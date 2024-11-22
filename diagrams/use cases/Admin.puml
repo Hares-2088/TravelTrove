@@ -21,12 +21,14 @@ rectangle "Travel Trove System" {
     usecase "Manage an employee account"
     usecase "Control Permissions"
     usecase "Generate report"
+    usecase "Remove a tour package"
 }
 
 "Manage an employee account" ..> "Control Permissions" : <<include>>
-
+Admin<|-- Employee
 Admin --- "Add an employee account"
 Admin -- "Manage an employee account"
 Admin -- "Generate report"
+Admin -- "Remove a tour package"
 
 @enduml
