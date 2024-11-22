@@ -1,0 +1,28 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Context.puml
+
+title System Context Diagram for Dar El Salam Travel Agency System
+
+Person(customer, "Customer", "Customer of the travel agency")
+Person(employee, "Employee", "Employee of the travel agency")
+Person(admin, "Admin", "Admin of the travel agency")
+
+System_Boundary(travelAgency, "Travel System", "Allows customers to view information about trips and make reservations. Also allows employees to manage trips and reservations")
+
+System_Ext(GmailAPI, "Gmail API", "Sends emails to customers")
+System_Ext(Stripe, "Stripe", "Processes international payments")
+System_Ext(Auth0, "Auth0", "Handles authentication and user management")
+
+Rel(employee, travelAgency, "Manages trips and reservations", "Uses")
+Rel(customer, travelAgency, "Views trips, and makes reservations", "Uses")
+Rel(admin, travelAgency, "Manages employees and views reports", "Uses")
+
+Rel(travelAgency, GmailAPI, "Sends emails using", "HTTPS")
+Rel(GmailAPI, customer, "Sends emails to", "SMTP/HTTPS")
+Rel(travelAgency, Stripe, "Processes payments using", "Processes")
+Rel(customer, Auth0, "Authenticates via", "OAuth 2.0")
+Rel(employee, Auth0, "Authenticates via", "OAuth 2.0")
+Rel(admin, Auth0, "Authenticates via", "OAuth 2.0")
+Rel(travelAgency, Auth0, "Uses for authentication", "Authenticates")
+
+@enduml

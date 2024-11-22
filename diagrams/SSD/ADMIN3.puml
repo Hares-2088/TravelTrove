@@ -1,0 +1,20 @@
+@startuml
+title ADMIN3 - Control Permissions
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Admin" as Admin #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+
+Admin -> TMS : Select Employee Account for Permission Management
+TMS -> Admin : Current Permissions Data (e.g., Roles, Access Levels)
+
+Admin -> TMS : Update Permissions (e.g., Assign/Remove Permissions, Change Access Levels)
+alt Valid Permissions Update
+    TMS -> Admin : Updated Permissions Data (e.g., New Permissions, Access Levels)
+else Invalid Permissions Update
+    TMS -> Admin : Error Data (e.g., Unauthorized Action, Invalid Role)
+end
+
+@enduml

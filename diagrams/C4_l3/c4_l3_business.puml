@@ -1,0 +1,119 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+AddElementTag("storage", $shape = CylinderShape(), $bgColor="lightSkyBlue", $fontColor="white")
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!include DEVICONS/mongodb.puml
+!include DEVICONS/react.puml
+!include DEVICONS/java.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include FONTAWESOME/amazon.puml
+!include FONTAWESOME/stripe.puml
+!include FONTAWESOME/google.puml
+
+LAYOUT_LEFT_RIGHT()
+
+title Component Diagram for API Application Container - Dar El Salam Travel
+
+Person(customer, "Customer", "Customer of the travel agency")
+Person(employee, "Employee", "Employee of the travel agency")
+Person(admin, "Admin", "Admin of the travel agency")
+
+Container_Boundary(api_app, "API Application") {
+    Container_Boundary(controllers, "Controllers") {
+        Component(CustomerController, "Customer Controller", "Spring REST Controller", "Handles HTTP requests related to customers", $sprite="java")
+        Component(TripController, "Trip Controller", "Spring REST Controller", "Handles HTTP requests related to trips", $sprite="java")
+        Component(ReservationController, "Reservation Controller", "Spring REST Controller", "Handles HTTP requests related to reservations", $sprite="java")
+        Component(NotificationController, "Notification Controller", "Spring REST Controller", "Handles HTTP requests related to notifications", $sprite="java")
+        Component(PaymentController, "Payment Controller", "Spring REST Controller", "Handles HTTP requests related to payments", $sprite="java")
+        Component(StaffController, "Staff Controller", "Spring REST Controller", "Handles HTTP requests related to staff management", $sprite="java")
+        Component(AuthenticationController, "Authentication Controller", "Spring REST Controller", "Handles HTTP requests for login, logout, and registration", $sprite="java")
+    }
+
+    Container_Boundary(services, "Services") {
+        Component(CustomerService, "Customer Service", "Spring Service", "Contains business logic for customer-related operations", $sprite="java")
+        Component(TripService, "Trip Service", "Spring Service", "Contains business logic for trip-related operations", $sprite="java")
+        Component(ReservationService, "Reservation Service", "Spring Service", "Contains business logic for reservation-related operations", $sprite="java")
+        Component(NotificationService, "Notification Service", "Spring Service", "Contains business logic for sending notifications", $sprite="java")
+        Component(PaymentService, "Payment Service", "Spring Service", "Contains business logic for processing payments", $sprite="java")
+        Component(StaffService, "Staff Service", "Spring Service", "Contains business logic for managing staff", $sprite="java")
+        Component(AuthenticationService, "Authentication Service", "Spring Service", "Handles user authentication and authorization", $sprite="java")
+    }
+
+    Container_Boundary(repositories, "Repositories") {
+        Component(CustomerRepo, "Customer Repository", "MongoDB Repository", "Handles persistence of customer data", $sprite="java")
+        Component(TripRepo, "Trip Repository", "MongoDB Repository", "Handles persistence of trip data", $sprite="java")
+        Component(ReservationRepo, "Reservation Repository", "MongoDB Repository", "Handles persistence of reservation data", $sprite="java")
+        Component(NotificationRepo, "Notification Repository", "MongoDB Repository", "Handles persistence of notification data", $sprite="java")
+        Component(PaymentRepo, "Payment Repository", "MongoDB Repository", "Handles persistence of payment data", $sprite="java")
+        Component(StaffRepo, "Staff Repository", "MongoDB Repository", "Handles persistence of staff data", $sprite="java")
+        Component(AuthenticationRepo, "Authentication Repository", "MongoDB Repository", "Handles persistence of user authentication and authorization data", $sprite="java")
+    }
+
+    Rel(CustomerController, CustomerService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(TripController, TripService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(ReservationController, ReservationService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(NotificationController, NotificationService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(PaymentController, PaymentService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(StaffController, StaffService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(AuthenticationController, AuthenticationService, "Receives HTTP requests and forwards to", "REST API")
+
+    Rel(CustomerService, CustomerRepo, "Uses to read/write customer data", "MongoDB Queries")
+    Rel(TripService, TripRepo, "Uses to read/write trip data", "MongoDB Queries")
+    Rel(ReservationService, ReservationRepo, "Uses to read/write reservation data", "MongoDB Queries")
+    Rel(NotificationService, NotificationRepo, "Uses to store notification records", "MongoDB Queries")
+    Rel(PaymentService, PaymentRepo, "Uses to store payment records", "MongoDB Queries")
+    Rel(StaffService, StaffRepo, "Uses to read/write staff data", "MongoDB Queries")
+    Rel(AuthenticationService, AuthenticationRepo, "Uses to manage user data (credentials, roles)", "MongoDB Queries")
+
+    Rel(ReservationService, CustomerService, "Fetches customer data for reservation creation", "HTTP API")
+    Rel(ReservationService, TripService, "Fetches trip data for reservation creation", "HTTP API")
+    Rel(TripService, ReservationService, "Checks reservation capacity for trips", "HTTP API")
+    Rel(PaymentService, ReservationService, "Validates reservation for payment", "HTTP API")
+    Rel(NotificationService, CustomerService, "Fetches customer contact details for sending notifications", "HTTP API")
+    Rel(NotificationService, ReservationService, "Fetches reservation data for notification", "HTTP API")
+    Rel(NotificationService, TripService, "Fetches trip data for sending notifications", "HTTP API")
+
+    Rel(AuthenticationService, CustomerService, "Verifies customer ownership", "HTTP API")
+    Rel(AuthenticationService, StaffService, "Verifies staff roles and permissions", "HTTP API")
+}
+
+Container(mongoDB, "MongoDB", "Database", "Stores all travel agency data", $tags = "storage", $sprite="mongodb")
+
+Rel(CustomerRepo, mongoDB, "Reads/Writes customer data to", "MongoDB Queries")
+Rel(TripRepo, mongoDB, "Reads/Writes trip data to", "MongoDB Queries")
+Rel(ReservationRepo, mongoDB, "Reads/Writes reservation data to", "MongoDB Queries")
+Rel(NotificationRepo, mongoDB, "Reads/Writes notification data to", "MongoDB Queries")
+Rel(PaymentRepo, mongoDB, "Reads/Writes payment data to", "MongoDB Queries")
+Rel(StaffRepo, mongoDB, "Reads/Writes staff data to", "MongoDB Queries")
+Rel(AuthenticationRepo, mongoDB, "Reads/Writes user authentication data to", "MongoDB Queries")
+
+Container(spa, "Single-Page Application", "TypeScript, React", "Main interface for interacting with the Dar El Salam system", $sprite="react")
+Container(web_app, "Web Application", "TypeScript, React", "Delivers static content and main interface", $sprite="react")
+
+Rel(web_app, CustomerController, "Makes HTTP requests for customer operations", "HTTPS/JSON")
+Rel(web_app, TripController, "Makes HTTP requests for trip operations", "HTTPS/JSON")
+Rel(web_app, ReservationController, "Makes HTTP requests for reservation operations", "HTTPS/JSON")
+Rel(web_app, NotificationController, "Makes HTTP requests for notification operations", "HTTPS/JSON")
+Rel(web_app, PaymentController, "Makes HTTP requests for payment operations", "HTTPS/JSON")
+Rel(web_app, StaffController, "Makes HTTP requests for staff management", "HTTPS/JSON")
+Rel(web_app, AuthenticationController, "Handles HTTP requests for login, registration", "HTTPS/JSON")
+
+System_Ext(Stripe, "Stripe", "External service for processing payments", $sprite="stripe")
+System_Ext(GmailApi, "Gmail API", "Sends emails to customers", $sprite="google")
+System_Ext(Auth0, "Auth0", "External authentication service for handling user login and security", $sprite="google")
+
+Rel(PaymentService, Stripe, "Processes payments using", "HTTPS API")
+Rel(NotificationService, GmailApi, "Sends notification emails via", "HTTPS API")
+
+Rel(AuthenticationController, Auth0, "Delegates authentication and authorization to", "OAuth 2.0/JWT")
+Rel(AuthenticationService, Auth0, "Verifies tokens and user credentials with", "OAuth 2.0/JWT")
+
+Rel(customer, spa, "Interacts with", "Web Browser")
+Rel(employee, spa, "Interacts with", "Web Browser")
+Rel(admin, spa, "Interacts with", "Web Browser")
+
+Rel(spa, web_app, "Routes requests to", "HTTPS")
+
+@enduml

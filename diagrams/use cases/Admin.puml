@@ -1,0 +1,32 @@
+@startuml
+scale 1
+left to right direction
+
+header
+Dar El Salam
+endheader
+
+' Custom skin parameters for use cases
+skinparam usecase {
+    BackgroundColor lightblue
+    BorderColor DarkSlateGray
+    ArrowColor Black
+}
+
+actor "Dar El Salam's Admin" as Admin
+
+rectangle "Travel Trove System" {
+
+    usecase "Add an employee account"
+    usecase "Manage an employee account"
+    usecase "Control Permissions"
+    usecase "Generate report"
+}
+
+"Manage an employee account" ..> "Control Permissions" : <<include>>
+
+Admin --- "Add an employee account"
+Admin -- "Manage an employee account"
+Admin -- "Generate report"
+
+@enduml

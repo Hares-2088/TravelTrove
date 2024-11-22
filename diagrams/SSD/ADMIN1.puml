@@ -1,0 +1,18 @@
+@startuml
+title ADMIN1 - Add an Employee Account
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Admin" as Admin #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+
+Admin -> TMS : Enter New Employee Details
+
+alt Valid Information
+    TMS -> Admin : Employee Data (e.g., Employee ID, Name, Role)
+else Invalid Information
+    TMS -> Admin : Error Data (e.g., Missing Fields, Invalid Inputs)
+end
+
+@enduml

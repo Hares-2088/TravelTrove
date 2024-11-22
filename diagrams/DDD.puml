@@ -1,0 +1,170 @@
+@startuml
+hide circle
+left to right direction
+
+!define ENTITY(entityName) class entityName << Entity >>
+!define AGGREGATE(aggregateName) class aggregateName << Aggregate >>
+!define AGGREGATE_ROOT(aggregateRootName) class aggregateRootName << Aggregate Root >>
+!define AGGREGATE_ROOT_ENTITY(aggregateRootEntityName) class aggregateRootEntityName << Aggregate Root >> << Entity >>
+!define VALUE_OBJECT(valueObjectName) class valueObjectName << Value Object >>
+!pragma useVerticalIf on
+skinparam dpi 350
+skinparam packageStyle rectangle
+skinparam rectangle {
+    BackgroundColor #f7f4eb
+    BorderColor Black
+}
+
+rectangle "Dar El Salam Travel Agency" as BoundedContextTravelAgency #line.dashed {
+
+    Package "Reservation Management Sub-Domain" <<Rectangle>> #Lavender {
+
+        AGGREGATE_ROOT(Reservation) #Cyan {
+            date: DateTime
+            status: Enum { PENDING, CONFIRMED, CANCELLED }
+        }
+
+        VALUE_OBJECT(ReservationId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(CustomerInfo) #Bisque {
+            name: String
+            email: String
+            phone: String
+        }
+
+        VALUE_OBJECT(PaymentDetails) #Bisque {
+            cardNumber: String
+            expirationDate: DateTime
+            paymentStatus: Enum { PENDING, COMPLETED, FAILED }
+        }
+
+        Reservation "1" o-- "1" ReservationId
+        Reservation "1" o-- "1" CustomerInfo
+        Reservation "1" o-- "1" PaymentDetails
+    }
+
+    Package "Customer Sub-Domain" <<Rectangle>> #FFCDD2 {
+
+        AGGREGATE_ROOT_ENTITY(Customer) #lightpink {
+            firstName: String
+            lastName: String
+            email: String
+            phone: String
+            address: String
+        }
+
+        VALUE_OBJECT(CustomerId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(CustomerAddress) #Bisque {
+            street: String
+            city: String
+            country: String
+        }
+
+        VALUE_OBJECT(CustomerPreferences) #Bisque {
+            preferredDestinations: List[String]
+        }
+
+        Customer "1" o-- "1" CustomerId
+        Customer "1" o-- "1" CustomerAddress
+        Customer "1" o-- "0..1" CustomerPreferences
+    }
+
+    Package "Staff Admin Sub-Domain" <<Rectangle>> #FFEE93 {
+
+        AGGREGATE_ROOT_ENTITY(Staff) #lightblue {
+            firstName: String
+            lastName: String
+            role: Enum { Admin, Employee }
+            email: String
+        }
+
+        VALUE_OBJECT(StaffId) #Bisque {
+            id: UUID
+        }
+
+        Staff "1" o-- "1" StaffId
+    }
+
+    Package "Trip Management Sub-Domain" <<Rectangle>> #LightSalmon {
+
+        AGGREGATE_ROOT(Trip) #lightblue {
+            destination: String
+            availableSeats: Integer
+            price: Decimal
+            startDate: DateTime
+            endDate: DateTime
+            status: TripStatus
+        }
+
+        VALUE_OBJECT(TripId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(TripDetails) #Bisque {
+            description: String
+            itinerary: String
+        }
+
+        VALUE_OBJECT(TripStatus) #Bisque {
+            type: Enum { COMPLETED, CANCELLED, AVAILABLE }
+        }
+
+        Trip "1" o-- "1" TripId
+        Trip "1" o-- "1" TripDetails
+        Trip "1" o-- "1" TripStatus
+    }
+
+    Package "Notification Sub-Domain" <<Rectangle>> #FFCDD2 {
+
+        ENTITY(Email) #lightpink {
+            recipient: String
+            subject: String
+            body: String
+        }
+
+        VALUE_OBJECT(EmailStatus) #Bisque {
+            status: Enum { PENDING, SENT, FAILED }
+            sentDate: DateTime
+        }
+
+        VALUE_OBJECT(EmailId) #Bisque {
+            id: UUID
+        }
+
+        Email "1" o-- "1" EmailId
+        Email "1" o-- "1" EmailStatus
+    }
+
+    Package "Payment Sub-Domain" <<Rectangle>> #LightGray {
+
+        AGGREGATE_ROOT(Payment) #lightblue {
+            amount: Decimal
+            status: Enum { PENDING, COMPLETED, FAILED }
+        }
+
+        VALUE_OBJECT(PaymentId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(CurrencyType) #Bisque {
+            type: Enum { USD, EUR, GBP, CAD }
+        }
+
+        Payment "1" o-- "1" PaymentId
+        Payment "1" o-- "1" CurrencyType
+    }
+
+    Customer "1" o-- "0..*" Reservation
+    Reservation "0..*" --> "1" Trip
+    Reservation "1" --> "0..*" Payment
+    Trip "0..*" --> "1" Staff
+    Customer "1" --> "0..*" Email
+
+}
+
+@enduml
