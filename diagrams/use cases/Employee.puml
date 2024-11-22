@@ -25,7 +25,6 @@ rectangle "Travel Trove System" {
 
 }
 Employee -- "Browse tour packages"
-Employee<|-- Customer
 "Browse tour packages" <.. "Filter search result" : <<extend>>
 "Browse tour packages" <.. "Add tour package" : <<extend>>
 "Browse tour packages" <.. "Modify tour package" : <<extend>>
