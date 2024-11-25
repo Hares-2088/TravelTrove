@@ -1,0 +1,152 @@
+@startuml
+skinparam class {
+    BackgroundColor #f7f4eb
+    BorderColor Black
+    ArrowColor Black
+}
+skinparam dpi 300
+
+title Full 3-Layer Architecture: Tour Management System
+
+' Presentation Layer
+package "Presentation Layer" <<Rectangle>> #LightYellow {
+    class TourPageController {
+        + displayTours(): void
+        + filterTours(criteria: FilterCriteria): void
+        + viewTourDetails(tourId: String): void
+    }
+
+    class TourDetailsPageController {
+        + displayTourDetails(tourId: String): void
+    }
+
+    class TourListView {
+        + render(tours: List<TourDTO>): void
+    }
+
+    class TourDetailsView {
+        + render(details: TourDetailsDTO): void
+    }
+
+    TourPageController --> TourListView : "renders"
+    TourDetailsPageController --> TourDetailsView : "renders"
+}
+
+' Business Layer
+package "Business Layer" <<Rectangle>> #Lavender {
+    class TourService {
+        + getTours(criteria: FilterCriteria): List<TourDTO>
+        + getTourDetails(tourId: String): TourDetailsDTO
+    }
+
+    class FilterCriteria {
+        + destination: String
+        + priceRange: Double[]
+        + dateRange: Date[]
+    }
+
+    TourPageController --> TourService : "uses"
+    TourDetailsPageController --> TourService : "uses"
+}
+
+' Data Access Layer
+package "Data Access Layer" <<Rectangle>> #LightCyan {
+    class Tour {
+        + name: String
+        + startDate: Date
+        + endDate: Date
+        + overallDesc: String
+        + image: Image
+        + cities: List<City>
+        + availability: Boolean
+        + spotsAvailable: Integer
+        + reviews: List<Review>
+        + booking: Booking
+        + itinerary: Image
+    }
+
+    class City {
+        + name: String
+        + description: String
+        + image: Image
+        + startDate: Date
+        + events: List<Event>
+        + hotel: String
+    }
+
+    class Event {
+        + date: Date
+        + name: String
+        + image: Image [optional]
+        + gatheringTime: Time
+        + departureTime: Time
+        + endTime: Time
+    }
+
+    class Review {
+        + reviewerName: String
+        + rating: Integer
+        + comment: String
+        + date: Date
+    }
+
+    class Booking {
+        + bookingId: UUID
+        + customerName: String
+        + bookingDate: Date
+        + numberOfSpots: Integer
+        + totalAmount: Decimal
+    }
+
+    class TourRepository {
+        + findTours(criteria: FilterCriteria): List<Tour>
+        + findTourDetails(tourId: String): Tour
+    }
+
+    TourService --> TourRepository : "uses"
+    TourRepository --> Tour : "queries"
+    TourRepository --> City : "queries"
+    TourRepository --> Event : "queries"
+    TourRepository --> Review : "queries"
+    TourRepository --> Booking : "queries"
+}
+
+' Data Transfer Objects
+package "Data Transfer Objects (DTOs)" <<Rectangle>> #White {
+    class TourDTO {
+        + name: String
+        + startDate: Date
+        + endDate: Date
+        + availability: Boolean
+        + spotsAvailable: Integer
+    }
+
+    class TourDetailsDTO {
+        + name: String
+        + overallDesc: String
+        + cities: List<CityDTO>
+        + itineraries: List<Image>
+        + reviews: List<ReviewDTO>
+    }
+
+    class CityDTO {
+        + name: String
+        + description: String
+        + startDate: Date
+        + hotel: String
+    }
+
+    class ReviewDTO {
+        + reviewerName: String
+        + rating: Integer
+        + comment: String
+        + date: Date
+    }
+
+    TourService --> TourDTO
+    TourService --> TourDetailsDTO
+    TourDetailsDTO --> CityDTO
+    TourDetailsDTO --> ReviewDTO
+}
+
+@enduml
