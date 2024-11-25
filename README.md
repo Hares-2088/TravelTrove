@@ -71,4 +71,4 @@ Follow the naming conventions or else.. :upside_down_face:
 - Mariya Zolovska
 - Debo Huang
 - Charles Séguin
-- [Ioannis Panaritis](github.com/ioannisp03)
+- [Ioannis Panaritis](https://github.com/ioannisp03)
