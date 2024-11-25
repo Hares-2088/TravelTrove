@@ -67,8 +67,8 @@ Follow the naming conventions or else.. :upside_down_face:
 
 ## Contributors
 
-- Adem Bessam
-- Mariya Zolovska
-- Debo Huang
-- Charles Séguin
+- [Adem Bessam](https://github.com/Hares-2088)
+- [Mariya Zolovska](https://github.com/mzolovska)
+- [Debo Huang](https://github.com/flyindonut)
+- [Charles Séguin](https://github.com/CharlesS42)
 - [Ioannis Panaritis](https://github.com/ioannisp03)
