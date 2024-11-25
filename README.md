@@ -28,14 +28,6 @@ This project addresses key business challenges by:
 - Enabling **data-driven decisions** with advanced reporting and analytics.
 - Improving **mobile accessibility** to reach a broader audience.
 
-## Contributors
-
-- Adem Bessam
-- Mariya Zolovska
-- Debo Huang
-- Charles Séguin
-- Ioannis Panaritis
-
 ### Branch Naming
 
 - Branches will be named according to the following convention: type/JiraID_Description
@@ -70,4 +62,12 @@ feat(JiraID): short description
 ```
 feat(JiraID): short description (#420)
 ```
+---
 
+## Contributors
+
+- Adem Bessam
+- Mariya Zolovska
+- Debo Huang
+- Charles Séguin
+- Ioannis Panaritis
