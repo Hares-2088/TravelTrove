@@ -1,4 +1,41 @@
-# TravelTrove
+# Dar El Salam Travel System
+
+Dar El Salam Travel System is a comprehensive platform designed to streamline the operations of **Dar El Salam Travel**, a leading halal tourism agency in North America. This project focuses on modernizing the agency's online presence and improving customer and staff user experience.
+
+## Features
+
+- **Customer Functionality**: 
+  - Browse, book, and cancel tour packages
+  - Manage profiles
+  - Subscribe to notifications for availability
+- **Staff Tools**: 
+  - Manage tours, bookings, and customer inquiries
+  - Edit and organize available packages
+- **Admin Tools**:
+  - Manage employee accounts and permissions
+  - Generate reports and oversee operations
+- **Advanced Features**:
+  - Real-time inventory tracking to prevent overbooking
+  - Robust reporting and analytics for data-driven decisions
+  - Mobile accessibility for customers and staff
+  - Community system to foster customer engagement
+
+## Business Goals
+
+This project addresses key business challenges by:
+- Enhancing the **user experience** with a user-friendly interface and efficient workflows.
+- Optimizing **resource management** with real-time tracking and notifications.
+- Enabling **data-driven decisions** with advanced reporting and analytics.
+- Improving **mobile accessibility** to reach a broader audience.
+
+## Contributors
+
+- Adem Bessam
+- Mariya Zolovska
+- Debo Huang
+- Charles Séguin
+- Ioannis Panaritis
+
 ### Branch Naming
 
 - Branches will be named according to the following convention: type/JiraID_Description
