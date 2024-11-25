@@ -63,6 +63,7 @@ feat(JiraID): short description
 feat(JiraID): short description (#420)
 ```
 ---
+Follow the naming conventions or else.. :upside_down_face:	
 
 ## Contributors
 
