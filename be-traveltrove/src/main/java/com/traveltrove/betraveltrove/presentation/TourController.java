@@ -9,6 +9,7 @@ import reactor.core.publisher.Flux;
 @RestController
 @RequestMapping("/api/v1/tours")
 @Slf4j
+@CrossOrigin(origins = "http://localhost:3000")
 public class TourController {
 
     private final TourService tourService;
