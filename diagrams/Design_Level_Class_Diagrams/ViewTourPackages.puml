@@ -42,7 +42,7 @@ package "Business Layer" <<Rectangle>> #Lavender {
     class FilterCriteria {
         + destination: String
         + priceRange: Double[]
-        + dateRange: Date[]
+        + dateRange: LocalDate[]
     }
 
     TourPageController --> TourService : "uses"
@@ -52,48 +52,54 @@ package "Business Layer" <<Rectangle>> #Lavender {
 ' Data Access Layer
 package "Data Access Layer" <<Rectangle>> #LightCyan {
     class Tour {
+        + tourId: UUID
         + name: String
-        + startDate: Date
-        + endDate: Date
-        + overallDesc: String
-        + image: Image
+        + startDate: LocalDate
+        + endDate: LocalDate
+        + overallDescription: String
+        + image: String
         + cities: List<City>
         + availability: Boolean
         + spotsAvailable: Integer
         + reviews: List<Review>
-        + booking: Booking
-        + itinerary: Image
+        + bookings: List<Booking>
+        + itineraryPicture: String
+        + price: Decimal
     }
 
     class City {
+        + cityId: UUID
         + name: String
         + description: String
-        + image: Image
-        + startDate: Date
+        + image: String
+        + startDate: LocalDate
         + events: List<Event>
         + hotel: String
     }
 
     class Event {
-        + date: Date
+        + eventId: UUID
+        + date: LocalDate
         + name: String
-        + image: Image [optional]
-        + gatheringTime: Time
-        + departureTime: Time
-        + endTime: Time
+        + image: String [optional]
+        + gatheringTime: LocalDateTime
+        + departureTime: LocalDateTime
+        + endTime: LocalDateTime
+        + description: String
     }
 
     class Review {
+        + reviewId: UUID
         + reviewerName: String
         + rating: Integer
-        + comment: String
-        + date: Date
+        + review: String
+        + date: LocalDateTime
     }
 
     class Booking {
         + bookingId: UUID
         + customerName: String
-        + bookingDate: Date
+        + bookingDate: LocalDate
         + numberOfSpots: Integer
         + totalAmount: Decimal
     }
@@ -115,8 +121,8 @@ package "Data Access Layer" <<Rectangle>> #LightCyan {
 package "Data Transfer Objects (DTOs)" <<Rectangle>> #White {
     class TourDTO {
         + name: String
-        + startDate: Date
-        + endDate: Date
+        + startDate: LocalDate
+        + endDate: LocalDate
         + availability: Boolean
         + spotsAvailable: Integer
     }
@@ -125,14 +131,14 @@ package "Data Transfer Objects (DTOs)" <<Rectangle>> #White {
         + name: String
         + overallDesc: String
         + cities: List<CityDTO>
-        + itineraries: List<Image>
+        + itineraries: List<String>
         + reviews: List<ReviewDTO>
     }
 
     class CityDTO {
         + name: String
         + description: String
-        + startDate: Date
+        + startDate: LocalDate
         + hotel: String
     }
 
@@ -140,7 +146,7 @@ package "Data Transfer Objects (DTOs)" <<Rectangle>> #White {
         + reviewerName: String
         + rating: Integer
         + comment: String
-        + date: Date
+        + date: LocalDate
     }
 
     TourService --> TourDTO
