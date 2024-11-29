@@ -20,7 +20,7 @@ public class Event {
     private String eventId;
     private String cityId;
     private String name;
-    private LocalDate date;
+    private LocalDate startDate;
     private String image;
     private String description;
     private LocalDateTime gatheringTime;

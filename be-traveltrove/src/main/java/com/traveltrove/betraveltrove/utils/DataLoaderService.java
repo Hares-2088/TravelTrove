@@ -29,7 +29,7 @@ public class DataLoaderService implements CommandLineRunner {
                 .name("Event 1")
                 .description("Event 1 Description")
                 .image("Event 1 Image")
-                .date(LocalDate.of(2025, 1, 1))
+                .startDate(LocalDate.of(2025, 1, 1))
                 .gatheringTime(LocalDate.of(2025, 1, 1).atTime(8, 0))
                 .departureTime(LocalDate.of(2025, 1, 1).atTime(9, 0))
                 .endTime(LocalDate.of(2025, 1, 1).atTime(10, 0))
