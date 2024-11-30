@@ -1,0 +1,27 @@
+.footer {
+  background-color: #e1e1e1;
+  padding: 1rem 2rem;
+  text-align: center;
+}
+
+.footer-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-icon {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s;
+}
+
+.footer-icon:hover {
+  transform: scale(1.2);
+}
+
+.footer-copyright {
+  font-size: 0.9rem;
+  color: #333;
+}

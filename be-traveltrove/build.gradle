@@ -18,6 +18,10 @@ configurations {
 	}
 }
 
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
 jacoco {
 	toolVersion = "0.8.11"
 }
@@ -46,6 +50,7 @@ dependencies {
 	testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.12.3')
+	testImplementation 'org.mock-server:mockserver-netty:5.14.0'
 }
 
 jacocoTestReport {
