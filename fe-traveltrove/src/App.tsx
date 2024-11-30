@@ -1,18 +1,9 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ToursPage from './pages/ToursPage';
-import NavBar from './context/NavBar';
+import './App.css';
+import { RouterProvider } from 'react-router-dom';
+import router from '../src/router';
 
-
-function App() {
-  return (
-    <Router>
-      <NavBar />
-      <Routes>
-        <Route path="/tours" element={<ToursPage />} />
-      </Routes>
-    </Router>
-  );
+function App(): JSX.Element {
+  return <RouterProvider router={router} />;
 }
 
 export default App;
