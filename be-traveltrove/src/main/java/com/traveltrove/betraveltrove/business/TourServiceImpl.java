@@ -31,4 +31,17 @@ public class TourServiceImpl implements TourService {
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Tour id not found: " + tourId))))
                 .map(EntityModelUtil::toTourResponseModel);
     }
+
+    @Override
+    public Mono<TourResponseModel> addTour(Mono<TourRequestModel> tourRequestModel) {
+        return tourRequestModel
+                .map(EntityModelUtil::toTourEntity)
+                .doOnNext(tour -> {
+                    tour.setTourId(UUID.randomUUID().toString());
+                })
+                .flatMap(tourRepository::insert)
+                .map(EntityModelUtil::toTourResponseModel);
+    }
+
+
 }

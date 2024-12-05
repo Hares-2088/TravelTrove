@@ -6,18 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CityResponseModel {
-    private String cityId;
+public class CityRequestModel {
     private String tourId;
     private String name;
     private String description;
     private String image;
     private LocalDate startDate;
     private String hotel;
+    //private String cityId;
 }

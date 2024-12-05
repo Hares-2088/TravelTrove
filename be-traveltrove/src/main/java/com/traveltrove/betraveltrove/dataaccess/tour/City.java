@@ -14,12 +14,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class City {
-
     private String cityId;
+    private String tourId;
     private String name;
     private String description;
     private String image;
     private LocalDate startDate;
-    private List<Event> events;
+    //private List<Event> events;
     private String hotel;
 }
