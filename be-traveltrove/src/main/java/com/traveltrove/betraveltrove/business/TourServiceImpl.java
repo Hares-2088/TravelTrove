@@ -14,9 +14,17 @@ import reactor.core.publisher.Mono;
 public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
+    private final CityRepository cityRepository;
+    private final EventRepository eventRepository;
 
-    public TourServiceImpl(TourRepository tourRepository) {
-        this.tourRepository = tourRepository;
+    public TourServiceImpl(TourRepository tourRepo, CityRepository? cityRepo, EventRepository? eventRepo) {
+        this.tourRepository = tourRepo;
+        if (cityRepository != null) {
+            this.cityRepository = cityRepo;
+        }
+        if (eventRepository != null) {
+            this.eventRepository = eventRepo;
+        }
     }
 
     @Override
@@ -43,5 +51,35 @@ public class TourServiceImpl implements TourService {
                 .map(EntityModelUtil::toTourResponseModel);
     }
 
+    @Override
+    public Mono<CityResponseModel> addCityToTour(String tourId, Mono<CityRequestModel> cityRequestModel) {
+        return tourRepository.findTourByTourId(tourId)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Tour with ID " + tourId + " does not exist")))
+                .then(cityRequestModel
+                        .map(EntityModelUtil::toCityEntity)
+                        .doOnNext(city -> {
+                            city.setCityId(UUID.randomUUID().toString());
+                            city.setTourId(tourId);
+                        })
+                        .flatMap(cityRepository::insert)
+                        .map(EntityModelUtil::toCityResponseModel));
+    }
+
+
+    @Override
+    Mono<EventResponseModel> addEventToCity(String tourId, String cityId, Mono<EventRequestModel> eventRequestModel) {
+        return tourRepository.findTourByTourId(tourId)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Tour with ID " + tourId + " does not exist")))
+                .then(cityRepository.findCityByCityIdAndTourId(cityId, tourId))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("City with ID " + cityId + " does not exist in tour with ID " + tourId)))
+                .then(eventRequestModel
+                        .map(EntityModelUtil::toEventEntity)
+                        .doOnNext(event -> {
+                            event.setEventId(UUID.randomUUID().toString());
+                            event.setCityId(cityId);
+                        })
+                        .flatMap(eventRepository::insert)
+                        .map(EntityModelUtil::toEventResponseModel));
+    }
 
 }

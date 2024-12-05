@@ -3,9 +3,7 @@ package com.traveltrove.betraveltrove.dataaccess.tour;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Mono;
 
-public interface TourRepository extends ReactiveMongoRepository<Tour, String> {
-    public Mono<Tour> findTourByTourId(String tourId);
-    public Flux<Tour> findAllTours();
+public interface CityRepository extends ReactiveMongoRepository<City, String> {
     public Mono<City> findCityByCityId(String cityId);
     public Mono<City> findCityByCityIdAndTourId(String cityId, String tourId);
     public Flux<City> findAllCitiesByTourId(String tourId);
