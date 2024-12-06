@@ -1,6 +1,6 @@
-package com.traveltrove.betraveltrove.presentation;
+package com.traveltrove.betraveltrove.presentation.tour;
 
-import com.traveltrove.betraveltrove.business.TourService;
+import com.traveltrove.betraveltrove.business.tour.TourService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

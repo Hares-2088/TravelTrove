@@ -1,9 +1,10 @@
 package com.traveltrove.betraveltrove.business;
 
+import com.traveltrove.betraveltrove.business.tour.TourServiceImpl;
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
-import com.traveltrove.betraveltrove.presentation.TourResponseModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

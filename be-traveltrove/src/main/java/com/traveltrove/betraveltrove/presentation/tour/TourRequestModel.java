@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.presentation;
+package com.traveltrove.betraveltrove.presentation.tour;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

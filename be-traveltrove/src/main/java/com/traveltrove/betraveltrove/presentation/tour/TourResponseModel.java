@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.presentation;
+package com.traveltrove.betraveltrove.presentation.tour;
 
 import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
 import lombok.AllArgsConstructor;
