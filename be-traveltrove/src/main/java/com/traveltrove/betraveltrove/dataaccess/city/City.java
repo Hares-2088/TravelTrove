@@ -18,6 +18,7 @@ import java.util.List;
 @Document(collection = "city")
 public class City {
 
+    @Id
     private String id;
     private String cityId;
     private String name;

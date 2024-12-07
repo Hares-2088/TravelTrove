@@ -99,17 +99,17 @@ public class EntityModelUtil {
     }
 
     public static CityResponseModel toCityResponseModel(City city) {
-        return CityResponseModel.builder()
-                .cityId(city.getCityId())
-                .name(city.getName())
-                .countryId(city.getCountryId())
-                .build();
+        CityResponseModel cityResponseModel = new CityResponseModel();
+        BeanUtils.copyProperties(city, cityResponseModel);
+        return cityResponseModel;
     }
 
     public static City toCityEntity(CityRequestModel cityRequestModel) {
-        City city = new City();
-        BeanUtils.copyProperties(cityRequestModel, city);
-        return city;
+        return City.builder()
+                .cityId(generateUUIDString())
+                .name(cityRequestModel.getName())
+                .countryId(cityRequestModel.getCountryId())
+                .build();
     }
 
     public static String generateUUIDString() {

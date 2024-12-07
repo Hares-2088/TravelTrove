@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
+import { getAllCountries } from "../../countries/api/countries.api";
 import { getAllCities, getCityById, addCity, updateCity, deleteCity } from "../../cities/api/cities.api";
 import { CityResponseModel, CityRequestModel } from "../../cities/models/city.model";
+import { CountryResponseModel } from "../../countries/models/country.model";
 import './CitiesTab.css';
 
 const CitiesTab: React.FC = () => {
     const [cities, setCities] = useState<CityResponseModel[]>([]);
+    const [countries, setCountries] = useState<CountryResponseModel[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
     const [selectedCity, setSelectedCity] = useState<CityResponseModel | null>(null);
@@ -14,7 +17,17 @@ const CitiesTab: React.FC = () => {
 
     useEffect(() => {
         fetchCities();
+        fetchCountries();
     }, []);
+
+    const fetchCountries = async () => {
+        try {
+            const data = await getAllCountries();
+            setCountries(data);
+        } catch (error) {
+            console.error("Error fetching countries:", error);
+        }
+    };
 
     const fetchCities = async () => {
         try {
@@ -90,6 +103,7 @@ const CitiesTab: React.FC = () => {
                         <Button
                             variant="primary"
                             onClick={() => {
+                                fetchCountries();
                                 setModalType("create");
                                 setFormData({ name: "", countryId: "" });
                                 setShowModal(true);
@@ -101,46 +115,47 @@ const CitiesTab: React.FC = () => {
                     <div className="cities-scrollbar" style={{ maxHeight: "700px", overflowY: "auto" }}>
                         <Table bordered hover responsive className="rounded" style={{ borderRadius: "12px", overflow: "hidden" }}>
                             <thead className="bg-light">
-                            <tr>
-                                <th>Name</th>
-                                <th>Actions</th>
-                            </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Actions</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            {cities.map((city) => (
-                                <tr key={city.cityId}>
-                                    <td
-                                        onClick={() => handleViewCity(city.cityId)}
-                                        style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
-                                    >
-                                        {city.name}
-                                    </td>
-                                    <td>
-                                        <Button
-                                            variant="outline-primary"
-                                            onClick={() => {
-                                                setSelectedCity(city);
-                                                setModalType("update");
-                                                setFormData({ name: city.name, countryId: city.countryId });
-                                                setShowModal(true);
-                                            }}
+                                {cities.map((city) => (
+                                    <tr key={city.cityId}>
+                                        <td
+                                            onClick={() => handleViewCity(city.cityId)}
+                                            style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
                                         >
-                                            Edit
-                                        </Button>
-                                        <Button
-                                            variant="outline-danger"
-                                            className="ms-2"
-                                            onClick={() => {
-                                                setSelectedCity(city);
-                                                setModalType("delete");
-                                                setShowModal(true);
-                                            }}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
+                                            {city.name}
+                                        </td>
+                                        <td>
+                                            <Button
+                                                variant="outline-primary"
+                                                onClick={() => {
+                                                    fetchCountries();
+                                                    setSelectedCity(city);
+                                                    setModalType("update");
+                                                    setFormData({ name: city.name, countryId: city.countryId });
+                                                    setShowModal(true);
+                                                }}
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                variant="outline-danger"
+                                                className="ms-2"
+                                                onClick={() => {
+                                                    setSelectedCity(city);
+                                                    setModalType("delete");
+                                                    setShowModal(true);
+                                                }}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </Table>
                     </div>
@@ -168,12 +183,18 @@ const CitiesTab: React.FC = () => {
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>City Country Id</Form.Label>
-                                <Form.Control
-                                    type="text"
+                                <Form.Label>Country</Form.Label>
+                                <Form.Select
                                     value={formData.countryId}
                                     onChange={(e) => setFormData({ ...formData, countryId: e.target.value })}
-                                />
+                                >
+                                    <option value="">Select a country</option>
+                                    {countries.map((country) => (
+                                        <option key={country.countryId} value={country.countryId}>
+                                            {country.name}
+                                        </option>
+                                    ))}
+                                </Form.Select>
                             </Form.Group>
                         </Form>
                     )}
