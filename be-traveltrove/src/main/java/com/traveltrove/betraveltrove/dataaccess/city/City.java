@@ -17,8 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @Document(collection = "city")
 public class City {
-    @Id
-    private int id;
+
+    private String id;
     private String cityId;
     private String name;
     private String countryId;

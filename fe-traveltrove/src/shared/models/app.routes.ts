@@ -5,6 +5,7 @@ export enum AppRoutes {
   TourDetailsPage = '/tours/:tourId',
   Dashboard = '/dashboard',
   CountryDetailsPage = '/countries/:countryId',
+  CityDetailsPage = '/cities/:cityId',
   Login = '/login',
   Register = '/register',
 }
