@@ -3,9 +3,9 @@ package com.traveltrove.betraveltrove.utils;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
+import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
 import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
 import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
-import com.traveltrove.betraveltrove.presentation.EventResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourRequestModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.country.CountryRequestModel;
@@ -30,37 +30,6 @@ public class EntityModelUtil {
         if (tour.getEndDate() != null) {
             tourResponseModel.setEndDate(tour.getEndDate().format(formatter));
         }
-
-        /*
-        // Map cities
-        if (tour.getCities() != null) {
-            tourResponseModel.setCities(
-                    tour.getCities().stream()
-                            .map(city -> CityResponseModel.builder()
-                                    .cityId(city.getCityId())
-                                    .name(city.getName())
-                                    .description(city.getDescription())
-                                    .image(city.getImage())
-                                    .startDate(city.getStartDate())
-                                    .hotel(city.getHotel())
-                                    .events(city.getEvents() != null ? city.getEvents().stream()
-                                            .map(event -> EventResponseModel.builder()
-                                                    .eventId(event.getEventId())
-                                                    .name(event.getName())
-                                                    .description(event.getDescription())
-                                                    .image(event.getImage())
-                                                    .startDate(event.getStartDate())
-                                                    .gatheringTime(event.getGatheringTime())
-                                                    .departureTime(event.getDepartureTime())
-                                                    .endTime(event.getEndTime())
-                                                    .build())
-                                            .toList() : null)
-                                    .build())
-                            .toList()
-            );
-        }
-
-         */
 
         return tourResponseModel;
     }

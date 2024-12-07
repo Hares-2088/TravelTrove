@@ -31,9 +31,9 @@ public class Tour {
     private double price;
     private int spotsAvailable;
 
-    // private List<City> cities;
-    private List<Review> reviews;
-    private List<Booking> bookings;
+    private List<String> cities;
+    private List<String> reviews;
+    private List<String> bookings;
 
     private String image;
     private String itineraryPicture;
