@@ -10,6 +10,6 @@ public interface TourService {
     Flux<TourResponseModel> getTours();
     Mono<TourResponseModel> getTourByTourId(String tourId);
     Mono<TourResponseModel> addTour(Mono<TourRequestModel> tourRequestModel);
-    Mono<TourResponseModel> addCityToTour(String tourId, Mono<CityRequestModel> cityRequestModel);
-    Mono<TourResponseModel> addEventToCity(String tourId, String cityId, Mono<EventRequestModel> eventRequestModel);
+    Mono<CityResponseModel> addCityToTour(String tourId, Mono<CityRequestModel> cityRequestModel);
+    Mono<EventResponseModel> addEventToCity(String tourId, String cityId, Mono<EventRequestModel> eventRequestModel);
 }
