@@ -1,17 +1,14 @@
 package com.traveltrove.betraveltrove.business;
 
-import com.traveltrove.betraveltrove.dataaccess.tour.City;
+import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.presentation.TourResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;

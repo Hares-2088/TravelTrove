@@ -1,7 +1,9 @@
 package com.traveltrove.betraveltrove.utils;
 
+import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
-import com.traveltrove.betraveltrove.presentation.CityResponseModel;
+import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
+import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
 import com.traveltrove.betraveltrove.presentation.EventResponseModel;
 import com.traveltrove.betraveltrove.presentation.TourRequestModel;
 import com.traveltrove.betraveltrove.presentation.TourResponseModel;
@@ -26,6 +28,7 @@ public class EntityModelUtil {
             tourResponseModel.setEndDate(tour.getEndDate().format(formatter));
         }
 
+        /*
         // Map cities
         if (tour.getCities() != null) {
             tourResponseModel.setCities(
@@ -54,6 +57,8 @@ public class EntityModelUtil {
             );
         }
 
+         */
+
         return tourResponseModel;
     }
 
@@ -71,6 +76,20 @@ public class EntityModelUtil {
                 .image(tourRequestModel.getImage())
                 .itineraryPicture(tourRequestModel.getItineraryPicture())
                 .build();
+    }
+
+    public static CityResponseModel toCityResponseModel(City city) {
+        return CityResponseModel.builder()
+                .cityId(city.getCityId())
+                .name(city.getName())
+                .countryId(city.getCountryId())
+                .build();
+    }
+
+    public static City toCityEntity(CityRequestModel cityRequestModel) {
+        City city = new City();
+        BeanUtils.copyProperties(cityRequestModel, city);
+        return city;
     }
 
     public static String generateUUIDString() {

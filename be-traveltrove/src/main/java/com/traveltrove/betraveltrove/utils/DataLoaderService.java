@@ -1,8 +1,6 @@
 package com.traveltrove.betraveltrove.utils;
 
-import com.traveltrove.betraveltrove.dataaccess.Booking;
-import com.traveltrove.betraveltrove.dataaccess.Review;
-import com.traveltrove.betraveltrove.dataaccess.tour.City;
+import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Event;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

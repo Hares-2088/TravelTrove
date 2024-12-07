@@ -1,9 +1,11 @@
-package com.traveltrove.betraveltrove.dataaccess.tour;
+package com.traveltrove.betraveltrove.dataaccess.city;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 
 import java.time.LocalDate;
@@ -13,13 +15,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Document(collection = "city")
 public class City {
+    @Id
+    private int id;
     private String cityId;
-    private String tourId;
     private String name;
-    private String description;
-    private String image;
-    private LocalDate startDate;
-    //private List<Event> events;
-    private String hotel;
+    private String countryId;
 }

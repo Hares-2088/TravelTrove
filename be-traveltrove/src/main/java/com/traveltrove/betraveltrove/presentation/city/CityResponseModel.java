@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.presentation;
+package com.traveltrove.betraveltrove.presentation.city;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,10 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CityResponseModel {
     private String cityId;
-    private String tourId;
     private String name;
-    private String description;
-    private String image;
-    private LocalDate startDate;
-    private String hotel;
+    private String countryId;
 }
