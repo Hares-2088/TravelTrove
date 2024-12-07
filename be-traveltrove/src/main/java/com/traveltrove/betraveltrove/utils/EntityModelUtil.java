@@ -1,9 +1,7 @@
 package com.traveltrove.betraveltrove.utils;
 
-import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.city.City;
-import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
 import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
@@ -79,6 +77,22 @@ public class EntityModelUtil {
                 .spotsAvailable(tourRequestModel.getSpotsAvailable())
                 .image(tourRequestModel.getImage())
                 .itineraryPicture(tourRequestModel.getItineraryPicture())
+                .build();
+    }
+
+    // Method to map a Country entity to a CountryResponseModel
+    public static CountryResponseModel toCountryResponseModel(Country country) {
+        CountryResponseModel countryResponseModel = new CountryResponseModel();
+        BeanUtils.copyProperties(country, countryResponseModel);
+        return countryResponseModel;
+    }
+
+    // Method to map a CountryRequestModel to a Country entity
+    public static Country toCountryEntity(CountryRequestModel countryRequestModel) {
+        return Country.builder()
+                .countryId(generateUUIDString())
+                .name(countryRequestModel.getName())
+                .image(countryRequestModel.getImage())
                 .build();
     }
 
