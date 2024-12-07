@@ -3,7 +3,6 @@ package com.traveltrove.betraveltrove.presentation.country;
 import com.traveltrove.betraveltrove.business.country.CountryService;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.utils.EntityModelUtil;
-import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
