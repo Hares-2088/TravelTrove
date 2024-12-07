@@ -96,22 +96,6 @@ public class EntityModelUtil {
                 .build();
     }
 
-    // Method to map a Country entity to a CountryResponseModel
-    public static CountryResponseModel toCountryResponseModel(Country country) {
-        CountryResponseModel countryResponseModel = new CountryResponseModel();
-        BeanUtils.copyProperties(country, countryResponseModel);
-        return countryResponseModel;
-    }
-
-    // Method to map a CountryRequestModel to a Country entity
-    public static Country toCountryEntity(CountryRequestModel countryRequestModel) {
-        return Country.builder()
-                .countryId(generateUUIDString())
-                .name(countryRequestModel.getName())
-                .image(countryRequestModel.getImage())
-                .build();
-    }
-
     public static CityResponseModel toCityResponseModel(City city) {
         CityResponseModel cityResponseModel = new CityResponseModel();
         BeanUtils.copyProperties(city, cityResponseModel);
