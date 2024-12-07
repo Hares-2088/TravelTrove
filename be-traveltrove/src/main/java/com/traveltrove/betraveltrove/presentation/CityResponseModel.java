@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.presentation;
 
+import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

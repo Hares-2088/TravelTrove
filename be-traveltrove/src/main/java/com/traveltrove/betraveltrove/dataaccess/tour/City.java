@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.dataaccess.tour;
 
+import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
