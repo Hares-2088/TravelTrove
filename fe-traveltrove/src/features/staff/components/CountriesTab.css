@@ -1,25 +1,31 @@
 .countries-scrollbar {
-  overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #666 #f1f1f1;
+  scrollbar-color: #000 #f8f9fa;
+  overflow-y: auto;
 }
 
 .countries-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  background-color: #f8f9fa;
+  width: 10px;
+  height: 10px;
 }
 
 .countries-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #666;
-  border-radius: 4px;
-  border: 2px solid #f1f1f1;
+  background: linear-gradient(180deg, #000, #555);
+  border-radius: 10px;
+  border: 2px solid #f8f9fa;
 }
 
 .countries-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #444;
+  background: linear-gradient(180deg, #333, #999);
 }
 
 .countries-scrollbar::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
-  border-radius: 4px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  margin: 2px;
+}
+
+.countries-scrollbar::-webkit-scrollbar-button {
+  display: none;
 }

@@ -27,7 +27,6 @@ const Dashboard: React.FC = () => {
                 sm={2}
                 className="bg-dark text-white d-flex flex-column"
                 style={{
-                  borderRadius: "15px 0 0 15px",
                   padding: "20px",
                   maxWidth: "170px",
                 }}
@@ -37,7 +36,7 @@ const Dashboard: React.FC = () => {
                   Dashboard
                 </h4>
                 {/* Tab List */}
-                <Nav className="flex-column">
+                <Nav className="flex-column text-center">
                   <Nav.Item>
                     <Nav.Link
                       eventKey="countries"
@@ -47,6 +46,7 @@ const Dashboard: React.FC = () => {
                       }`}
                       style={{
                         fontWeight: activeTab === "countries" ? "bold" : "normal",
+                        borderRadius: "10px",
                       }}
                     >
                       Countries
@@ -61,6 +61,7 @@ const Dashboard: React.FC = () => {
                       }`}
                       style={{
                         fontWeight: activeTab === "tours" ? "bold" : "normal",
+                        borderRadius: "10px"
                       }}
                     >
                       Tours
@@ -75,6 +76,7 @@ const Dashboard: React.FC = () => {
                       }`}
                       style={{
                         fontWeight: activeTab === "cities" ? "bold" : "normal",
+                        borderRadius: "10px"
                       }}
                     >
                       Cities
@@ -89,6 +91,7 @@ const Dashboard: React.FC = () => {
                       }`}
                       style={{
                         fontWeight: activeTab === "events" ? "bold" : "normal",
+                        borderRadius: "10px"
                       }}
                     >
                       Events
