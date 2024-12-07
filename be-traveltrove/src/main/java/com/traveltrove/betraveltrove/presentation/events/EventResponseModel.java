@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventResponseModel {
-
     private String eventId;
     private String cityId;
     private String countryId;

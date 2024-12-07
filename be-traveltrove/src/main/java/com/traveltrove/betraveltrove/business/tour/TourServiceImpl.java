@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.business.tour;
 
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
+import com.traveltrove.betraveltrove.presentation.*;
 import com.traveltrove.betraveltrove.utils.EntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,8 @@ public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
 
-    public TourServiceImpl(TourRepository tourRepository) {
-        this.tourRepository = tourRepository;
+    public TourServiceImpl(TourRepository tourRepo) {
+        this.tourRepository = tourRepo;
     }
 
     @Override
@@ -31,4 +32,5 @@ public class TourServiceImpl implements TourService {
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Tour id not found: " + tourId))))
                 .map(EntityModelUtil::toTourResponseModel);
     }
+
 }
