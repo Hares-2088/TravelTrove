@@ -22,8 +22,8 @@ public class CityServiceImpl implements CityService {
 
 
     @Override
-    public Mono<CityResponseModel> addCity(City city) {
-        return cityRepository.save(city)
+    public Mono<CityResponseModel> addCity(CityRequestModel cityRequestModel) {
+        return cityRepository.save(EntityModelUtil.toCityEntity(cityRequestModel))
                 .map(EntityModelUtil::toCityResponseModel);
     }
 
@@ -41,12 +41,12 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public Mono<CityResponseModel> updateCity(String cityId, City city) {
+    public Mono<CityResponseModel> updateCity(String cityId, CityRequestModel cityRequestModel) {
         return cityRepository.findCityByCityId(cityId)
                 .switchIfEmpty(Mono.error(new NotFoundException("City id not found: " + cityId)))
                 .flatMap(existingCity -> {
-                    existingCity.setName(city.getName());
-                    existingCity.setCountryId(city.getCountryId());
+                    existingCity.setName(cityRequestModel.getName());
+                    existingCity.setCountryId(cityRequestModel.getCountryId());
                     return cityRepository.save(existingCity);
                 })
                 .map(EntityModelUtil::toCityResponseModel);

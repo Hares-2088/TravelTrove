@@ -27,7 +27,7 @@ public class CityController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<CityResponseModel> addCity(@Valid @RequestBody CityRequestModel cityRequestModel) {
-        return cityService.addCity(EntityModelUtil.toCityEntity(cityRequestModel));
+        return cityService.addCity(cityRequestModel);
     }
 
     @GetMapping(value = "/{cityId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,10 +44,7 @@ public class CityController {
 
     @PutMapping(value = "/{cityId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<CityResponseModel>> updateCity(@PathVariable String cityId, @Valid @RequestBody CityRequestModel cityRequestModel) {
-        City city = EntityModelUtil.toCityEntity(cityRequestModel);
-        city.setCityId(cityId);
-
-        return cityService.updateCity(cityId, city)
+        return cityService.updateCity(cityId, cityRequestModel)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
