@@ -1,13 +1,9 @@
 package com.traveltrove.betraveltrove.presentation.city;
 
 import com.traveltrove.betraveltrove.business.city.CityService;
-import com.traveltrove.betraveltrove.dataaccess.city.City;
-import com.traveltrove.betraveltrove.utils.EntityModelUtil;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

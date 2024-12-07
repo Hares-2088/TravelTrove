@@ -1,6 +1,5 @@
 package com.traveltrove.betraveltrove.business.city;
 
-import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
 import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
 import reactor.core.publisher.Flux;
