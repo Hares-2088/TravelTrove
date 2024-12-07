@@ -1,0 +1,136 @@
+import React, { useState } from "react";
+import { Tab, Nav, Row, Col, Card } from "react-bootstrap";
+import CountriesTab from "./CountriesTab";
+
+const Dashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState("countries");
+
+  return (
+    <div
+      className="d-flex justify-content-center align-items-center p-4"
+      style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}
+    >
+      <Card
+        className="rounded shadow border-0"
+        style={{
+          width: "1600px",
+          height: "800px",
+          borderRadius: "15px",
+          overflow: "hidden",
+        }}
+      >
+        <Card.Body className="p-0 d-flex flex-column">
+          <Tab.Container activeKey={activeTab}>
+            <Row className="g-0 flex-grow-1">
+              {/* Sidebar */}
+              <Col
+                sm={2}
+                className="bg-dark text-white d-flex flex-column"
+                style={{
+                  padding: "20px",
+                  maxWidth: "170px",
+                }}
+              >
+                {/* Dashboard Title */}
+                <h4 className="text-center mb-3" style={{ fontWeight: "bold" }}>
+                  Dashboard
+                </h4>
+                {/* Tab List */}
+                <Nav className="flex-column text-center">
+                  <Nav.Item>
+                    <Nav.Link
+                      eventKey="countries"
+                      onClick={() => setActiveTab("countries")}
+                      className={`text-white px-3 py-2 ${
+                        activeTab === "countries" ? "bg-secondary" : ""
+                      }`}
+                      style={{
+                        fontWeight: activeTab === "countries" ? "bold" : "normal",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      Countries
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
+                      eventKey="tours"
+                      onClick={() => setActiveTab("tours")}
+                      className={`text-white px-3 py-2 ${
+                        activeTab === "tours" ? "bg-secondary" : ""
+                      }`}
+                      style={{
+                        fontWeight: activeTab === "tours" ? "bold" : "normal",
+                        borderRadius: "10px"
+                      }}
+                    >
+                      Tours
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
+                      eventKey="cities"
+                      onClick={() => setActiveTab("cities")}
+                      className={`text-white px-3 py-2 ${
+                        activeTab === "cities" ? "bg-secondary" : ""
+                      }`}
+                      style={{
+                        fontWeight: activeTab === "cities" ? "bold" : "normal",
+                        borderRadius: "10px"
+                      }}
+                    >
+                      Cities
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
+                      eventKey="events"
+                      onClick={() => setActiveTab("events")}
+                      className={`text-white px-3 py-2 ${
+                        activeTab === "events" ? "bg-secondary" : ""
+                      }`}
+                      style={{
+                        fontWeight: activeTab === "events" ? "bold" : "normal",
+                        borderRadius: "10px"
+                      }}
+                    >
+                      Events
+                    </Nav.Link>
+                  </Nav.Item>
+                </Nav>
+              </Col>
+
+              {/* Main Content */}
+              <Col
+                sm={10}
+                className="bg-white"
+                style={{
+                  padding: "20px",
+                  overflowY: "auto",
+                  height: "100%",
+                }}
+              >
+                <Tab.Content style={{ height: "100%" }}>
+                  <Tab.Pane eventKey="countries" style={{ height: "100%" }}>
+                    <CountriesTab />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="tours">
+                    <p>No content for Tours yet.</p>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="cities">
+                    <p>No content for Cities yet.</p>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="events">
+                    <p>No content for Events yet.</p>
+                  </Tab.Pane>
+                </Tab.Content>
+              </Col>
+            </Row>
+          </Tab.Container>
+        </Card.Body>
+      </Card>
+    </div>
+  );
+};
+
+export default Dashboard;

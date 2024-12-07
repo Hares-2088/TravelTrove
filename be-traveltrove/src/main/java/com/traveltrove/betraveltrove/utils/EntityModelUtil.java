@@ -1,10 +1,13 @@
 package com.traveltrove.betraveltrove.utils;
 
+import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.presentation.CityResponseModel;
 import com.traveltrove.betraveltrove.presentation.EventResponseModel;
-import com.traveltrove.betraveltrove.presentation.TourRequestModel;
-import com.traveltrove.betraveltrove.presentation.TourResponseModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourRequestModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
+import com.traveltrove.betraveltrove.presentation.country.CountryRequestModel;
+import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
 import org.springframework.beans.BeanUtils;
 
 import java.time.format.DateTimeFormatter;
@@ -57,7 +60,6 @@ public class EntityModelUtil {
         return tourResponseModel;
     }
 
-
     // This method is to convert a request model to a Tour entity
     public static Tour toTourEntity(TourRequestModel tourRequestModel) {
         return Tour.builder()
@@ -70,6 +72,22 @@ public class EntityModelUtil {
                 .spotsAvailable(tourRequestModel.getSpotsAvailable())
                 .image(tourRequestModel.getImage())
                 .itineraryPicture(tourRequestModel.getItineraryPicture())
+                .build();
+    }
+
+    // Method to map a Country entity to a CountryResponseModel
+    public static CountryResponseModel toCountryResponseModel(Country country) {
+        CountryResponseModel countryResponseModel = new CountryResponseModel();
+        BeanUtils.copyProperties(country, countryResponseModel);
+        return countryResponseModel;
+    }
+
+    // Method to map a CountryRequestModel to a Country entity
+    public static Country toCountryEntity(CountryRequestModel countryRequestModel) {
+        return Country.builder()
+                .countryId(generateUUIDString())
+                .name(countryRequestModel.getName())
+                .image(countryRequestModel.getImage())
                 .build();
     }
 

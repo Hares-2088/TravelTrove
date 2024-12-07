@@ -1,28 +1,23 @@
-package com.traveltrove.betraveltrove.presentation;
+package com.traveltrove.betraveltrove.presentation.tour;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TourResponseModel {
-
-    private String tourId;
+public class TourRequestModel {
     private String name;
-    private String startDate;
-    private String endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String overallDescription;
     private double price;
     private int spotsAvailable;
-    private boolean available;
     private String image;
     private String itineraryPicture;
-
-    private List<CityResponseModel> cities;
 }

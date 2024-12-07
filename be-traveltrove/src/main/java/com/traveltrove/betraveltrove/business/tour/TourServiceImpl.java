@@ -1,7 +1,7 @@
-package com.traveltrove.betraveltrove.business;
+package com.traveltrove.betraveltrove.business.tour;
 
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
-import com.traveltrove.betraveltrove.presentation.TourResponseModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.utils.EntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
