@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import { getAllCountries, getCountryById, addCountry, updateCountry, deleteCountry } from "../../countries/api/countries.api";
 import { CountryResponseModel, CountryRequestModel } from "../../countries/models/country.model";
+import './CountriesTab.css';
 
 const CountriesTab: React.FC = () => {
   const [countries, setCountries] = useState<CountryResponseModel[]>([]);
@@ -60,7 +61,7 @@ const CountriesTab: React.FC = () => {
   };
 
   return (
-    <div style={{ maxHeight: "100%", overflowY: "auto" }}>
+    <div>
       {/* Viewing a Single Country */}
       {viewingCountry ? (
         <div>
@@ -97,50 +98,52 @@ const CountriesTab: React.FC = () => {
               Create
             </Button>
           </div>
-          <Table bordered hover responsive className="rounded" style={{ borderRadius: "12px", overflow: "hidden" }}>
-            <thead className="bg-light">
-            <tr>
-              <th>Name</th>
-              <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {countries.map((country) => (
-              <tr key={country.countryId}>
-                <td
-                  onClick={() => handleViewCountry(country.countryId)}
-                  style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
-                >
-                  {country.name}
-                </td>
-                <td>
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => {
-                      setSelectedCountry(country);
-                      setModalType("update");
-                      setFormData({ name: country.name, image: country.image });
-                      setShowModal(true);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    className="ms-2"
-                    onClick={() => {
-                      setSelectedCountry(country);
-                      setModalType("delete");
-                      setShowModal(true);
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </td>
+          <div className="countries-scrollbar" style={{ maxHeight: "700px", overflowY: "auto" }}>
+            <Table bordered hover responsive className="rounded" style={{ borderRadius: "12px", overflow: "hidden" }}>
+              <thead className="bg-light">
+              <tr>
+                <th>Name</th>
+                <th>Actions</th>
               </tr>
-            ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+              {countries.map((country) => (
+                <tr key={country.countryId}>
+                  <td
+                    onClick={() => handleViewCountry(country.countryId)}
+                    style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+                  >
+                    {country.name}
+                  </td>
+                  <td>
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => {
+                        setSelectedCountry(country);
+                        setModalType("update");
+                        setFormData({ name: country.name, image: country.image });
+                        setShowModal(true);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      className="ms-2"
+                      onClick={() => {
+                        setSelectedCountry(country);
+                        setModalType("delete");
+                        setShowModal(true);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+              </tbody>
+            </Table>
+          </div>
         </>
       )}
 
