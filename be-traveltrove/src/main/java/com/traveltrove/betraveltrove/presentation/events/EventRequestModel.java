@@ -1,5 +1,6 @@
-package com.traveltrove.betraveltrove.presentation;
+package com.traveltrove.betraveltrove.presentation.events;
 
+import com.mongodb.lang.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +13,13 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventResponseModel {
+public class EventRequestModel {
 
-    private String eventId;
+    @Nullable
+    private String cityId;
+    @Nullable
+    private String countryId;
+
     private String name;
     private String description;
     private String image;

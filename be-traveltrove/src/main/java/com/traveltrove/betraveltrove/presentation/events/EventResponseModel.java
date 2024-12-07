@@ -1,28 +1,27 @@
-package com.traveltrove.betraveltrove.dataaccess.tour;
+package com.traveltrove.betraveltrove.presentation.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.UUID;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class Event {
+@AllArgsConstructor
+public class EventResponseModel {
 
     private String eventId;
     private String cityId;
+    private String countryId;
     private String name;
-    private LocalDate startDate;
-    private String image;
     private String description;
+    private String image;
+    private LocalDate startDate;
     private LocalDateTime gatheringTime;
     private LocalDateTime departureTime;
     private LocalDateTime endTime;
