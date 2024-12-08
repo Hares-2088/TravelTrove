@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.UUID;
+
 @Document(collection = "tourevents")
 @Data
 @Builder
@@ -21,4 +23,5 @@ public class TourEvents {
     private String seqDesc;
     private String tourId; // FK tour ID
     private String events; // FK events ID
+    private String toursEventId = UUID.randomUUID().toString();
 }
