@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "city")
+@Document(collection = "cities")
 public class City {
 
     @Id

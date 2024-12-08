@@ -57,7 +57,6 @@ public class TourServiceImpl implements TourService {
                 .map(EntityModelUtil::toTourResponseModel);
     }
 
-
     @Override
     public Mono<Void> deleteTourByTourId(String tourId) {
         return tourRepository.findTourByTourId(tourId)

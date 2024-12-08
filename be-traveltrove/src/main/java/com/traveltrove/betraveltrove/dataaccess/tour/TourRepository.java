@@ -6,6 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface TourRepository extends ReactiveMongoRepository<Tour, String> {
 
-    public Mono<Tour> findTourByTourId(String tourId);
+    Mono<Tour> findTourByTourId(String tourId);
 
 }
