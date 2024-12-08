@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.presentation.tour;
 
 import com.traveltrove.betraveltrove.business.tour.TourService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/v1/tours")
 @Slf4j
 @CrossOrigin(origins = "http://localhost:3000")
+
 public class TourController {
 
     private final TourService tourService;
@@ -21,8 +23,7 @@ public class TourController {
         this.tourService = tourService;
     }
 
-    // Should be text/event-stream?
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<TourResponseModel> getAllTours() {
         return tourService.getTours()
                 .doOnNext(tour -> log.info("Tour: {}", tour));

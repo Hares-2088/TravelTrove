@@ -6,6 +6,8 @@ import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.country.CountryRepository;
 import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
+import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
+import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -155,6 +157,42 @@ public class DatabaseLoader {
                         success -> log.info("Events preloaded successfully."),
                         error -> log.error("Error preloading events: {}", error.getMessage())
                 );
+    }
+
+    // Tours
+    private final TourRepository tourRepository;
+
+    @PostConstruct
+    public void loadTours() {
+        List<Tour> sampleTours = List.of(
+                Tour.builder()
+                        .id(null)
+                        .tourId("TOUR01")
+                        .name("Spring Festival")
+                        .description("A vibrant festival celebrating the arrival of spring.")
+                        .build(),
+                Tour.builder()
+                        .id(null)
+                        .tourId("TOUR02")
+                        .name("Tech Expo 2024")
+                        .description("Showcasing the latest advancements in technology.")
+                        .build(),
+                Tour.builder()
+                        .id(null)
+                        .tourId("TOUR03")
+                        .name("Wine Tasting Retreat")
+                        .description("A relaxing getaway featuring fine wines and scenic views.")
+                        .build()
+        );
+
+        tourRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleTours))
+                .flatMap(tourRepository::save)
+                .doOnNext(tour -> log.info("Preloaded tour: {}", tour))
+                .subscribe(
+                        success -> log.info("Tours preloaded successfully."),
+                        error -> log.error("Error preloading tours: {}", error.getMessage())
+        );
     }
 
 }

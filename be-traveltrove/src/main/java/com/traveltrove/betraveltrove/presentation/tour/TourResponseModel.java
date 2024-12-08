@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.swing.event.ListDataEvent;
 import java.util.List;
 
 @Data
@@ -16,14 +17,19 @@ public class TourResponseModel {
 
     private String tourId;
     private String name;
-    private String startDate;
-    private String endDate;
-    private String overallDescription;
-    private double price;
-    private int spotsAvailable;
-    private boolean available;
-    private String image;
-    private String itineraryPicture;
+    private String description;
+//    private List<ListTourEventResponseModel> tourEvents;
 
-    private List<CityResponseModel> cities;
+
+    //old
+//    private String startDate;
+//    private String endDate;
+//    private String overallDescription;
+//    private double price;
+//    private int spotsAvailable;
+//    private boolean available;
+//    private String image;
+//    private String itineraryPicture;
+//
+//    private List<CityResponseModel> cities;
 }

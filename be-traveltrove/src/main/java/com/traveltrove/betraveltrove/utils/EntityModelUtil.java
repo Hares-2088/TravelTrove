@@ -23,13 +23,13 @@ public class EntityModelUtil {
         BeanUtils.copyProperties(tour, tourResponseModel);
 
         // Convert LocalDate to String
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-        if (tour.getStartDate() != null) {
-            tourResponseModel.setStartDate(tour.getStartDate().format(formatter));
-        }
-        if (tour.getEndDate() != null) {
-            tourResponseModel.setEndDate(tour.getEndDate().format(formatter));
-        }
+//        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+//        if (tour.getStartDate() != null) {
+//            tourResponseModel.setStartDate(tour.getStartDate().format(formatter));
+//        }
+//        if (tour.getEndDate() != null) {
+//            tourResponseModel.setEndDate(tour.getEndDate().format(formatter));
+//        }
 
         return tourResponseModel;
     }
@@ -39,13 +39,14 @@ public class EntityModelUtil {
         return Tour.builder()
                 .tourId(generateUUIDString())
                 .name(tourRequestModel.getName())
-                .startDate(tourRequestModel.getStartDate())
-                .endDate(tourRequestModel.getEndDate())
-                .overallDescription(tourRequestModel.getOverallDescription())
-                .price(tourRequestModel.getPrice())
-                .spotsAvailable(tourRequestModel.getSpotsAvailable())
-                .image(tourRequestModel.getImage())
-                .itineraryPicture(tourRequestModel.getItineraryPicture())
+                .description(tourRequestModel.getDescription())
+//                .startDate(tourRequestModel.getStartDate())
+//                .endDate(tourRequestModel.getEndDate())
+//                .overallDescription(tourRequestModel.getOverallDescription())
+//                .price(tourRequestModel.getPrice())
+//                .spotsAvailable(tourRequestModel.getSpotsAvailable())
+//                .image(tourRequestModel.getImage())
+//                .itineraryPicture(tourRequestModel.getItineraryPicture())
                 .build();
     }
 

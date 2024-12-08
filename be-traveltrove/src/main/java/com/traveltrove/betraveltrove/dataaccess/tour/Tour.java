@@ -24,17 +24,7 @@ public class Tour {
 
     private String tourId;
     private String name;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String overallDescription;
-    private boolean available;
-    private double price;
-    private int spotsAvailable;
+    private String description;
 
-    private List<String> cities;
-    private List<String> reviews;
-    private List<String> bookings;
-
-    private String image;
-    private String itineraryPicture;
+    private List<TourEvents> tourEvents;
 }
