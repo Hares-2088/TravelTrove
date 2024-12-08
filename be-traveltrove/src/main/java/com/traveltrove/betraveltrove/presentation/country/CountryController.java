@@ -53,10 +53,6 @@ public class CountryController {
             @PathVariable String countryId,
             @Valid @RequestBody CountryRequestModel countryRequestModel) {
         log.info("Updating country with id: {}", countryId);
-
-        Country updatedCountry = EntityModelUtil.toCountryEntity(countryRequestModel);
-        updatedCountry.setCountryId(countryId);
-
         return countryService.updateCountry(countryId, countryRequestModel)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());

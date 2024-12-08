@@ -30,7 +30,7 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public Mono<CountryResponseModel> getCountryById(String countryId) {
         return countryRepository.findCountryByCountryId(countryId)
-                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Country id not found: {}" + countryId))))
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Country id not found: " + countryId))))
                 .map(EntityModelUtil::toCountryResponseModel);
     }
 
