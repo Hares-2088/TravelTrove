@@ -5,6 +5,7 @@ import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
 import com.traveltrove.betraveltrove.presentation.events.EventRequestModel;
 import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
 import com.traveltrove.betraveltrove.utils.EventEntityModel;
+import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class EventServiceImpl implements EventService {
             return eventRepository.findAllByCityId(cityId)
                     .map(EventEntityModel::toEventResponseModel);
         } else if (countryId != null && !countryId.isEmpty()) {
-            return eventRepository.findByCountryId(countryId)
+            return eventRepository.findAllByCountryId(countryId)
                     .map(EventEntityModel::toEventResponseModel);
         }
         // Return all events if no filters are provided
@@ -46,11 +47,21 @@ public class EventServiceImpl implements EventService {
     @Override
     public Mono<EventResponseModel> createEvent(Mono<EventRequestModel> eventRequestModel) {
         return eventRequestModel
-                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Event request model is empty"))))
-                .map(EventEntityModel::toEventEntity)
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new InvalidInputException("Event request model is empty"))))
+                .flatMap(requestModel -> {
+                    if (requestModel.getName() == null || requestModel.getName().isBlank()) {
+                        return Mono.error(new InvalidInputException("Event name is required"));
+                    }
+                    if (requestModel.getDescription() == null || requestModel.getDescription().isBlank()) {
+                        return Mono.error(new InvalidInputException("Event description is required"));
+                    }
+                    // cityId and countryId are optional, so they are not validated here
+                    return Mono.just(EventEntityModel.toEventEntity(requestModel));
+                })
                 .flatMap(eventRepository::save)
                 .map(EventEntityModel::toEventResponseModel);
     }
+
 
     @Override
     public Mono<EventResponseModel> updateEvent(String eventId, Mono<EventRequestModel> eventRequestModel) {

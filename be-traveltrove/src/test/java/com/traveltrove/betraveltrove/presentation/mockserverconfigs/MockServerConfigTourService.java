@@ -44,12 +44,11 @@ public class MockServerConfigTourService {
                                 """,
                                 tour.getTourId(),
                                 tour.getName(),
-                                tour.getStartDate(),
-                                tour.getEndDate(),
-                                tour.getOverallDescription(),
-                                tour.isAvailable(),
-                                tour.getPrice(),
-                                tour.getSpotsAvailable())));
+                                tour.getTourEvents(),
+                                tour.getDescription()
+                                )
+                        )
+                );
     }
 
     public void registerGetTourByInvalidIdEndpoint(String invalidTourId) {

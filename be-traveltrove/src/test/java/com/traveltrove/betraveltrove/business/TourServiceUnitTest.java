@@ -34,14 +34,6 @@ public class TourServiceUnitTest {
         Tour tour = new Tour();
         tour.setTourId(tourId);
         tour.setName("Sample Tour");
-        tour.setStartDate(LocalDate.of(2023, 1, 1));
-        tour.setEndDate(LocalDate.of(2023, 1, 10));
-        tour.setOverallDescription("A sample tour description");
-        tour.setAvailable(true);
-        tour.setPrice(999.99);
-        tour.setSpotsAvailable(20);
-        tour.setImage("sample-image.jpg");
-        tour.setItineraryPicture("sample-itinerary.jpg");
         //tour.setCities(Collections.singletonList(new City("city1", "Sample City", "A sample city description", "city-image.jpg", LocalDate.of(2023, 1, 2), null, "Sample Hotel")));
 
         when(tourRepository.findTourByTourId(tourId))

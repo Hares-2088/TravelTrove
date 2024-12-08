@@ -45,7 +45,7 @@ public class DatabaseLoader {
                 new Country(null, "877ec1c0-ffab-449e-a2ec-08f95db58f55", "China", "china.png")
         );
         List<City> sampleCities = List.of(
-                new City(null, generateUUIDString(), "New York", sampleCountries.get(0).getCountryId()),
+                new City(null, "2702f60a-cf9e-46cf-a971-d76895b904e6", "New York", sampleCountries.get(0).getCountryId()),
                 new City(null, generateUUIDString(), "Toronto", sampleCountries.get(1).getCountryId()),
                 new City(null, generateUUIDString(), "Paris", sampleCountries.get(2).getCountryId()),
                 new City(null, generateUUIDString(), "Berlin", sampleCountries.get(3).getCountryId()),
