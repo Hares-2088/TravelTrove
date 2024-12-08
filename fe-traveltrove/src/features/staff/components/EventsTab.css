@@ -1,0 +1,32 @@
+.events-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #000 #f8f9fa;
+    overflow-y: auto;
+  }
+  
+  .events-scrollbar::-webkit-scrollbar {
+    background-color: #f8f9fa;
+    width: 10px;
+    height: 10px;
+  }
+  
+  .events-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #000, #555);
+    border-radius: 10px;
+    border: 2px solid #f8f9fa;
+  }
+  
+  .events-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #333, #999);
+  }
+  
+  .events-scrollbar::-webkit-scrollbar-track {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    margin: 2px;
+  }
+  
+  .events-scrollbar::-webkit-scrollbar-button {
+    display: none;
+  }
+  
