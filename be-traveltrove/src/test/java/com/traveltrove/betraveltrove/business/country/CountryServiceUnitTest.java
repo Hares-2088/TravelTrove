@@ -1,6 +1,5 @@
-package com.traveltrove.betraveltrove.business;
+package com.traveltrove.betraveltrove.business.country;
 
-import com.traveltrove.betraveltrove.business.country.CountryServiceImpl;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.country.CountryRepository;
 import com.traveltrove.betraveltrove.presentation.country.CountryRequestModel;

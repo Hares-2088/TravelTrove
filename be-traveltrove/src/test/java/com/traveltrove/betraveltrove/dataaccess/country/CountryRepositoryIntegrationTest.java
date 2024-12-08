@@ -1,7 +1,5 @@
-package com.traveltrove.betraveltrove.dataaccess;
+package com.traveltrove.betraveltrove.dataaccess.country;
 
-import com.traveltrove.betraveltrove.dataaccess.country.Country;
-import com.traveltrove.betraveltrove.dataaccess.country.CountryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
