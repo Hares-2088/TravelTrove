@@ -1,7 +1,7 @@
 package com.traveltrove.betraveltrove.business;
 
 import com.traveltrove.betraveltrove.business.tour.TourServiceImpl;
-import com.traveltrove.betraveltrove.dataaccess.tour.City;
+import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
@@ -42,7 +42,7 @@ public class TourServiceUnitTest {
         tour.setSpotsAvailable(20);
         tour.setImage("sample-image.jpg");
         tour.setItineraryPicture("sample-itinerary.jpg");
-        tour.setCities(Collections.singletonList(new City("city1", "Sample City", "A sample city description", "city-image.jpg", LocalDate.of(2023, 1, 2), null, "Sample Hotel")));
+        //tour.setCities(Collections.singletonList(new City("city1", "Sample City", "A sample city description", "city-image.jpg", LocalDate.of(2023, 1, 2), null, "Sample Hotel")));
 
         when(tourRepository.findTourByTourId(tourId))
                 .thenReturn(Mono.just(tour));

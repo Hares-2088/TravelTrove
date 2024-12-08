@@ -57,7 +57,7 @@ public class CountryController {
         Country updatedCountry = EntityModelUtil.toCountryEntity(countryRequestModel);
         updatedCountry.setCountryId(countryId);
 
-        return countryService.updateCountry(countryId, updatedCountry)
+        return countryService.updateCountry(countryId, countryRequestModel)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

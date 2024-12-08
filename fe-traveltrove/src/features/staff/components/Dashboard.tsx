@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Tab, Nav, Row, Col, Card } from "react-bootstrap";
 import CountriesTab from "./CountriesTab";
-import EventsTab from "./EventsTab"; // Import the EventsTab component
+import EventsTab from "./EventsTab"; 
+import CitiesTab from "./CitiesTab";
+import ToursTab from "./Tourstab";
+
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("tours");
@@ -113,13 +116,13 @@ const Dashboard: React.FC = () => {
               >
                 <Tab.Content style={{ height: "100%" }}>
                   <Tab.Pane eventKey="tours">
-                    <p>No content for Tours yet.</p>
+                   <ToursTab />
                   </Tab.Pane>
                   <Tab.Pane eventKey="events">
                     <EventsTab /> {/* Use the EventsTab component here */}
                   </Tab.Pane>
                   <Tab.Pane eventKey="cities">
-                    <p>No content for Cities yet.</p>
+                    <CitiesTab />
                   </Tab.Pane>
                   <Tab.Pane eventKey="countries" style={{ height: "100%" }}>
                     <CountriesTab />

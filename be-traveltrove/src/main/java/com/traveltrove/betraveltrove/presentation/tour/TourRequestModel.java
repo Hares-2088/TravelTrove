@@ -13,11 +13,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class TourRequestModel {
     private String name;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String overallDescription;
-    private double price;
-    private int spotsAvailable;
-    private String image;
-    private String itineraryPicture;
+    private String description;
+//    private LocalDate startDate;
+//    private LocalDate endDate;
+//    private String overallDescription;
+//    private double price;
+//    private int spotsAvailable;
+//    private String image;
+//    private String itineraryPicture;
 }

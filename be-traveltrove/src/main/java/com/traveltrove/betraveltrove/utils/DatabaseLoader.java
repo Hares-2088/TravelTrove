@@ -1,9 +1,13 @@
 package com.traveltrove.betraveltrove.utils;
 
+import com.traveltrove.betraveltrove.dataaccess.city.City;
+import com.traveltrove.betraveltrove.dataaccess.city.CityRepository;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.country.CountryRepository;
 import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
+import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
+import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,7 @@ public class DatabaseLoader {
 
     // Countries :)
     private final CountryRepository countryRepository;
+    private final CityRepository cityRepository;
 
     @PostConstruct
     public void loadData() {
@@ -39,11 +44,32 @@ public class DatabaseLoader {
                 new Country(null, "3cd2ad86-26cc-42ad-8b20-8b0b6e6d2a2e", "India", "india.png"),
                 new Country(null, "877ec1c0-ffab-449e-a2ec-08f95db58f55", "China", "china.png")
         );
+        List<City> sampleCities = List.of(
+                new City(null, generateUUIDString(), "New York", sampleCountries.get(0).getCountryId()),
+                new City(null, generateUUIDString(), "Toronto", sampleCountries.get(1).getCountryId()),
+                new City(null, generateUUIDString(), "Paris", sampleCountries.get(2).getCountryId()),
+                new City(null, generateUUIDString(), "Berlin", sampleCountries.get(3).getCountryId()),
+                new City(null, generateUUIDString(), "Rome", sampleCountries.get(4).getCountryId()),
+                new City(null, generateUUIDString(), "Tokyo", sampleCountries.get(5).getCountryId()),
+                new City(null, generateUUIDString(), "Rio de Janeiro", sampleCountries.get(6).getCountryId()),
+                new City(null, generateUUIDString(), "Sydney", sampleCountries.get(7).getCountryId()),
+                new City(null, generateUUIDString(), "Mumbai", sampleCountries.get(8).getCountryId()),
+                new City(null, generateUUIDString(), "Beijing", sampleCountries.get(9).getCountryId())
+        );
 
         countryRepository.deleteAll()
                 .thenMany(Flux.fromIterable(sampleCountries))
                 .flatMap(countryRepository::save)
                 .doOnNext(country -> log.info("Preloaded country: {}", country))
+                .subscribe(
+                        success -> log.info("Database preloaded successfully."),
+                        error -> log.error("Error preloading database: {}", error.getMessage())
+                );
+
+        cityRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleCities))
+                .flatMap(cityRepository::save)
+                .doOnNext(city -> log.info("Preloaded city: {}", city))
                 .subscribe(
                         success -> log.info("Database preloaded successfully."),
                         error -> log.error("Error preloading database: {}", error.getMessage())
@@ -111,6 +137,42 @@ public class DatabaseLoader {
                         success -> log.info("Events preloaded successfully."),
                         error -> log.error("Error preloading events: {}", error.getMessage())
                 );
+    }
+
+    // Tours
+    private final TourRepository tourRepository;
+
+    @PostConstruct
+    public void loadTours() {
+        List<Tour> sampleTours = List.of(
+                Tour.builder()
+                        .id(null)
+                        .tourId("TOUR01")
+                        .name("Spring Festival")
+                        .description("A vibrant festival celebrating the arrival of spring.")
+                        .build(),
+                Tour.builder()
+                        .id(null)
+                        .tourId("TOUR02")
+                        .name("Tech Expo 2024")
+                        .description("Showcasing the latest advancements in technology.")
+                        .build(),
+                Tour.builder()
+                        .id(null)
+                        .tourId("TOUR03")
+                        .name("Wine Tasting Retreat")
+                        .description("A relaxing getaway featuring fine wines and scenic views.")
+                        .build()
+        );
+
+        tourRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleTours))
+                .flatMap(tourRepository::save)
+                .doOnNext(tour -> log.info("Preloaded tour: {}", tour))
+                .subscribe(
+                        success -> log.info("Tours preloaded successfully."),
+                        error -> log.error("Error preloading tours: {}", error.getMessage())
+        );
     }
 
 }
