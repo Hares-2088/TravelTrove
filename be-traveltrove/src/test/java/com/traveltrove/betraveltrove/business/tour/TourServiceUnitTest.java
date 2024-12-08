@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.business;
+package com.traveltrove.betraveltrove.business.tour;
 
 import com.traveltrove.betraveltrove.business.tour.TourServiceImpl;
 import com.traveltrove.betraveltrove.dataaccess.city.City;

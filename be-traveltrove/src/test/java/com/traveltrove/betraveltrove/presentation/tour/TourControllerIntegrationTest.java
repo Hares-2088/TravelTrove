@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.presentation;
+package com.traveltrove.betraveltrove.presentation.tour;
 
 import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigTourService;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
@@ -189,9 +189,6 @@ class TourControllerIntegrationTest {
                 .expectNextCount(0)
                 .verifyComplete();
     }
-
-    //getalltest
-
 
     @Test
     void whenAddTour_withValidTourRequestModel_thenReturnCreatedTourResponseModel() {

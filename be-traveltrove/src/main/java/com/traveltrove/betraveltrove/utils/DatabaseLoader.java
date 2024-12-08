@@ -18,6 +18,7 @@ import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static com.traveltrove.betraveltrove.utils.EntityModelUtil.generateUUIDString;
 
@@ -146,24 +147,67 @@ public class DatabaseLoader {
     public void loadTours() {
         List<Tour> sampleTours = List.of(
                 Tour.builder()
-                        .id(null)
+                        .id(UUID.randomUUID().toString())
                         .tourId("TOUR01")
-                        .name("Spring Festival")
-                        .description("A vibrant festival celebrating the arrival of spring.")
+                        .name("Arabian Desert Safari")
+                        .description("Embark on a luxurious desert adventure with private 4x4 rides, camel treks, and an evening of stargazing in Bedouin-style camps.")
                         .build(),
                 Tour.builder()
-                        .id(null)
+                        .id(UUID.randomUUID().toString())
                         .tourId("TOUR02")
-                        .name("Tech Expo 2024")
-                        .description("Showcasing the latest advancements in technology.")
+                        .name("Splendors of Dubai")
+                        .description("Experience the glamour of Dubai with exclusive tours of Burj Khalifa, Palm Jumeirah, luxury shopping, and a private yacht cruise.")
                         .build(),
                 Tour.builder()
-                        .id(null)
+                        .id(UUID.randomUUID().toString())
                         .tourId("TOUR03")
-                        .name("Wine Tasting Retreat")
-                        .description("A relaxing getaway featuring fine wines and scenic views.")
+                        .name("Qatar Cultural Retreat")
+                        .description("Discover Qatar’s rich heritage with visits to Souq Waqif, the Museum of Islamic Art, and luxury desert escapes.")
+                        .build(),
+                Tour.builder()
+                        .id(UUID.randomUUID().toString())
+                        .tourId("TOUR04")
+                        .name("Oman’s Hidden Gems")
+                        .description("Explore the beauty of Oman with a mix of luxury and tradition, including Wadi Shab, Musandam fjords, and opulent resorts in Muscat.")
+                        .build(),
+                Tour.builder()
+                        .id(UUID.randomUUID().toString())
+                        .tourId("TOUR05")
+                        .name("Abu Dhabi Royal Experience")
+                        .description("Indulge in Abu Dhabi’s grandeur with private tours of Sheikh Zayed Grand Mosque, Ferrari World, and Emirates Palace.")
+                        .build(),
+                Tour.builder()
+                        .id(UUID.randomUUID().toString())
+                        .tourId("TOUR06")
+                        .name("Petra and Dead Sea Luxury Journey")
+                        .description("Uncover Jordan’s wonders with guided tours of Petra, the Dead Sea, and luxurious stays in 5-star desert resorts.")
+                        .build(),
+                Tour.builder()
+                        .id(UUID.randomUUID().toString())
+                        .tourId("TOUR07")
+                        .name("Riyadh and the Edge of the World")
+                        .description("Experience Saudi Arabia with a mix of modernity and nature, from Riyadh’s skyscrapers to the breathtaking ‘Edge of the World’ cliffs.")
+                        .build(),
+                Tour.builder()
+                        .id(UUID.randomUUID().toString())
+                        .tourId("TOUR08")
+                        .name("Luxury Nile Cruise")
+                        .description("Sail along the Nile River in unparalleled luxury, visiting ancient Egyptian landmarks and enjoying fine dining aboard.")
+                        .build(),
+                Tour.builder()
+                        .id(UUID.randomUUID().toString())
+                        .tourId("TOUR09")
+                        .name("Kuwait City Highlights")
+                        .description("Discover the charm of Kuwait with visits to the Kuwait Towers, luxury shopping districts, and fine dining by the Gulf.")
+                        .build(),
+                Tour.builder()
+                        .id(UUID.randomUUID().toString())
+                        .tourId("TOUR10")
+                        .name("Moroccan Royal Adventure")
+                        .description("Immerse yourself in Morocco’s beauty, from Marrakech’s markets to the luxury riads and golden dunes of the Sahara Desert.")
                         .build()
         );
+
 
         tourRepository.deleteAll()
                 .thenMany(Flux.fromIterable(sampleTours))
