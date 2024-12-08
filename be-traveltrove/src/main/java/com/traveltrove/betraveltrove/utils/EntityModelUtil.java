@@ -3,19 +3,19 @@ package com.traveltrove.betraveltrove.utils;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
-import com.traveltrove.betraveltrove.dataaccess.tour.TourEvents;
-import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
+import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
+import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
 import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
-import com.traveltrove.betraveltrove.presentation.tour.TourEventsRequestModel;
-import com.traveltrove.betraveltrove.presentation.tour.TourEventsResponseModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourEventRequestModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourEventResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourRequestModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.country.CountryRequestModel;
 import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
 import org.springframework.beans.BeanUtils;
+import reactor.core.publisher.Mono;
 
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class EntityModelUtil {
@@ -66,27 +66,24 @@ public class EntityModelUtil {
                 .build();
     }
 
-    public static TourEvents toTourEventsEntity(TourEventsRequestModel request) {
-        return TourEvents.builder()
-                .toursEventId(generateUUIDString())
-                .seq(request.getSeq())
-                .seqDesc(request.getSeqDesc())
-                .tourId(request.getTourId())
-                .events(request.getEvents())
+    public static TourEvent toTourEventEntity(TourEventRequestModel tourEventRequestModel) {
+        return TourEvent.builder()
+                .tourEventId(generateUUIDString())
+                .seq(tourEventRequestModel.getSeq())
+                .seqDesc(tourEventRequestModel.getSeqDesc())
+                .tourId(tourEventRequestModel.getTourId())
+                .eventId(tourEventRequestModel.getEventId())
                 .build();
     }
 
-    public static TourEventsResponseModel toTourEventsResponseModel(TourEvents tourEvents) {
-        TourEventsResponseModel tourEventsResponseModel = new TourEventsResponseModel();
-        BeanUtils.copyProperties(tourEvents, tourEventsResponseModel);
-        return tourEventsResponseModel;
+    public static TourEventResponseModel toTourEventResponseModel(TourEvent tourEvent) {
+        TourEventResponseModel tourEventResponseModel = new TourEventResponseModel();
+        BeanUtils.copyProperties(tourEvent, tourEventResponseModel);
+        return tourEventResponseModel;
     }
-
 
     public static String generateUUIDString() {
         return UUID.randomUUID().toString();
     }
-
-
 
 }
