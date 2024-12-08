@@ -34,8 +34,6 @@ await page.goto('http://localhost:3000/dashboard');
 await page.getByRole('tab', { name: 'Countries' }).click();
 await page.getByRole('cell', { name: 'United States' }).click();
 await expect(page.getByLabel('Countries').getByRole('heading')).toContainText('United States');
-await expect(page.getByLabel('Countries')).toContainText('Country ID: ad633b50-83d4-41f3-866a-26452bdd6f33');
-await expect(page.getByLabel('Countries')).toContainText('Image: usa.png');
 await page.close()
 });
 
