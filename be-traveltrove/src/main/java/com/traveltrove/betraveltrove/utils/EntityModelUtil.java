@@ -1,9 +1,11 @@
 package com.traveltrove.betraveltrove.utils;
 
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
+import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
-import com.traveltrove.betraveltrove.presentation.CityResponseModel;
 import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
+import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
+import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourRequestModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.country.CountryRequestModel;
@@ -21,13 +23,13 @@ public class EntityModelUtil {
         BeanUtils.copyProperties(tour, tourResponseModel);
 
         // Convert LocalDate to String
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-        if (tour.getStartDate() != null) {
-            tourResponseModel.setStartDate(tour.getStartDate().format(formatter));
-        }
-        if (tour.getEndDate() != null) {
-            tourResponseModel.setEndDate(tour.getEndDate().format(formatter));
-        }
+//        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+//        if (tour.getStartDate() != null) {
+//            tourResponseModel.setStartDate(tour.getStartDate().format(formatter));
+//        }
+//        if (tour.getEndDate() != null) {
+//            tourResponseModel.setEndDate(tour.getEndDate().format(formatter));
+//        }
 
         return tourResponseModel;
     }
@@ -37,13 +39,14 @@ public class EntityModelUtil {
         return Tour.builder()
                 .tourId(generateUUIDString())
                 .name(tourRequestModel.getName())
-                .startDate(tourRequestModel.getStartDate())
-                .endDate(tourRequestModel.getEndDate())
-                .overallDescription(tourRequestModel.getOverallDescription())
-                .price(tourRequestModel.getPrice())
-                .spotsAvailable(tourRequestModel.getSpotsAvailable())
-                .image(tourRequestModel.getImage())
-                .itineraryPicture(tourRequestModel.getItineraryPicture())
+                .description(tourRequestModel.getDescription())
+//                .startDate(tourRequestModel.getStartDate())
+//                .endDate(tourRequestModel.getEndDate())
+//                .overallDescription(tourRequestModel.getOverallDescription())
+//                .price(tourRequestModel.getPrice())
+//                .spotsAvailable(tourRequestModel.getSpotsAvailable())
+//                .image(tourRequestModel.getImage())
+//                .itineraryPicture(tourRequestModel.getItineraryPicture())
                 .build();
     }
 
@@ -60,6 +63,20 @@ public class EntityModelUtil {
                 .countryId(generateUUIDString())
                 .name(countryRequestModel.getName())
                 .image(countryRequestModel.getImage())
+                .build();
+    }
+
+    public static CityResponseModel toCityResponseModel(City city) {
+        CityResponseModel cityResponseModel = new CityResponseModel();
+        BeanUtils.copyProperties(city, cityResponseModel);
+        return cityResponseModel;
+    }
+
+    public static City toCityEntity(CityRequestModel cityRequestModel) {
+        return City.builder()
+                .cityId(generateUUIDString())
+                .name(cityRequestModel.getName())
+                .countryId(cityRequestModel.getCountryId())
                 .build();
     }
 

@@ -7,19 +7,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CityResponseModel {
-
-    private String name;
-    private String description;
-    private String image;
-    private LocalDate startDate;
-    private String hotel;
+public class EventRequestModel {
     private String cityId;
-    private List<EventResponseModel> events;
+    private String name;
+    private LocalDate startDate;
+    private String image;
+    private String description;
+    private LocalDateTime gatheringTime;
+    private LocalDateTime departureTime;
+    private LocalDateTime endTime;
 }

@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.business.country;
 
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.country.CountryRepository;
+import com.traveltrove.betraveltrove.presentation.country.CountryRequestModel;
 import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
 import com.traveltrove.betraveltrove.utils.EntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
@@ -41,19 +42,18 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public Mono<CountryResponseModel> updateCountry(String countryId, Country updatedCountry) {
+    public Mono<CountryResponseModel> updateCountry(String countryId, CountryRequestModel countryRequestModel) {
         return countryRepository.findCountryByCountryId(countryId)
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Country id not found: " + countryId))))
                 .flatMap(existingCountry -> {
                     // Update fields on the existing country
-                    existingCountry.setName(updatedCountry.getName());
-                    existingCountry.setImage(updatedCountry.getImage());
+                    existingCountry.setName(countryRequestModel.getName());
+                    existingCountry.setImage(countryRequestModel.getImage());
                     return countryRepository.save(existingCountry);
                 })
-                .doOnSuccess(savedCountry -> log.info("Updated country: {}", savedCountry))
+                .doOnSuccess(updatedCountry -> log.info("Updated country: {}", updatedCountry))
                 .map(EntityModelUtil::toCountryResponseModel);
     }
-
 
     @Override
     public Mono<Void> deleteCountry(String countryId) {
