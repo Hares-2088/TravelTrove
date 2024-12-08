@@ -9,13 +9,18 @@ public interface EventService {
 
     Mono<EventResponseModel> getEventByEventId(String eventId);
 
-    Flux<EventResponseModel> getEvents();
-    Flux<EventResponseModel> getEventsByCityId(String cityId);
-    Flux<EventResponseModel> getEventsByCountryId(String countryId);
+    /**
+     * Fetch all events or filter by cityId and countryId if provided.
+     *
+     * @param cityId optional city ID to filter events
+     * @param countryId optional country ID to filter events
+     * @return a Flux of EventResponseModel matching the criteria
+     */
+    Flux<EventResponseModel> getEvents(String cityId, String countryId);
 
     Mono<EventResponseModel> createEvent(Mono<EventRequestModel> event);
 
     Mono<EventResponseModel> updateEvent(String eventId, Mono<EventRequestModel> event);
 
-    Mono<Void> deleteEvent(String eventId);
+    Mono<EventResponseModel> deleteEvent(String eventId);
 }

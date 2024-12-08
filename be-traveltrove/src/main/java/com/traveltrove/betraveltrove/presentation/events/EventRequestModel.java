@@ -23,8 +23,4 @@ public class EventRequestModel {
     private String name;
     private String description;
     private String image;
-    private LocalDate startDate;
-    private LocalDateTime gatheringTime;
-    private LocalDateTime departureTime;
-    private LocalDateTime endTime;
 }

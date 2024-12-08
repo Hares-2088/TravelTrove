@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Tab, Nav, Row, Col, Card } from "react-bootstrap";
 import CountriesTab from "./CountriesTab";
+import EventsTab from "./EventsTab"; 
 import CitiesTab from "./CitiesTab";
 import ToursTab from "./Tourstab";
 
+
 const Dashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("countries");
+  const [activeTab, setActiveTab] = useState("tours");
 
   return (
     <div
@@ -41,21 +43,6 @@ const Dashboard: React.FC = () => {
                 <Nav className="flex-column text-center">
                   <Nav.Item>
                     <Nav.Link
-                      eventKey="countries"
-                      onClick={() => setActiveTab("countries")}
-                      className={`text-white px-3 py-2 ${
-                        activeTab === "countries" ? "bg-secondary" : ""
-                      }`}
-                      style={{
-                        fontWeight: activeTab === "countries" ? "bold" : "normal",
-                        borderRadius: "10px",
-                      }}
-                    >
-                      Countries
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link
                       eventKey="tours"
                       onClick={() => setActiveTab("tours")}
                       className={`text-white px-3 py-2 ${
@@ -63,25 +50,10 @@ const Dashboard: React.FC = () => {
                       }`}
                       style={{
                         fontWeight: activeTab === "tours" ? "bold" : "normal",
-                        borderRadius: "10px"
+                        borderRadius: "10px",
                       }}
                     >
                       Tours
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link
-                      eventKey="cities"
-                      onClick={() => setActiveTab("cities")}
-                      className={`text-white px-3 py-2 ${
-                        activeTab === "cities" ? "bg-secondary" : ""
-                      }`}
-                      style={{
-                        fontWeight: activeTab === "cities" ? "bold" : "normal",
-                        borderRadius: "10px"
-                      }}
-                    >
-                      Cities
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
@@ -93,10 +65,40 @@ const Dashboard: React.FC = () => {
                       }`}
                       style={{
                         fontWeight: activeTab === "events" ? "bold" : "normal",
-                        borderRadius: "10px"
+                        borderRadius: "10px",
                       }}
                     >
                       Events
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
+                      eventKey="cities"
+                      onClick={() => setActiveTab("cities")}
+                      className={`text-white px-3 py-2 ${
+                        activeTab === "cities" ? "bg-secondary" : ""
+                      }`}
+                      style={{
+                        fontWeight: activeTab === "cities" ? "bold" : "normal",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      Cities
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
+                      eventKey="countries"
+                      onClick={() => setActiveTab("countries")}
+                      className={`text-white px-3 py-2 ${
+                        activeTab === "countries" ? "bg-secondary" : ""
+                      }`}
+                      style={{
+                        fontWeight: activeTab === "countries" ? "bold" : "normal",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      Countries
                     </Nav.Link>
                   </Nav.Item>
                 </Nav>
@@ -113,17 +115,17 @@ const Dashboard: React.FC = () => {
                 }}
               >
                 <Tab.Content style={{ height: "100%" }}>
-                  <Tab.Pane eventKey="countries" style={{ height: "100%" }}>
-                    <CountriesTab />
-                  </Tab.Pane>
                   <Tab.Pane eventKey="tours">
                    <ToursTab />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="events">
+                    <EventsTab /> {/* Use the EventsTab component here */}
                   </Tab.Pane>
                   <Tab.Pane eventKey="cities">
                     <CitiesTab />
                   </Tab.Pane>
-                  <Tab.Pane eventKey="events">
-                    <p>No content for Events yet.</p>
+                  <Tab.Pane eventKey="countries" style={{ height: "100%" }}>
+                    <CountriesTab />
                   </Tab.Pane>
                 </Tab.Content>
               </Col>

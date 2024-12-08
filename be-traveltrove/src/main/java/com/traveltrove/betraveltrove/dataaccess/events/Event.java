@@ -24,16 +24,13 @@ public class Event {
     private String eventId; //public
 
     @Nullable
-    private String cityId; //not always related to a city
+    private String cityId;
 
     @Nullable
     private String countryId;
 
     private String name;
-    private LocalDate startDate;
-    private String image;
     private String description;
-    private LocalDateTime gatheringTime;
-    private LocalDateTime departureTime;
-    private LocalDateTime endTime;
+    private String image;
+
 }

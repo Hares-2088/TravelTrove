@@ -1,7 +1,6 @@
 package com.traveltrove.betraveltrove.presentation.events;
 
 import com.traveltrove.betraveltrove.business.event.EventService;
-import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,25 +20,13 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    // Get all events
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Flux<EventResponseModel> getAllEvents() {
-        log.info("Fetching all events");
-        return eventService.getEvents();
-    }
-
-    // Get all events by city ID
-    @GetMapping(value = "/city/{cityId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Flux<EventResponseModel> getEventsByCityId(@PathVariable String cityId) {
-        log.info("Fetching all events by city ID: {}", cityId);
-        return eventService.getEventsByCityId(cityId);
-    }
-
-    // Get all events by country ID
-    @GetMapping(value = "/country/{countryId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Flux<EventResponseModel> getEventsByCountryId(@PathVariable String countryId) {
-        log.info("Fetching all events by country ID: {}", countryId);
-        return eventService.getEventsByCountryId(countryId);
+    // Get all events or filter by cityId or countryId
+    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<EventResponseModel> getEvents(
+            @RequestParam(required = false) String cityId,
+            @RequestParam(required = false) String countryId) {
+        log.info("Fetching events with filters: cityId={}, countryId={}", cityId, countryId);
+        return eventService.getEvents(cityId, countryId);
     }
 
     // Get an event by event ID
@@ -73,7 +60,7 @@ public class EventController {
 
     // Delete an event by event ID
     @DeleteMapping(value = "/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<Void>> deleteEvent(@PathVariable String eventId) {
+    public Mono<ResponseEntity<EventResponseModel>> deleteEvent(@PathVariable String eventId) {
         log.info("Deleting event with event ID: {}", eventId);
         return eventService.deleteEvent(eventId)
                 .map(ResponseEntity::ok)
