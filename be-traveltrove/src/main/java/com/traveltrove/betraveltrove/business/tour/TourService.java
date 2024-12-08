@@ -8,4 +8,7 @@ public interface TourService {
 
     Flux<TourResponseModel> getTours();
     Mono<TourResponseModel> getTourByTourId(String tourId);
+    Mono<TourResponseModel> addTour(TourResponseModel tourResponseModel);
+    Mono<TourResponseModel> updateTour(String tourId, TourResponseModel tourResponseModel);
+    Mono<Void> deleteTourByTourId(String tourId);
 }

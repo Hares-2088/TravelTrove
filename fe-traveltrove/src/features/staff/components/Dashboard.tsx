@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Tab, Nav, Row, Col, Card } from "react-bootstrap";
 import CountriesTab from "./CountriesTab";
 import CitiesTab from "./CitiesTab";
+import ToursTab from "./Tourstab";
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("countries");
@@ -116,7 +117,7 @@ const Dashboard: React.FC = () => {
                     <CountriesTab />
                   </Tab.Pane>
                   <Tab.Pane eventKey="tours">
-                    <p>No content for Tours yet.</p>
+                   <ToursTab />
                   </Tab.Pane>
                   <Tab.Pane eventKey="cities">
                     <CitiesTab />

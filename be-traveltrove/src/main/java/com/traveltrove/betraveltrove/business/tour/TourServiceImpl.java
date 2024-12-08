@@ -33,4 +33,19 @@ public class TourServiceImpl implements TourService {
                 .map(EntityModelUtil::toTourResponseModel);
     }
 
+    @Override
+    public Mono<TourResponseModel> addTour(TourResponseModel tourResponseModel) {
+        return null;
+    }
+
+    @Override
+    public Mono<TourResponseModel> updateTour(String tourId, TourResponseModel tourResponseModel) {
+        return null;
+    }
+
+    @Override
+    public Mono<Void> deleteTourByTourId(String tourId) {
+        return null;
+    }
+
 }
