@@ -1,5 +1,5 @@
 import axiosInstance from '../../../shared/axios/axios.instance';
-import { EventRequestModel, EventResponseModel } from '../model/models';
+import { EventRequestModel, EventResponseModel } from '../model/tourEvents.models';
 
 // Fetch all events, with optional filters for cityId and countryId
 export const getAllEvents = async (filters?: { cityId?: string; countryId?: string }): Promise<EventResponseModel[]> => {

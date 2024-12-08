@@ -3,9 +3,12 @@ package com.traveltrove.betraveltrove.utils;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
+import com.traveltrove.betraveltrove.dataaccess.tour.TourEvents;
 import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
 import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
 import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourEventsRequestModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourEventsResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourRequestModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.country.CountryRequestModel;
@@ -63,8 +66,27 @@ public class EntityModelUtil {
                 .build();
     }
 
+    public static TourEvents toTourEventsEntity(TourEventsRequestModel request) {
+        return TourEvents.builder()
+                .toursEventId(generateUUIDString())
+                .seq(request.getSeq())
+                .seqDesc(request.getSeqDesc())
+                .tourId(request.getTourId())
+                .events(request.getEvents())
+                .build();
+    }
+
+    public static TourEventsResponseModel toTourEventsResponseModel(TourEvents tourEvents) {
+        TourEventsResponseModel tourEventsResponseModel = new TourEventsResponseModel();
+        BeanUtils.copyProperties(tourEvents, tourEventsResponseModel);
+        return tourEventsResponseModel;
+    }
+
+
     public static String generateUUIDString() {
         return UUID.randomUUID().toString();
     }
+
+
 
 }
