@@ -7,12 +7,16 @@ import {
   updateEvent,
   deleteEvent,
 } from "../../events/api/events.ts";
-import { EventResponseModel, EventRequestModel } from "../../events/model/tourEvents.models.ts";
+import { getAllCities } from "../../cities/api/cities.api";
+import { getAllCountries } from "../../countries/api/countries.api";
+import { EventResponseModel, EventRequestModel } from "../../events/model/models.ts";
 import "./EventsTab.css";
 
 const EventsTab: React.FC = () => {
   const [events, setEvents] = useState<EventResponseModel[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<EventResponseModel[]>([]);
+  const [cities, setCities] = useState<{ id: string; name: string }[]>([]);
+  const [countries, setCountries] = useState<{ id: string; name: string }[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
   const [selectedEvent, setSelectedEvent] = useState<EventResponseModel | null>(null);
@@ -28,6 +32,8 @@ const EventsTab: React.FC = () => {
 
   useEffect(() => {
     fetchEvents();
+    fetchCities();
+    fetchCountries();
   }, []);
 
   useEffect(() => {
@@ -41,6 +47,24 @@ const EventsTab: React.FC = () => {
       setFilteredEvents(data);
     } catch (error) {
       console.error("Error fetching events:", error);
+    }
+  };
+
+  const fetchCities = async () => {
+    try {
+      const data = await getAllCities();
+      setCities(data.map((city) => ({ id: city.cityId, name: city.name })));
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
+
+  const fetchCountries = async () => {
+    try {
+      const data = await getAllCountries();
+      setCountries(data.map((country) => ({ id: country.countryId, name: country.name })));
+    } catch (error) {
+      console.error("Error fetching countries:", error);
     }
   };
 
@@ -66,6 +90,16 @@ const EventsTab: React.FC = () => {
 
   const handleSave = async () => {
     try {
+      // Validation for required fields
+      if (!formData.name.trim()) {
+        alert("Event name is required.");
+        return;
+      }
+      if (!formData.description.trim()) {
+        alert("Event description is required.");
+        return;
+      }
+  
       if (modalType === "create") {
         await addEvent(formData);
       } else if (modalType === "update" && selectedEvent) {
@@ -77,6 +111,7 @@ const EventsTab: React.FC = () => {
       console.error("Error saving event:", error);
     }
   };
+  
 
   const handleDelete = async () => {
     try {
@@ -146,20 +181,32 @@ const EventsTab: React.FC = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Filter by City</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter city ID"
+                  as="select"
                   value={filter.cityId}
                   onChange={(e) => setFilter({ ...filter, cityId: e.target.value })}
-                />
+                >
+                  <option value="">All Cities</option>
+                  {cities.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.name}
+                    </option>
+                  ))}
+                </Form.Control>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Filter by Country</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter country ID"
+                  as="select"
                   value={filter.countryId}
                   onChange={(e) => setFilter({ ...filter, countryId: e.target.value })}
-                />
+                >
+                  <option value="">All Countries</option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.name}
+                    </option>
+                  ))}
+                </Form.Control>
               </Form.Group>
             </Form>
           </div>
@@ -220,7 +267,7 @@ const EventsTab: React.FC = () => {
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalType === "create" ? "Create Event" : modalType === "update" ? "Edit Event" : "Delete Event"}
+            {modalType === "create" ? "Create Event" : "Edit Event"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -234,7 +281,11 @@ const EventsTab: React.FC = () => {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  isInvalid={!formData.name.trim()}
                 />
+                <Form.Control.Feedback type="invalid">
+                  Event name is required.
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Event Description</Form.Label>
@@ -243,7 +294,41 @@ const EventsTab: React.FC = () => {
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  isInvalid={!formData.description.trim()}
                 />
+                <Form.Control.Feedback type="invalid">
+                  Event description is required.
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>City</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={formData.cityId}
+                  onChange={(e) => setFormData({ ...formData, cityId: e.target.value })}
+                >
+                  <option value="">Select a City</option>
+                  {cities.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.name}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Country</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={formData.countryId}
+                  onChange={(e) => setFormData({ ...formData, countryId: e.target.value })}
+                >
+                  <option value="">Select a Country</option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.name}
+                    </option>
+                  ))}
+                </Form.Control>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Image URL</Form.Label>
