@@ -1,20 +1,22 @@
-import { City } from './City';
+// import { City } from './City';
 // import { Review } from './Review';
 // import { Booking } from './Booking';
 
-export interface Tour {
-  tourId: string;
-  name: string;
-  image: string;
-  overallDescription: string;
-  startDate: string;
-  endDate: string;
-  price: number;
-  spotsAvailable: number;
-  itineraryPicture: string;
-  cities: City[];
-  events?: Event[];
-}
+// export interface Tour {
+//   tourId: string;
+//   name: string;
+//   startDate: string;
+//   endDate: string;
+//   overallDescription: string;
+//   available: boolean;
+//   price: number;
+//   spotsAvailable: number;
+//   cities: City[];
+//   reviews: Review[];
+//   bookings: Booking[];
+//   image: string;
+//   itineraryPicture: string;
+// }
 
 export interface TourResponseModel{
   tourId: string;

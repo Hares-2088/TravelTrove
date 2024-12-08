@@ -7,7 +7,7 @@ import {
   updateEvent,
   deleteEvent,
 } from "../../events/api/events.ts";
-import { EventResponseModel, EventRequestModel } from "../../events/model/tourEvents.models.ts";
+import { EventResponseModel, EventRequestModel } from "../../events/model/models.ts";
 import "./EventsTab.css";
 
 const EventsTab: React.FC = () => {

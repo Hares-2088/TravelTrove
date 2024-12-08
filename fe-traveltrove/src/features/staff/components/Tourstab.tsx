@@ -25,7 +25,6 @@ const ToursTab: React.FC = () => {
   const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(
     null
   );
-  const [tourEvents, setTourEvents] = useState<any[]>([]);  // Assuming you have an EventResponseModel for events
 
   useEffect(() => {
     fetchTours();
@@ -44,24 +43,8 @@ const ToursTab: React.FC = () => {
     try {
       const tour = await getTourByTourId(tourId);
       setViewingTour(tour);
-
-      // Fetch the events for this specific tour
-      const eventsData = await fetchTourEvents(tourId);
-      setTourEvents(eventsData);
     } catch (error) {
       console.error("Error fetching Tour details:", error);
-    }
-  };
-
-  const fetchTourEvents = async (tourId: string) => {
-    try {
-      // Fetch the events for the selected tour. Replace with actual API call.
-      const response = await fetch(`/api/tours/${tourId}/events`);
-      const data = await response.json();
-      return data;  // assuming the data is an array of events
-    } catch (error) {
-      console.error("Error fetching events:", error);
-      return [];
     }
   };
 
@@ -93,7 +76,7 @@ const ToursTab: React.FC = () => {
 
   return (
     <div>
-      {/* Viewing a Single Tour */}
+      {/*Viewing a Single Tour*/}
       {viewingTour ? (
         <div>
           <Button
@@ -117,54 +100,24 @@ const ToursTab: React.FC = () => {
             <strong>Description:</strong>{" "}
             {viewingTour.description || "No description available"}
           </p>
-          
-          {/* Display Tour Events */}
-          <div>
-            <h4>Tour Events</h4>
-            {tourEvents.length === 0 ? (
-              <p>No events available for this tour.</p>
-            ) : (
-              <Table bordered hover responsive>
-                <thead>
-                  <tr>
-                    <th>Event Name</th>
-                    <th>Event Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tourEvents.map((event, index) => (
-                    <tr key={index}>
-                      <td>{event.name}</td>
-                      <td>{new Date(event.date).toLocaleDateString()}</td>
-                      <td>
-                        {/* Add buttons for editing or deleting events */}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            )}
-          </div>
         </div>
       ) : (
-        // Display List of Tours
-        <div>
+        <>
+          {/* List of Tours */}
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3>Tours</h3>
-            <Button
-              variant="primary"
-              onClick={() => {
-                fetchTours();
-                setModalType("create");
-                setFormData({ name: "", description: "" });
-                setShowModal(true);
-              }}
-            >
-              Create
-            </Button>
-          </div>
-
+                        <h3>Tours</h3>
+                        <Button
+                            variant="primary"
+                            onClick={() => {
+                                fetchTours();
+                                setModalType("create");
+                                setFormData({ name: "", description: "" });
+                                setShowModal(true);
+                            }}
+                        >
+                            Create
+                        </Button>
+                    </div>
           <div
             className="tours-scrollbar"
             style={{ maxHeight: "700px", overflowY: "auto" }}
@@ -227,7 +180,7 @@ const ToursTab: React.FC = () => {
               </tbody>
             </Table>
           </div>
-        </div>
+        </>
       )}
 
       {/* Modal for Create, Update, and Delete */}

@@ -3,7 +3,6 @@ export enum AppRoutes {
   Home = '/home',
   ToursPage = '/tours',
   TourDetailsPage = '/tours/:tourId',
-  TourEventsDetailPage = '/tour-events/:toursEventId',
   Dashboard = '/dashboard',
   CountryDetailsPage = '/countries/:countryId',
   CityDetailsPage = '/cities/:cityId',
