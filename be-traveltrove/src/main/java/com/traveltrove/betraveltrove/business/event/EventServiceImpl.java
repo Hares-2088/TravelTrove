@@ -29,22 +29,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Flux<EventResponseModel> getEvents() {
+    public Flux<EventResponseModel> getEvents(String cityId, String countryId) {
+        // Handle filtering logic based on query parameters
+        if (cityId != null && !cityId.isEmpty()) {
+            return eventRepository.findAllByCityId(cityId)
+                    .map(EventEntityModel::toEventResponseModel);
+        } else if (countryId != null && !countryId.isEmpty()) {
+            return eventRepository.findByCountryId(countryId)
+                    .map(EventEntityModel::toEventResponseModel);
+        }
+        // Return all events if no filters are provided
         return eventRepository.findAll()
-                .map(EventEntityModel::toEventResponseModel);
-    }
-
-    @Override
-    public Flux<EventResponseModel> getEventsByCityId(String cityId) {
-        return eventRepository.findAllByCityId(cityId)
-                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("City id not found: " + cityId))))
-                .map(EventEntityModel::toEventResponseModel);
-    }
-
-    @Override
-    public Flux<EventResponseModel> getEventsByCountryId(String countryId) {
-        return eventRepository.findByCountryId(countryId)
-                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Country id not found: " + countryId))))
                 .map(EventEntityModel::toEventResponseModel);
     }
 
@@ -63,7 +58,6 @@ public class EventServiceImpl implements EventService {
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Event id not found: " + eventId))))
                 .flatMap(foundEvent -> eventRequestModel
                         .map(EventEntityModel::toEventEntity)
-                        //the country id and city id are nullable
                         .doOnNext(event -> event.setEventId(foundEvent.getEventId()))
                         .doOnNext(event -> event.setId(foundEvent.getId()))
                         .doOnNext(event -> event.setCountryId(foundEvent.getCountryId()))
@@ -73,9 +67,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Mono<Void> deleteEvent(String eventId) {
+    public Mono<EventResponseModel> deleteEvent(String eventId) {
         return eventRepository.findEventByEventId(eventId)
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Event id not found: " + eventId))))
-                .flatMap(eventRepository::delete);
+                .flatMap(event -> eventRepository.delete(event).thenReturn(event))
+                .map(EventEntityModel::toEventResponseModel);
     }
 }
