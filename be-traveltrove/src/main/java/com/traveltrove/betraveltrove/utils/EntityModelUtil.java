@@ -21,16 +21,6 @@ public class EntityModelUtil {
     public static TourResponseModel toTourResponseModel(Tour tour) {
         TourResponseModel tourResponseModel = new TourResponseModel();
         BeanUtils.copyProperties(tour, tourResponseModel);
-
-        // Convert LocalDate to String
-//        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-//        if (tour.getStartDate() != null) {
-//            tourResponseModel.setStartDate(tour.getStartDate().format(formatter));
-//        }
-//        if (tour.getEndDate() != null) {
-//            tourResponseModel.setEndDate(tour.getEndDate().format(formatter));
-//        }
-
         return tourResponseModel;
     }
 
@@ -40,13 +30,6 @@ public class EntityModelUtil {
                 .tourId(generateUUIDString())
                 .name(tourRequestModel.getName())
                 .description(tourRequestModel.getDescription())
-//                .startDate(tourRequestModel.getStartDate())
-//                .endDate(tourRequestModel.getEndDate())
-//                .overallDescription(tourRequestModel.getOverallDescription())
-//                .price(tourRequestModel.getPrice())
-//                .spotsAvailable(tourRequestModel.getSpotsAvailable())
-//                .image(tourRequestModel.getImage())
-//                .itineraryPicture(tourRequestModel.getItineraryPicture())
                 .build();
     }
 

@@ -50,5 +50,5 @@ export const updateTour = async (
 }
 
 export const deleteTour = async (tourId: string): Promise<void> => {
-  await axiosInstance.delete(`/turs/${tourId}`);
+  await axiosInstance.delete(`/tours/${tourId}`);
 }

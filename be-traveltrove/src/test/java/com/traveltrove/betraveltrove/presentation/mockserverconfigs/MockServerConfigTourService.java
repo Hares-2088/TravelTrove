@@ -34,22 +34,12 @@ public class MockServerConfigTourService {
                                 {
                                     "tourId": "%s",
                                     "name": "%s",
-                                    "startDate": "%s",
-                                    "endDate": "%s",
-                                    "overallDescription": "%s",
-                                    "available": %s,
-                                    "price": %s,
-                                    "spotsAvailable": %s
+                                    "description": "%s"
                                 }
                                 """,
                                 tour.getTourId(),
                                 tour.getName(),
-                                tour.getStartDate(),
-                                tour.getEndDate(),
-                                tour.getOverallDescription(),
-                                tour.isAvailable(),
-                                tour.getPrice(),
-                                tour.getSpotsAvailable())));
+                                tour.getDescription())));
     }
 
     public void registerGetTourByInvalidIdEndpoint(String invalidTourId) {
