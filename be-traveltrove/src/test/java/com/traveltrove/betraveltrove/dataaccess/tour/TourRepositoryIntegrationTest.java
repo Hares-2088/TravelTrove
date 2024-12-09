@@ -27,7 +27,6 @@ public class TourRepositoryIntegrationTest {
                 .tourId("1")
                 .name("Test Tour")
                 .description("A test tour")
-                .tourEvents(Collections.emptyList())
                 .build();
 
         StepVerifier.create(tourRepository.save(testTour))

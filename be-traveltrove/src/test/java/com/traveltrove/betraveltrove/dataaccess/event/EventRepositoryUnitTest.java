@@ -1,5 +1,7 @@
-package com.traveltrove.betraveltrove.dataaccess.events;
+package com.traveltrove.betraveltrove.dataaccess.event;
 
+import com.traveltrove.betraveltrove.dataaccess.events.Event;
+import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

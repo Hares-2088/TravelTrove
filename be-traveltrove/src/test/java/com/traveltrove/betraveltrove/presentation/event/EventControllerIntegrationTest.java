@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.presentation.events;
+package com.traveltrove.betraveltrove.presentation.event;
 
 import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
