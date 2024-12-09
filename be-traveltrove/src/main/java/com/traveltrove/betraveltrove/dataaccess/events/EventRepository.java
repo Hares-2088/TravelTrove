@@ -9,5 +9,6 @@ public interface EventRepository extends ReactiveMongoRepository<Event, String> 
 
         public Mono<Event> findEventByEventId(String eventId);
         public Flux<Event> findAllByCityId(String cityId);
-        public Flux<Event> findByCountryId(String countryId);
+        public Flux<Event> findAllByCountryId(String countryId);
+
 }

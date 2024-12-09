@@ -6,25 +6,20 @@ import {
   addEvent,
   updateEvent,
   deleteEvent,
-} from "../../events/api/events.ts";
-import {
-  EventResponseModel,
-  EventRequestModel,
-} from "../../events/model/tourEvents.models.ts";
+} from "../../events/api/events";
+import { getAllCities } from "../../cities/api/cities.api";
+import { getAllCountries } from "../../countries/api/countries.api";
+import { EventResponseModel, EventRequestModel } from "../../events/model/models";
 import "./EventsTab.css";
 
 const EventsTab: React.FC = () => {
   const [events, setEvents] = useState<EventResponseModel[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<EventResponseModel[]>(
-    []
-  );
+  // const [filteredEvents, setFilteredEvents] = useState<EventResponseModel[]>([]); // Commented for filters
+  const [cities, setCities] = useState<{ id: string; name: string }[]>([]);
+  const [countries, setCountries] = useState<{ id: string; name: string }[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">(
-    "create"
-  );
-  const [selectedEvent, setSelectedEvent] = useState<EventResponseModel | null>(
-    null
-  );
+  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
+  const [selectedEvent, setSelectedEvent] = useState<EventResponseModel | null>(null);
   const [formData, setFormData] = useState<EventRequestModel>({
     cityId: "",
     countryId: "",
@@ -32,45 +27,58 @@ const EventsTab: React.FC = () => {
     description: "",
     image: "",
   });
-  const [filter, setFilter] = useState({ cityId: "", countryId: "" });
-  const [viewingEvent, setViewingEvent] = useState<EventResponseModel | null>(
-    null
-  );
-
-  const [eventNameError, setEventNameError] = useState(false);
-  const [descriptionError, setDescriptionError] = useState(false);
-  const [imageURLError, setImageURLError] = useState(false);
+  // const [filter, setFilter] = useState({ cityId: "", countryId: "" }); // Commented for filters
+  const [viewingEvent, setViewingEvent] = useState<EventResponseModel | null>(null);
 
   useEffect(() => {
     fetchEvents();
+    fetchCities();
+    fetchCountries();
   }, []);
 
-  useEffect(() => {
-    applyFilters();
-  }, [filter, events]);
+  // useEffect(() => {
+  //   applyFilters(); // Commented for filters
+  // }, [filter, events]);
 
   const fetchEvents = async () => {
     try {
       const data = await getAllEvents();
       setEvents(data);
-      setFilteredEvents(data);
+      // setFilteredEvents(data); // Commented for filters
     } catch (error) {
       console.error("Error fetching events:", error);
     }
   };
 
-  const applyFilters = () => {
-    let filtered = events;
-    if (filter.cityId) {
-      filtered = filtered.filter((event) => event.cityId === filter.cityId);
+  const fetchCities = async () => {
+    try {
+      const data = await getAllCities();
+      setCities(data.map((city) => ({ id: city.cityId, name: city.name })));
+    } catch (error) {
+      console.error("Error fetching cities:", error);
     }
-    if (filter.countryId) {
-      filtered = filtered.filter(
-        (event) => event.countryId === filter.countryId
-      );
-    }
-    setFilteredEvents(filtered);
   };
+
+  const fetchCountries = async () => {
+    try {
+      const data = await getAllCountries();
+      setCountries(data.map((country) => ({ id: country.countryId, name: country.name })));
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+    }
+    // setFilteredEvents(filtered); // Commented for filters
+  };
+
+  // const applyFilters = () => { // Commented for filters
+  //   let filtered = events;
+  //   if (filter.cityId) {
+  //     filtered = filtered.filter((event) => event.cityId === filter.cityId);
+  //   }
+  //   if (filter.countryId) {
+  //     filtered = filtered.filter((event) => event.countryId === filter.countryId);
+  //   }
+  //   setFilteredEvents(filtered);
+  // };
 
   const handleViewEvent = async (eventId: string) => {
     try {
@@ -82,19 +90,17 @@ const EventsTab: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const isEventNameValid = formData.name.trim() !== "";
-    const isDescriptionValid = formData.description.trim() !== "";
-    const isImageURLValid = formData.image.trim() !== "";
-
-    setEventNameError(!isEventNameValid);
-    setDescriptionError(!isDescriptionValid);
-    setImageURLError(!isImageURLValid);
-
-    if (!isEventNameValid || !isDescriptionValid || !isImageURLValid) {
-      return;
-    }
-
     try {
+      // Validation for required fields
+      if (!formData.name.trim()) {
+        alert("Event name is required.");
+        return;
+      }
+      if (!formData.description.trim()) {
+        alert("Event description is required.");
+        return;
+      }
+
       if (modalType === "create") {
         await addEvent(formData);
       } else if (modalType === "update" && selectedEvent) {
@@ -138,9 +144,6 @@ const EventsTab: React.FC = () => {
           </Button>
           <h3>{viewingEvent.name}</h3>
           <p>
-            <strong>Event ID:</strong> {viewingEvent.eventId}
-          </p>
-          <p>
             <strong>Description:</strong> {viewingEvent.description}
           </p>
           <p>
@@ -169,88 +172,98 @@ const EventsTab: React.FC = () => {
             </Button>
           </div>
 
-          {/* Filters */}
-          <div className="mb-3">
+          {/* Filters Section Commented */}
+          {/* <div className="mb-3">
             <Form>
               <Form.Group className="mb-3">
                 <Form.Label>Filter by City</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter city ID"
+                  as="select"
                   value={filter.cityId}
-                  onChange={(e) =>
-                    setFilter({ ...filter, cityId: e.target.value })
-                  }
-                />
+                  onChange={(e) => setFilter({ ...filter, cityId: e.target.value })}
+                >
+                  <option value="">All Cities</option>
+                  {cities.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.name}
+                    </option>
+                  ))}
+                </Form.Control>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Filter by Country</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter country ID"
+                  as="select"
                   value={filter.countryId}
-                  onChange={(e) =>
-                    setFilter({ ...filter, countryId: e.target.value })
-                  }
-                />
+                  onChange={(e) => setFilter({ ...filter, countryId: e.target.value })}
+                >
+                  <option value="">All Countries</option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.name}
+                    </option>
+                  ))}
+                </Form.Control>
               </Form.Group>
             </Form>
-          </div>
+          </div> */}
 
-          <Table bordered hover responsive className="rounded">
-            <thead className="bg-light">
-              <tr>
-                <th>Name</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEvents.map((event) => (
-                <tr key={event.eventId}>
-                  <td
-                    onClick={() => handleViewEvent(event.eventId)}
-                    style={{
-                      cursor: "pointer",
-                      color: "#007bff",
-                      textDecoration: "underline",
-                    }}
-                  >
-                    {event.name}
-                  </td>
-                  <td>
-                    <Button
-                      variant="outline-primary"
-                      onClick={() => {
-                        setSelectedEvent(event);
-                        setModalType("update");
-                        setFormData({
-                          cityId: event.cityId,
-                          countryId: event.countryId,
-                          name: event.name,
-                          description: event.description,
-                          image: event.image,
-                        });
-                        setShowModal(true);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      className="ms-2"
-                      onClick={() => {
-                        setSelectedEvent(event);
-                        setModalType("delete");
-                        setShowModal(true);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </td>
+          <div className="events-scrollbar" style={{ maxHeight: "500px", overflowY: "auto" }}>
+            <Table bordered hover responsive className="rounded">
+              <thead className="bg-light">
+                <tr>
+                  <th>Name</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {events.map((event) => (
+                  <tr key={event.eventId}>
+                    <td
+                      onClick={() => handleViewEvent(event.eventId)}
+                      style={{
+                        cursor: "pointer",
+                        color: "#007bff",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      {event.name}
+                    </td>
+                    <td>
+                      <Button
+                        variant="outline-primary"
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setModalType("update");
+                          setFormData({
+                            cityId: event.cityId,
+                            countryId: event.countryId,
+                            name: event.name,
+                            description: event.description,
+                            image: event.image,
+                          });
+                          setShowModal(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        className="ms-2"
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setModalType("delete");
+                          setShowModal(true);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </>
       )}
 
@@ -272,45 +285,65 @@ const EventsTab: React.FC = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Event Name</Form.Label>
                 <Form.Control
-                  required
                   type="text"
                   value={formData.name}
-                  onChange={(e) => {
-                    setFormData({ ...formData, name: e.target.value });
-                    setEventNameError(false);
-                  }}
-                  isInvalid={eventNameError}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  isInvalid={!formData.name.trim()}
                 />
-                <div className="invalid-feedback">Event name is required.</div>
+                <Form.Control.Feedback type="invalid">
+                  Event name is required.
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Event Description</Form.Label>
                 <Form.Control
-                  required
                   as="textarea"
                   rows={3}
                   value={formData.description}
-                  onChange={(e) => {
-                    setFormData({ ...formData, description: e.target.value });
-                    setDescriptionError(false);
-                  }}
-                  isInvalid={descriptionError}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  isInvalid={!formData.description.trim()}
                 />
-                <div className="invalid-feedback">Description is required.</div>
+                <Form.Control.Feedback type="invalid">
+                  Event description is required.
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>City</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={formData.cityId}
+                  onChange={(e) => setFormData({ ...formData, cityId: e.target.value })}
+                >
+                  <option value="">Select a City</option>
+                  {cities.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.name}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Country</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={formData.countryId}
+                  onChange={(e) => setFormData({ ...formData, countryId: e.target.value })}
+                >
+                  <option value="">Select a Country</option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.name}
+                    </option>
+                  ))}
+                </Form.Control>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Image URL</Form.Label>
                 <Form.Control
-                  required
                   type="text"
                   value={formData.image}
-                  onChange={(e) => {
-                    setFormData({ ...formData, image: e.target.value });
-                    setImageURLError(false);
-                  }}
-                  isInvalid={imageURLError}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 />
-                <div className="invalid-feedback">Image URL is required.</div>
               </Form.Group>
             </Form>
           )}

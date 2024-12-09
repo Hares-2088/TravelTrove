@@ -3,7 +3,7 @@ import { Tab, Nav, Row, Col, Card } from "react-bootstrap";
 import CountriesTab from "./CountriesTab";
 import EventsTab from "./EventsTab"; 
 import CitiesTab from "./CitiesTab";
-import ToursTab from "./Tourstab";
+import ToursTab from "./ToursTab.tsx";
 
 
 const Dashboard: React.FC = () => {

@@ -267,7 +267,6 @@ public class DatabaseLoader {
                 // Grand American Adventure
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("186645b4-df8a-45ec-ab45-12ed29dc6e74")
                         .seq(1)
                         .seqDesc("Start at New York Summer Carnival")
                         .tourId("7f54a45d-8c1d-432f-a5c8-1f93b89bfe29")
@@ -277,7 +276,6 @@ public class DatabaseLoader {
                 // Canadian Rockies Expedition
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("29f363c7-af51-44ea-b33f-9e54a864e070")
                         .seq(1)
                         .seqDesc("Explore Toronto's Winter Lights Festival")
                         .tourId("90af5e42-b8a7-4b59-939f-8fa2c4e384d1")
@@ -287,7 +285,6 @@ public class DatabaseLoader {
                 // Parisian Art & Culture Tour
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("ae2fef94-8eaa-49e3-8b50-66b1385f7901")
                         .seq(1)
                         .seqDesc("Visit Paris Fashion Week")
                         .tourId("f1f4ac8e-4e24-4bb3-97d3-e5b7b5b7f912")
@@ -297,7 +294,6 @@ public class DatabaseLoader {
                 // German Castle Escape
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("e4c78c16-f2ee-4f80-b6a8-ac720fac5655")
                         .seq(1)
                         .seqDesc("Attend Berlin Tech Conference")
                         .tourId("83e6f7ba-0567-426a-b43f-456f947c576b")
@@ -307,7 +303,6 @@ public class DatabaseLoader {
                 // Italian Culinary Retreat
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("bd48cf86-f8f9-43ff-b53e-1c6735eeacec")
                         .seq(1)
                         .seqDesc("Enjoy Rome Food & Wine Festival")
                         .tourId("d12a7bf7-dc94-4953-9189-68f6a70f7844")
@@ -317,7 +312,6 @@ public class DatabaseLoader {
                 // Japan Cherry Blossom Tour
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("f0316294-d585-43af-9bfe-5e4b5a6ed9ba")
                         .seq(1)
                         .seqDesc("Join Tokyo Cherry Blossom Festival")
                         .tourId("7e14cb83-3e2a-41c6-b26f-09ebd62a5e39")
@@ -327,7 +321,6 @@ public class DatabaseLoader {
                 // Brazilian Amazon Adventure
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("27f9e6d1-d8be-4d45-a883-2b630515da68")
                         .seq(1)
                         .seqDesc("Experience Rio Carnival")
                         .tourId("42cf8561-6f83-4f2f-becb-e3c72a1bb572")
@@ -337,7 +330,6 @@ public class DatabaseLoader {
                 // Australian Outback Expedition
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("b1edc308-82bb-4f81-90b8-82eca8d71c7b")
                         .seq(1)
                         .seqDesc("Enjoy Sydney Fireworks")
                         .tourId("f4a9c2ef-8473-4b67-b527-44fcb3a6eec5")
@@ -347,7 +339,6 @@ public class DatabaseLoader {
                 // Indian Heritage Journey
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("820b4a93-5d6f-45e7-a581-9c6633af9e62")
                         .seq(1)
                         .seqDesc("Attend Mumbai Film Festival")
                         .tourId("7b82cb14-2ff5-4d8f-b84c-3bfb7b6cda1e")
@@ -357,7 +348,6 @@ public class DatabaseLoader {
                 // Chinese Silk Road Adventure
                 TourEvent.builder()
                         .Id(null)
-                        .tourEventId("6f74b73f-1681-402f-931f-9126a6bc4523")
                         .seq(1)
                         .seqDesc("Experience Beijing Dragon Boat Festival")
                         .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")

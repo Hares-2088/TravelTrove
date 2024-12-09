@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Document(collection = "tourevents")
 public class TourEvent {
-
     @Id
     private String Id;
     private String tourEventId;
@@ -21,4 +20,5 @@ public class TourEvent {
     private String seqDesc;
     private String tourId;
     private String eventId;
+    private String events;
 }
