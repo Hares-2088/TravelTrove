@@ -1,120 +1,165 @@
 @startuml
-
+skinparam linetype polyline
+skinparam monochrome true
 skinparam entity {
     BackgroundColor #DDEEFF
     BorderColor #3366CC
     FontColor Black
 }
 
-entity "tour_packages" as tour_packages {
-    + id: INT <<PK>> AUTO_INCREMENT
+' Entities
+entity "Users" as Users {
+    + _id: ObjectId
     --
-    package_id: VARCHAR(36) <<FK>> UNIQUE NOT NULL
-    name: VARCHAR(255) NOT NULL
-    description: TEXT NOT NULL
-    destination: VARCHAR(255) NOT NULL
-    duration: INT NOT NULL
-    price: DECIMAL(10,2) NOT NULL
-    spots: INT NOT NULL
-    category: VARCHAR(255) NOT NULL
+    userId: String <<Unique>>
+    firstName: String
+    lastName: String
+    email: String <<Unique>>
+    password: String
+    phoneNumber: String
+    role: Enum [Admin, Customer, Employee]
 }
 
-entity "bookings" as bookings {
-    + id: INT <<PK>> AUTO_INCREMENT
+entity "TourPackages" as TourPackages {
+    + _id: ObjectId
     --
-    booking_id: VARCHAR(36) <<FK>> UNIQUE NOT NULL
-    customer_id: VARCHAR(36) <<FK>> NOT NULL
-    package_id: VARCHAR(36) <<FK>> NOT NULL
-    booking_date: DATETIME NOT NULL
-    total_amount: DECIMAL(10,2) NOT NULL
-    status: VARCHAR(255) NOT NULL
+    packageId: String <<Unique>>
+    name: String
+    description: String
+    startDate: DateTime
+    endDate: DateTime
+    priceForOne: Decimal
+    priceForTwo: Decimal
+    priceForThree: Decimal
+    airportId: String <<FK>>
+    tourId: String <<FK>>
 }
 
-entity "customer" as customer {
-    + id: INT <<PK>> AUTO_INCREMENT
+entity "Bookings" as Bookings {
+    + _id: ObjectId
     --
-    customer_id: VARCHAR(36) <<FK>> UNIQUE NOT NULL
-    first_name: VARCHAR(255) NOT NULL
-    last_name: VARCHAR(255) NOT NULL
-    email: VARCHAR(255) <<UNIQUE>> NOT NULL
-    phone_number: VARCHAR(15) NOT NULL
-    password: VARCHAR(255) NOT NULL
-    role: VARCHAR(50) NOT NULL
+    bookingId: String <<Unique>>
+    userId: String <<FK>>
+    packageId: String <<FK>>
+    refundId:String <<FK>>
+    bookingDate: DateTime
+    totalAmount: Decimal
+    status: String
 }
 
-entity "notifications" as notifications {
-    + id: INT <<PK>> AUTO_INCREMENT
+entity "Refunds" as Refunds {
+    + _id: ObjectId
     --
-    notification_id: VARCHAR(36) <<FK>> UNIQUE NOT NULL
-    customer_id: VARCHAR(36) <<FK>> NOT NULL
-    package_id: VARCHAR(36) <<FK>> NOT NULL
-    message: TEXT NOT NULL
-    status: VARCHAR(50) NOT NULL
-    notification_date: DATETIME NOT NULL
+    refundId: String <<Unique>>
+    bookingId: String <<FK>>
+    userID: String <<FK>>
+    refundedAmount: Decimal
+    totalTransactionAmount: Decimal
 }
 
-entity "refund_requests" as refund_requests {
-    + id: INT <<PK>> AUTO_INCREMENT
+entity "Payments" as Payments {
+    + _id: ObjectId
     --
-    refund_id: VARCHAR(36) <<FK>> UNIQUE NOT NULL
-    booking_id: VARCHAR(36) <<FK>> NOT NULL
-    customer_id: VARCHAR(36) <<FK>> NOT NULL
-    request_date: DATETIME NOT NULL
-    refund_status: VARCHAR(255) NOT NULL
+    paymentId: String <<Unique>>
+    bookingId: String <<FK>>
+    stripePaymentId: String <<Unique>>
+    paymentDate: DateTime
+    amount: Decimal
+    status: String
 }
 
-entity "reports" as reports {
-    + id: INT <<PK>> AUTO_INCREMENT
+entity "Reviews" as Reviews {
+    + _id: ObjectId
     --
-    report_id: VARCHAR(36) <<FK>> UNIQUE NOT NULL
-    customer_id: VARCHAR(36) <<FK>> NOT NULL
-    report_type: VARCHAR(255) NOT NULL
-    report_date: DATETIME NOT NULL
-    details: TEXT NOT NULL
+    reviewId: String <<Unique>>
+    userId: String <<FK>>
+    packageId: String <<FK>>
+    bookingId: String <<FK>>
+    rating: Integer
+    comment: String
+    reviewDate: DateTime
 }
 
-entity "employees" as employees {
-    + id: INT <<PK>> AUTO_INCREMENT
+entity "Hotels" as Hotels {
+    + _id: ObjectId
     --
-    employee_id: VARCHAR(36) <<FK>> UNIQUE NOT NULL
-    name: VARCHAR(255) NOT NULL
-    email: VARCHAR(255) <<UNIQUE>> NOT NULL
-    position: VARCHAR(50) NOT NULL
-    permissions: TEXT NOT NULL
+    hotelId: String <<Unique>>
+    name: String
+    cityId: String <<FK>>
+    countryId: String <<FK>>
+    address: String
+    hotelUrl: String
 }
 
-entity "payments" as payments {
-    + id: INT <<PK>> AUTO_INCREMENT
+entity "Airports" as Airports {
+    + _id: ObjectId
     --
-    payment_id: VARCHAR(36) <<FK>> UNIQUE NOT NULL
-    booking_id: VARCHAR(36) <<FK>> NOT NULL
-    stripe_payment_id: VARCHAR(255) <<UNIQUE>> NOT NULL
-    payment_date: DATETIME NOT NULL
-    amount: DECIMAL(10,2) NOT NULL
-    status: VARCHAR(255) NOT NULL
+    airportId: String <<Unique>>
+    name: String
+    cityId: String <<FK>>
 }
 
-entity "reviews" as reviews {
-    + id: INT <<PK>> AUTO_INCREMENT
+entity "Cities" as Cities {
+    + _id: ObjectId
     --
-    review_id: VARCHAR(36) <<FK>> UNIQUE NOT NULL
-    customer_id: VARCHAR(36) <<FK>> NOT NULL
-    package_id: VARCHAR(36) <<FK>> NOT NULL
-    rating: INT NOT NULL
-    comment: TEXT
-    review_date: DATETIME NOT NULL
+    cityId: String <<Unique>>
+    name: String
+    countryId: String <<FK>>
 }
 
-tour_packages ||--o{ bookings
-customer ||--o{ bookings
-customer ||--o{ notifications
-tour_packages ||--o{ notifications
-bookings ||--o{ refund_requests
-customer ||--o{ refund_requests
-customer ||--o{ reports
-employees ||--o{ reports
-bookings ||--o{ payments
-customer ||--o{ reviews
-tour_packages ||--o{ reviews
+entity "Countries" as Countries {
+    + _id: ObjectId
+    --
+    countryId: String <<Unique>>
+    name: String
+    imagePath: String
+}
+
+entity "Events" as Events {
+    + _id: ObjectId
+    --
+    eventId: String <<Unique>>
+    title: String
+    description: String
+    cityId: String <<FK>>
+}
+
+entity "TourEvents" as TourEvents {
+    + _id: ObjectId
+    --
+    tourEventId: String <<Unique>>
+    seq: Integer
+    seqDesc: String
+    tourId: String <<FK>>
+    eventId: String <<FK>>
+    hotelId: String <<FK>>
+}
+
+'entity "EventImages" as EventImages {
+'    + _id: ObjectId
+'    --
+'    eventImageId: String <<Unique>>
+'    eventId: String <<FK>>
+'    seq: Integer
+'    imagePath: String
+'    description: String
+'}
+
+' Relationships
+Users ||--o{ Bookings : "1:N"
+Users ||--o{ Reviews : "1:N"
+TourPackages ||--o{ Bookings : "1:N"
+TourPackages ||--o{ Reviews : "1:N"
+Bookings ||--|| Payments : "1:1"
+Cities ||--o{ Hotels : "1:N"
+Cities ||--o{ Airports : "1:N"
+Countries ||--o{ Cities : "1:N"
+'Events ||--o{ EventImages : "1:N"
+Cities ||--o{ Events : "1:N"
+TourPackages ||--o{ Airports : "1:1"
+TourPackages ||--o{ TourEvents : "1:N"
+TourEvents ||--o{ Events : "1:N"
+TourEvents ||--o{ Hotels : "1:M"
+"Bookings" ||--o{ "Refunds" : "1:N"
 
 @enduml

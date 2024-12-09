@@ -1,0 +1,463 @@
+@startuml
+title Integrated Class Diagram with Cross-Subdomain Links
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam interfaceStyle circle
+skinparam legendBorderColor black
+skinparam legendBackgroundColor #DDDDDD
+
+' ***********************************************************************
+' EVENT SUBDOMAIN
+' ***********************************************************************
+package "eventsubdomain" {
+    package "businesslayer" {
+        interface EventService {
+            + getEventByEventId(eventId: String) : Mono<EventResponseModel>
+            + getEvents(cityId: String, countryId: String) : Flux<EventResponseModel>
+            + createEvent(event: Mono<EventRequestModel>) : Mono<EventResponseModel>
+            + updateEvent(eventId: String, event: Mono<EventRequestModel>) : Mono<EventResponseModel>
+            + deleteEvent(eventId: String) : Mono<EventResponseModel>
+        }
+
+        class EventServiceImpl {
+            - eventRepository: EventRepository
+            + getEventByEventId(eventId: String) : Mono<EventResponseModel>
+            + getEvents(cityId: String, countryId: String) : Flux<EventResponseModel>
+            + createEvent(event: Mono<EventRequestModel>) : Mono<EventResponseModel>
+            + updateEvent(eventId: String, event: Mono<EventRequestModel>) : Mono<EventResponseModel>
+            + deleteEvent(eventId: String) : Mono<EventResponseModel>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Event {
+            + id: String
+            + eventId: String
+            + cityId: String
+            + countryId: String
+            + name: String
+            + description: String
+            + image: String
+        }
+
+        interface EventRepository extends ReactiveMongoRepository {
+            + findEventByEventId(eventId: String) : Mono<Event>
+            + findAllByCityId(cityId: String) : Flux<Event>
+            + findByCountryId(countryId: String) : Flux<Event>
+        }
+    }
+
+    package "presentationlayer" {
+        class EventRequestModel {
+            + cityId: String
+            + countryId: String
+            + name: String
+            + description: String
+            + image: String
+        }
+
+        class EventResponseModel {
+            + eventId: String
+            + cityId: String
+            + countryId: String
+            + name: String
+            + description: String
+            + image: String
+        }
+
+        class EventController {
+            - eventService: EventService
+            + getEvents(cityId: String, countryId: String) : Flux<EventResponseModel>
+            + getEventByEventId(eventId: String) : Mono<ResponseEntity<EventResponseModel>>
+            + createEvent(event: Mono<EventRequestModel>) : Mono<ResponseEntity<EventResponseModel>>
+            + updateEvent(eventId: String, event: Mono<EventRequestModel>) : Mono<ResponseEntity<EventResponseModel>>
+            + deleteEvent(eventId: String) : Mono<ResponseEntity<EventResponseModel>>
+        }
+    }
+
+    package "utils" {
+        class EventEntityModel {
+            + toEventResponseModel(event: Event) : EventResponseModel
+            + toEventEntity(eventRequestModel: EventRequestModel) : Event
+            + generateUUIDString() : String
+        }
+    }
+
+    EventServiceImpl -down-|> EventService
+    EventServiceImpl -down-> EventRepository
+    EventController -down-> EventService
+    EventController -down-> EventRequestModel
+    EventController -down-> EventResponseModel
+    EventServiceImpl -down-> Event
+    EventServiceImpl -down-> EventRequestModel
+    EventServiceImpl -down-> EventResponseModel
+    EventEntityModel -up-^ Event
+    EventEntityModel -up-^ EventRequestModel
+    EventEntityModel -up-^ EventResponseModel
+}
+
+' ***********************************************************************
+' TOUR SUBDOMAIN
+' ***********************************************************************
+package "toursubdomain" {
+    package "businesslayer" {
+        interface TourService {
+            + getTours() : Flux<TourResponseModel>
+            + getTourByTourId(tourId: String) : Mono<TourResponseModel>
+            + addTour(tour: Tour) : Mono<TourResponseModel>
+            + updateTour(tourId: String, tourRequestModel: TourRequestModel) : Mono<TourResponseModel>
+            + deleteTourByTourId(tourId: String) : Mono<Void>
+        }
+
+        class TourServiceImpl {
+            - tourRepository: TourRepository
+            + getTours() : Flux<TourResponseModel>
+            + getTourByTourId(tourId: String) : Mono<TourResponseModel>
+            + addTour(tour: Tour) : Mono<TourResponseModel>
+            + updateTour(tourId: String, tourRequestModel: TourRequestModel) : Mono<TourResponseModel>
+            + deleteTourByTourId(tourId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Tour {
+            + id: String
+            + tourId: String
+            + name: String
+            + description: String
+            + tourEvents: List<TourEvents>
+        }
+
+        class TourEvents {
+            + id: String
+            + seq: int
+            + seqDesc: String
+            + tourId: String
+            + events: String
+            + toursEventId: String
+        }
+
+        interface TourRepository extends ReactiveMongoRepository {
+            + findTourByTourId(tourId: String) : Mono<Tour>
+            + findAll() : Flux<Tour>
+        }
+    }
+
+    package "presentationlayer" {
+        class TourRequestModel {
+            + name: String
+            + description: String
+        }
+
+        class TourResponseModel {
+            + tourId: String
+            + name: String
+            + description: String
+        }
+
+        class TourController {
+            - tourService: TourService
+            + getAllTours() : Flux<TourResponseModel>
+            + getTourByTourId(tourId: String) : Mono<ResponseEntity<TourResponseModel>>
+            + addTour(tourRequestModel: TourRequestModel) : Mono<TourResponseModel>
+            + updateTour(tourId: String, tourRequestModel: TourRequestModel) : Mono<ResponseEntity<TourResponseModel>>
+            + deleteTourByTourId(tourId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toTourResponseModel(tour: Tour) : TourResponseModel
+            + toTourEntity(tourRequestModel: TourRequestModel) : Tour
+            + generateUUIDString() : String
+        }
+    }
+
+    TourServiceImpl -down-|> TourService
+    TourServiceImpl -down-> TourRepository
+    TourController -down-> TourService
+    TourController -down-> TourRequestModel
+    TourController -down-> TourResponseModel
+    TourServiceImpl -down-> Tour
+    TourServiceImpl -down-> TourRequestModel
+    TourServiceImpl -down-> TourResponseModel
+    EntityModelUtil -up-^ Tour
+    EntityModelUtil -up-^ TourRequestModel
+    EntityModelUtil -up-^ TourResponseModel
+    Tour -down-> TourEvents
+}
+
+' ***********************************************************************
+' COUNTRY SUBDOMAIN
+' ***********************************************************************
+package "countrysubdomain" {
+    package "businesslayer" {
+        interface CountryService {
+            + getAllCountries() : Flux<CountryResponseModel>
+            + getCountryById(countryId: String) : Mono<CountryResponseModel>
+            + addCountry(country: Country) : Mono<CountryResponseModel>
+            + updateCountry(countryId: String, countryRequestModel: CountryRequestModel) : Mono<CountryResponseModel>
+            + deleteCountry(countryId: String) : Mono<Void>
+        }
+
+        class CountryServiceImpl {
+            - countryRepository: CountryRepository
+            + getAllCountries() : Flux<CountryResponseModel>
+            + getCountryById(countryId: String) : Mono<CountryResponseModel>
+            + addCountry(country: Country) : Mono<CountryResponseModel>
+            + updateCountry(countryId: String, countryRequestModel: CountryRequestModel) : Mono<CountryResponseModel>
+            + deleteCountry(countryId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Country {
+            + id: String
+            + countryId: String
+            + name: String
+            + image: String
+        }
+
+        interface CountryRepository extends ReactiveMongoRepository {
+            + findCountryByCountryId(countryId: String) : Mono<Country>
+        }
+    }
+
+    package "presentationlayer" {
+        class CountryRequestModel {
+            + name: String
+            + image: String
+        }
+
+        class CountryResponseModel {
+            + countryId: String
+            + name: String
+            + image: String
+        }
+
+        class CountryController {
+            - countryService: CountryService
+            + getAllCountries() : Flux<CountryResponseModel>
+            + getCountryById(countryId: String) : Mono<ResponseEntity<CountryResponseModel>>
+            + addCountry(countryRequestModel: CountryRequestModel) : Mono<CountryResponseModel>
+            + updateCountry(countryId: String, countryRequestModel: CountryRequestModel) : Mono<ResponseEntity<CountryResponseModel>>
+            + deleteCountry(countryId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil_country {
+            + toCountryResponseModel(country: Country) : CountryResponseModel
+            + toCountryEntity(countryRequestModel: CountryRequestModel) : Country
+            + generateUUIDString() : String
+        }
+    }
+
+    CountryServiceImpl -down-|> CountryService
+    CountryServiceImpl -down-> CountryRepository
+    CountryController -down-> CountryService
+    CountryController -down-> CountryRequestModel
+    CountryController -down-> CountryResponseModel
+    CountryServiceImpl -down-> Country
+    CountryServiceImpl -down-> CountryRequestModel
+    CountryServiceImpl -down-> CountryResponseModel
+    EntityModelUtil_country -up-^ Country
+    EntityModelUtil_country -up-^ CountryRequestModel
+    EntityModelUtil_country -up-^ CountryResponseModel
+}
+
+' ***********************************************************************
+' CITY SUBDOMAIN
+' ***********************************************************************
+package "citysubdomain" {
+    package "businesslayer" {
+        interface CityService {
+            + addCity(cityRequestModel: CityRequestModel) : Mono<CityResponseModel>
+            + getCityById(cityId: String) : Mono<CityResponseModel>
+            + getAllCities() : Flux<CityResponseModel>
+            + updateCity(cityId: String, cityRequestModel: CityRequestModel) : Mono<CityResponseModel>
+            + deleteCityByCityId(cityId: String) : Mono<Void>
+        }
+
+        class CityServiceImpl {
+            - cityRepository: CityRepository
+            + addCity(cityRequestModel: CityRequestModel) : Mono<CityResponseModel>
+            + getCityById(cityId: String) : Mono<CityResponseModel>
+            + getAllCities() : Flux<CityResponseModel>
+            + updateCity(cityId: String, cityRequestModel: CityRequestModel) : Mono<CityResponseModel>
+            + deleteCityByCityId(cityId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class City {
+            + id: String
+            + cityId: String
+            + name: String
+            + countryId: String
+        }
+
+        interface CityRepository extends ReactiveMongoRepository {
+            + findCityByCityId(cityId: String) : Mono<City>
+            + findCityByCityIdAndCountryId(cityId: String, countryId: String) : Mono<City>
+            + findAllCitiesByCountryId(countryId: String) : Flux<City>
+        }
+    }
+
+    package "presentationlayer" {
+        class CityRequestModel {
+            + name: String
+            + countryId: String
+        }
+
+        class CityResponseModel {
+            + cityId: String
+            + name: String
+            + countryId: String
+        }
+
+        class CityController {
+            - cityService: CityService
+            + addCity(cityRequestModel: CityRequestModel) : Mono<CityResponseModel>
+            + getCityById(cityId: String) : Mono<ResponseEntity<CityResponseModel>>
+            + getAllCities() : Flux<CityResponseModel>
+            + updateCity(cityId: String, cityRequestModel: CityRequestModel) : Mono<ResponseEntity<CityResponseModel>>
+            + deleteCityByCityId(cityId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil_city {
+            + toCityResponseModel(city: City) : CityResponseModel
+            + toCityEntity(cityRequestModel: CityRequestModel) : City
+            + generateUUIDString() : String
+        }
+    }
+
+    CityServiceImpl -down-|> CityService
+    CityServiceImpl -down-> CityRepository
+    CityController -down-> CityService
+    CityController -down-> CityRequestModel
+    CityController -down-> CityResponseModel
+    CityServiceImpl -down-> City
+    CityServiceImpl -down-> CityRequestModel
+    CityServiceImpl -down-> CityResponseModel
+    EntityModelUtil_city -up-^ City
+    EntityModelUtil_city -up-^ CityRequestModel
+    EntityModelUtil_city -up-^ CityResponseModel
+}
+
+' ***********************************************************************
+' TOUREVENT SUBDOMAIN
+' ***********************************************************************
+package "toureventsubdomain" {
+    package "businesslayer" {
+        interface TourEventService {
+            + getAllTourEvents() : Flux<TourEventResponseModel>
+            + getTourEventsByTourId(tourId: String) : Flux<TourEventResponseModel>
+            + getTourEventByTourEventId(tourEventId: String) : Mono<TourEventResponseModel>
+            + addTourEvent(tourEvent: TourEvent) : Mono<TourEventResponseModel>
+            + updateTourEvent(tourEventId: String, request: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + deleteTourEvent(tourEventId: String) : Mono<Void>
+        }
+
+        class TourEventServiceImpl {
+            - tourEventRepository: TourEventRepository
+            + getAllTourEvents() : Flux<TourEventResponseModel>
+            + getTourEventsByTourId(tourId: String) : Flux<TourEventResponseModel>
+            + getTourEventByTourEventId(tourEventId: String) : Mono<TourEventResponseModel>
+            + addTourEvent(tourEvent: TourEvent) : Mono<TourEventResponseModel>
+            + updateTourEvent(tourEventId: String, request: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + deleteTourEvent(tourEventId: String) : Mono<Void>
+        }
+    }
+
+    package "datalayer" {
+        class TourEvent {
+            + id: String
+            + tourEventId: String
+            + seq: Integer
+            + seqDesc: String
+            + tourId: String
+            + eventId: String
+        }
+
+        interface TourEventRepository extends ReactiveMongoRepository {
+            + findAllByTourId(tourId: String) : Flux<TourEvent>
+            + findByTourEventId(tourEventId: String) : Mono<TourEvent>
+            + deleteByTourEventId(tourEventId: String) : Mono<Void>
+        }
+    }
+
+    package "presentationlayer" {
+        class TourEventRequestModel {
+            + seq: Integer
+            + seqDesc: String
+            + tourId: String
+            + eventId: String
+        }
+
+        class TourEventResponseModel {
+            + tourEventId: String
+            + seq: Integer
+            + seqDesc: String
+            + tourId: String
+            + eventId: String
+        }
+
+        class TourEventController {
+            - tourEventService: TourEventService
+            - tourEventRepository: TourEventRepository
+            + getAllTourEvents() : Flux<TourEventResponseModel>
+            + getTourEventsByTourId(tourId: String) : Flux<TourEventResponseModel>
+            + getTourEventByTourEventId(tourEventId: String) : Mono<ResponseEntity<TourEventResponseModel>>
+            + addTourEvent(request: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + updateTourEvent(tourEventId: String, request: TourEventRequestModel) : Mono<ResponseEntity<TourEventResponseModel>>
+            + deleteTourEvent(tourEventId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EventEntityModel_tourevent {
+            + toTourEventResponseModel(tourEvent: TourEvent) : TourEventResponseModel
+            + toTourEventEntity(request: TourEventRequestModel) : TourEvent
+            + generateUUIDString() : String
+        }
+    }
+
+    TourEventServiceImpl -down-|> TourEventService
+    TourEventServiceImpl -down-> TourEventRepository
+    TourEventController -down-> TourEventService
+    TourEventController -down-> TourEventRepository
+    TourEventController -down-> TourEventRequestModel
+    TourEventController -down-> TourEventResponseModel
+    EventEntityModel_tourevent -up-^ TourEvent
+}
+
+' ***********************************************************************
+' CROSS-DOMAIN DEPENDENCIES
+' These are not direct object relationships, but ID-based references:
+'
+' Event references City (cityId) and Country (countryId)
+eventsubdomain.dataaccesslayer.Event --> citysubdomain.dataaccesslayer.City : "cityId"
+eventsubdomain.dataaccesslayer.Event --> countrysubdomain.dataaccesslayer.Country : "countryId"
+
+' TourEvents references Events by 'events' field (likely event IDs)
+toursubdomain.dataaccesslayer.TourEvents --> eventsubdomain.dataaccesslayer.Event : "events"
+
+' TourEvent references Tour (tourId) and Event (eventId)
+toureventsubdomain.datalayer.TourEvent --> toursubdomain.dataaccesslayer.Tour : "tourId"
+toureventsubdomain.datalayer.TourEvent --> eventsubdomain.dataaccesslayer.Event : "eventId"
+
+' ***********************************************************************
+' Legend
+' ***********************************************************************
+legend
+|=Symbol=|=Meaning=|
+|-->|Dependency (ID-based reference)|
+|-| or -down->| Normal relationships as defined within subdomains|
+|^| Generalization|
+endlegend
+
+@enduml

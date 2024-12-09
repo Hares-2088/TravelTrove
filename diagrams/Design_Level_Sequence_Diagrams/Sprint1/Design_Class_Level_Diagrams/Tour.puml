@@ -1,0 +1,93 @@
+@startuml
+title Tour Subdomain Design Class Diagram
+
+package "toursubdomain" {
+
+    package "businesslayer" {
+        interface TourService {
+            + getTours() : Flux<TourResponseModel>
+            + getTourByTourId(tourId: String) : Mono<TourResponseModel>
+            + addTour(tour: Tour) : Mono<TourResponseModel>
+            + updateTour(tourId: String, tourRequestModel: TourRequestModel) : Mono<TourResponseModel>
+            + deleteTourByTourId(tourId: String) : Mono<Void>
+        }
+
+        class TourServiceImpl {
+            - tourRepository: TourRepository
+            + getTours() : Flux<TourResponseModel>
+            + getTourByTourId(tourId: String) : Mono<TourResponseModel>
+            + addTour(tour: Tour) : Mono<TourResponseModel>
+            + updateTour(tourId: String, tourRequestModel: TourRequestModel) : Mono<TourResponseModel>
+            + deleteTourByTourId(tourId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Tour {
+            + id: String
+            + tourId: String
+            + name: String
+            + description: String
+            + tourEvents: List<TourEvents>
+        }
+
+        class TourEvents {
+            + id: String
+            + seq: int
+            + seqDesc: String
+            + tourId: String
+            + events: String
+            + toursEventId: String
+        }
+
+        interface TourRepository extends ReactiveMongoRepository {
+            + findTourByTourId(tourId: String) : Mono<Tour>
+            + findAll() : Flux<Tour>
+        }
+    }
+
+    package "presentationlayer" {
+        class TourRequestModel {
+            + name: String
+            + description: String
+        }
+
+        class TourResponseModel {
+            + tourId: String
+            + name: String
+            + description: String
+        }
+
+        class TourController {
+            - tourService: TourService
+            + getAllTours() : Flux<TourResponseModel>
+            + getTourByTourId(tourId: String) : Mono<ResponseEntity<TourResponseModel>>
+            + addTour(tourRequestModel: TourRequestModel) : Mono<TourResponseModel>
+            + updateTour(tourId: String, tourRequestModel: TourRequestModel) : Mono<ResponseEntity<TourResponseModel>>
+            + deleteTourByTourId(tourId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toTourResponseModel(tour: Tour) : TourResponseModel
+            + toTourEntity(tourRequestModel: TourRequestModel) : Tour
+            + generateUUIDString() : String
+        }
+    }
+
+    TourServiceImpl -down-|> TourService : implements
+    TourServiceImpl -down-> TourRepository : uses
+    TourController -down-> TourService : uses
+    TourController -down-> TourRequestModel : uses
+    TourController -down-> TourResponseModel : uses
+    TourServiceImpl -down-> Tour : manipulates
+    TourServiceImpl -down-> TourRequestModel : uses
+    TourServiceImpl -down-> TourResponseModel : returns
+    EntityModelUtil -up-^ Tour : converts
+    EntityModelUtil -up-^ TourRequestModel : maps
+    EntityModelUtil -up-^ TourResponseModel : maps
+    Tour -down-> TourEvents : contains
+}
+
+@enduml
