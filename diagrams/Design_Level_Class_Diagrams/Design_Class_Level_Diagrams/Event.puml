@@ -1,0 +1,92 @@
+@startuml
+title Event Subdomain Design Class Diagram
+
+package "eventsubdomain" {
+
+    package "businesslayer" {
+        interface EventService {
+            + getEventByEventId(eventId: String) : Mono<EventResponseModel>
+            + getEvents(cityId: String, countryId: String) : Flux<EventResponseModel>
+            + createEvent(event: Mono<EventRequestModel>) : Mono<EventResponseModel>
+            + updateEvent(eventId: String, event: Mono<EventRequestModel>) : Mono<EventResponseModel>
+            + deleteEvent(eventId: String) : Mono<EventResponseModel>
+        }
+
+        class EventServiceImpl {
+            - eventRepository: EventRepository
+            + getEventByEventId(eventId: String) : Mono<EventResponseModel>
+            + getEvents(cityId: String, countryId: String) : Flux<EventResponseModel>
+            + createEvent(event: Mono<EventRequestModel>) : Mono<EventResponseModel>
+            + updateEvent(eventId: String, event: Mono<EventRequestModel>) : Mono<EventResponseModel>
+            + deleteEvent(eventId: String) : Mono<EventResponseModel>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Event {
+            + id: String
+            + eventId: String
+            + cityId: String
+            + countryId: String
+            + name: String
+            + description: String
+            + image: String
+        }
+
+        interface EventRepository extends ReactiveMongoRepository {
+            + findEventByEventId(eventId: String) : Mono<Event>
+            + findAllByCityId(cityId: String) : Flux<Event>
+            + findByCountryId(countryId: String) : Flux<Event>
+        }
+    }
+
+    package "presentationlayer" {
+        class EventRequestModel {
+            + cityId: String
+            + countryId: String
+            + name: String
+            + description: String
+            + image: String
+        }
+
+        class EventResponseModel {
+            + eventId: String
+            + cityId: String
+            + countryId: String
+            + name: String
+            + description: String
+            + image: String
+        }
+
+        class EventController {
+            - eventService: EventService
+            + getEvents(cityId: String, countryId: String) : Flux<EventResponseModel>
+            + getEventByEventId(eventId: String) : Mono<ResponseEntity<EventResponseModel>>
+            + createEvent(event: Mono<EventRequestModel>) : Mono<ResponseEntity<EventResponseModel>>
+            + updateEvent(eventId: String, event: Mono<EventRequestModel>) : Mono<ResponseEntity<EventResponseModel>>
+            + deleteEvent(eventId: String) : Mono<ResponseEntity<EventResponseModel>>
+        }
+    }
+
+    package "utils" {
+        class EventEntityModel {
+            + toEventResponseModel(event: Event) : EventResponseModel
+            + toEventEntity(eventRequestModel: EventRequestModel) : Event
+            + generateUUIDString() : String
+        }
+    }
+
+    EventServiceImpl -down-|> EventService : implements
+    EventServiceImpl -down-> EventRepository : uses
+    EventController -down-> EventService : uses
+    EventController -down-> EventRequestModel : uses
+    EventController -down-> EventResponseModel : uses
+    EventServiceImpl -down-> Event : manipulates
+    EventServiceImpl -down-> EventRequestModel : uses
+    EventServiceImpl -down-> EventResponseModel : returns
+    EventEntityModel -up-^ Event : converts
+    EventEntityModel -up-^ EventRequestModel : maps
+    EventEntityModel -up-^ EventResponseModel : maps
+}
+
+@enduml
