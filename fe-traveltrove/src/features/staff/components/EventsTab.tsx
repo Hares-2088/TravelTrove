@@ -6,10 +6,10 @@ import {
   addEvent,
   updateEvent,
   deleteEvent,
-} from "../../events/api/events.ts";
+} from "../../events/api/events";
 import { getAllCities } from "../../cities/api/cities.api";
 import { getAllCountries } from "../../countries/api/countries.api";
-import { EventResponseModel, EventRequestModel } from "../../events/model/models.ts";
+import { EventResponseModel, EventRequestModel } from "../../events/model/models";
 import "./EventsTab.css";
 
 const EventsTab: React.FC = () => {
@@ -99,7 +99,7 @@ const EventsTab: React.FC = () => {
         alert("Event description is required.");
         return;
       }
-  
+
       if (modalType === "create") {
         await addEvent(formData);
       } else if (modalType === "update" && selectedEvent) {
@@ -111,7 +111,7 @@ const EventsTab: React.FC = () => {
       console.error("Error saving event:", error);
     }
   };
-  
+
 
   const handleDelete = async () => {
     try {
@@ -144,9 +144,6 @@ const EventsTab: React.FC = () => {
           </Button>
           <h3>{viewingEvent.name}</h3>
           <p>
-            <strong>Event ID:</strong> {viewingEvent.eventId}
-          </p>
-          <p>
             <strong>Description:</strong> {viewingEvent.description}
           </p>
           <p>
@@ -160,13 +157,13 @@ const EventsTab: React.FC = () => {
             <Button
               variant="primary"
               onClick={() => {
-                setModalType("create");
+                setModalType('create');
                 setFormData({
-                  cityId: "",
-                  countryId: "",
-                  name: "",
-                  description: "",
-                  image: "",
+                  cityId: '',
+                  countryId: '',
+                  name: '',
+                  description: '',
+                  image: '',
                 });
                 setShowModal(true);
               }}
@@ -210,20 +207,24 @@ const EventsTab: React.FC = () => {
               </Form.Group>
             </Form>
           </div>
-
-          <Table bordered hover responsive className="rounded">
-            <thead className="bg-light">
+          <div className="events-scrollbar" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+            <Table bordered hover responsive className="rounded">
+              <thead className="bg-light">
               <tr>
                 <th>Name</th>
                 <th>Actions</th>
               </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
               {filteredEvents.map((event) => (
                 <tr key={event.eventId}>
                   <td
                     onClick={() => handleViewEvent(event.eventId)}
-                    style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+                    style={{
+                      cursor: 'pointer',
+                      color: '#007bff',
+                      textDecoration: 'underline',
+                    }}
                   >
                     {event.name}
                   </td>
@@ -232,7 +233,7 @@ const EventsTab: React.FC = () => {
                       variant="outline-primary"
                       onClick={() => {
                         setSelectedEvent(event);
-                        setModalType("update");
+                        setModalType('update');
                         setFormData({
                           cityId: event.cityId,
                           countryId: event.countryId,
@@ -250,7 +251,7 @@ const EventsTab: React.FC = () => {
                       className="ms-2"
                       onClick={() => {
                         setSelectedEvent(event);
-                        setModalType("delete");
+                        setModalType('delete');
                         setShowModal(true);
                       }}
                     >
@@ -259,19 +260,20 @@ const EventsTab: React.FC = () => {
                   </td>
                 </tr>
               ))}
-            </tbody>
-          </Table>
+              </tbody>
+            </Table>
+          </div>
         </>
       )}
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalType === "create" ? "Create Event" : "Edit Event"}
+            {modalType === 'create' ? 'Create Event' : 'Edit Event'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {modalType === "delete" ? (
+          {modalType === 'delete' ? (
             <p>Are you sure you want to delete this event?</p>
           ) : (
             <Form>

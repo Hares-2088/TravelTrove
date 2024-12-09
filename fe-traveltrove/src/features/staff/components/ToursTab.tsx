@@ -1,13 +1,8 @@
-import { useEffect, useState } from "react";
-import {
-  addTour,
-  deleteTour,
-  getAllTours,
-  getTourByTourId,
-  updateTour,
-} from "../../tours/api/tours.api";
-import { TourRequestModel, TourResponseModel } from "../../tours/models/Tour";
-import { Button, Table, Modal, Form } from "react-bootstrap";
+import { useEffect, useState } from 'react';
+import { addTour, deleteTour, getAllTours, getTourByTourId, updateTour } from '../../tours/api/tours.api';
+import { TourRequestModel, TourResponseModel } from '../../tours/models/Tour';
+import { Button, Form, Modal, Table } from 'react-bootstrap';
+import './ToursTab.css';
 
 const ToursTab: React.FC = () => {
   const [tours, setTours] = useState<TourResponseModel[]>([]);
@@ -57,8 +52,7 @@ const ToursTab: React.FC = () => {
     try {
       // Fetch the events for the selected tour. Replace with actual API call.
       const response = await fetch(`/api/tours/${tourId}/events`);
-      const data = await response.json();
-      return data;  // assuming the data is an array of events
+      return await response.json();  // assuming the data is an array of events
     } catch (error) {
       console.error("Error fetching events:", error);
       return [];
