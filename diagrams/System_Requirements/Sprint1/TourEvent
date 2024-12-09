@@ -1,0 +1,8 @@
+Business Rules:
+BR1: Each tour event must link a specific event to a tour.
+BR2: A tour event must specify the sequence or order of the event in the tour.
+BR3: A tour event must have a valid duration (start and end time).
+System Requirements:
+SYSREQ1: Establish a composite primary key in the TourEvent table combining tour_id and event_id.
+SYSREQ2: Add a field to store the order of events in the tour, with a unique constraint on order per tour.
+SYSREQ3: Implement a service-layer validation to ensure the start time and end time of the tour event are valid.
