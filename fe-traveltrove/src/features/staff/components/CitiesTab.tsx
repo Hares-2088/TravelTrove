@@ -33,7 +33,6 @@ const CitiesTab: React.FC = () => {
     null
   );
 
-  //error message for no input in the fields when creating and editing
   const [nameError, setNameError] = useState(false);
   const [countryError, setCountryError] = useState(false);
 
@@ -67,6 +66,11 @@ const CitiesTab: React.FC = () => {
     } catch (error) {
       console.error("Error fetching city details:", error);
     }
+  };
+
+  const getCountryName = (countryId: string) => {
+    const country = countries.find((country) => country.countryId === countryId);
+    return country ? country.name : "Unknown Country";
   };
 
   const handleSave = async () => {
@@ -103,7 +107,6 @@ const CitiesTab: React.FC = () => {
 
   return (
     <div>
-      {/* Viewing a Single City */}
       {viewingCity ? (
         <div>
           <Button
@@ -124,12 +127,11 @@ const CitiesTab: React.FC = () => {
             <strong>City ID:</strong> {viewingCity.cityId}
           </p>
           <p>
-            <strong>Country ID:</strong> {viewingCity.countryId}
+            <strong>Country:</strong> {getCountryName(viewingCity.countryId)}
           </p>
         </div>
       ) : (
         <>
-          {/* List of Cities */}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h3>Cities</h3>
             <Button
@@ -210,7 +212,6 @@ const CitiesTab: React.FC = () => {
         </>
       )}
 
-      {/* Modals for Create, Update, and Delete */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -234,7 +235,7 @@ const CitiesTab: React.FC = () => {
                   value={formData.name}
                   onChange={(e) => {
                     setFormData({ ...formData, name: e.target.value });
-                    setNameError(false); // error is removed when the user starts typing
+                    setNameError(false);
                   }}
                   isInvalid={nameError}
                 />
@@ -246,12 +247,10 @@ const CitiesTab: React.FC = () => {
                   value={formData.countryId}
                   onChange={(e) => {
                     setFormData({ ...formData, countryId: e.target.value });
-                    setCountryError(false); // error is removed when the user starts typing
+                    setCountryError(false);
                   }}
-                  isInvalid={nameError}
+                  isInvalid={countryError}
                 >
-                  <div className="invalid-feedback">City name is required.</div>
-
                   <option value="">Select a country</option>
                   {countries.map((country) => (
                     <option key={country.countryId} value={country.countryId}>
@@ -259,6 +258,9 @@ const CitiesTab: React.FC = () => {
                     </option>
                   ))}
                 </Form.Select>
+                <div className="invalid-feedback">
+                  A country selection is required.
+                </div>
               </Form.Group>
             </Form>
           )}
