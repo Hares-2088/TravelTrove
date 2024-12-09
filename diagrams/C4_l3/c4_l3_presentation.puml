@@ -35,10 +35,10 @@ Container_Boundary(spa, "Web Application (React)") {
     ' Center: pages and features aligned
     Container_Boundary(customer_pages_and_features, "Customer Pages and Features") {
         ' Main user pages and features
-        Component(TripsFeature, "Trips Feature", "React Module", "Manages trips browsing functionality", $tags = "feature", $sprite="react")
+        Component(ToursFeature, "Tours Feature", "React Module", "Manages tours browsing functionality", $tags = "feature", $sprite="react")
 
-        Component(TripsPage, "Trips Page", "React Component", "Displays available trips", $tags = "page", $sprite="react")
-        Component(TripDetailsPage, "Trip Details Page", "React Component", "Shows detailed trip information", $tags = "page", $sprite="react")
+        Component(ToursPage, "Tours Page", "React Component", "Displays available tours", $tags = "page", $sprite="react")
+        Component(TourDetailsPage, "Tour Details Page", "React Component", "Shows detailed tour information", $tags = "page", $sprite="react")
 
         Component(BookingPage, "Booking Page", "React Component", "Allows users to book trips", $tags = "page", $sprite="react")
         Component(BookingFeature, "Booking Feature", "React Module", "Handles trip booking operations", $tags = "feature", $sprite="react")
@@ -76,7 +76,7 @@ Container_Boundary(spa, "Web Application (React)") {
 
     ' Employee-specific pages and features
     Container_Boundary(employee_pages_and_features, "Employee Pages and Features") {
-        Component(TripManagementPage, "Trip Management Page", "React Component", "Allows employees to manage tour packages", $tags = "page", $sprite="react")
+        Component(TourManagementPage, "Tour Management Page", "React Component", "Allows employees to manage tour packages", $tags = "page", $sprite="react")
         Component(AddTourPackageFeature, "Add Tour Package Feature", "React Module", "Allows employees to add new tour packages", $tags = "feature", $sprite="react")
         Component(ModifyTourPackageFeature, "Modify Tour Package Feature", "React Module", "Enables editing of existing tour packages", $tags = "feature", $sprite="react")
 
@@ -100,8 +100,8 @@ System_Boundary(api, "Dar El Salam API") {
 ' Relationships
 Rel(IndexHTML, AppNavBar, "Loads the initial page")
 
-Rel(UserContext, TripsPage, "Provides user context to")
-Rel(UserContext, TripDetailsPage, "Provides user context to")
+Rel(UserContext, ToursPage, "Provides user context to")
+Rel(UserContext, TourDetailsPage, "Provides user context to")
 Rel(UserContext, BookingPage, "Provides user context to")
 Rel(UserContext, UserProfilePage, "Provides user context to")
 Rel(UserContext, ReservationPage, "Provides user context to")
@@ -109,14 +109,14 @@ Rel(UserContext, PaymentPage, "Provides user context to")
 Rel(UserContext, AdminDashboardPage, "Provides user context to")
 Rel(UserContext, EmployeeListPage, "Provides user context to")
 Rel(UserContext, EmployeeDetailsPage, "Provides user context to")
-Rel(UserContext, TripManagementPage, "Provides user context to")
+Rel(UserContext, TourManagementPage, "Provides user context to")
 Rel(UserContext, CustomNotificationPage, "Provides user context to")
 Rel(UserContext, ReviewPage, "Provides user context to")
 
 Rel(UserContext, HomePage, "Provides user context to")
 
 
-Rel(TripsFeature, AxiosInstance, "Fetches data using", "HTTP")
+Rel(ToursFeature, AxiosInstance, "Fetches data using", "HTTP")
 Rel(BookingFeature, AxiosInstance, "Submits booking data via", "HTTP")
 Rel(ProfileFeature, AxiosInstance, "Fetches/Updates user data using", "HTTP")
 Rel(ReservationFeature, AxiosInstance, "Fetches reservation data using", "HTTP")
@@ -139,10 +139,10 @@ Rel(AxiosInstance, BackendService, "Sends HTTP requests to")
 Rel(AppNavBar, Router, "Uses to handle navigation")
 
 ' Page to Feature relationships
-Rel(TripsPage, TripsFeature, "Uses")
-Rel(TripDetailsPage, TripsFeature, "Uses")
-Rel(HomePage, TripsFeature, "Uses")
-Rel(ReviewPage, TripsFeature, "Uses")
+Rel(ToursPage, ToursFeature, "Uses")
+Rel(TourDetailsPage, ToursFeature, "Uses")
+Rel(HomePage, ToursFeature, "Uses")
+Rel(ReviewPage, ToursFeature, "Uses")
 Rel(ReviewPage, AddReviewFeature, "Uses")
 Rel(UserProfilePage, EmailingFeature, "Uses")
 
@@ -160,8 +160,8 @@ Rel(ReportsPage, GenerateReportFeature, "Uses")
 Rel(EmployeeListPage, AddEmployeeFeature, "Uses")
 
 Rel(CustomNotificationPage, CustomEmailNotificationFeature, "Uses")
-Rel(TripManagementPage, AddTourPackageFeature, "Uses")
-Rel(TripManagementPage, ModifyTourPackageFeature, "Uses")
+Rel(TourManagementPage, AddTourPackageFeature, "Uses")
+Rel(TourManagementPage, ModifyTourPackageFeature, "Uses")
 
 Person(customer, "Customer", "Customer of the travel agency")
 Person(employee, "Employee", "Employee of the travel agency")
