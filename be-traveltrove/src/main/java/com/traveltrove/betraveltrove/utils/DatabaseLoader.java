@@ -7,8 +7,6 @@ import com.traveltrove.betraveltrove.dataaccess.country.CountryRepository;
 import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
-import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
-import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -259,120 +257,110 @@ public class DatabaseLoader {
                 );
     }
 
-    private final TourEventRepository tourEventRepository;
-
-    @PostConstruct
-    public void loadTourEvents() {
-        List<TourEvent> sampleTourEvents = List.of(
-                // Grand American Adventure
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("186645b4-df8a-45ec-ab45-12ed29dc6e74")
-                        .seq(1)
-                        .seqDesc("Start at New York Summer Carnival")
-                        .tourId("7f54a45d-8c1d-432f-a5c8-1f93b89bfe29")
-                        .eventId("91c940b1-24e8-463f-96ef-f54f7e4aaf1d")
-                        .build(),
-
-                // Canadian Rockies Expedition
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("29f363c7-af51-44ea-b33f-9e54a864e070")
-                        .seq(1)
-                        .seqDesc("Explore Toronto's Winter Lights Festival")
-                        .tourId("90af5e42-b8a7-4b59-939f-8fa2c4e384d1")
-                        .eventId("87b3b478-031c-49d2-b64e-b54a49578d8c")
-                        .build(),
-
-                // Parisian Art & Culture Tour
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("ae2fef94-8eaa-49e3-8b50-66b1385f7901")
-                        .seq(1)
-                        .seqDesc("Visit Paris Fashion Week")
-                        .tourId("f1f4ac8e-4e24-4bb3-97d3-e5b7b5b7f912")
-                        .eventId("e48b9f26-fec7-4ce0-8f98-010ee0e6bd6c")
-                        .build(),
-
-                // German Castle Escape
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("e4c78c16-f2ee-4f80-b6a8-ac720fac5655")
-                        .seq(1)
-                        .seqDesc("Attend Berlin Tech Conference")
-                        .tourId("83e6f7ba-0567-426a-b43f-456f947c576b")
-                        .eventId("7a92bd77-c6e4-4f27-9bbe-a5dad2761950")
-                        .build(),
-
-                // Italian Culinary Retreat
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("bd48cf86-f8f9-43ff-b53e-1c6735eeacec")
-                        .seq(1)
-                        .seqDesc("Enjoy Rome Food & Wine Festival")
-                        .tourId("d12a7bf7-dc94-4953-9189-68f6a70f7844")
-                        .eventId("44475ce1-6358-4d2f-a497-4ca3032c495c")
-                        .build(),
-
-                // Japan Cherry Blossom Tour
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("f0316294-d585-43af-9bfe-5e4b5a6ed9ba")
-                        .seq(1)
-                        .seqDesc("Join Tokyo Cherry Blossom Festival")
-                        .tourId("7e14cb83-3e2a-41c6-b26f-09ebd62a5e39")
-                        .eventId("3ea4a674-3463-4fa2-a3cf-d882485963b6")
-                        .build(),
-
-                // Brazilian Amazon Adventure
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("27f9e6d1-d8be-4d45-a883-2b630515da68")
-                        .seq(1)
-                        .seqDesc("Experience Rio Carnival")
-                        .tourId("42cf8561-6f83-4f2f-becb-e3c72a1bb572")
-                        .eventId("528398a9-91a1-4833-bdd1-d88b732b9be6")
-                        .build(),
-
-                // Australian Outback Expedition
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("b1edc308-82bb-4f81-90b8-82eca8d71c7b")
-                        .seq(1)
-                        .seqDesc("Enjoy Sydney Fireworks")
-                        .tourId("f4a9c2ef-8473-4b67-b527-44fcb3a6eec5")
-                        .eventId("72927c9c-750f-4b37-9799-16d3b7a59725")
-                        .build(),
-
-                // Indian Heritage Journey
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("820b4a93-5d6f-45e7-a581-9c6633af9e62")
-                        .seq(1)
-                        .seqDesc("Attend Mumbai Film Festival")
-                        .tourId("7b82cb14-2ff5-4d8f-b84c-3bfb7b6cda1e")
-                        .eventId("82c07322-37da-4635-bcae-3ae241036cf8")
-                        .build(),
-
-                // Chinese Silk Road Adventure
-                TourEvent.builder()
-                        .Id(null)
-                        .tourEventId("6f74b73f-1681-402f-931f-9126a6bc4523")
-                        .seq(1)
-                        .seqDesc("Experience Beijing Dragon Boat Festival")
-                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
-                        .eventId("4e5bf569-27cb-494b-b7e5-9f9bf0ca66fe")
-                        .build()
-        );
-
-        tourEventRepository.deleteAll()
-                .thenMany(Flux.fromIterable(sampleTourEvents))
-                .flatMap(tourEventRepository::save)
-                .doOnNext(event -> log.info("Preloaded tour event: {}", event))
-                .subscribe(
-                        success -> log.info("Tour events preloaded successfully."),
-                        error -> log.error("Error preloading tour events: {}", error.getMessage())
-                );
-    }
+//    private final TourEventsRepository tourEventRepository;
+//
+//    @PostConstruct
+//    public void loadTourEvents() {
+//        List<TourEvents> sampleTourEvents = List.of(
+//                // Grand American Adventure
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Start at New York Summer Carnival")
+//                        .tourId("7f54a45d-8c1d-432f-a5c8-1f93b89bfe29")
+//                        .eventId("91c940b1-24e8-463f-96ef-f54f7e4aaf1d")
+//                        .build(),
+//
+//                // Canadian Rockies Expedition
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Explore Toronto's Winter Lights Festival")
+//                        .tourId("90af5e42-b8a7-4b59-939f-8fa2c4e384d1")
+//                        .eventId("87b3b478-031c-49d2-b64e-b54a49578d8c")
+//                        .build(),
+//
+//                // Parisian Art & Culture Tour
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Visit Paris Fashion Week")
+//                        .tourId("f1f4ac8e-4e24-4bb3-97d3-e5b7b5b7f912")
+//                        .eventId("e48b9f26-fec7-4ce0-8f98-010ee0e6bd6c")
+//                        .build(),
+//
+//                // German Castle Escape
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Attend Berlin Tech Conference")
+//                        .tourId("83e6f7ba-0567-426a-b43f-456f947c576b")
+//                        .eventId("7a92bd77-c6e4-4f27-9bbe-a5dad2761950")
+//                        .build(),
+//
+//                // Italian Culinary Retreat
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Enjoy Rome Food & Wine Festival")
+//                        .tourId("d12a7bf7-dc94-4953-9189-68f6a70f7844")
+//                        .eventId("44475ce1-6358-4d2f-a497-4ca3032c495c")
+//                        .build(),
+//
+//                // Japan Cherry Blossom Tour
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Join Tokyo Cherry Blossom Festival")
+//                        .tourId("7e14cb83-3e2a-41c6-b26f-09ebd62a5e39")
+//                        .eventId("3ea4a674-3463-4fa2-a3cf-d882485963b6")
+//                        .build(),
+//
+//                // Brazilian Amazon Adventure
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Experience Rio Carnival")
+//                        .tourId("42cf8561-6f83-4f2f-becb-e3c72a1bb572")
+//                        .eventId("528398a9-91a1-4833-bdd1-d88b732b9be6")
+//                        .build(),
+//
+//                // Australian Outback Expedition
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Enjoy Sydney Fireworks")
+//                        .tourId("f4a9c2ef-8473-4b67-b527-44fcb3a6eec5")
+//                        .eventId("72927c9c-750f-4b37-9799-16d3b7a59725")
+//                        .build(),
+//
+//                // Indian Heritage Journey
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Attend Mumbai Film Festival")
+//                        .tourId("7b82cb14-2ff5-4d8f-b84c-3bfb7b6cda1e")
+//                        .eventId("82c07322-37da-4635-bcae-3ae241036cf8")
+//                        .build(),
+//
+//                // Chinese Silk Road Adventure
+//                TourEvents.builder()
+//                        .Id(null)
+//                        .seq(1)
+//                        .seqDesc("Experience Beijing Dragon Boat Festival")
+//                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
+//                        .eventId("4e5bf569-27cb-494b-b7e5-9f9bf0ca66fe")
+//                        .build()
+//        );
+//
+//        tourEventRepository.deleteAll()
+//                .thenMany(Flux.fromIterable(sampleTourEvents))
+//                .flatMap(tourEventRepository::save)
+//                .doOnNext(event -> log.info("Preloaded tour event: {}", event))
+//                .subscribe(
+//                        success -> log.info("Tour events preloaded successfully."),
+//                        error -> log.error("Error preloading tour events: {}", error.getMessage())
+//                );
+//    }
 
 }
