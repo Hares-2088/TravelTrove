@@ -1,0 +1,81 @@
+@startuml
+title Country Subdomain Design Class Diagram
+
+package "countrysubdomain" {
+
+    package "businesslayer" {
+        interface CountryService {
+            + getAllCountries() : Flux<CountryResponseModel>
+            + getCountryById(countryId: String) : Mono<CountryResponseModel>
+            + addCountry(country: Country) : Mono<CountryResponseModel>
+            + updateCountry(countryId: String, countryRequestModel: CountryRequestModel) : Mono<CountryResponseModel>
+            + deleteCountry(countryId: String) : Mono<Void>
+        }
+
+        class CountryServiceImpl {
+            - countryRepository: CountryRepository
+            + getAllCountries() : Flux<CountryResponseModel>
+            + getCountryById(countryId: String) : Mono<CountryResponseModel>
+            + addCountry(country: Country) : Mono<CountryResponseModel>
+            + updateCountry(countryId: String, countryRequestModel: CountryRequestModel) : Mono<CountryResponseModel>
+            + deleteCountry(countryId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Country {
+            - id: String
+            - countryId: String
+            - name: String
+            - image: String
+        }
+
+        interface CountryRepository extends ReactiveMongoRepository {
+            + findCountryByCountryId(countryId: String) : Mono<Country>
+        }
+    }
+
+    package "presentationlayer" {
+        class CountryRequestModel {
+            - name: String
+            - image: String
+        }
+
+        class CountryResponseModel {
+            - countryId: String
+            - name: String
+            - image: String
+        }
+
+        class CountryController {
+            - countryService: CountryService
+            + getAllCountries() : Flux<CountryResponseModel>
+            + getCountryById(countryId: String) : Mono<ResponseEntity<CountryResponseModel>>
+            + addCountry(countryRequestModel: CountryRequestModel) : Mono<CountryResponseModel>
+            + updateCountry(countryId: String, countryRequestModel: CountryRequestModel) : Mono<ResponseEntity<CountryResponseModel>>
+            + deleteCountry(countryId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toCountryResponseModel(country: Country) : CountryResponseModel
+            + toCountryEntity(countryRequestModel: CountryRequestModel) : Country
+            + generateUUIDString() : String
+        }
+    }
+
+    CountryServiceImpl -down-|> CountryService : implements
+    CountryServiceImpl -down-> CountryRepository : uses
+    CountryController -down-> CountryService : uses
+    CountryController -down-> CountryRequestModel : uses
+    CountryController -down-> CountryResponseModel : uses
+    CountryServiceImpl -down-> Country : manipulates
+    CountryServiceImpl -down-> CountryRequestModel : uses
+    CountryServiceImpl -down-> CountryResponseModel : returns
+    EntityModelUtil -up-^ Country : converts
+    EntityModelUtil -up-^ CountryRequestModel : maps
+    EntityModelUtil -up-^ CountryResponseModel : maps
+}
+
+@enduml

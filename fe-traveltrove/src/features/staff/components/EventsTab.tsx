@@ -6,11 +6,11 @@ import {
   addEvent,
   updateEvent,
   deleteEvent,
-} from "../../events/api/events";
+} from "../../events/api/events.api";
 import { getAllCities } from "../../cities/api/cities.api";
 import { getAllCountries } from "../../countries/api/countries.api";
 import { EventResponseModel, EventRequestModel } from "../../events/model/models";
-import "./EventsTab.css";
+import "../../../shared/css/Scrollbar.css";
 
 const EventsTab: React.FC = () => {
   const [events, setEvents] = useState<EventResponseModel[]>([]);
@@ -208,7 +208,7 @@ const EventsTab: React.FC = () => {
             </Form>
           </div> */}
 
-          <div className="events-scrollbar" style={{ maxHeight: "500px", overflowY: "auto" }}>
+          <div className="dashboard-scrollbar" style={{ maxHeight: "700px", overflowY: "auto" }}>
             <Table bordered hover responsive className="rounded">
               <thead className="bg-light">
                 <tr>
