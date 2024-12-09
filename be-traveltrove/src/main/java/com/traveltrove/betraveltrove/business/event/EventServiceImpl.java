@@ -63,35 +63,7 @@ public class EventServiceImpl implements EventService {
     }
 
 
-<<<<<<< HEAD
-    @Override
-    public Mono<EventResponseModel> updateEvent(String eventId, Mono<EventRequestModel> eventRequestModel) {
-        return eventRepository.findEventByEventId(eventId)
-                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Event id not found: " + eventId))))
-                .flatMap(foundEvent -> eventRequestModel
-                        .switchIfEmpty(Mono.defer(() -> Mono.error(new InvalidInputException("Event request model is empty"))))
-                        .flatMap(requestModel -> {
-                            if (requestModel.getName() == null || requestModel.getName().isBlank()) {
-                                return Mono.error(new InvalidInputException("Event name is required"));
-                            }
-                            if (requestModel.getDescription() == null || requestModel.getDescription().isBlank()) {
-                                return Mono.error(new InvalidInputException("Event description is required"));
-                            }
-                            if (requestModel.getCityId() == null || requestModel.getCityId().isBlank()) {
-                                return Mono.error(new InvalidInputException("City ID is required"));
-                            }
-                            if (requestModel.getCountryId() == null || requestModel.getCountryId().isBlank()) {
-                                return Mono.error(new InvalidInputException("Country ID is required"));
-                            }
-                            return Mono.just(EventEntityModel.toEventEntity(requestModel))
-                                    .doOnNext(event -> event.setEventId(foundEvent.getEventId()))
-                                    .doOnNext(event -> event.setId(foundEvent.getId()));
-                        }))
-                .flatMap(eventRepository::save)
-                .map(EventEntityModel::toEventResponseModel);
-    }
-=======
-@Override
+
 public Mono<EventResponseModel> updateEvent(String eventId, Mono<EventRequestModel> eventRequestModel) {
     return eventRepository.findEventByEventId(eventId)
             .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Event id not found: " + eventId))))
@@ -117,7 +89,7 @@ public Mono<EventResponseModel> updateEvent(String eventId, Mono<EventRequestMod
             .flatMap(eventRepository::save)
             .map(EventEntityModel::toEventResponseModel);
 }
->>>>>>> f576ce1a2f8d1ab68f7872032570f00efd806719
+
 
     @Override
     public Mono<EventResponseModel> deleteEvent(String eventId) {

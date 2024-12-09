@@ -179,8 +179,8 @@ class EventServiceUnitTest {
         when(eventRepository.findEventByEventId(eventId))
                 .thenReturn(Mono.just(event1));
 
-        when(eventRepository.save(any(Event.class)))
-                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+        when(eventRepository.save(event1))
+                .thenReturn(Mono.just(event1));
 
         Mono<EventResponseModel> result = eventService.updateEvent(eventId, Mono.just(eventRequestModel));
 

@@ -43,7 +43,7 @@ public class EventController {
     public Mono<ResponseEntity<EventResponseModel>> createEvent(@RequestBody Mono<EventRequestModel> eventRequestModel) {
         log.info("Creating new event");
         return eventService.createEvent(eventRequestModel)
-                .map(eventResponseModel -> ResponseEntity.status(201).body(eventResponseModel))
+                .map(ResponseEntity::ok)
                 .switchIfEmpty(Mono.just(ResponseEntity.badRequest().build()));
     }
 
