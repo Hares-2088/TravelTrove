@@ -5,7 +5,7 @@ import {
   addTourEvent,
   updateTourEvent,
   deleteTourEvent
-} from '../../tourEvents/api/tourevent.api.ts';
+} from "../../tourevents/api/tourevent.api";
 import { getAllEvents } from '../../events/api/events.api';
 import { TourEventRequestModel, TourEventResponseModel } from '../../tourevents/model/tourevents.model';
 import "../../../shared/css/Scrollbar.css";
