@@ -1,0 +1,62 @@
+@startuml
+title Customer Account Creation Sequence Diagram
+
+actor Customer as "<<Actor>>\nNot Registered Customer"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant RegistrationPage as "<<View>>\nRegistrationPage"
+participant UserController as "<<Controller>>\nUserController"
+participant UserService as "<<Service>>\nUserService"
+participant UserEntity as "<<Entity>>\nUserEntity"
+participant UserRepository as "<<Repository>>\nUserRepository"
+participant Database as "<<Database>>"
+participant UserRequestModel as "<<Model>>\nUserRequestModel"
+participant UserResponseModel as "<<Model>>\nUserResponseModel"
+
+Customer -> ReactApplication : Access Registration Page
+activate ReactApplication
+
+ReactApplication -> RegistrationPage : render()
+activate RegistrationPage
+deactivate ReactApplication
+
+RegistrationPage --> Customer : Display registration form
+
+Customer -> RegistrationPage : Fill form and submit
+RegistrationPage -> UserController : POST /api/v1/users/register
+activate UserController
+
+UserController -> UserRequestModel : Create request model from form data
+activate UserRequestModel
+UserRequestModel -> UserService : createUser(userRequestModel)
+deactivate UserRequestModel
+activate UserService
+
+UserService -> UserEntity : Instantiate entity from request model
+activate UserEntity
+UserEntity --> UserService : Entity created
+deactivate UserEntity
+
+UserService -> UserRepository : save(userEntity)
+activate UserRepository
+UserRepository -> Database : INSERT INTO users
+activate Database
+Database --> UserRepository : Success
+deactivate Database
+UserRepository --> UserService : Saved user entity
+deactivate UserRepository
+
+UserService -> UserResponseModel : Map saved entity to response model
+activate UserResponseModel
+UserResponseModel --> UserService : Response model ready
+deactivate UserResponseModel
+
+UserService --> UserController : UserResponseModel
+deactivate UserService
+
+UserController --> RegistrationPage : Account creation success message
+deactivate UserController
+
+RegistrationPage --> Customer : Account created successfully
+
+@enduml
