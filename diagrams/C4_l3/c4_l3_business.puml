@@ -1,218 +1,209 @@
 @startuml
-hide circle
-left to right direction
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
-!define ENTITY(entityName) class entityName << Entity >>
-!define AGGREGATE(aggregateName) class aggregateName << Aggregate >>
-!define AGGREGATE_ROOT(aggregateRootName) class aggregateRootName << Aggregate Root >>
-!define AGGREGATE_ROOT_ENTITY(aggregateRootEntityName) class aggregateRootEntityName << Aggregate Root >> << Entity >>
-!define VALUE_OBJECT(valueObjectName) class valueObjectName << Value Object >>
-!define CONTROLLER(controllerName) class controllerName << Controller >>
-!define SERVICE(serviceName) class serviceName << Service >>
-!define REPOSITORY(repositoryName) class repositoryName << Repository >>
+AddElementTag("storage", $shape = CylinderShape(), $bgColor="lightSkyBlue", $fontColor="white")
 
-!pragma useVerticalIf on
-skinparam dpi 350
-skinparam packageStyle rectangle
-skinparam rectangle {
-    BackgroundColor #f7f4eb
-    BorderColor Black
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!include DEVICONS/mongodb.puml
+!include DEVICONS/react.puml
+!include DEVICONS/java.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include FONTAWESOME/amazon.puml
+!include FONTAWESOME/stripe.puml
+!include FONTAWESOME/google.puml
+
+LAYOUT_LEFT_RIGHT()
+
+title Component Diagram for API Application Container - Dar El Salam Travel
+
+Person(customer, "Customer", "Customer of the travel agency")
+Person(employee, "Employee", "Employee of the travel agency")
+Person(admin, "Admin", "Admin of the travel agency")
+
+Container_Boundary(api_app, "API Application") {
+    Container_Boundary(controllers, "Controllers") {
+        Component(EventController, "Event Controller", "Spring REST Controller", "Handles HTTP requests related to events", $sprite="java")
+        Component(CityController, "City Controller", "Spring REST Controller", "Handles HTTP requests related to cities", $sprite="java")
+        Component(CountryController, "Country Controller", "Spring REST Controller", "Handles HTTP requests related to countries", $sprite="java")
+        Component(AirportController, "Airport Controller", "Spring REST Controller", "Handles HTTP requests related to airports", $sprite="java")
+        Component(HotelController, "Hotel Controller", "Spring REST Controller", "Handles HTTP requests related to hotels", $sprite="java")
+        Component(UserController, "User Controller", "Spring REST Controller", "Handles HTTP requests related to users", $sprite="java")
+        Component(BookingController, "Booking Controller", "Spring REST Controller", "Handles HTTP requests related to bookings", $sprite="java")
+        Component(TourPackageController, "Tour Package Controller", "Spring REST Controller", "Handles HTTP requests related to tour packages", $sprite="java")
+        Component(AirportController, "Airport Controller", "Spring REST Controller", "Handles HTTP requests related to airports", $sprite="java")
+        Component(HotelController, "Hotel Controller", "Spring REST Controller", "Handles HTTP requests related to hotels", $sprite="java")
+        Component(TourEventController, "Tour Event Controller", "Spring REST Controller", "Handles HTTP requests related to tour events", $sprite="java")
+        Component(BookingController, "Booking Controller", "Spring REST Controller", "Handles HTTP requests related to bookings", $sprite="java")
+        Component(PaymentController, "Payment Controller", "Spring REST Controller", "Handles HTTP requests related to payments", $sprite="java")
+        Component(NotificationController, "Notification Controller", "Spring REST Controller", "Handles HTTP requests related to notifications", $sprite="java")
+        Component(TourController, "Tour Controller", "Spring REST Controller", "Handles HTTP requests related to tours", $sprite="java")
+        Component(CustomerController, "Customer Controller", "Spring REST Controller", "Handles HTTP requests related to customers", $sprite="java")
+        Component(ReservationController, "Reservation Controller", "Spring REST Controller", "Handles HTTP requests related to reservations", $sprite="java")
+        Component(StaffController, "Staff Controller", "Spring REST Controller", "Handles HTTP requests related to staff", $sprite="java")
+        Component(AuthenticationController, "Authentication Controller", "Spring REST Controller", "Handles HTTP requests related to authentication", $sprite="java")
+    }
+
+    Container_Boundary(services, "Services") {
+        Component(EventService, "Event Service", "Spring Service", "Contains business logic for event-related operations", $sprite="java")
+        Component(CityService, "City Service", "Spring Service", "Contains business logic for city-related operations", $sprite="java")
+        Component(CountryService, "Country Service", "Spring Service", "Contains business logic for country-related operations", $sprite="java")
+        Component(AirportService, "Airport Service", "Spring Service", "Contains business logic for airport-related operations", $sprite="java")
+        Component(HotelService, "Hotel Service", "Spring Service", "Contains business logic for hotel-related operations", $sprite="java")
+        Component(UserService, "User Service", "Spring Service", "Contains business logic for user-related operations", $sprite="java")
+        Component(TourEventService, "Tour Event Service", "Spring Service", "Contains business logic for tour event-related operations", $sprite="java")
+        Component(BookingService, "Booking Service", "Spring Service", "Contains business logic for booking-related operations", $sprite="java")
+        Component(TourPackageService, "Tour Package Service", "Spring Service", "Contains business logic for tour package-related operations", $sprite="java")
+        Component(TourService, "Tour Service", "Spring Service", "Contains business logic for tour-related operations", $sprite="java")
+        Component(PaymentService, "Payment Service", "Spring Service", "Contains business logic for payment-related operations", $sprite="java")
+        Component(NotificationService, "Notification Service", "Spring Service", "Contains business logic for sending notifications", $sprite="java")
+        Component(StaffService, "Staff Service", "Spring Service", "Contains business logic for staff management operations", $sprite="java")
+        Component(AuthenticationService, "Authentication Service", "Spring Service", "Handles user authentication and authorization", $sprite="java")
+        Component(ReservationService, "Reservation Service", "Spring Service", "Contains business logic for reservation-related operations", $sprite="java")
+        Component(CustomerService, "Customer Service", "Spring Service", "Contains business logic for customer-related operations", $sprite="java")
+
+    }
+
+    Container_Boundary(repositories, "Repositories") {
+        Component(EventRepo, "Event Repository", "MongoDB Repository", "Handles persistence of event data", $sprite="java")
+        Component(CityRepo, "City Repository", "MongoDB Repository", "Handles persistence of city data", $sprite="java")
+        Component(CountryRepo, "Country Repository", "MongoDB Repository", "Handles persistence of country data", $sprite="java")
+        Component(AirportRepo, "Airport Repository", "MongoDB Repository", "Handles persistence of airport data", $sprite="java")
+        Component(HotelRepo, "Hotel Repository", "MongoDB Repository", "Handles persistence of hotel data", $sprite="java")
+        Component(UserRepo, "User Repository", "MongoDB Repository", "Handles persistence of user data", $sprite="java")
+        Component(TourEventRepo, "Tour Event Repository", "MongoDB Repository", "Handles persistence of tour event data", $sprite="java")
+        Component(BookingRepo, "Booking Repository", "MongoDB Repository", "Handles persistence of booking data", $sprite="java")
+        Component(TourPackageRepo, "Tour Package Repository", "MongoDB Repository", "Handles persistence of tour package data", $sprite="java")
+        Component(PaymentRepo, "Payment Repository", "MongoDB Repository", "Handles persistence of payment data", $sprite="java")
+        Component(NotificationRepo, "Notification Repository", "MongoDB Repository", "Handles persistence of notification data", $sprite="java")
+        Component(StaffRepo, "Staff Repository", "MongoDB Repository", "Handles persistence of staff data", $sprite="java")
+        Component(AuthenticationRepo, "Authentication Repository", "MongoDB Repository", "Handles persistence of authentication data", $sprite="java")
+        Component(ReservationRepo, "Reservation Repository", "MongoDB Repository", "Handles persistence of reservation data", $sprite="java")
+        Component(CustomerRepo, "Customer Repository", "MongoDB Repository", "Handles persistence of customer data", $sprite="java")
+        Component(TourRepo, "Tour Repository", "MongoDB Repository", "Handles persistence of tour data", $sprite="java")
+   }
+
+    Rel(CustomerController, CustomerService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(TourController, TourService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(ReservationController, ReservationService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(NotificationController, NotificationService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(PaymentController, PaymentService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(StaffController, StaffService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(AuthenticationController, AuthenticationService, "Receives HTTP requests and forwards to", "REST API")
+
+    Rel(EventController, EventService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(CityController, CityService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(CountryController, CountryService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(AirportController, AirportService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(HotelController, HotelService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(UserController, UserService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(TourEventController, TourEventService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(BookingController, BookingService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(TourPackageController, TourPackageService, "Receives HTTP requests and forwards to", "REST API")
+
+
+    Rel(CustomerService, CustomerRepo, "Uses to read/write customer data", "MongoDB Queries")
+    Rel(TourService, TourRepo, "Uses to read/write tour data", "MongoDB Queries")
+    Rel(ReservationService, ReservationRepo, "Uses to read/write reservation data", "MongoDB Queries")
+    Rel(NotificationService, NotificationRepo, "Uses to store notification records", "MongoDB Queries")
+    Rel(PaymentService, PaymentRepo, "Uses to store payment records", "MongoDB Queries")
+    Rel(StaffService, StaffRepo, "Uses to read/write staff data", "MongoDB Queries")
+    Rel(AuthenticationService, AuthenticationRepo, "Uses to manage user data (credentials, roles)", "MongoDB Queries")
+    Rel(PaymentService, PaymentRepo, "Uses to store payment records", "MongoDB Queries")
+    Rel(NotificationService, NotificationRepo, "Uses to store notification records", "MongoDB Queries")
+    Rel(StaffService, StaffRepo, "Uses to read/write staff data", "MongoDB Queries")
+    Rel(AuthenticationService, AuthenticationRepo, "Uses to manage user data (credentials, roles)", "MongoDB Queries")
+    Rel(ReservationService, ReservationRepo, "Uses to read/write reservation data", "MongoDB Queries")
+    Rel(CustomerService, CustomerRepo, "Uses to read/write customer data", "MongoDB Queries")
+    Rel(TourService, TourRepo, "Uses to read/write tour data", "MongoDB Queries")
+    Rel(EventService, EventRepo, "Uses to read/write event data", "MongoDB Queries")
+    Rel(CityService, CityRepo, "Uses to read/write city data", "MongoDB Queries")
+    Rel(CountryService, CountryRepo, "Uses to read/write country data", "MongoDB Queries")
+    Rel(AirportService, AirportRepo, "Uses to read/write airport data", "MongoDB Queries")
+    Rel(HotelService, HotelRepo, "Uses to read/write hotel data", "MongoDB Queries")
+    Rel(TourEventService, TourEventRepo, "Uses to read/write tour event data", "MongoDB Queries")
+    Rel(BookingService, BookingRepo, "Uses to read/write booking data", "MongoDB Queries")
+    Rel(TourPackageService, TourPackageRepo, "Uses to read/write tour package data", "MongoDB Queries")
+
+
+    Rel(ReservationService, CustomerService, "Fetches customer data for reservation creation", "HTTP API")
+    Rel(ReservationService, TourService, "Fetches tour data for reservation creation", "HTTP API")
+    Rel(TourService, ReservationService, "Checks reservation capacity for tours", "HTTP API")
+    Rel(PaymentService, ReservationService, "Validates reservation for payment", "HTTP API")
+    Rel(NotificationService, CustomerService, "Fetches customer contact details for sending notifications", "HTTP API")
+    Rel(NotificationService, ReservationService, "Fetches reservation data for notification", "HTTP API")
+    Rel(NotificationService, TourService, "Fetches tour data for sending notifications", "HTTP API")
+
+    Rel(AuthenticationService, CustomerService, "Verifies customer ownership", "HTTP API")
+    Rel(AuthenticationService, StaffService, "Verifies staff roles and permissions", "HTTP API")
+    Rel(EventService, TourService, "Fetches associated tours for events", "HTTP API")
+    Rel(EventService, NotificationService, "Notifies customers about event updates", "HTTP API")
+    Rel(EventService, BookingService, "Validates bookings associated with events", "HTTP API")
+
+    Rel(CityService, CountryService, "Fetches country data for a city", "HTTP API")
+    Rel(AirportService, CityService, "Fetches city data for an airport", "HTTP API")
+    Rel(HotelService, CityService, "Fetches city data for hotel locations", "HTTP API")
+
+    Rel(TourEventService, EventService, "Fetches event details for a tour event", "HTTP API")
+    Rel(TourEventService, TourService, "Fetches tour details for a tour event", "HTTP API")
+
+    Rel(BookingService, CustomerService, "Fetches customer data for a booking", "HTTP API")
+    Rel(BookingService, TourService, "Fetches tour details for a booking", "HTTP API")
+    Rel(BookingService, HotelService, "Fetches hotel details for a booking", "HTTP API")
+    Rel(BookingService, NotificationService, "Notifies customers about booking status", "HTTP API")
+
+    Rel(TourPackageService, TourService, "Fetches tour data for a tour package", "HTTP API")
+    Rel(TourPackageService, HotelService, "Fetches hotel data for a tour package", "HTTP API")
+    Rel(TourPackageService, AirportService, "Fetches airport data for a tour package", "HTTP API")
+    Rel(TourPackageService, BookingService, "Validates bookings for a tour package", "HTTP API")
+
 }
 
-rectangle "Dar El Salam Travel Agency" as BoundedContextTravelAgency #line.dashed {
+Container(mongoDB, "MongoDB", "Database", "Stores all travel agency data", $tags = "storage", $sprite="mongodb")
 
-    Package "Reservation Management Sub-Domain" <<Rectangle>> #Lavender {
-        AGGREGATE_ROOT(Reservation) #Cyan {
-            date: DateTime
-            status: Enum { PENDING, CONFIRMED, CANCELLED }
-        }
+Rel(CustomerRepo, mongoDB, "Reads/Writes customer data to", "MongoDB Queries")
+Rel(TourRepo, mongoDB, "Reads/Writes tour data to", "MongoDB Queries")
+Rel(ReservationRepo, mongoDB, "Reads/Writes reservation data to", "MongoDB Queries")
+Rel(NotificationRepo, mongoDB, "Reads/Writes notification data to", "MongoDB Queries")
+Rel(PaymentRepo, mongoDB, "Reads/Writes payment data to", "MongoDB Queries")
+Rel(StaffRepo, mongoDB, "Reads/Writes staff data to", "MongoDB Queries")
+Rel(AuthenticationRepo, mongoDB, "Reads/Writes user authentication data to", "MongoDB Queries")
 
-        VALUE_OBJECT(ReservationId) #Bisque {
-            id: UUID
-        }
+Container(spa, "Single-Page Application", "TypeScript, React", "Main interface for interacting with the Dar El Salam system", $sprite="react")
+Container(web_app, "Web Application", "TypeScript, React", "Delivers static content and main interface", $sprite="react")
 
-        VALUE_OBJECT(CustomerInfo) #Bisque {
-            name: String
-            email: String
-            phone: String
-        }
+Rel(web_app, CustomerController, "Makes HTTP requests for customer operations", "HTTPS/JSON")
+Rel(web_app, TourController, "Makes HTTP requests for tour operations", "HTTPS/JSON")
+Rel(web_app, ReservationController, "Makes HTTP requests for reservation operations", "HTTPS/JSON")
+Rel(web_app, NotificationController, "Makes HTTP requests for notification operations", "HTTPS/JSON")
+Rel(web_app, PaymentController, "Makes HTTP requests for payment operations", "HTTPS/JSON")
+Rel(web_app, StaffController, "Makes HTTP requests for staff management", "HTTPS/JSON")
+Rel(web_app, AuthenticationController, "Handles HTTP requests for login, registration", "HTTPS/JSON")
 
-        VALUE_OBJECT(PaymentDetails) #Bisque {
-            cardNumber: String
-            expirationDate: DateTime
-            paymentStatus: Enum { PENDING, COMPLETED, FAILED }
-        }
+Rel(web_app, EventController, "Makes HTTP requests for event operations", "HTTPS/JSON")
+Rel(web_app, CityController, "Makes HTTP requests for city operations", "HTTPS/JSON")
+Rel(web_app, CountryController, "Makes HTTP requests for country operations", "HTTPS/JSON")
+Rel(web_app, AirportController, "Makes HTTP requests for airport operations", "HTTPS/JSON")
+Rel(web_app, HotelController, "Makes HTTP requests for hotel operations", "HTTPS/JSON")
+Rel(web_app, UserController, "Makes HTTP requests for user operations", "HTTPS/JSON")
+Rel(web_app, TourEventController, "Makes HTTP requests for tour event operations", "HTTPS/JSON")
+Rel(web_app, BookingController, "Makes HTTP requests for booking operations", "HTTPS/JSON")
+Rel(web_app, TourPackageController, "Makes HTTP requests for tour package operations", "HTTPS/JSON")
 
-        CONTROLLER(ReservationController) #Yellow
-        SERVICE(ReservationService) #Green
-        REPOSITORY(ReservationRepo) #Orange
 
-        Reservation "1" o-- "1" ReservationId
-        Reservation "1" o-- "1" CustomerInfo
-        Reservation "1" o-- "1" PaymentDetails
+System_Ext(Stripe, "Stripe", "External service for processing payments", $sprite="stripe")
+System_Ext(GmailApi, "Gmail API", "Sends emails to customers", $sprite="google")
+System_Ext(Auth0, "Auth0", "External authentication service for handling user login and security", $sprite="google")
 
-        ReservationController --> ReservationService : "Handles HTTP requests"
-        ReservationService --> Reservation : "Applies business logic"
-        ReservationRepo --> Reservation : "Persists reservation state"
-    }
+Rel(PaymentService, Stripe, "Processes payments using", "HTTPS API")
+Rel(NotificationService, GmailApi, "Sends notification emails via", "HTTPS API")
 
-    Package "Customer Sub-Domain" <<Rectangle>> #FFCDD2 {
-        AGGREGATE_ROOT_ENTITY(Customer) #lightpink {
-            firstName: String
-            lastName: String
-            email: String
-            phone: String
-            address: String
-        }
+Rel(AuthenticationController, Auth0, "Delegates authentication and authorization to", "OAuth 2.0/JWT")
+Rel(AuthenticationService, Auth0, "Verifies tokens and user credentials with", "OAuth 2.0/JWT")
 
-        VALUE_OBJECT(CustomerId) #Bisque {
-            id: UUID
-        }
+Rel(customer, spa, "Interacts with", "Web Browser")
+Rel(employee, spa, "Interacts with", "Web Browser")
+Rel(admin, spa, "Interacts with", "Web Browser")
 
-        VALUE_OBJECT(CustomerAddress) #Bisque {
-            street: String
-            city: String
-            country: String
-        }
+Rel(spa, web_app, "Routes requests to", "HTTPS")
 
-        VALUE_OBJECT(CustomerPreferences) #Bisque {
-            preferredDestinations: List[String]
-        }
-
-        CONTROLLER(CustomerController) #Yellow
-        SERVICE(CustomerService) #Green
-        REPOSITORY(CustomerRepo) #Orange
-
-        Customer "1" o-- "1" CustomerId
-        Customer "1" o-- "1" CustomerAddress
-        Customer "1" o-- "0..1" CustomerPreferences
-
-        CustomerController --> CustomerService : "Handles HTTP requests"
-        CustomerService --> Customer : "Applies business logic"
-        CustomerRepo --> Customer : "Persists customer data"
-    }
-
-    Package "Staff Admin Sub-Domain" <<Rectangle>> #FFEE93 {
-        AGGREGATE_ROOT_ENTITY(Staff) #lightblue {
-            firstName: String
-            lastName: String
-            role: Enum { Admin, Employee }
-            email: String
-        }
-
-        VALUE_OBJECT(StaffId) #Bisque {
-            id: UUID
-        }
-
-        CONTROLLER(StaffController) #Yellow
-        SERVICE(StaffService) #Green
-        REPOSITORY(StaffRepo) #Orange
-
-        Staff "1" o-- "1" StaffId
-
-        StaffController --> StaffService : "Handles HTTP requests"
-        StaffService --> Staff : "Applies business logic"
-        StaffRepo --> Staff : "Persists staff data"
-    }
-
-    Package "Tour Management Sub-Domain" <<Rectangle>> #LightSalmon {
-        AGGREGATE_ROOT(Tour) #lightblue {
-            name: String
-            spotsAvailable: Integer
-            availability: Boolean
-            price: Decimal
-            startDate: DateTime
-            endDate: DateTime
-            status: TripStatus
-            cities: List[City]
-            reviews: List[Review]
-            bookings: List[Booking]
-        }
-
-        VALUE_OBJECT(TourId) #Bisque {
-            tourId: UUID
-        }
-
-        VALUE_OBJECT(TourDetails) #Bisque {
-            description: String
-            itinerary: String
-        }
-
-        VALUE_OBJECT(TourStatus) #Bisque {
-            type: Enum { COMPLETED, CANCELLED, AVAILABLE }
-        }
-
-        CONTROLLER(TourController) #Yellow
-        SERVICE(TourService) #Green
-        REPOSITORY(TourRepo) #Orange
-
-        Tour "1" o-- "1" TourId
-        Tour "1" o-- "1" TourDetails
-        Tour "1" o-- "1" TourStatus
-
-        TourController --> TourService : "Handles HTTP requests"
-        TourService --> Tour : "Applies business logic"
-        TourRepo --> Tour : "Persists tour data"
-    }
-
-    Package "Notification Sub-Domain" <<Rectangle>> #FFCDD2 {
-        ENTITY(Email) #lightpink {
-            recipient: String
-            subject: String
-            body: String
-        }
-
-        VALUE_OBJECT(EmailStatus) #Bisque {
-            status: Enum { PENDING, SENT, FAILED }
-            sentDate: DateTime
-        }
-
-        VALUE_OBJECT(EmailId) #Bisque {
-            id: UUID
-        }
-
-        CONTROLLER(NotificationController) #Yellow
-        SERVICE(NotificationService) #Green
-        REPOSITORY(NotificationRepo) #Orange
-
-        Email "1" o-- "1" EmailId
-        Email "1" o-- "1" EmailStatus
-
-        NotificationController --> NotificationService : "Handles HTTP requests"
-        NotificationService --> Email : "Applies notification logic"
-        NotificationRepo --> Email : "Persists notification data"
-    }
-
-    Package "Payment Sub-Domain" <<Rectangle>> #LightGray {
-        AGGREGATE_ROOT(Payment) #lightblue {
-            amount: Decimal
-            status: Enum { PENDING, COMPLETED, FAILED }
-        }
-
-        VALUE_OBJECT(PaymentId) #Bisque {
-            id: UUID
-        }
-
-        VALUE_OBJECT(CurrencyType) #Bisque {
-            type: Enum { USD, EUR, GBP, CAD }
-        }
-
-        CONTROLLER(PaymentController) #Yellow
-        SERVICE(PaymentService) #Green
-        REPOSITORY(PaymentRepo) #Orange
-
-        Payment "1" o-- "1" PaymentId
-        Payment "1" o-- "1" CurrencyType
-
-        PaymentController --> PaymentService : "Handles HTTP requests"
-        PaymentService --> Payment : "Applies payment logic"
-        PaymentRepo --> Payment : "Persists payment data"
-    }
-
-    Customer "1" o-- "0..*" Reservation
-    Reservation "0..*" --> "1" Tour
-    Reservation "1" --> "0..*" Payment
-    Tour "0..*" --> "1" Staff
-    Customer "1" --> "0..*" Email
-}
 @enduml
