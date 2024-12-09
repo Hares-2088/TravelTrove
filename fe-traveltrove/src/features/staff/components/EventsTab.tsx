@@ -66,7 +66,7 @@ const EventsTab: React.FC = () => {
     } catch (error) {
       console.error("Error fetching countries:", error);
     }
-    setFilteredEvents(filtered);
+    // setFilteredEvents(filtered); // Commented for filters
   };
 
   // const applyFilters = () => { // Commented for filters
@@ -144,9 +144,6 @@ const EventsTab: React.FC = () => {
           </Button>
           <h3>{viewingEvent.name}</h3>
           <p>
-            <strong>Event ID:</strong> {viewingEvent.eventId}
-          </p>
-          <p>
             <strong>Description:</strong> {viewingEvent.description}
           </p>
           <p>
@@ -160,13 +157,13 @@ const EventsTab: React.FC = () => {
             <Button
               variant="primary"
               onClick={() => {
-                setModalType('create');
+                setModalType("create");
                 setFormData({
-                  cityId: '',
-                  countryId: '',
-                  name: '',
-                  description: '',
-                  image: '',
+                  cityId: "",
+                  countryId: "",
+                  name: "",
+                  description: "",
+                  image: "",
                 });
                 setShowModal(true);
               }}
@@ -211,7 +208,7 @@ const EventsTab: React.FC = () => {
             </Form>
           </div> */}
 
-          <div className="events-scrollbar" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+          <div className="events-scrollbar" style={{ maxHeight: "500px", overflowY: "auto" }}>
             <Table bordered hover responsive className="rounded">
               <thead className="bg-light">
                 <tr>
@@ -220,14 +217,14 @@ const EventsTab: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {events.map((event) => ( // Changed from filteredEvents to events
+                {events.map((event) => (
                   <tr key={event.eventId}>
                     <td
                       onClick={() => handleViewEvent(event.eventId)}
                       style={{
-                        cursor: 'pointer',
-                        color: '#007bff',
-                        textDecoration: 'underline',
+                        cursor: "pointer",
+                        color: "#007bff",
+                        textDecoration: "underline",
                       }}
                     >
                       {event.name}
@@ -237,7 +234,7 @@ const EventsTab: React.FC = () => {
                         variant="outline-primary"
                         onClick={() => {
                           setSelectedEvent(event);
-                          setModalType('update');
+                          setModalType("update");
                           setFormData({
                             cityId: event.cityId,
                             countryId: event.countryId,
@@ -255,7 +252,7 @@ const EventsTab: React.FC = () => {
                         className="ms-2"
                         onClick={() => {
                           setSelectedEvent(event);
-                          setModalType('delete');
+                          setModalType("delete");
                           setShowModal(true);
                         }}
                       >
@@ -273,15 +270,15 @@ const EventsTab: React.FC = () => {
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalType === 'create'
-              ? 'Create Event'
-              : modalType === 'update'
-                ? 'Edit Event'
-                : 'Delete Event'}
+            {modalType === "create"
+              ? "Create Event"
+              : modalType === "update"
+              ? "Edit Event"
+              : "Delete Event"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {modalType === 'delete' ? (
+          {modalType === "delete" ? (
             <p>Are you sure you want to delete this event?</p>
           ) : (
             <Form>
