@@ -1,32 +1,31 @@
-.cities-scrollbar {
+.dashboard-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #000 #f8f9fa;
   overflow-y: auto;
 }
 
-.cities-scrollbar::-webkit-scrollbar {
+.dashboard-scrollbar::-webkit-scrollbar {
   background-color: #f8f9fa;
   width: 10px;
   height: 10px;
 }
 
-.cities-scrollbar::-webkit-scrollbar-thumb {
+.dashboard-scrollbar::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #000, #555);
   border-radius: 10px;
   border: 2px solid #f8f9fa;
 }
 
-.cities-scrollbar::-webkit-scrollbar-thumb:hover {
+.dashboard-scrollbar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #333, #999);
 }
 
-.cities-scrollbar::-webkit-scrollbar-track {
+.dashboard-scrollbar::-webkit-scrollbar-track {
   background-color: #f8f9fa;
   border-radius: 10px;
   margin: 2px;
 }
 
-.cities-scrollbar::-webkit-scrollbar-button {
+.dashboard-scrollbar::-webkit-scrollbar-button {
   display: none;
 }
-  

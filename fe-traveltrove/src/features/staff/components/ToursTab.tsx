@@ -8,6 +8,8 @@ import {
 } from "../../tours/api/tours.api";
 import { TourRequestModel, TourResponseModel } from "../../tours/models/Tour";
 import { Button, Table, Modal, Form } from "react-bootstrap";
+import TourEventsTab from "./TourEventsTab";
+import "../../../shared/css/Scrollbar.css";
 
 const ToursTab: React.FC = () => {
   const [tours, setTours] = useState<TourResponseModel[]>([]);
@@ -25,7 +27,6 @@ const ToursTab: React.FC = () => {
   const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(
     null
   );
-  const [tourEvents, setTourEvents] = useState<any[]>([]); // Assuming you have an EventResponseModel for events
 
   const [tourNameError, setTourNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
@@ -46,39 +47,20 @@ const ToursTab: React.FC = () => {
   const handleViewTour = async (tourId: string) => {
     try {
       const tour = await getTourByTourId(tourId);
-      setViewingTour(tour);
-
-      // Fetch the events for this specific tour
-      const eventsData = await fetchTourEvents(tourId);
-      setTourEvents(eventsData);
+      setViewingTour(tour); // Show Tour Details View
     } catch (error) {
       console.error("Error fetching Tour details:", error);
     }
   };
 
-  const fetchTourEvents = async (tourId: string) => {
-    try {
-      // Fetch the events for the selected tour. Replace with actual API call.
-      const response = await fetch(`/api/tours/${tourId}/events`);
-      const data = await response.json();
-      return data; // assuming the data is an array of events
-    } catch (error) {
-      console.error("Error fetching events:", error);
-      return [];
-    }
-  };
-
   const handleSave = async () => {
-    const isTourNameInvalid = formData.name.trim() !== "";
-    const isDescriptionValid = formData.name.trim() !== "";
+    const isTourNameValid = formData.name.trim() !== "";
+    const isDescriptionValid = formData.description.trim() !== "";
 
-    setTourNameError(!isTourNameInvalid);
+    setTourNameError(!isTourNameValid);
     setDescriptionError(!isDescriptionValid);
 
-    if (!isTourNameInvalid || !isDescriptionValid) {
-      return;
-    }
-
+    if (!isTourNameValid || !isDescriptionValid) return;
 
     try {
       if (modalType === "create") {
@@ -107,7 +89,6 @@ const ToursTab: React.FC = () => {
 
   return (
     <div>
-      {/* Viewing a Single Tour */}
       {viewingTour ? (
         <div>
           <Button
@@ -125,41 +106,12 @@ const ToursTab: React.FC = () => {
           </Button>
           <h3>{viewingTour.name}</h3>
           <p>
-            <strong>Tour ID:</strong> {viewingTour.tourId}
-          </p>
-          <p>
             <strong>Description:</strong>{" "}
             {viewingTour.description || "No description available"}
           </p>
 
-          {/* Display Tour Events */}
-          <div>
-            <h4>Tour Events</h4>
-            {tourEvents.length === 0 ? (
-              <p>No events available for this tour.</p>
-            ) : (
-              <Table bordered hover responsive>
-                <thead>
-                  <tr>
-                    <th>Event Name</th>
-                    <th>Event Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tourEvents.map((event, index) => (
-                    <tr key={index}>
-                      <td>{event.name}</td>
-                      <td>{new Date(event.date).toLocaleDateString()}</td>
-                      <td>
-                        {/* Add buttons for editing or deleting events */}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            )}
-          </div>
+          {/* Integrate TourEventsTab */}
+          <TourEventsTab tourId={viewingTour.tourId} />
         </div>
       ) : (
         // Display List of Tours
@@ -169,7 +121,6 @@ const ToursTab: React.FC = () => {
             <Button
               variant="primary"
               onClick={() => {
-                fetchTours();
                 setModalType("create");
                 setFormData({ name: "", description: "" });
                 setShowModal(true);
@@ -180,64 +131,58 @@ const ToursTab: React.FC = () => {
           </div>
 
           <div
-            className="tours-scrollbar"
+            className="dashboard-scrollbar"
             style={{ maxHeight: "700px", overflowY: "auto" }}
           >
-            <Table
-              bordered
-              hover
-              responsive
-              className="rounded"
-              style={{ borderRadius: "12px", overflow: "hidden" }}
-            >
+            <Table bordered hover responsive className="rounded">
               <thead className="bg-light">
-                <tr>
-                  <th>Name</th>
-                  <th>Actions</th>
-                </tr>
+              <tr>
+                <th>Name</th>
+                <th>Actions</th>
+              </tr>
               </thead>
               <tbody>
-                {tours.map((tour) => (
-                  <tr key={tour.tourId}>
-                    <td
-                      onClick={() => handleViewTour(tour.tourId)}
-                      style={{
-                        cursor: "pointer",
-                        color: "#007bff",
-                        textDecoration: "underline",
+              {tours.map((tour) => (
+                <tr key={tour.tourId}>
+                  <td
+                    onClick={() => handleViewTour(tour.tourId)}
+                    style={{
+                      cursor: "pointer",
+                      color: "#007bff",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    {tour.name}
+                  </td>
+                  <td>
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => {
+                        setSelectedTour(tour);
+                        setModalType("update");
+                        setFormData({
+                          name: tour.name,
+                          description: tour.description,
+                        });
+                        setShowModal(true);
                       }}
                     >
-                      {tour.name}
-                    </td>
-                    <td>
-                      <Button
-                        variant="outline-primary"
-                        onClick={() => {
-                          setSelectedTour(tour);
-                          setModalType("update");
-                          setFormData({
-                            name: tour.name,
-                            description: tour.description,
-                          });
-                          setShowModal(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        className="ms-2"
-                        onClick={() => {
-                          setSelectedTour(tour);
-                          setModalType("delete");
-                          setShowModal(true);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      className="ms-2"
+                      onClick={() => {
+                        setSelectedTour(tour);
+                        setModalType("delete");
+                        setShowModal(true);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
               </tbody>
             </Table>
           </div>
@@ -251,8 +196,8 @@ const ToursTab: React.FC = () => {
             {modalType === "create"
               ? "Create Tour"
               : modalType === "update"
-              ? "Edit Tour"
-              : "Delete Tour"}
+                ? "Edit Tour"
+                : "Delete Tour"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

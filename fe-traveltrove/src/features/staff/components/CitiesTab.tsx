@@ -13,7 +13,7 @@ import {
   CityRequestModel,
 } from "../../cities/models/city.model";
 import { CountryResponseModel } from "../../countries/models/country.model";
-import "./CitiesTab.css";
+import "../../../shared/css/Scrollbar.css";
 
 const CitiesTab: React.FC = () => {
   const [cities, setCities] = useState<CityResponseModel[]>([]);
@@ -124,9 +124,6 @@ const CitiesTab: React.FC = () => {
           </Button>
           <h3>{viewingCity.name}</h3>
           <p>
-            <strong>City ID:</strong> {viewingCity.cityId}
-          </p>
-          <p>
             <strong>Country:</strong> {getCountryName(viewingCity.countryId)}
           </p>
         </div>
@@ -147,7 +144,7 @@ const CitiesTab: React.FC = () => {
             </Button>
           </div>
           <div
-            className="cities-scrollbar"
+            className="dashboard-scrollbar"
             style={{ maxHeight: "700px", overflowY: "auto" }}
           >
             <Table

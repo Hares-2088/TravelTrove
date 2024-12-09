@@ -11,7 +11,7 @@ import {
   CountryResponseModel,
   CountryRequestModel,
 } from "../../countries/models/country.model";
-import "./CountriesTab.css";
+import "../../../shared/css/Scrollbar.css";
 
 const CountriesTab: React.FC = () => {
   const [countries, setCountries] = useState<CountryResponseModel[]>([]);
@@ -105,9 +105,6 @@ const CountriesTab: React.FC = () => {
           </Button>
           <h3>{viewingCountry.name}</h3>
           <p>
-            <strong>Country ID:</strong> {viewingCountry.countryId}
-          </p>
-          <p>
             <strong>Image:</strong>{" "}
             {viewingCountry.image || "No image available"}
           </p>
@@ -129,7 +126,7 @@ const CountriesTab: React.FC = () => {
             </Button>
           </div>
           <div
-            className="countries-scrollbar"
+            className="dashboard-scrollbar"
             style={{ maxHeight: "700px", overflowY: "auto" }}
           >
             <Table
