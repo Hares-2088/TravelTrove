@@ -1,0 +1,9 @@
+Business Rules:
+BR1: A booking must be linked to a user and a tour package.
+BR2: A booking can only be confirmed after payment is completed.
+BR3: A user can only book a tour package if slots are available.
+
+System Requirements:
+SYSREQ1: Create foreign key relationships in the database to link bookings with users and tour packages.
+SYSREQ2: Implement a payment validation service to verify payment status before saving the booking as "confirmed."
+SYSREQ3: Add a query to check the availability of tour package slots before allowing new bookings.

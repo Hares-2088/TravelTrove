@@ -1,0 +1,8 @@
+Business Rules:
+BR1: Verify that a user has a valid email address.
+BR2: Users must have a role (e.g., customer, admin, or employee).
+BR3: Users cannot be deleted if they have active bookings.
+System Requirements:
+SYSREQ1: Implement email validation in the service layer to ensure the format and uniqueness of user email addresses.
+SYSREQ2: Use an enum or similar mechanism in the database to define and enforce valid user roles.
+SYSREQ3: Implement a service-layer validation to check for active bookings before allowing account deletion.

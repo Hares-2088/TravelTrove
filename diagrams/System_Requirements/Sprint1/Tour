@@ -1,0 +1,8 @@
+Business Rules:
+BR1: Each tour must have at least one event.
+BR2: Tours must have a valid start and end date.
+BR3: Tours cannot be deleted if they have active bookings.
+System Requirements:
+SYSREQ1: Create a foreign key relationship to ensure tours are linked to at least one event in the database.
+SYSREQ2: Add validation in the service layer to check that the start date is before the end date.
+SYSREQ3: Implement a service-layer validation to prevent deletion of tours that have associated bookings.

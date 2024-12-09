@@ -1,0 +1,9 @@
+Business Rules:
+BR1: An airport must have a unique IATA code.
+BR2: Each airport must belong to a city and country.
+BR3: Airports cannot be deleted if they are linked to existing flights or tours.
+
+System Requirements:
+SYSREQ1: Implement a database constraint to ensure the uniqueness of the IATA code for each airport.
+SYSREQ2: Establish foreign key relationships in the database to link airports with cities and countries.
+SYSREQ3: Add validation in the service layer to prevent airport deletion if linked records exist in related tables.
