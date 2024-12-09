@@ -1,0 +1,8 @@
+Business Rules:
+BR1: Each city must belong to a country.
+BR2: Cities must have unique names within a country.
+BR3: A city cannot be deleted if it is linked to events, tours, or hotels.
+System Requirements:
+SYSREQ1: Establish a foreign key relationship in the database to link cities to countries.
+SYSREQ2: Add a composite unique constraint on the name and country_id columns in the City table.
+SYSREQ3: Implement a service-layer check to prevent deletion of a city if it is referenced by events, tours, or hotels in related tables.
