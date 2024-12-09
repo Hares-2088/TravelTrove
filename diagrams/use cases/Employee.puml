@@ -29,7 +29,8 @@ rectangle "Travel Trove System" {
     usecase "Manage tour events"
     usecase "View Account"
     usecase "Edit Account"
-
+    usecase "Manage hotels"
+    usecase "Manage airports"
 }
 Employee -- "Browse tour packages"
 Employee -- "Manage events"
@@ -37,6 +38,8 @@ Employee -- "Manage tours"
 Employee -- "Manage countries"
 Employee -- "Manage cities"
 Employee -- "View Account"
+Employee -- "Manage hotels"
+Employee -- "Manage airports"
 "Browse tour packages" <.. "Filter search result" : <<extend>>
 "Browse tour packages" <.. "Add tour package" : <<extend>>
 "Browse tour packages" <.. "Modify tour package" : <<extend>>
@@ -44,6 +47,5 @@ Employee -- "View Account"
 "Modify tour package" <.. "Filter search result" : <<extend>>
 "Manage tours" <.. "Manage tour events" : <<extend>>
 "View Account" <.. "Edit Account" : <<extend>>
-
 
 @enduml
