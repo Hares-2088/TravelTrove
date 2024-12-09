@@ -1,0 +1,94 @@
+.tour-details-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff5f0;
+}
+
+.tour-details {
+  flex: 1;
+  padding: 2rem 5%; /* Add padding to prevent content from touching screen edges */
+}
+
+.tour-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.tour-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.tour-main-image {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.tour-description {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.tour-info {
+  margin-top: 2rem;
+}
+
+h2 {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.tour-cities {
+  margin-top: 2rem;
+}
+
+.city-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.city-item {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+.city-image {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  margin: 1rem 0;
+}
+
+.event-list {
+  margin-top: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.event-item {
+  margin: 1rem 0;
+}
+
+.event-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin: 1rem 0;
+}
+
+.itinerary-image {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  margin-top: 1rem;
+}

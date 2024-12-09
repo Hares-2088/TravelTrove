@@ -1,0 +1,167 @@
+@startuml
+skinparam class {
+    BackgroundColor #f7f4eb
+    BorderColor Black
+    ArrowColor Black
+}
+skinparam dpi 300
+
+title Full 3-Layer Architecture: Tour Management System
+
+' Presentation Layer
+package "Presentation Layer" <<Rectangle>> #LightYellow {
+    class TourPageController {
+        + displayTours(): void
+        + filterTours(criteria: FilterCriteria): void
+        + viewTourDetails(tourId: String): void
+    }
+
+    class TourDetailsPageController {
+        + displayTourDetails(tourId: String): void
+    }
+
+    class TourListView {
+        + render(tours: List<TourDTO>): void
+    }
+
+    class TourDetailsView {
+        + render(details: TourDetailsDTO): void
+    }
+
+    TourPageController --> TourListView : "renders"
+    TourDetailsPageController --> TourDetailsView : "renders"
+}
+
+' Business Layer
+package "Business Layer" <<Rectangle>> #Lavender {
+    class TourService {
+        + getTours(criteria: FilterCriteria): List<TourDTO>
+        + getTourDetails(tourId: String): TourDetailsDTO
+    }
+
+    class FilterCriteria {
+        + destination: String
+        + priceRange: Double[]
+        + dateRange: LocalDate[]
+    }
+
+    TourPageController --> TourService : "uses"
+    TourDetailsPageController --> TourService : "uses"
+}
+
+' Data Access Layer
+package "Data Access Layer" <<Rectangle>> #LightCyan {
+    class Tour {
+        + tourId: UUID
+        + name: String
+        + startDate: LocalDate
+        + endDate: LocalDate
+        + overallDescription: String
+        + image: String
+        + cities: List<City>
+        + availability: Boolean
+        + spotsAvailable: Integer
+        + reviews: List<Review>
+        + bookings: List<Booking>
+        + itineraryPicture: String
+        + price: Decimal
+    }
+
+    class City {
+        + cityId: UUID
+        + name: String
+        + description: String
+        + image: String
+        + startDate: LocalDate
+        + events: List<Event>
+        + hotel: String
+    }
+
+    class Event {
+        + eventId: UUID
+        + date: LocalDate
+        + name: String
+        + image: String [optional]
+        + gatheringTime: LocalDateTime
+        + departureTime: LocalDateTime
+        + endTime: LocalDateTime
+        + description: String
+    }
+
+    class Review {
+        + reviewId: UUID
+        + reviewerName: String
+        + rating: Integer
+        + review: String
+        + date: LocalDateTime
+    }
+
+    class Booking {
+        + bookingId: UUID
+        + customerName: String
+        + bookingDate: LocalDate
+        + numberOfSpots: Integer
+        + totalAmount: Decimal
+    }
+
+    class TourEvent {
+            + tourEventId: UUID
+            + seq: String
+            + seqDesc: String
+            + eventId: String
+            + tourId: String
+        }
+
+    class TourRepository {
+        + findTours(criteria: FilterCriteria): List<Tour>
+        + findTourDetails(tourId: String): Tour
+    }
+
+    TourService --> TourRepository : "uses"
+    TourRepository --> Tour : "queries"
+    TourRepository --> City : "queries"
+    TourRepository --> Event : "queries"
+    TourRepository --> Review : "queries"
+    TourRepository --> Booking : "queries"
+    TourRepository --> TourEvent : "queries"
+}
+
+' Data Transfer Objects
+package "Data Transfer Objects (DTOs)" <<Rectangle>> #White {
+    class TourDTO {
+        + name: String
+        + startDate: LocalDate
+        + endDate: LocalDate
+        + availability: Boolean
+        + spotsAvailable: Integer
+    }
+
+    class TourDetailsDTO {
+        + name: String
+        + overallDesc: String
+        + cities: List<CityDTO>
+        + itineraries: List<String>
+        + reviews: List<ReviewDTO>
+    }
+
+    class CityDTO {
+        + name: String
+        + description: String
+        + startDate: LocalDate
+        + hotel: String
+    }
+
+    class ReviewDTO {
+        + reviewerName: String
+        + rating: Integer
+        + comment: String
+        + date: LocalDate
+    }
+
+    TourService --> TourDTO
+    TourService --> TourDetailsDTO
+    TourDetailsDTO --> CityDTO
+    TourDetailsDTO --> ReviewDTO
+}
+
+@enduml

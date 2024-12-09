@@ -1,0 +1,22 @@
+.home-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #fff5f0;
+  color: #333;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.home-details h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.home-details p {
+  font-size: 1.2rem;
+  color: #666;
+}

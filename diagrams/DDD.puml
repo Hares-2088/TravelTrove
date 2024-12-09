@@ -90,33 +90,38 @@ rectangle "Dar El Salam Travel Agency" as BoundedContextTravelAgency #line.dashe
         Staff "1" o-- "1" StaffId
     }
 
-    Package "Trip Management Sub-Domain" <<Rectangle>> #LightSalmon {
+    Package "Tour Management Sub-Domain" <<Rectangle>> #LightSalmon {
 
-        AGGREGATE_ROOT(Trip) #lightblue {
-            destination: String
-            availableSeats: Integer
+
+        AGGREGATE_ROOT(Tour) #lightblue {
+            name: String
+            spotsAvailable: Integer
+            availability: Boolean
             price: Decimal
             startDate: DateTime
             endDate: DateTime
             status: TripStatus
+            cities: List[City]
+            reviews: List[Review]
+            bookings: List[Booking]
         }
 
-        VALUE_OBJECT(TripId) #Bisque {
-            id: UUID
+        VALUE_OBJECT(TourId) #Bisque {
+            tourId: UUID
         }
 
-        VALUE_OBJECT(TripDetails) #Bisque {
+        VALUE_OBJECT(TourDetails) #Bisque {
             description: String
             itinerary: String
         }
 
-        VALUE_OBJECT(TripStatus) #Bisque {
+        VALUE_OBJECT(TourStatus) #Bisque {
             type: Enum { COMPLETED, CANCELLED, AVAILABLE }
         }
 
-        Trip "1" o-- "1" TripId
-        Trip "1" o-- "1" TripDetails
-        Trip "1" o-- "1" TripStatus
+        Tour "1" o-- "1" TourId
+        Tour "1" o-- "1" TourDetails
+        Tour "1" o-- "1" TourStatus
     }
 
     Package "Notification Sub-Domain" <<Rectangle>> #FFCDD2 {
@@ -160,9 +165,9 @@ rectangle "Dar El Salam Travel Agency" as BoundedContextTravelAgency #line.dashe
     }
 
     Customer "1" o-- "0..*" Reservation
-    Reservation "0..*" --> "1" Trip
+    Reservation "0..*" --> "1" Tour
     Reservation "1" --> "0..*" Payment
-    Trip "0..*" --> "1" Staff
+    Tour "0..*" --> "1" Staff
     Customer "1" --> "0..*" Email
 
 }
