@@ -63,6 +63,18 @@ Container_Boundary(spa, "Web Application (React)") {
     ' Admin-specific pages and features
     Container_Boundary(admin_pages_and_features, "Admin Pages and Features") {
         Component(AdminDashboardPage, "Admin Dashboard Page", "React Component", "Main control panel for admins", $tags = "page", $sprite="react")
+
+        Component(EventManagementFeature, "Event Management Feature", "React Module", "Manages events and bookings", $tags = "feature", $sprite="react")
+        Component(CityManagementFeature, "City Management Feature", "React Module", "Manages city data", $tags = "feature", $sprite="react")
+        Component(TourManagementFeature, "Tour Management Feature", "React Module", "Manages tour data", $tags = "feature", $sprite="react")
+        Component(CountryManagementFeature, "Country Management Feature", "React Module", "Manages country data", $tags = "feature", $sprite="react")
+        Component(TourEventManagementFeature, "Tour Event Management Feature", "React Module", "Manages tour events", $tags = "feature", $sprite="react")
+        Component(HotelsManagementFeature, "Hotels Management Feature", "React Module", "Manages hotel data", $tags = "feature", $sprite="react")
+        Component(AirportManagementFeature, "Airport Management Feature", "React Module", "Manages airport data", $tags = "feature", $sprite="react")
+        Component(UserManagementFeature, "User Management Feature", "React Module", "Manages user data", $tags = "feature", $sprite="react")
+        Component(HotelsManagementFeature, "Hotels Management Feature", "React Module", "Manages hotel data", $tags = "feature", $sprite="react")
+        Component(AddTourPackageFeature, "Add Tour Package Feature", "React Module", "Allows admins to add new tour packages", $tags = "feature", $sprite="react")
+
         Component(EmployeeListPage, "Employee List Page", "React Component", "Displays the list of employees for admin", $tags = "page", $sprite="react")
         Component(EmployeeDetailsPage, "Employee Details Page", "React Component", "Shows detailed information of an employee for admin", $tags = "page", $sprite="react")
 
@@ -76,6 +88,7 @@ Container_Boundary(spa, "Web Application (React)") {
 
     ' Employee-specific pages and features
     Container_Boundary(employee_pages_and_features, "Employee Pages and Features") {
+        Component(EmployeeDashboardPage, "Employee Dashboard Page", "React Component", "Main control panel for employees", $tags = "page", $sprite="react")
         Component(TourManagementPage, "Tour Management Page", "React Component", "Allows employees to manage tour packages", $tags = "page", $sprite="react")
         Component(AddTourPackageFeature, "Add Tour Package Feature", "React Module", "Allows employees to add new tour packages", $tags = "feature", $sprite="react")
         Component(ModifyTourPackageFeature, "Modify Tour Package Feature", "React Module", "Enables editing of existing tour packages", $tags = "feature", $sprite="react")
@@ -153,11 +166,35 @@ Rel(PaymentPage, PaymentFeature, "Uses")
 Rel(AddReviewFeature, ReviewPage, "Links")
 
 Rel(AdminDashboardPage, ControlPermissionsFeature, "Uses")
-Rel(AdminDashboardPage, GenerateReportFeature, "Uses")
+
+Rel(AdminDashboardPage, EventManagementFeature, "Uses")
+Rel(AdminDashboardPage, CityManagementFeature, "Uses")
+Rel(AdminDashboardPage, TourManagementFeature, "Uses")
+Rel(AdminDashboardPage, CountryManagementFeature, "Uses")
+Rel(AdminDashboardPage, TourEventManagementFeature, "Uses")
+Rel(AdminDashboardPage, HotelsManagementFeature, "Uses")
+Rel(AdminDashboardPage, AirportManagementFeature, "Uses")
+Rel(AdminDashboardPage, UserManagementFeature, "Uses")
+Rel(AdminDashboardPage, AddTourPackageFeature, "Uses")
+
+
 Rel(EmployeeListPage, ManageEmployeeAccountsFeature, "Uses")
 Rel(EmployeeDetailsPage, ManageEmployeeAccountsFeature, "Uses")
 Rel(ReportsPage, GenerateReportFeature, "Uses")
 Rel(EmployeeListPage, AddEmployeeFeature, "Uses")
+
+Rel(EmployeeDashboardPage, EventManagementFeature, "Uses")
+Rel(EmployeeDashboardPage, CityManagementFeature, "Uses")
+Rel(EmployeeDashboardPage, TourManagementFeature, "Uses")
+Rel(EmployeeDashboardPage, CountryManagementFeature, "Uses")
+Rel(EmployeeDashboardPage, TourEventManagementFeature, "Uses")
+Rel(EmployeeDashboardPage, HotelsManagementFeature, "Uses")
+Rel(EmployeeDashboardPage, AirportManagementFeature, "Uses")
+Rel(EmployeeDashboardPage, UserManagementFeature, "Uses")
+Rel(EmployeeDashboardPage, AddTourPackageFeature, "Uses")
+Rel(EmployeeDashboardPage, ModifyTourPackageFeature, "Uses")
+Rel(EmployeeDashboardPage, CustomEmailNotificationFeature, "Uses")
+
 
 Rel(CustomNotificationPage, CustomEmailNotificationFeature, "Uses")
 Rel(TourManagementPage, AddTourPackageFeature, "Uses")
