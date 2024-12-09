@@ -1,0 +1,8 @@
+Business Rules:
+BR1: A hotel must be associated with a city.
+BR2: The number of rooms in a hotel must be recorded and updated with each booking.
+BR3: Hotels cannot be linked to multiple cities.
+System Requirements:
+SYSREQ1: Establish a foreign key relationship between hotels and cities in the database.
+SYSREQ2: Implement a service layer method to decrement room availability during booking operations.
+SYSREQ3: Enforce a one-to-one relationship between hotels and cities in the database schema.

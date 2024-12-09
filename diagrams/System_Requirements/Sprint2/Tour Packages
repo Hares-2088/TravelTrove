@@ -1,0 +1,9 @@
+Business Rules:
+BR1: A tour package must include at least one destination (e.g., a city or attraction).
+BR2: A tour package can only be deleted by admin users.
+BR3: Each tour package must have all required details, such as a name, description, price, cities, countries, etc.
+
+System Requirements:
+SYSREQ1: Create a relational table to link tour packages with destinations, ensuring at least one destination exists for each package.
+SYSREQ2: Implement a service-layer method to restrict tour package deletion to admin users only.
+SYSREQ3: Add validation checks in the service layer to ensure all required details are provided when creating or updating tour packages.

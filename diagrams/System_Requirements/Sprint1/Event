@@ -1,0 +1,8 @@
+Business Rules:
+BR1: Events must have a unique name within the same city.
+BR2: Events must be associated with a city and a tour.
+BR3: Events must not overlap in time if they are part of the same tour.
+System Requirements:
+SYSREQ1: Add a composite unique constraint on name and city_id in the Event table.
+SYSREQ2: Establish foreign key relationships to link events with cities and tours.
+SYSREQ3: Implement a time conflict validation in the service layer to ensure events in the same tour do not overlap.
