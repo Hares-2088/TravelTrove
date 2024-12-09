@@ -104,6 +104,14 @@ package "Data Access Layer" <<Rectangle>> #LightCyan {
         + totalAmount: Decimal
     }
 
+    class TourEvent {
+            + tourEventId: UUID
+            + seq: String
+            + seqDesc: String
+            + eventId: String
+            + tourId: String
+        }
+
     class TourRepository {
         + findTours(criteria: FilterCriteria): List<Tour>
         + findTourDetails(tourId: String): Tour
@@ -115,6 +123,7 @@ package "Data Access Layer" <<Rectangle>> #LightCyan {
     TourRepository --> Event : "queries"
     TourRepository --> Review : "queries"
     TourRepository --> Booking : "queries"
+    TourRepository --> TourEvent : "queries"
 }
 
 ' Data Transfer Objects
