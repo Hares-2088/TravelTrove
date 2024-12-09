@@ -68,7 +68,7 @@ public class EntityModelUtil {
 
     public static TourEvents toTourEventsEntity(TourEventsRequestModel request) {
         return TourEvents.builder()
-                .toursEventId(generateUUIDString())
+                .tourId(generateUUIDString())
                 .seq(request.getSeq())
                 .seqDesc(request.getSeqDesc())
                 .tourId(request.getTourId())
