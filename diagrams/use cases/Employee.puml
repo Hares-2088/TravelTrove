@@ -24,19 +24,26 @@ rectangle "Travel Trove System" {
     usecase "Custom notification"
     usecase "Manage events"
     usecase "Manage tours"
+    usecase "Manage countries"
+    usecase "Manage cities"
+    usecase "Manage tour events"
+    usecase "View Account"
+    usecase "Edit Account"
 
 }
 Employee -- "Browse tour packages"
 Employee -- "Manage events"
 Employee -- "Manage tours"
+Employee -- "Manage countries"
+Employee -- "Manage cities"
+Employee -- "View Account"
 "Browse tour packages" <.. "Filter search result" : <<extend>>
 "Browse tour packages" <.. "Add tour package" : <<extend>>
 "Browse tour packages" <.. "Modify tour package" : <<extend>>
 "Modify tour package" <.. "Custom notification" : <<extend>>
 "Modify tour package" <.. "Filter search result" : <<extend>>
-
-
-
+"Manage tours" <.. "Manage tour events" : <<extend>>
+"View Account" <.. "Edit Account" : <<extend>>
 
 
 @enduml
