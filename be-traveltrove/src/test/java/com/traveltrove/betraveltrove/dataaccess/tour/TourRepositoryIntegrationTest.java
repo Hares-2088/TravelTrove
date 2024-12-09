@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.dataaccess.tour;
+package com.traveltrove.betraveltrove.dataaccess;
 
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
@@ -26,18 +26,8 @@ public class TourRepositoryIntegrationTest {
         Tour testTour = Tour.builder()
                 .tourId("1")
                 .name("Test Tour")
-                .description("A sample test tour")
-//                .startDate(LocalDate.of(2024, 1, 1))
-//                .endDate(LocalDate.of(2024, 1, 10))
-//                .overallDescription("A sample test tour")
-//                .available(true)
-//                .price(500.0)
-//                .spotsAvailable(20)
-//                .cities(Collections.emptyList())
-//                .reviews(Collections.emptyList())
-//                .bookings(Collections.emptyList())
-//                .image("test_image.jpg")
-//                .itineraryPicture("itinerary.jpg")
+                .description("A test tour")
+                .tourEvents(Collections.emptyList())
                 .build();
 
         StepVerifier.create(tourRepository.save(testTour))

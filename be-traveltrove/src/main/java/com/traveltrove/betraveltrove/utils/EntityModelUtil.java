@@ -66,6 +66,7 @@ public class EntityModelUtil {
                 .build();
     }
 
+<<<<<<< HEAD
     public static TourEvent toTourEventEntity(TourEventRequestModel tourEventRequestModel) {
         return TourEvent.builder()
                 .tourEventId(generateUUIDString())
@@ -73,6 +74,15 @@ public class EntityModelUtil {
                 .seqDesc(tourEventRequestModel.getSeqDesc())
                 .tourId(tourEventRequestModel.getTourId())
                 .eventId(tourEventRequestModel.getEventId())
+=======
+    public static TourEvents toTourEventsEntity(TourEventsRequestModel request) {
+        return TourEvents.builder()
+                .tourId(generateUUIDString())
+                .seq(request.getSeq())
+                .seqDesc(request.getSeqDesc())
+                .tourId(request.getTourId())
+                .events(request.getEvents())
+>>>>>>> f576ce1a2f8d1ab68f7872032570f00efd806719
                 .build();
     }
 
