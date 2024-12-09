@@ -22,9 +22,13 @@ rectangle "Travel Trove System" {
     usecase "Modify tour package"
     usecase "Filter search result"
     usecase "Custom notification"
+    usecase "Manage events"
+    usecase "Manage tours"
 
 }
 Employee -- "Browse tour packages"
+Employee -- "Manage events"
+Employee -- "Manage tours"
 "Browse tour packages" <.. "Filter search result" : <<extend>>
 "Browse tour packages" <.. "Add tour package" : <<extend>>
 "Browse tour packages" <.. "Modify tour package" : <<extend>>
