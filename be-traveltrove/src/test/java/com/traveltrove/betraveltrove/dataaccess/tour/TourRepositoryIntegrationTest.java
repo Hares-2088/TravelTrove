@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.dataaccess;
+package com.traveltrove.betraveltrove.dataaccess.tour;
 
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
