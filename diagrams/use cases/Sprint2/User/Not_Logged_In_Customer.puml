@@ -1,0 +1,14 @@
+@startuml
+title Customer Account Creation Use Case
+
+actor "Not Registered Customer" as NotRegisteredCustomer
+
+rectangle "Registration System" {
+    usecase "Access Registration Page"
+    usecase "Create Account"
+}
+
+NotRegisteredCustomer -- "Access Registration Page"
+NotRegisteredCustomer -- "Create Account"
+
+@enduml

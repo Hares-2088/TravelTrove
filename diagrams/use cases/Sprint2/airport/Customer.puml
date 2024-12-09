@@ -1,0 +1,28 @@
+@startuml
+scale 1
+left to right direction
+
+header
+Dar El Salam
+endheader
+
+' Custom skin parameters for use cases
+skinparam usecase {
+    BackgroundColor lightblue
+    BorderColor DarkSlateGray
+    ArrowColor Black
+}
+
+actor "Customer" as Customer
+
+rectangle "Travel Trove System" {
+
+    usecase "Get My Trips"
+    usecase "View Airports of a Trip"
+}
+
+Customer -- "Get My Trips"
+
+"Get My Trips" ..> "View Airports of a Trip" : <<include>>
+
+@enduml
