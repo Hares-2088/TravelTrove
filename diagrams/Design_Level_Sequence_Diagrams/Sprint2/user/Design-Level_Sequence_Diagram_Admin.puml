@@ -1,0 +1,155 @@
+@startuml
+title User Management Sequence Diagram for Admin
+
+actor Admin as "<<Actor>>\nAdmin"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant DashboardPage as "<<View>>\nDashboardPage"
+participant UserController as "<<Controller>>\nUserController"
+participant UserService as "<<Service>>\nUserService"
+participant UserEntity as "<<Entity>>\nUserEntity"
+participant UserRepository as "<<Repository>>\nUserRepository"
+participant Database as "<<Database>>"
+participant UserResponseModel as "<<Model>>\nUserResponseModel"
+
+Admin -> ReactApplication : Access Dashboard Page
+activate ReactApplication
+
+ReactApplication -> DashboardPage : render()
+activate DashboardPage
+deactivate ReactApplication
+
+DashboardPage -> UserController : GET /api/v1/users
+activate UserController
+
+UserController -> UserService : getAllUsers()
+activate UserService
+
+UserService -> UserRepository : findAll()
+activate UserRepository
+
+UserRepository -> Database : SELECT * FROM users
+activate Database
+Database --> UserRepository : List of users
+deactivate Database
+
+UserRepository --> UserService : userEntities
+deactivate UserRepository
+
+UserService -> UserResponseModel : Map entities to response models
+activate UserResponseModel
+UserResponseModel --> UserService : Response models ready
+deactivate UserResponseModel
+
+UserService --> UserController : List of UserResponseModels
+deactivate UserService
+
+UserController --> DashboardPage : Display users list
+deactivate UserController
+
+opt Add New User
+    Admin -> DashboardPage : Fill user form and submit
+    DashboardPage -> UserController : POST /api/v1/users
+    activate UserController
+
+    UserController -> UserService : addUser(userRequestModel)
+    activate UserService
+
+    UserService -> UserEntity : Instantiate from request model
+    activate UserEntity
+    UserEntity --> UserService : Entity created
+    deactivate UserEntity
+
+    UserService -> UserRepository : save(userEntity)
+    activate UserRepository
+    UserRepository -> Database : INSERT INTO users
+    activate Database
+    Database --> UserRepository : Success
+    deactivate Database
+    UserRepository --> UserService : Saved user
+    deactivate UserRepository
+
+    UserService -> UserResponseModel : Create response model from entity
+    activate UserResponseModel
+    UserResponseModel --> UserService : Response ready
+    deactivate UserResponseModel
+
+    UserService --> UserController : userResponseModel
+    deactivate UserService
+    UserController --> DashboardPage : User added successfully
+    deactivate UserController
+end
+
+opt Edit User Permissions
+    Admin -> DashboardPage : Select user to edit
+    DashboardPage -> UserController : PUT /api/v1/users/{userId}/permissions
+    activate UserController
+
+    UserController -> UserService : updatePermissions(userId, permissionsRequestModel)
+    activate UserService
+
+    UserService -> UserRepository : findUserById(userId)
+    activate UserRepository
+    UserRepository -> Database : SELECT * FROM users WHERE id = userId
+    activate Database
+    Database --> UserRepository : User found
+    deactivate Database
+    UserRepository --> UserService : userEntity
+    deactivate UserRepository
+
+    UserService -> UserEntity : Update entity with new permissions
+    activate UserEntity
+    UserEntity --> UserService : Updated entity
+    deactivate UserEntity
+
+    UserService -> UserRepository : save(updatedUserEntity)
+    activate UserRepository
+    UserRepository -> Database : UPDATE users SET ...
+    Database --> UserRepository : Success
+    deactivate Database
+    UserRepository --> UserService : Updated user
+    deactivate UserRepository
+
+    UserService -> UserResponseModel : Create response model
+    activate UserResponseModel
+    UserResponseModel --> UserService : Response ready
+    deactivate UserResponseModel
+
+    UserService --> UserController : userResponseModel
+    deactivate UserService
+    UserController --> DashboardPage : User permissions updated
+    deactivate UserController
+end
+
+opt Delete User
+    Admin -> DashboardPage : Select user to delete
+    DashboardPage -> UserController : DELETE /api/v1/users/{userId}
+    activate UserController
+
+    UserController -> UserService : deleteUserById(userId)
+    activate UserService
+
+    UserService -> UserRepository : findUserById(userId)
+    activate UserRepository
+    UserRepository -> Database : SELECT * FROM users WHERE id = userId
+    activate Database
+    Database --> UserRepository : User found
+    deactivate Database
+    UserRepository --> UserService : userEntity
+    deactivate UserRepository
+
+    UserService -> UserRepository : delete(userEntity)
+    activate UserRepository
+    UserRepository -> Database : DELETE FROM users WHERE id = userId
+    Database --> UserRepository : Success
+    deactivate Database
+    UserRepository --> UserService : Deletion success
+    deactivate UserRepository
+
+    UserService --> UserController : Deletion confirmation
+    deactivate UserService
+    UserController --> DashboardPage : User deleted successfully
+    deactivate UserController
+end
+
+@enduml

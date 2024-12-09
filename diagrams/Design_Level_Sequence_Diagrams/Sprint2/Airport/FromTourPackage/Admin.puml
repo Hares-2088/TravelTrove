@@ -1,0 +1,55 @@
+@startuml
+title Airports Viewing from Tour Package Description for Admin
+
+actor Admin as "<<Actor>>\nAdmin"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant TourPackageDescriptionPage as "<<View>>\nTourPackageDescriptionPage"
+participant AirportController as "<<Controller>>\nAirportController"
+participant AirportService as "<<Service>>\nAirportService"
+participant AirportEntity as "<<Entity>>\nAirportEntity"
+participant AirportRepository as "<<Repository>>\nAirportRepository"
+participant Database as "<<Database>>"
+participant AirportResponseModel as "<<Model>>\nAirportResponseModel"
+
+Admin -> ReactApplication : Access Tour Package Description Page
+activate ReactApplication
+
+ReactApplication -> TourPackageDescriptionPage : render()
+activate TourPackageDescriptionPage
+deactivate ReactApplication
+
+TourPackageDescriptionPage --> Admin : Display tour package details
+
+Admin -> TourPackageDescriptionPage : Request airports related to tour package
+TourPackageDescriptionPage -> AirportController : GET /api/v1/airports/tour/{tourId}
+activate AirportController
+
+AirportController -> AirportService : getAirportsByTourId(tourId)
+activate AirportService
+
+AirportService -> AirportRepository : findAllByTourId(tourId)
+activate AirportRepository
+
+AirportRepository -> Database : SELECT * FROM airports WHERE tourId = tourId
+activate Database
+Database --> AirportRepository : List of airports
+deactivate Database
+
+AirportRepository --> AirportService : List of airport entities
+deactivate AirportRepository
+
+AirportService -> AirportResponseModel : Map entities to response models
+activate AirportResponseModel
+AirportResponseModel --> AirportService : Response models ready
+deactivate AirportResponseModel
+
+AirportService --> AirportController : List of AirportResponseModels
+deactivate AirportService
+
+AirportController --> TourPackageDescriptionPage : Display airports list
+deactivate AirportController
+
+TourPackageDescriptionPage --> Admin : Show airports related to the tour package
+
+@enduml
