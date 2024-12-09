@@ -25,7 +25,10 @@ const ToursTab: React.FC = () => {
   const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(
     null
   );
-  const [tourEvents, setTourEvents] = useState<any[]>([]);  // Assuming you have an EventResponseModel for events
+  const [tourEvents, setTourEvents] = useState<any[]>([]); // Assuming you have an EventResponseModel for events
+
+  const [tourNameError, setTourNameError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
 
   useEffect(() => {
     fetchTours();
@@ -58,7 +61,7 @@ const ToursTab: React.FC = () => {
       // Fetch the events for the selected tour. Replace with actual API call.
       const response = await fetch(`/api/tours/${tourId}/events`);
       const data = await response.json();
-      return data;  // assuming the data is an array of events
+      return data; // assuming the data is an array of events
     } catch (error) {
       console.error("Error fetching events:", error);
       return [];
@@ -66,6 +69,17 @@ const ToursTab: React.FC = () => {
   };
 
   const handleSave = async () => {
+    const isTourNameInvalid = formData.name.trim() !== "";
+    const isDescriptionValid = formData.name.trim() !== "";
+
+    setTourNameError(!isTourNameInvalid);
+    setDescriptionError(!isDescriptionValid);
+
+    if (!isTourNameInvalid || !isDescriptionValid) {
+      return;
+    }
+
+
     try {
       if (modalType === "create") {
         await addTour(formData);
@@ -117,7 +131,7 @@ const ToursTab: React.FC = () => {
             <strong>Description:</strong>{" "}
             {viewingTour.description || "No description available"}
           </p>
-          
+
           {/* Display Tour Events */}
           <div>
             <h4>Tour Events</h4>
@@ -249,23 +263,30 @@ const ToursTab: React.FC = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Tour Name</Form.Label>
                 <Form.Control
+                  required
                   type="text"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    setTourNameError(false);
+                  }}
+                  isInvalid={tourNameError}
                 />
+                <div className="invalid-feedback">Tour name is required.</div>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Tour Description</Form.Label>
                 <Form.Control
                   as="textarea"
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, description: e.target.value });
+                    setDescriptionError(false);
+                  }}
+                  isInvalid={descriptionError}
                   rows={3}
                 />
+                <div className="invalid-feedback">Description is required.</div>
               </Form.Group>
             </Form>
           )}
