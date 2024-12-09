@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">be-traveltrove</a> &gt; <a href="index.source.html" class="el_package">com.traveltrove.betraveltrove.presentation.events</a> &gt; <span class="el_source">EventController.java</span></div><h1>EventController.java</h1><pre class="source lang-java linenums">package com.traveltrove.betraveltrove.presentation.events;
+
+import com.traveltrove.betraveltrove.business.event.EventService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@RestController
+@RequestMapping(&quot;/api/v1/events&quot;)
+<span class="nc" id="L13">@Slf4j</span>
+@CrossOrigin(origins = &quot;http://localhost:3000&quot;)
+public class EventController {
+
+    private final EventService eventService;
+
+<span class="nc" id="L19">    public EventController(EventService eventService) {</span>
+<span class="nc" id="L20">        this.eventService = eventService;</span>
+<span class="nc" id="L21">    }</span>
+
+    // Get all events or filter by cityId or countryId
+    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux&lt;EventResponseModel&gt; getEvents(
+            @RequestParam(required = false) String cityId,
+            @RequestParam(required = false) String countryId) {
+<span class="nc" id="L28">        log.info(&quot;Fetching events with filters: cityId={}, countryId={}&quot;, cityId, countryId);</span>
+<span class="nc" id="L29">        return eventService.getEvents(cityId, countryId);</span>
+    }
+
+    // Get an event by event ID
+    @GetMapping(value = &quot;/{eventId}&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono&lt;ResponseEntity&lt;EventResponseModel&gt;&gt; getEventByEventId(@PathVariable String eventId) {
+<span class="nc" id="L35">        log.info(&quot;Fetching event by event ID: {}&quot;, eventId);</span>
+<span class="nc" id="L36">        return eventService.getEventByEventId(eventId)</span>
+<span class="nc" id="L37">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L38">                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));</span>
+    }
+
+    // Create a new event
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono&lt;ResponseEntity&lt;EventResponseModel&gt;&gt; createEvent(@RequestBody Mono&lt;EventRequestModel&gt; eventRequestModel) {
+<span class="nc" id="L44">        log.info(&quot;Creating new event&quot;);</span>
+<span class="nc" id="L45">        return eventService.createEvent(eventRequestModel)</span>
+<span class="nc" id="L46">                .map(eventResponseModel -&gt; ResponseEntity.status(201).body(eventResponseModel))</span>
+<span class="nc" id="L47">                .switchIfEmpty(Mono.just(ResponseEntity.badRequest().build()));</span>
+    }
+
+    // Update an existing event
+    @PutMapping(value = &quot;/{eventId}&quot;, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono&lt;ResponseEntity&lt;EventResponseModel&gt;&gt; updateEvent(
+            @PathVariable String eventId,
+            @RequestBody Mono&lt;EventRequestModel&gt; eventRequestModel) {
+<span class="nc" id="L55">        log.info(&quot;Updating event with event ID: {}&quot;, eventId);</span>
+<span class="nc" id="L56">        return eventService.updateEvent(eventId, eventRequestModel)</span>
+<span class="nc" id="L57">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L58">                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));</span>
+    }
+
+    // Delete an event by event ID
+    @DeleteMapping(value = &quot;/{eventId}&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono&lt;ResponseEntity&lt;EventResponseModel&gt;&gt; deleteEvent(@PathVariable String eventId) {
+<span class="nc" id="L64">        log.info(&quot;Deleting event with event ID: {}&quot;, eventId);</span>
+<span class="nc" id="L65">        return eventService.deleteEvent(eventId)</span>
+<span class="nc" id="L66">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L67">                .defaultIfEmpty(ResponseEntity.notFound().build());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

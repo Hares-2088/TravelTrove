@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalControllerExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">be-traveltrove</a> &gt; <a href="index.source.html" class="el_package">com.traveltrove.betraveltrove.utils</a> &gt; <span class="el_source">GlobalControllerExceptionHandler.java</span></div><h1>GlobalControllerExceptionHandler.java</h1><pre class="source lang-java linenums">package com.traveltrove.betraveltrove.utils;
+
+import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+
+@RestControllerAdvice
+<span class="nc" id="L16">@Slf4j</span>
+<span class="nc" id="L17">public class GlobalControllerExceptionHandler {</span>
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public HttpErrorInfo handleNotFoundException(ServerHttpRequest request, Exception ex) {
+<span class="nc" id="L22">        return createHttpErrorInfo(NOT_FOUND, request, ex);</span>
+    }
+
+    @ResponseStatus(UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(InvalidInputException.class)
+    public HttpErrorInfo handleInvalidInputException(ServerHttpRequest request, Exception ex) {
+<span class="nc" id="L28">        return createHttpErrorInfo(UNPROCESSABLE_ENTITY, request, ex);</span>
+    }
+
+
+    private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, ServerHttpRequest request, Exception ex) {
+<span class="nc" id="L33">        final String path = request.getPath().value();</span>
+        // final String path = request.getPath().pathWithinApplication().value();
+<span class="nc" id="L35">        final String message = ex.getMessage();</span>
+<span class="nc" id="L36">        log.debug(&quot;message is: &quot; + message);</span>
+
+<span class="nc" id="L38">        log.debug(&quot;Returning HTTP status: {} for path: {}, message: {}&quot;, httpStatus, path, message);</span>
+
+<span class="nc" id="L40">        return new HttpErrorInfo(httpStatus, path, message);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,47 @@
+@startuml
+title Tour Package Viewing Sequence Diagram for Not Logged-In Not_Logged_In_Customer
+
+actor Not_Logged_In_Customer
+participant ReactApplication
+participant TourPackagesPage
+participant TourPackageController
+participant TourPackageService
+participant TourPackageRepository
+participant Database
+
+Not_Logged_In_Customer -> ReactApplication : Access Tour Packages Page
+activate ReactApplication
+
+ReactApplication -> TourPackagesPage : render()
+activate TourPackagesPage
+deactivate ReactApplication
+
+TourPackagesPage --> Not_Logged_In_Customer : Display list of available tours
+
+Not_Logged_In_Customer -> TourPackagesPage : Request available tours
+TourPackagesPage -> TourPackageController : GET /api/v1/tour-packages
+activate TourPackageController
+
+TourPackageController -> TourPackageService : getAllTourPackages()
+activate TourPackageService
+
+TourPackageService -> TourPackageRepository : findAll()
+activate TourPackageRepository
+
+TourPackageRepository -> Database : SELECT * FROM tour_packages
+activate Database
+Database --> TourPackageRepository : List of tour packages
+deactivate Database
+
+TourPackageRepository --> TourPackageService : List of package entities
+deactivate TourPackageRepository
+
+TourPackageService --> TourPackageController : List of TourPackageResponseModels
+deactivate TourPackageService
+
+TourPackageController --> TourPackagesPage : Response with tour packages
+deactivate TourPackageController
+
+TourPackagesPage --> Not_Logged_In_Customer : Display available tours
+
+@enduml

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EntityModelUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">be-traveltrove</a> &gt; <a href="index.source.html" class="el_package">com.traveltrove.betraveltrove.utils</a> &gt; <span class="el_source">EntityModelUtil.java</span></div><h1>EntityModelUtil.java</h1><pre class="source lang-java linenums">package com.traveltrove.betraveltrove.utils;
+
+import com.traveltrove.betraveltrove.dataaccess.country.Country;
+import com.traveltrove.betraveltrove.dataaccess.city.City;
+import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
+import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
+import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
+import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
+import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourEventRequestModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourEventResponseModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourRequestModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
+import com.traveltrove.betraveltrove.presentation.country.CountryRequestModel;
+import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
+import org.springframework.beans.BeanUtils;
+import reactor.core.publisher.Mono;
+
+import java.util.UUID;
+
+<span class="nc" id="L21">public class EntityModelUtil {</span>
+
+    // This method is to convert a Tour object to a TourResponseModel object
+    public static TourResponseModel toTourResponseModel(Tour tour) {
+<span class="nc" id="L25">        TourResponseModel tourResponseModel = new TourResponseModel();</span>
+<span class="nc" id="L26">        BeanUtils.copyProperties(tour, tourResponseModel);</span>
+<span class="nc" id="L27">        return tourResponseModel;</span>
+    }
+
+    // This method is to convert a request model to a Tour entity
+    public static Tour toTourEntity(TourRequestModel tourRequestModel) {
+<span class="nc" id="L32">        return Tour.builder()</span>
+<span class="nc" id="L33">                .tourId(generateUUIDString())</span>
+<span class="nc" id="L34">                .name(tourRequestModel.getName())</span>
+<span class="nc" id="L35">                .description(tourRequestModel.getDescription())</span>
+<span class="nc" id="L36">                .build();</span>
+    }
+
+    // Method to map a Country entity to a CountryResponseModel
+    public static CountryResponseModel toCountryResponseModel(Country country) {
+<span class="nc" id="L41">        CountryResponseModel countryResponseModel = new CountryResponseModel();</span>
+<span class="nc" id="L42">        BeanUtils.copyProperties(country, countryResponseModel);</span>
+<span class="nc" id="L43">        return countryResponseModel;</span>
+    }
+
+    // Method to map a CountryRequestModel to a Country entity
+    public static Country toCountryEntity(CountryRequestModel countryRequestModel) {
+<span class="nc" id="L48">        return Country.builder()</span>
+<span class="nc" id="L49">                .countryId(generateUUIDString())</span>
+<span class="nc" id="L50">                .name(countryRequestModel.getName())</span>
+<span class="nc" id="L51">                .image(countryRequestModel.getImage())</span>
+<span class="nc" id="L52">                .build();</span>
+    }
+
+    public static CityResponseModel toCityResponseModel(City city) {
+<span class="nc" id="L56">        CityResponseModel cityResponseModel = new CityResponseModel();</span>
+<span class="nc" id="L57">        BeanUtils.copyProperties(city, cityResponseModel);</span>
+<span class="nc" id="L58">        return cityResponseModel;</span>
+    }
+
+    public static City toCityEntity(CityRequestModel cityRequestModel) {
+<span class="nc" id="L62">        return City.builder()</span>
+<span class="nc" id="L63">                .cityId(generateUUIDString())</span>
+<span class="nc" id="L64">                .name(cityRequestModel.getName())</span>
+<span class="nc" id="L65">                .countryId(cityRequestModel.getCountryId())</span>
+<span class="nc" id="L66">                .build();</span>
+    }
+
+    public static TourEvent toTourEventEntity(TourEventRequestModel tourEventRequestModel) {
+<span class="nc" id="L70">        return TourEvent.builder()</span>
+<span class="nc" id="L71">                .tourEventId(generateUUIDString())</span>
+<span class="nc" id="L72">                .seq(tourEventRequestModel.getSeq())</span>
+<span class="nc" id="L73">                .seqDesc(tourEventRequestModel.getSeqDesc())</span>
+<span class="nc" id="L74">                .tourId(tourEventRequestModel.getTourId())</span>
+<span class="nc" id="L75">                .eventId(tourEventRequestModel.getEventId())</span>
+<span class="nc" id="L76">                .build();</span>
+    }
+
+    public static TourEventResponseModel toTourEventResponseModel(TourEvent tourEvent) {
+<span class="nc" id="L80">        TourEventResponseModel tourEventResponseModel = new TourEventResponseModel();</span>
+<span class="nc" id="L81">        BeanUtils.copyProperties(tourEvent, tourEventResponseModel);</span>
+<span class="nc" id="L82">        return tourEventResponseModel;</span>
+    }
+
+    public static String generateUUIDString() {
+<span class="nc" id="L86">        return UUID.randomUUID().toString();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

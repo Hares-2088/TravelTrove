@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TourEventsController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">be-traveltrove</a> &gt; <a href="index.source.html" class="el_package">com.traveltrove.betraveltrove.presentation.tour</a> &gt; <span class="el_source">TourEventsController.java</span></div><h1>TourEventsController.java</h1><pre class="source lang-java linenums">package com.traveltrove.betraveltrove.presentation.tour;
+
+import com.traveltrove.betraveltrove.business.tour.TourEventsService;
+import com.traveltrove.betraveltrove.dataaccess.tour.TourEvents;
+import com.traveltrove.betraveltrove.utils.EntityModelUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@RestController
+@RequestMapping(&quot;/api/v1/tour-events&quot;)
+public class TourEventsController {
+
+    @Autowired
+    private TourEventsService tourEventsService;
+
+<span class="nc" id="L21">    public TourEventsController(TourEventsService tourEventsService) {</span>
+<span class="nc" id="L22">        this.tourEventsService = tourEventsService;</span>
+<span class="nc" id="L23">    }</span>
+
+    @GetMapping
+    public Flux&lt;TourEventsResponseModel&gt; getAllTourEvents() {
+<span class="nc" id="L27">        return tourEventsService.getAllTourEvents()</span>
+<span class="nc" id="L28">                .map(event -&gt; {</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">                    if (event == null) {</span>
+<span class="nc" id="L30">                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Tour events not found&quot;);</span>
+                    }
+<span class="nc" id="L32">                    return event;</span>
+                });
+    }
+
+    @GetMapping(&quot;{tourId}&quot;)
+    public Mono&lt;TourEventsResponseModel&gt; getTourEventsByTourId(@PathVariable String tourId) {
+<span class="nc" id="L38">        return tourEventsService.getTourEventsByTourId(tourId);</span>
+    }
+
+    @PostMapping
+    public Mono&lt;ResponseEntity&lt;TourEventsResponseModel&gt;&gt; addTourEvent(@RequestBody TourEventsRequestModel request) {
+<span class="nc" id="L43">        return tourEventsService.addTourEvent(EntityModelUtil.toTourEventsEntity(request))</span>
+<span class="nc" id="L44">                .map(event -&gt; ResponseEntity.status(HttpStatus.CREATED).body(event));</span>
+    }
+
+    @PutMapping(&quot;/{toursEventId}&quot;)
+    public Mono&lt;ResponseEntity&lt;TourEventsResponseModel&gt;&gt; updateTourEvent(@PathVariable String toursEventId,
+                                                                         @RequestBody TourEventsRequestModel request) {
+<span class="nc" id="L50">        return tourEventsService.updateTourEvent(toursEventId, request)</span>
+<span class="nc" id="L51">                .map(event -&gt; ResponseEntity.ok(event))</span>
+<span class="nc" id="L52">                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+    }
+
+    @DeleteMapping(&quot;/{toursEventId}&quot;)
+    public Mono&lt;ResponseEntity&lt;Void&gt;&gt; deleteTourEvent(@PathVariable String toursEventId) {
+<span class="nc" id="L57">        return tourEventsService.deleteTourEvent(toursEventId)</span>
+<span class="nc" id="L58">                .then(Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).build()));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

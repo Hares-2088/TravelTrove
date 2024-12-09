@@ -1,0 +1,152 @@
+@startuml
+title City Management Sequence Diagram for Employee
+
+actor Employee as "<<Actor>>\nEmployee"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant CitiesPage as "<<View>>\nCitiesPage"
+participant CityController as "<<Controller>>\nCityController"
+participant CityService as "<<Service>>\nCityService"
+participant CityEntity as "<<Entity>>\nCityEntity"
+participant CityRepository as "<<Repository>>\nCityRepository"
+participant Database as "<<Database>>"
+participant CityResponseModel as "<<Model>>\nCityResponseModel"
+
+Employee -> ReactApplication : Access Cities Page
+activate ReactApplication
+
+ReactApplication -> CitiesPage : render()
+activate CitiesPage
+deactivate ReactApplication
+
+CitiesPage -> CityController : GET /api/v1/cities
+activate CityController
+
+CityController -> CityService : getAllCities()
+activate CityService
+
+CityService -> CityRepository : findAll()
+activate CityRepository
+
+CityRepository -> Database : SELECT * FROM cities
+activate Database
+Database --> CityRepository : List of cities
+deactivate Database
+
+CityRepository --> CityService : cityEntities
+deactivate CityRepository
+
+CityService -> CityResponseModel : Map entities to response models
+activate CityResponseModel
+CityResponseModel --> CityService : Response models ready
+deactivate CityResponseModel
+
+CityService --> CityController : List of CityResponseModels
+deactivate CityService
+
+CityController --> CitiesPage : Display cities list
+deactivate CityController
+
+opt Add New City
+    Employee -> CitiesPage : Fill form and submit
+    CitiesPage -> CityController : POST /api/v1/cities
+    activate CityController
+
+    CityController -> CityService : addCity(cityRequestModel)
+    activate CityService
+
+    CityService -> CityEntity : Instantiate from request model
+    activate CityEntity
+    CityEntity --> CityService : Entity created
+    deactivate CityEntity
+
+    CityService -> CityRepository : save(cityEntity)
+    activate CityRepository
+    CityRepository -> Database : INSERT INTO cities
+    activate Database
+    Database --> CityRepository : Success
+    deactivate Database
+    CityRepository --> CityService : Saved city
+    deactivate CityRepository
+
+    CityService -> CityResponseModel : Create response model from entity
+    activate CityResponseModel
+    CityResponseModel --> CityService : Response ready
+    deactivate CityResponseModel
+
+    CityService --> CityController : cityResponseModel
+    deactivate CityService
+    CityController --> CitiesPage : City added successfully
+    deactivate CityController
+end
+
+opt Modify City
+    Employee -> CitiesPage : Edit form and submit
+    CitiesPage -> CityController : PUT /api/v1/cities/{cityId}
+    activate CityController
+
+    CityController -> CityService : updateCity(cityId, cityRequestModel)
+    activate CityService
+
+    CityService -> CityRepository : findCityByCityId(cityId)
+    activate CityRepository
+    CityRepository -> Database : SELECT * FROM cities WHERE id = cityId
+    activate Database
+    Database --> CityRepository : City found
+    deactivate Database
+    CityRepository --> CityService : cityEntity
+    deactivate CityRepository
+
+    CityService -> CityEntity : Update entity with request data
+    activate CityEntity
+    CityEntity --> CityService : Updated entity
+    deactivate CityEntity
+
+    CityService -> CityRepository : save(updatedCityEntity)
+    activate CityRepository
+    CityRepository -> Database : UPDATE cities SET ...
+    Database --> CityRepository : Success
+    deactivate Database
+    CityRepository --> CityService : Updated city
+    deactivate CityRepository
+
+    CityService -> CityResponseModel : Create response model
+    activate CityResponseModel
+    CityResponseModel --> CityService : Response ready
+    deactivate CityResponseModel
+
+    CityService --> CityController : cityResponseModel
+    deactivate CityService
+    CityController --> CitiesPage : City updated successfully
+    deactivate CityController
+end
+
+opt Get City by ID
+    Employee -> CitiesPage : Click on city name
+    CitiesPage -> CityController : GET /api/v1/cities/{cityId}
+    activate CityController
+
+    CityController -> CityService : getCityById(cityId)
+    activate CityService
+
+    CityService -> CityRepository : findCityByCityId(cityId)
+    activate CityRepository
+    CityRepository -> Database : SELECT * FROM cities WHERE id = cityId
+    activate Database
+    Database --> CityRepository : City data
+    deactivate Database
+    CityRepository --> CityService : cityEntity
+    deactivate CityRepository
+
+    CityService -> CityResponseModel : Create response model
+    activate CityResponseModel
+    CityResponseModel --> CityService : Response ready
+    deactivate CityResponseModel
+
+    CityService --> CityController : cityResponseModel
+    deactivate CityService
+    CityController --> CitiesPage : Display city details
+    deactivate CityController
+end
+
+@enduml

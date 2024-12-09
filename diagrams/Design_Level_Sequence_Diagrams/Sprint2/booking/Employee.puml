@@ -1,0 +1,56 @@
+@startuml
+title Booking Viewing Sequence Diagram for Employee
+
+actor Employee
+participant ReactApplication
+participant BookingsPage
+participant BookingController
+participant BookingService
+participant BookingEntity
+participant BookingRepository
+participant Database
+participant BookingResponseModel
+
+Employee -> ReactApplication : Access Bookings Page
+activate ReactApplication
+
+ReactApplication -> BookingsPage : render()
+activate BookingsPage
+deactivate ReactApplication
+
+BookingsPage --> Employee : Display list of customer bookings
+
+opt View All Bookings
+    Employee -> BookingsPage : Request all bookings
+    BookingsPage -> BookingController : GET /api/v1/bookings
+    activate BookingController
+
+    BookingController -> BookingService : getAllBookings()
+    activate BookingService
+
+    BookingService -> BookingRepository : findAll()
+    activate BookingRepository
+
+    BookingRepository -> Database : SELECT * FROM bookings
+    activate Database
+    Database --> BookingRepository : List of bookings
+    deactivate Database
+
+    BookingRepository --> BookingService : List of booking entities
+    deactivate BookingRepository
+
+    BookingService -> BookingResponseModel : Map entities to response models
+    activate BookingResponseModel
+    BookingResponseModel --> BookingService : Response models ready
+    deactivate BookingResponseModel
+
+    BookingService --> BookingController : List of BookingResponseModels
+    deactivate BookingService
+
+    BookingController --> BookingsPage : Response with all bookings
+    deactivate BookingController
+
+    BookingsPage --> Employee : Display all bookings
+end
+
+@enduml

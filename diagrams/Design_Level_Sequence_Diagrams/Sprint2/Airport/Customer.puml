@@ -1,0 +1,76 @@
+@startuml
+title Airport Viewing Sequence Diagram for Customer
+
+actor Customer as "<<Actor>>\nCustomer"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant TourPackagePage as "<<View>>\nTourPackagePage"
+participant TourPackageController as "<<Controller>>\nTourPackageController"
+participant TourPackageService as "<<Service>>\nTourPackageService"
+participant TourPackageRepository as "<<Repository>>\nTourPackageRepository"
+participant AirportController as "<<Controller>>\nAirportController"
+participant AirportService as "<<Service>>\nAirportService"
+participant AirportRepository as "<<Repository>>\nAirportRepository"
+participant Database as "<<Database>>"
+
+Customer -> ReactApplication : Access Tour Package Page
+activate ReactApplication
+
+ReactApplication -> TourPackagePage : render()
+activate TourPackagePage
+deactivate ReactApplication
+
+TourPackagePage --> Customer : Display placeholder for tour package and related airports
+
+Customer -> TourPackagePage : Request tour package details
+TourPackagePage -> TourPackageController : GET /api/v1/tour-packages/{tourId}
+activate TourPackageController
+
+TourPackageController -> TourPackageService : getTourPackageById(tourId)
+activate TourPackageService
+
+TourPackageService -> TourPackageRepository : findById(tourId)
+activate TourPackageRepository
+
+TourPackageRepository -> Database : SELECT * FROM tour_packages WHERE id = tourId
+activate Database
+Database --> TourPackageRepository : Tour package data
+deactivate Database
+
+TourPackageRepository --> TourPackageService : Tour package entity
+deactivate TourPackageRepository
+
+TourPackageService --> TourPackageController : Tour package details
+deactivate TourPackageService
+
+TourPackageController --> TourPackagePage : Tour package details
+deactivate TourPackageController
+
+TourPackagePage --> Customer : Display tour package details
+
+Customer -> TourPackagePage : Request related airports
+TourPackagePage -> AirportController : GET /api/v1/airports/tour/{tourId}
+activate AirportController
+
+AirportController -> AirportService : getAirportsByTourId(tourId)
+activate AirportService
+
+AirportService -> AirportRepository : findAllByTourId(tourId)
+activate AirportRepository
+
+AirportRepository -> Database : SELECT * FROM airports WHERE tourId = tourId
+Database --> AirportRepository : List of airports
+deactivate Database
+
+AirportRepository --> AirportService : Airport entities
+deactivate AirportRepository
+
+AirportService --> AirportController : Airport details
+deactivate AirportService
+
+AirportController --> TourPackagePage : Related airport details
+deactivate AirportController
+
+TourPackagePage --> Customer : Display airports
+
+@enduml
