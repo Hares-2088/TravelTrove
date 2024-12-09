@@ -1,0 +1,152 @@
+@startuml
+title Tour Events Management Sequence Diagram for Employee
+
+actor Employee as "<<Actor>>\nEmployee"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant TourEventsPage as "<<View>>\nTourEventsPage"
+participant TourEventController as "<<Controller>>\nTourEventController"
+participant TourEventService as "<<Service>>\nTourEventService"
+participant TourEventEntity as "<<Entity>>\nTourEventEntity"
+participant TourEventRepository as "<<Repository>>\nTourEventRepository"
+participant Database as "<<Database>>"
+participant TourEventResponseModel as "<<Model>>\nTourEventResponseModel"
+
+Employee -> ReactApplication : Access Tour Events Page
+activate ReactApplication
+
+ReactApplication -> TourEventsPage : render()
+activate TourEventsPage
+deactivate ReactApplication
+
+TourEventsPage -> TourEventController : GET /api/v1/tourevents
+activate TourEventController
+
+TourEventController -> TourEventService : getAllTourEvents()
+activate TourEventService
+
+TourEventService -> TourEventRepository : findAll()
+activate TourEventRepository
+
+TourEventRepository -> Database : SELECT * FROM tourevents
+activate Database
+Database --> TourEventRepository : List of tour events
+deactivate Database
+
+TourEventRepository --> TourEventService : List of tourEventEntities
+deactivate TourEventRepository
+
+TourEventService -> TourEventResponseModel : Map entities to response models
+activate TourEventResponseModel
+TourEventResponseModel --> TourEventService : Response models ready
+deactivate TourEventResponseModel
+
+TourEventService --> TourEventController : List of TourEventResponseModels
+deactivate TourEventService
+
+TourEventController --> TourEventsPage : Display list of tour events
+deactivate TourEventController
+
+opt Add New Tour Event
+    Employee -> TourEventsPage : Fill form and submit
+    TourEventsPage -> TourEventController : POST /api/v1/tourevents
+    activate TourEventController
+
+    TourEventController -> TourEventService : addTourEvent(tourEventRequestModel)
+    activate TourEventService
+
+    TourEventService -> TourEventEntity : Instantiate from request model
+    activate TourEventEntity
+    TourEventEntity --> TourEventService : Entity created
+    deactivate TourEventEntity
+
+    TourEventService -> TourEventRepository : save(tourEventEntity)
+    activate TourEventRepository
+    TourEventRepository -> Database : INSERT INTO tourevents
+    activate Database
+    Database --> TourEventRepository : Success
+    deactivate Database
+    TourEventRepository --> TourEventService : Saved tourEvent
+    deactivate TourEventRepository
+
+    TourEventService -> TourEventResponseModel : Create response model
+    activate TourEventResponseModel
+    TourEventResponseModel --> TourEventService : Response ready
+    deactivate TourEventResponseModel
+
+    TourEventService --> TourEventController : tourEventResponseModel
+    deactivate TourEventService
+    TourEventController --> TourEventsPage : Tour event added successfully
+    deactivate TourEventController
+end
+
+opt Modify Tour Event
+    Employee -> TourEventsPage : Edit form and submit
+    TourEventsPage -> TourEventController : PUT /api/v1/tourevents/{tourEventId}
+    activate TourEventController
+
+    TourEventController -> TourEventService : updateTourEvent(tourEventId, tourEventRequestModel)
+    activate TourEventService
+
+    TourEventService -> TourEventRepository : findByTourEventId(tourEventId)
+    activate TourEventRepository
+    TourEventRepository -> Database : SELECT * FROM tourevents WHERE id = tourEventId
+    activate Database
+    Database --> TourEventRepository : Tour event found
+    deactivate Database
+    TourEventRepository --> TourEventService : tourEventEntity
+    deactivate TourEventRepository
+
+    TourEventService -> TourEventEntity : Update entity with request data
+    activate TourEventEntity
+    TourEventEntity --> TourEventService : Updated entity
+    deactivate TourEventEntity
+
+    TourEventService -> TourEventRepository : save(updatedTourEventEntity)
+    activate TourEventRepository
+    TourEventRepository -> Database : UPDATE tourevents SET ...
+    Database --> TourEventRepository : Success
+    deactivate Database
+    TourEventRepository --> TourEventService : Updated tour event
+    deactivate TourEventRepository
+
+    TourEventService -> TourEventResponseModel : Create response model
+    activate TourEventResponseModel
+    TourEventResponseModel --> TourEventService : Response ready
+    deactivate TourEventResponseModel
+
+    TourEventService --> TourEventController : tourEventResponseModel
+    deactivate TourEventService
+    TourEventController --> TourEventsPage : Tour event updated successfully
+    deactivate TourEventController
+end
+
+opt Get Tour Event by ID
+    Employee -> TourEventsPage : Click on tour event
+    TourEventsPage -> TourEventController : GET /api/v1/tourevents/{tourEventId}
+    activate TourEventController
+
+    TourEventController -> TourEventService : getTourEventByTourEventId(tourEventId)
+    activate TourEventService
+
+    TourEventService -> TourEventRepository : findByTourEventId(tourEventId)
+    activate TourEventRepository
+    TourEventRepository -> Database : SELECT * FROM tourevents WHERE id = tourEventId
+    activate Database
+    Database --> TourEventRepository : Tour event data
+    deactivate Database
+    TourEventRepository --> TourEventService : tourEventEntity
+    deactivate TourEventRepository
+
+    TourEventService -> TourEventResponseModel : Create response model
+    activate TourEventResponseModel
+    TourEventResponseModel --> TourEventService : Response ready
+    deactivate TourEventResponseModel
+
+    TourEventService --> TourEventController : tourEventResponseModel
+    deactivate TourEventService
+    TourEventController --> TourEventsPage : Display tour event details
+    deactivate TourEventController
+end
+
+@enduml

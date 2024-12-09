@@ -1,0 +1,14 @@
+.footer {
+  border-top: 1px solid #ddd;
+}
+
+.footer .social-icons a img {
+  margin: 0 10px;
+  width: 25px;
+  height: 25px;
+}
+
+.footer .social-icons a img:hover {
+  transform: scale(1.1);
+  transition: 0.3s ease-in-out;
+}

@@ -1,0 +1,38 @@
+@startuml
+left to right direction
+
+' Add a header with left alignment
+header
+Dar El Salam
+endheader
+
+' Custom skin parameters for use cases
+skinparam usecase {
+    BackgroundColor lightblue
+    BorderColor DarkSlateGray
+    ArrowColor Black
+}
+
+actor "Dar El Salam's Employee" as Employee
+
+rectangle "Travel Trove System" {
+
+    usecase "Browse tour packages"
+    usecase "Add tour package"
+    usecase "Modify tour package"
+    usecase "Filter search result"
+    usecase "Custom notification"
+
+}
+Employee -- "Browse tour packages"
+"Browse tour packages" <.. "Filter search result" : <<extend>>
+"Browse tour packages" <.. "Add tour package" : <<extend>>
+"Browse tour packages" <.. "Modify tour package" : <<extend>>
+"Modify tour package" <.. "Custom notification" : <<extend>>
+"Modify tour package" <.. "Filter search result" : <<extend>>
+
+
+
+
+
+@enduml

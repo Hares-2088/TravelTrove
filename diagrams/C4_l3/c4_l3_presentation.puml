@@ -1,0 +1,174 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!include DEVICONS/mongodb.puml
+!include DEVICONS/react.puml
+!include DEVICONS/java.puml
+!includeurl DEVICONS/html5.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include FONTAWESOME/amazon.puml
+!include FONTAWESOME/stripe.puml
+!include FONTAWESOME/google.puml
+
+AddElementTag("page", $shape = RectangleShape(), $bgColor="lightSkyBlue", $fontColor="white")
+AddElementTag("feature", $shape = RectangleShape(), $bgColor="lightSteelBlue", $fontColor="white")
+AddElementTag("shared", $shape = RectangleShape(), $bgColor="lightGreen", $fontColor="black")
+AddElementTag("context", $shape = RectangleShape(), $bgColor="Green", $fontColor="white")
+AddElementTag("layout", $shape = RectangleShape(), $bgColor="lightSlateGray", $fontColor="white")
+AddElementTag("entry", $shape = RectangleShape(), $bgColor="lightCoral", $fontColor="black")
+
+LAYOUT_LEFT_RIGHT()
+
+title Presentation Layer Component Diagram - Dar El Salam Travel
+
+Container_Boundary(spa, "Web Application (React)") {
+
+    ' Entry point for the SPA
+    Component(IndexHTML, "index.html", "HTML Page", "Initial entry point for loading the React app", $tags = "entry", $sprite="html5")
+
+    ' Left side: context folder
+    Container_Boundary(context, "Context") {
+        Component(UserContext, "User Context", "React Context", "Provides user session and context data", $tags = "context", $sprite="react")
+    }
+
+    ' Center: pages and features aligned
+    Container_Boundary(customer_pages_and_features, "Customer Pages and Features") {
+        ' Main user pages and features
+        Component(ToursFeature, "Tours Feature", "React Module", "Manages tours browsing functionality", $tags = "feature", $sprite="react")
+
+        Component(ToursPage, "Tours Page", "React Component", "Displays available tours", $tags = "page", $sprite="react")
+        Component(TourDetailsPage, "Tour Details Page", "React Component", "Shows detailed tour information", $tags = "page", $sprite="react")
+
+        Component(BookingPage, "Booking Page", "React Component", "Allows users to book trips", $tags = "page", $sprite="react")
+        Component(BookingFeature, "Booking Feature", "React Module", "Handles trip booking operations", $tags = "feature", $sprite="react")
+
+        Component(UserProfilePage, "User Profile Page", "React Component", "Manages user information and preferences", $tags = "page", $sprite="react")
+        Component(ProfileFeature, "Profile Feature", "React Module", "Handles user profile management", $tags = "feature", $sprite="react")
+
+        Component(ReservationPage, "Reservation Page", "React Component", "Displays user reservations", $tags = "page", $sprite="react")
+        Component(ReservationFeature, "Reservation Feature", "React Module", "Manages user reservations", $tags = "feature", $sprite="react")
+
+        Component(PaymentPage, "Payment Page", "React Component", "Handles payment interactions", $tags = "page", $sprite="react")
+        Component(PaymentFeature, "Payment Feature", "React Module", "Manages payment processing", $tags = "feature", $sprite="react")
+
+        Component(EmailingFeature, "Emailing feature", "React Module", "Handles emailing functionality", $tags = "feature", $sprite="react")
+
+        Component(ReviewPage, "Review Page", "React Component", "Displays reviews", $tags = "page", $sprite="react")
+        Component(AddReviewFeature, "Add Review Feature", "React Module", "Allows users to add reviews", $tags = "feature", $sprite="react")
+
+        Component(HomePage, "Home Page", "React Component", "Displays the main entry point", $tags = "page", $sprite="react")
+    }
+
+    ' Admin-specific pages and features
+    Container_Boundary(admin_pages_and_features, "Admin Pages and Features") {
+        Component(AdminDashboardPage, "Admin Dashboard Page", "React Component", "Main control panel for admins", $tags = "page", $sprite="react")
+        Component(EmployeeListPage, "Employee List Page", "React Component", "Displays the list of employees for admin", $tags = "page", $sprite="react")
+        Component(EmployeeDetailsPage, "Employee Details Page", "React Component", "Shows detailed information of an employee for admin", $tags = "page", $sprite="react")
+
+        Component(AddEmployeeFeature, "Add Employee Feature", "React Module", "Allows the admin to add new employees", $tags = "feature", $sprite="react")
+        Component(ManageEmployeeAccountsFeature, "Manage Employee Accounts Feature", "React Module", "Handles employee data management", $tags = "feature", $sprite="react")
+        Component(ControlPermissionsFeature, "Control Permissions Feature", "React Module", "Enables admin control over employee permissions", $tags = "feature", $sprite="react")
+
+        Component(ReportsPage, "Reports Page", "React Component", "Displays reporting tools for admin", $tags = "page", $sprite="react")
+        Component(GenerateReportFeature, "Generate Report Feature", "React Module", "Generates reports based on criteria", $tags = "feature", $sprite="react")
+    }
+
+    ' Employee-specific pages and features
+    Container_Boundary(employee_pages_and_features, "Employee Pages and Features") {
+        Component(TourManagementPage, "Tour Management Page", "React Component", "Allows employees to manage tour packages", $tags = "page", $sprite="react")
+        Component(AddTourPackageFeature, "Add Tour Package Feature", "React Module", "Allows employees to add new tour packages", $tags = "feature", $sprite="react")
+        Component(ModifyTourPackageFeature, "Modify Tour Package Feature", "React Module", "Enables editing of existing tour packages", $tags = "feature", $sprite="react")
+
+        Component(CustomNotificationPage, "Custom Notification Page", "React Component", "Allows employees to send notifications", $tags = "page", $sprite="react")
+        Component(CustomEmailNotificationFeature, "Custom Email Notification Feature", "React Module", "Sends customized notifications to customers", $tags = "feature", $sprite="react")
+    }
+
+    ' Right side: layout and shared folder
+    Container_Boundary(layouts, "Layouts") {
+        Component(AppNavBar, "App Navigation Bar", "React Component", "Layout for the navigation bar", $tags = "layout", $sprite="react")
+    }
+
+    Component(AxiosInstance, "Axios", "Library (Axios)", "Handles HTTP client for API requests", $tags = "shared", $sprite="react")
+    Component(Router, "Router Component", "React Router", "Manages application routing", $tags = "shared", $sprite="react")
+}
+
+System_Boundary(api, "Dar El Salam API") {
+    Component(BackendService, "Spring Boot API", "Handles business logic and data", $sprite="java")
+}
+
+' Relationships
+Rel(IndexHTML, AppNavBar, "Loads the initial page")
+
+Rel(UserContext, ToursPage, "Provides user context to")
+Rel(UserContext, TourDetailsPage, "Provides user context to")
+Rel(UserContext, BookingPage, "Provides user context to")
+Rel(UserContext, UserProfilePage, "Provides user context to")
+Rel(UserContext, ReservationPage, "Provides user context to")
+Rel(UserContext, PaymentPage, "Provides user context to")
+Rel(UserContext, AdminDashboardPage, "Provides user context to")
+Rel(UserContext, EmployeeListPage, "Provides user context to")
+Rel(UserContext, EmployeeDetailsPage, "Provides user context to")
+Rel(UserContext, TourManagementPage, "Provides user context to")
+Rel(UserContext, CustomNotificationPage, "Provides user context to")
+Rel(UserContext, ReviewPage, "Provides user context to")
+
+Rel(UserContext, HomePage, "Provides user context to")
+
+
+Rel(ToursFeature, AxiosInstance, "Fetches data using", "HTTP")
+Rel(BookingFeature, AxiosInstance, "Submits booking data via", "HTTP")
+Rel(ProfileFeature, AxiosInstance, "Fetches/Updates user data using", "HTTP")
+Rel(ReservationFeature, AxiosInstance, "Fetches reservation data using", "HTTP")
+Rel(PaymentFeature, AxiosInstance, "Processes payment via", "HTTP")
+Rel(EmailingFeature, AxiosInstance, "Sends email notifications using", "HTTP")
+Rel(AddReviewFeature, AxiosInstance, "Adds reviews using", "HTTP")
+
+Rel(CustomEmailNotificationFeature, AxiosInstance , "Provides user context to")
+Rel(AddTourPackageFeature, AxiosInstance, "Provides user context to")
+Rel(ModifyTourPackageFeature, AxiosInstance, "Provides user context to")
+
+Rel(AddEmployeeFeature, AxiosInstance, "Provides user context to")
+Rel(ManageEmployeeAccountsFeature, AxiosInstance, "Provides user context to")
+Rel(ControlPermissionsFeature, AxiosInstance, "Provides user context to")
+Rel(GenerateReportFeature, AxiosInstance, "Provides user context to")
+
+Rel(Router, UserContext, "Manages routing based on user context")
+Rel(AxiosInstance, BackendService, "Sends HTTP requests to")
+
+Rel(AppNavBar, Router, "Uses to handle navigation")
+
+' Page to Feature relationships
+Rel(ToursPage, ToursFeature, "Uses")
+Rel(TourDetailsPage, ToursFeature, "Uses")
+Rel(HomePage, ToursFeature, "Uses")
+Rel(ReviewPage, ToursFeature, "Uses")
+Rel(ReviewPage, AddReviewFeature, "Uses")
+Rel(UserProfilePage, EmailingFeature, "Uses")
+
+Rel(BookingPage, BookingFeature, "Uses")
+Rel(UserProfilePage, ProfileFeature, "Uses")
+Rel(ReservationPage, ReservationFeature, "Uses")
+Rel(PaymentPage, PaymentFeature, "Uses")
+Rel(AddReviewFeature, ReviewPage, "Links")
+
+Rel(AdminDashboardPage, ControlPermissionsFeature, "Uses")
+Rel(AdminDashboardPage, GenerateReportFeature, "Uses")
+Rel(EmployeeListPage, ManageEmployeeAccountsFeature, "Uses")
+Rel(EmployeeDetailsPage, ManageEmployeeAccountsFeature, "Uses")
+Rel(ReportsPage, GenerateReportFeature, "Uses")
+Rel(EmployeeListPage, AddEmployeeFeature, "Uses")
+
+Rel(CustomNotificationPage, CustomEmailNotificationFeature, "Uses")
+Rel(TourManagementPage, AddTourPackageFeature, "Uses")
+Rel(TourManagementPage, ModifyTourPackageFeature, "Uses")
+
+Person(customer, "Customer", "Customer of the travel agency")
+Person(employee, "Employee", "Employee of the travel agency")
+Person(admin, "Admin", "Admin of the travel agency")
+
+Rel(customer, IndexHTML, "Interacts with", "Web Browser / Mobile App")
+Rel(admin, IndexHTML, "Interacts with", "Web Browser")
+Rel(employee, IndexHTML, "Interacts with", "API Client")
+
+@enduml

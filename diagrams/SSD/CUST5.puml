@@ -1,0 +1,20 @@
+@startuml
+title CUST5 - Pay for a Tour
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor Customer #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+participant "Stripe" as Stripe #FFFFFF
+
+Customer -> TMS : Enter Payment Details
+TMS -> Stripe : Send Payment Request
+Stripe -> TMS : Payment Status Data (e.g., Transaction ID, Amount, Status)
+alt Payment Successful
+    TMS -> Customer : Payment Data (e.g., Transaction ID, Amount, Status)
+else Payment Failed
+    TMS -> Customer : Error Data (e.g., Reason for Failure)
+end
+
+@enduml

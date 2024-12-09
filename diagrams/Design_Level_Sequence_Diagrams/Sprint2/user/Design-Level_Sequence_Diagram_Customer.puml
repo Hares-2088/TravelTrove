@@ -1,0 +1,99 @@
+@startuml
+title Customer Profile Management Sequence Diagram
+
+actor Customer as "<<Actor>>\nCustomer"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant ProfilePage as "<<View>>\nProfilePage"
+participant UserController as "<<Controller>>\nUserController"
+participant UserService as "<<Service>>\nUserService"
+participant UserRepository as "<<Repository>>\nUserRepository"
+participant Database as "<<Database>>"
+participant UserResponseModel as "<<Model>>\nUserResponseModel"
+participant UserRequestModel as "<<Model>>\nUserRequestModel"
+
+Customer -> ReactApplication : Access Profile Page
+activate ReactApplication
+
+ReactApplication -> ProfilePage : render()
+activate ProfilePage
+deactivate ReactApplication
+
+ProfilePage -> UserController : GET /api/v1/users/{userId}
+activate UserController
+
+UserController -> UserService : getUserById(userId)
+activate UserService
+
+UserService -> UserRepository : findById(userId)
+activate UserRepository
+
+UserRepository -> Database : SELECT * FROM users WHERE id = userId
+activate Database
+Database --> UserRepository : User data
+deactivate Database
+
+UserRepository --> UserService : userEntity
+deactivate UserRepository
+
+UserService -> UserResponseModel : Map entity to response model
+activate UserResponseModel
+UserResponseModel --> UserService : Response model ready
+deactivate UserResponseModel
+
+UserService --> UserController : UserResponseModel
+deactivate UserService
+
+UserController --> ProfilePage : Display user profile data
+deactivate UserController
+
+ProfilePage --> Customer : Show user profile details
+
+opt Modify Profile Information
+    Customer -> ProfilePage : Edit and submit profile changes
+    ProfilePage -> UserController : PUT /api/v1/users/{userId}
+    activate UserController
+
+    UserController -> UserRequestModel : Create request model from form data
+    activate UserRequestModel
+    UserRequestModel -> UserService : updateUser(userId, userRequestModel)
+    deactivate UserRequestModel
+    activate UserService
+
+    UserService -> UserRepository : Find user by ID
+    activate UserRepository
+    UserRepository -> Database : SELECT * FROM users WHERE id = userId
+    activate Database
+    Database --> UserRepository : User data
+    deactivate Database
+    UserRepository --> UserService : userEntity
+    deactivate UserRepository
+
+    UserService -> UserEntity : Update entity with new data
+    activate UserEntity
+    UserEntity --> UserService : Updated entity
+    deactivate UserEntity
+
+    UserService -> UserRepository : save(updatedUserEntity)
+    activate UserRepository
+    UserRepository -> Database : UPDATE users SET ...
+    Database --> UserRepository : Success
+    deactivate Database
+    UserRepository --> UserService : Updated user
+    deactivate UserRepository
+
+    UserService -> UserResponseModel : Map updated entity to response model
+    activate UserResponseModel
+    UserResponseModel --> UserService : Response model ready
+    deactivate UserResponseModel
+
+    UserService --> UserController : UserResponseModel
+    deactivate UserService
+
+    UserController --> ProfilePage : Update success message
+    deactivate UserController
+
+    ProfilePage --> Customer : Profile updated successfully
+end
+
+@enduml

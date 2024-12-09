@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CityController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">be-traveltrove</a> &gt; <a href="index.source.html" class="el_package">com.traveltrove.betraveltrove.presentation.city</a> &gt; <span class="el_source">CityController.java</span></div><h1>CityController.java</h1><pre class="source lang-java linenums">package com.traveltrove.betraveltrove.presentation.city;
+
+import com.traveltrove.betraveltrove.business.city.CityService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import org.springframework.http.MediaType;
+
+@RestController
+@RequestMapping(&quot;/api/v1/cities&quot;)
+<span class="nc" id="L16">@Slf4j</span>
+@CrossOrigin(origins = &quot;http://localhost:3000&quot;)
+<span class="nc" id="L18">@RequiredArgsConstructor</span>
+public class CityController {
+
+    private final CityService cityService;
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono&lt;CityResponseModel&gt; addCity(@Valid @RequestBody CityRequestModel cityRequestModel) {
+<span class="nc" id="L26">        return cityService.addCity(cityRequestModel);</span>
+    }
+
+    @GetMapping(value = &quot;/{cityId}&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono&lt;ResponseEntity&lt;CityResponseModel&gt;&gt; getCityById(@PathVariable String cityId) {
+<span class="nc" id="L31">        return cityService.getCityById(cityId)</span>
+<span class="nc" id="L32">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L33">                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+    }
+
+    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux&lt;CityResponseModel&gt; getAllCities() {
+<span class="nc" id="L38">        return cityService.getAllCities();</span>
+    }
+
+    @PutMapping(value = &quot;/{cityId}&quot;, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono&lt;ResponseEntity&lt;CityResponseModel&gt;&gt; updateCity(@PathVariable String cityId, @Valid @RequestBody CityRequestModel cityRequestModel) {
+<span class="nc" id="L43">        return cityService.updateCity(cityId, cityRequestModel)</span>
+<span class="nc" id="L44">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L45">                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+    }
+
+    @DeleteMapping(value = &quot;/{cityId}&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono&lt;Void&gt; deleteCityByCityId(@PathVariable String cityId) {
+<span class="nc" id="L51">        return cityService.deleteCityByCityId(cityId);</span>
+    }
+
+    @GetMapping(value = &quot;/country/{countryId}&quot;, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux&lt;ResponseEntity&lt;CityResponseModel&gt;&gt; getAllCitiesByCountryId(@PathVariable String countryId) {
+<span class="nc" id="L56">        return cityService.getAllCitiesByCountryId(countryId)</span>
+<span class="nc" id="L57">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L58">                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+    }
+
+    @GetMapping(value = &quot;/{cityId}/country/{countryId}&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono&lt;ResponseEntity&lt;CityResponseModel&gt;&gt; getCityByCityIdAndCountryId(@PathVariable String cityId, @PathVariable String countryId) {
+<span class="nc" id="L63">        return cityService.getCityByCityIdAndCountryId(cityId, countryId)</span>
+<span class="nc" id="L64">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L65">                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

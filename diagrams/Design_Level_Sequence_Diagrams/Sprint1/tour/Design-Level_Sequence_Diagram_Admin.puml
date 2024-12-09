@@ -1,0 +1,185 @@
+@startuml
+title Tour Management Sequence Diagram for Admin
+
+actor Admin as "<<Actor>>\nAdmin"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant ToursPage as "<<View>>\nToursPage"
+participant TourController as "<<Controller>>\nTourController"
+participant TourService as "<<Service>>\nTourService"
+participant TourEntity as "<<Entity>>\nTourEntity"
+participant TourRepository as "<<Repository>>\nTourRepository"
+participant Database as "<<Database>>"
+participant TourResponseModel as "<<Model>>\nTourResponseModel"
+
+Admin -> ReactApplication : Access Tours Page
+activate ReactApplication
+
+ReactApplication -> ToursPage : render()
+activate ToursPage
+deactivate ReactApplication
+
+ToursPage -> TourController : GET /api/v1/tours
+activate TourController
+
+TourController -> TourService : getTours()
+activate TourService
+
+TourService -> TourRepository : findAll()
+activate TourRepository
+
+TourRepository -> Database : SELECT * FROM tours
+activate Database
+Database --> TourRepository : List of tours
+deactivate Database
+
+TourRepository --> TourService : tourEntities
+deactivate TourRepository
+
+TourService -> TourResponseModel : Map entities to response models
+activate TourResponseModel
+TourResponseModel --> TourService : Response models ready
+deactivate TourResponseModel
+
+TourService --> TourController : List of TourResponseModels
+deactivate TourService
+
+TourController --> ToursPage : Display tours list
+deactivate TourController
+
+opt Add New Tour
+    Admin -> ToursPage : Fill tour form and submit
+    ToursPage -> TourController : POST /api/v1/tours
+    activate TourController
+
+    TourController -> TourService : saveTour(tourRequestModel)
+    activate TourService
+
+    TourService -> TourEntity : Instantiate from request model
+    activate TourEntity
+    TourEntity --> TourService : Entity created
+    deactivate TourEntity
+
+    TourService -> TourRepository : save(tourEntity)
+    activate TourRepository
+    TourRepository -> Database : INSERT INTO tours
+    activate Database
+    Database --> TourRepository : Success
+    deactivate Database
+    TourRepository --> TourService : Saved tour
+    deactivate TourRepository
+
+    TourService -> TourResponseModel : Create response model from entity
+    activate TourResponseModel
+    TourResponseModel --> TourService : Response ready
+    deactivate TourResponseModel
+
+    TourService --> TourController : tourResponseModel
+    deactivate TourService
+    TourController --> ToursPage : Tour added successfully
+    deactivate TourController
+end
+
+opt Modify Tour
+    Admin -> ToursPage : Edit tour form and submit
+    ToursPage -> TourController : PUT /api/v1/tours/{tourId}
+    activate TourController
+
+    TourController -> TourService : updateTour(tourId, tourRequestModel)
+    activate TourService
+
+    TourService -> TourRepository : Find tour by ID
+    activate TourRepository
+    TourRepository -> Database : SELECT * FROM tours WHERE id = tourId
+    activate Database
+    Database --> TourRepository : Tour found
+    deactivate Database
+    TourRepository --> TourService : tourEntity
+    deactivate TourRepository
+
+    TourService -> TourEntity : Update entity with request data
+    activate TourEntity
+    TourEntity --> TourService : Updated entity
+    deactivate TourEntity
+
+    TourService -> TourRepository : save(updatedTourEntity)
+    activate TourRepository
+    TourRepository -> Database : UPDATE tours SET ...
+    Database --> TourRepository : Success
+    deactivate Database
+    TourRepository --> TourService : Updated tour
+    deactivate TourRepository
+
+    TourService -> TourResponseModel : Create response model from updated entity
+    activate TourResponseModel
+    TourResponseModel --> TourService : Response ready
+    deactivate TourResponseModel
+
+    TourService --> TourController : tourResponseModel
+    deactivate TourService
+    TourController --> ToursPage : Tour updated successfully
+    deactivate TourController
+end
+
+opt Delete Tour
+    Admin -> ToursPage : Select tour to delete
+    ToursPage -> TourController : DELETE /api/v1/tours/{tourId}
+    activate TourController
+
+    TourController -> TourService : deleteTourByTourId(tourId)
+    activate TourService
+
+    TourService -> TourRepository : findTourByTourId(tourId)
+    activate TourRepository
+
+    TourRepository -> Database : SELECT * FROM tours WHERE id = tourId
+    activate Database
+    Database --> TourRepository : Tour data
+    deactivate Database
+
+    TourRepository --> TourService : tourEntity
+    deactivate TourRepository
+
+    TourService -> TourRepository : delete(tourEntity)
+    activate TourRepository
+    TourRepository -> Database : DELETE FROM tours WHERE id = tourId
+    Database --> TourRepository : Success
+    deactivate Database
+    TourRepository --> TourService : Deletion success
+    deactivate TourRepository
+
+    TourService --> TourController : Deletion confirmation
+    deactivate TourService
+    TourController --> ToursPage : Tour deleted successfully
+    deactivate TourController
+end
+
+opt Get Tour by ID
+    Admin -> ToursPage : Click on tour name
+    ToursPage -> TourController : GET /api/v1/tours/{tourId}
+    activate TourController
+
+    TourController -> TourService : getTourByTourId(tourId)
+    activate TourService
+
+    TourService -> TourRepository : findTourByTourId(tourId)
+    activate TourRepository
+    TourRepository -> Database : SELECT * FROM tours WHERE id = tourId
+    activate Database
+    Database --> TourRepository : Tour data
+    deactivate Database
+    TourRepository --> TourService : tourEntity
+    deactivate TourRepository
+
+    TourService -> TourResponseModel : Create response model from entity
+    activate TourResponseModel
+    TourResponseModel --> TourService : Response ready
+    deactivate TourResponseModel
+
+    TourService --> TourController : tourResponseModel
+    deactivate TourService
+    TourController --> ToursPage : Display tour details
+    deactivate TourController
+end
+
+@enduml

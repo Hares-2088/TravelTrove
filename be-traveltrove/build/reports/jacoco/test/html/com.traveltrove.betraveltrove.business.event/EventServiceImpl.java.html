@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">be-traveltrove</a> &gt; <a href="index.source.html" class="el_package">com.traveltrove.betraveltrove.business.event</a> &gt; <span class="el_source">EventServiceImpl.java</span></div><h1>EventServiceImpl.java</h1><pre class="source lang-java linenums">package com.traveltrove.betraveltrove.business.event;
+
+import com.traveltrove.betraveltrove.dataaccess.events.Event;
+import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
+import com.traveltrove.betraveltrove.presentation.events.EventRequestModel;
+import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
+import com.traveltrove.betraveltrove.utils.EventEntityModel;
+import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@Service
+<span class="nc" id="L16">@Slf4j</span>
+public class EventServiceImpl implements EventService {
+
+    private final EventRepository eventRepository;
+
+<span class="nc" id="L21">    public EventServiceImpl(EventRepository eventRepository) {</span>
+<span class="nc" id="L22">        this.eventRepository = eventRepository;</span>
+<span class="nc" id="L23">    }</span>
+
+    @Override
+    public Mono&lt;EventResponseModel&gt; getEventByEventId(String eventId) {
+<span class="nc" id="L27">        return eventRepository.findEventByEventId(eventId)</span>
+<span class="nc" id="L28">                .switchIfEmpty(Mono.defer(() -&gt; Mono.error(new NotFoundException(&quot;Event id not found: &quot; + eventId))))</span>
+<span class="nc" id="L29">                .map(EventEntityModel::toEventResponseModel);</span>
+    }
+
+    @Override
+    public Flux&lt;EventResponseModel&gt; getEvents(String cityId, String countryId) {
+        // Handle filtering logic based on query parameters
+<span class="nc bnc" id="L35" title="All 4 branches missed.">        if (cityId != null &amp;&amp; !cityId.isEmpty()) {</span>
+<span class="nc" id="L36">            return eventRepository.findAllByCityId(cityId)</span>
+<span class="nc" id="L37">                    .map(EventEntityModel::toEventResponseModel);</span>
+<span class="nc bnc" id="L38" title="All 4 branches missed.">        } else if (countryId != null &amp;&amp; !countryId.isEmpty()) {</span>
+<span class="nc" id="L39">            return eventRepository.findAllByCountryId(countryId)</span>
+<span class="nc" id="L40">                    .map(EventEntityModel::toEventResponseModel);</span>
+        }
+        // Return all events if no filters are provided
+<span class="nc" id="L43">        return eventRepository.findAll()</span>
+<span class="nc" id="L44">                .map(EventEntityModel::toEventResponseModel);</span>
+    }
+
+    @Override
+    public Mono&lt;EventResponseModel&gt; createEvent(Mono&lt;EventRequestModel&gt; eventRequestModel) {
+<span class="nc" id="L49">        return eventRequestModel</span>
+<span class="nc" id="L50">                .switchIfEmpty(Mono.defer(() -&gt; Mono.error(new InvalidInputException(&quot;Event request model is empty&quot;))))</span>
+<span class="nc" id="L51">                .flatMap(requestModel -&gt; {</span>
+<span class="nc bnc" id="L52" title="All 4 branches missed.">                    if (requestModel.getName() == null || requestModel.getName().isBlank()) {</span>
+<span class="nc" id="L53">                        return Mono.error(new InvalidInputException(&quot;Event name is required&quot;));</span>
+                    }
+<span class="nc bnc" id="L55" title="All 4 branches missed.">                    if (requestModel.getDescription() == null || requestModel.getDescription().isBlank()) {</span>
+<span class="nc" id="L56">                        return Mono.error(new InvalidInputException(&quot;Event description is required&quot;));</span>
+                    }
+                    // cityId and countryId are optional, so they are not validated here
+<span class="nc" id="L59">                    return Mono.just(EventEntityModel.toEventEntity(requestModel));</span>
+                })
+<span class="nc" id="L61">                .flatMap(eventRepository::save)</span>
+<span class="nc" id="L62">                .map(EventEntityModel::toEventResponseModel);</span>
+    }
+
+
+
+public Mono&lt;EventResponseModel&gt; updateEvent(String eventId, Mono&lt;EventRequestModel&gt; eventRequestModel) {
+<span class="nc" id="L68">    return eventRepository.findEventByEventId(eventId)</span>
+<span class="nc" id="L69">            .switchIfEmpty(Mono.defer(() -&gt; Mono.error(new NotFoundException(&quot;Event id not found: &quot; + eventId))))</span>
+<span class="nc" id="L70">            .flatMap(foundEvent -&gt; eventRequestModel</span>
+<span class="nc" id="L71">                    .switchIfEmpty(Mono.defer(() -&gt; Mono.error(new InvalidInputException(&quot;Event request model is empty&quot;))))</span>
+<span class="nc" id="L72">                    .flatMap(requestModel -&gt; {</span>
+<span class="nc bnc" id="L73" title="All 4 branches missed.">                        if (requestModel.getName() == null || requestModel.getName().isBlank()) {</span>
+<span class="nc" id="L74">                            return Mono.error(new InvalidInputException(&quot;Event name is required&quot;));</span>
+                        }
+<span class="nc bnc" id="L76" title="All 4 branches missed.">                        if (requestModel.getDescription() == null || requestModel.getDescription().isBlank()) {</span>
+<span class="nc" id="L77">                            return Mono.error(new InvalidInputException(&quot;Event description is required&quot;));</span>
+                        }
+<span class="nc bnc" id="L79" title="All 4 branches missed.">                        if (requestModel.getCityId() == null || requestModel.getCityId().isBlank()) {</span>
+<span class="nc" id="L80">                            return Mono.error(new InvalidInputException(&quot;City ID is required&quot;));</span>
+                        }
+<span class="nc bnc" id="L82" title="All 4 branches missed.">                        if (requestModel.getCountryId() == null || requestModel.getCountryId().isBlank()) {</span>
+<span class="nc" id="L83">                            return Mono.error(new InvalidInputException(&quot;Country ID is required&quot;));</span>
+                        }
+<span class="nc" id="L85">                        return Mono.just(EventEntityModel.toEventEntity(requestModel))</span>
+<span class="nc" id="L86">                                .doOnNext(event -&gt; event.setEventId(foundEvent.getEventId()))</span>
+<span class="nc" id="L87">                                .doOnNext(event -&gt; event.setId(foundEvent.getId()));</span>
+                    }))
+<span class="nc" id="L89">            .flatMap(eventRepository::save)</span>
+<span class="nc" id="L90">            .map(EventEntityModel::toEventResponseModel);</span>
+}
+
+
+    @Override
+    public Mono&lt;EventResponseModel&gt; deleteEvent(String eventId) {
+<span class="nc" id="L96">        return eventRepository.findEventByEventId(eventId)</span>
+<span class="nc" id="L97">                .switchIfEmpty(Mono.defer(() -&gt; Mono.error(new NotFoundException(&quot;Event id not found: &quot; + eventId))))</span>
+<span class="nc" id="L98">                .flatMap(event -&gt; eventRepository.delete(event).thenReturn(event))</span>
+<span class="nc" id="L99">                .map(EventEntityModel::toEventResponseModel);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

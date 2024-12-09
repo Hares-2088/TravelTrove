@@ -1,0 +1,89 @@
+@startuml
+title Tour Package Management Sequence Diagram for Customer
+
+actor Customer as "<<Actor>>\nCustomer"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant TourPackagesPage as "<<View>>\nTourPackagesPage"
+participant TourPackageController as "<<Controller>>\nTourPackageController"
+participant TourPackageService as "<<Service>>\nTourPackageService"
+participant TourPackageEntity as "<<Entity>>\nTourPackageEntity"
+participant TourPackageRepository as "<<Repository>>\nTourPackageRepository"
+participant Database as "<<Database>>"
+participant SubscriptionRepository as "<<Repository>>\nSubscriptionRepository"
+participant SubscriptionEntity as "<<Entity>>\nSubscriptionEntity"
+participant SubscriptionResponseModel as "<<Model>>\nSubscriptionResponseModel"
+
+Customer -> ReactApplication : Access Tour Packages Page
+activate ReactApplication
+
+ReactApplication -> TourPackagesPage : render()
+activate TourPackagesPage
+deactivate ReactApplication
+
+opt View All Available Tours
+    TourPackagesPage -> TourPackageController : GET /api/v1/tour-packages
+    activate TourPackageController
+
+    TourPackageController -> TourPackageService : getAllTourPackages()
+    activate TourPackageService
+
+    TourPackageService -> TourPackageRepository : findAll()
+    activate TourPackageRepository
+
+    TourPackageRepository -> Database : SELECT * FROM tour_packages
+    activate Database
+    Database --> TourPackageRepository : List of tour packages
+    deactivate Database
+
+    TourPackageRepository --> TourPackageService : List of package entities
+    deactivate TourPackageRepository
+
+    TourPackageService --> TourPackageController : List of TourPackageResponseModels
+    deactivate TourPackageService
+
+    TourPackageController --> TourPackagesPage : Display packages list
+    deactivate TourPackageController
+
+    TourPackagesPage --> Customer : List of available tours displayed
+end
+
+opt View Subscribed Tours
+    Customer -> TourPackagesPage : View My Subscriptions
+    TourPackagesPage -> TourPackageController : GET /api/v1/tour-packages/subscriptions
+    activate TourPackageController
+
+    TourPackageController -> TourPackageService : getSubscribedTours(customerId)
+    activate TourPackageService
+
+    TourPackageService -> SubscriptionRepository : findSubscriptionsByCustomerId(customerId)
+    activate SubscriptionRepository
+
+    SubscriptionRepository -> Database : SELECT * FROM subscriptions WHERE customer_id = customerId
+    activate Database
+    Database --> SubscriptionRepository : List of subscriptions
+    deactivate Database
+
+    SubscriptionRepository --> TourPackageService : List of subscription entities
+    deactivate SubscriptionRepository
+
+    TourPackageService -> TourPackageEntity : Fetch associated tour package details
+    activate TourPackageEntity
+    TourPackageEntity --> TourPackageService : Associated tour package details
+    deactivate TourPackageEntity
+
+    TourPackageService -> SubscriptionResponseModel : Map subscriptions to response models
+    activate SubscriptionResponseModel
+    SubscriptionResponseModel --> TourPackageService : Response models ready
+    deactivate SubscriptionResponseModel
+
+    TourPackageService --> TourPackageController : List of SubscriptionResponseModels
+    deactivate TourPackageService
+
+    TourPackageController --> TourPackagesPage : Display subscribed tours list
+    deactivate TourPackageController
+
+    TourPackagesPage --> Customer : Subscribed tours displayed
+end
+
+@enduml

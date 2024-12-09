@@ -1,0 +1,152 @@
+@startuml
+title Country Management Sequence Diagram for Employee
+
+actor Employee as "<<Actor>>\nEmployee"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant CountriesPage as "<<View>>\nCountriesPage"
+participant CountryController as "<<Controller>>\nCountryController"
+participant CountryService as "<<Service>>\nCountryService"
+participant CountryEntity as "<<Entity>>\nCountryEntity"
+participant CountryRepository as "<<Repository>>\nCountryRepository"
+participant Database as "<<Database>>"
+participant CountryResponseModel as "<<Model>>\nCountryResponseModel"
+
+Employee -> ReactApplication : Access Countries Page
+activate ReactApplication
+
+ReactApplication -> CountriesPage : render()
+activate CountriesPage
+deactivate ReactApplication
+
+CountriesPage -> CountryController : GET /api/v1/countries
+activate CountryController
+
+CountryController -> CountryService : getAllCountries()
+activate CountryService
+
+CountryService -> CountryRepository : findAll()
+activate CountryRepository
+
+CountryRepository -> Database : SELECT * FROM countries
+activate Database
+Database --> CountryRepository : List of countries
+deactivate Database
+
+CountryRepository --> CountryService : countryEntities
+deactivate CountryRepository
+
+CountryService -> CountryResponseModel : Map entities to response models
+activate CountryResponseModel
+CountryResponseModel --> CountryService : Response models ready
+deactivate CountryResponseModel
+
+CountryService --> CountryController : List of CountryResponseModels
+deactivate CountryService
+
+CountryController --> CountriesPage : Display countries list
+deactivate CountryController
+
+opt Add New Country
+    Employee -> CountriesPage : Fill country form and submit
+    CountriesPage -> CountryController : POST /api/v1/countries
+    activate CountryController
+
+    CountryController -> CountryService : saveCountry(countryRequestModel)
+    activate CountryService
+
+    CountryService -> CountryEntity : Instantiate from request model
+    activate CountryEntity
+    CountryEntity --> CountryService : Entity created
+    deactivate CountryEntity
+
+    CountryService -> CountryRepository : save(countryEntity)
+    activate CountryRepository
+    CountryRepository -> Database : INSERT INTO countries
+    activate Database
+    Database --> CountryRepository : Success
+    deactivate Database
+    CountryRepository --> CountryService : Saved country
+    deactivate CountryRepository
+
+    CountryService -> CountryResponseModel : Create response model from entity
+    activate CountryResponseModel
+    CountryResponseModel --> CountryService : Response ready
+    deactivate CountryResponseModel
+
+    CountryService --> CountryController : countryResponseModel
+    deactivate CountryService
+    CountryController --> CountriesPage : Country added successfully
+    deactivate CountryController
+end
+
+opt Modify Country
+    Employee -> CountriesPage : Edit country form and submit
+    CountriesPage -> CountryController : PUT /api/v1/countries/{countryId}
+    activate CountryController
+
+    CountryController -> CountryService : updateCountry(countryId, countryRequestModel)
+    activate CountryService
+
+    CountryService -> CountryRepository : Find country by ID
+    activate CountryRepository
+    CountryRepository -> Database : SELECT * FROM countries WHERE id = countryId
+    activate Database
+    Database --> CountryRepository : Country found
+    deactivate Database
+    CountryRepository --> CountryService : countryEntity
+    deactivate CountryRepository
+
+    CountryService -> CountryEntity : Update entity with request data
+    activate CountryEntity
+    CountryEntity --> CountryService : Updated entity
+    deactivate CountryEntity
+
+    CountryService -> CountryRepository : save(updatedCountryEntity)
+    activate CountryRepository
+    CountryRepository -> Database : UPDATE countries SET ...
+    Database --> CountryRepository : Success
+    deactivate Database
+    CountryRepository --> CountryService : Updated country
+    deactivate CountryRepository
+
+    CountryService -> CountryResponseModel : Create response model from updated entity
+    activate CountryResponseModel
+    CountryResponseModel --> CountryService : Response ready
+    deactivate CountryResponseModel
+
+    CountryService --> CountryController : countryResponseModel
+    deactivate CountryService
+    CountryController --> CountriesPage : Country updated successfully
+    deactivate CountryController
+end
+
+opt Get Country by ID
+    Employee -> CountriesPage : Click on country name
+    CountriesPage -> CountryController : GET /api/v1/countries/{countryId}
+    activate CountryController
+
+    CountryController -> CountryService : getCountryById(countryId)
+    activate CountryService
+
+    CountryService -> CountryRepository : findCountryByCountryId(countryId)
+    activate CountryRepository
+    CountryRepository -> Database : SELECT * FROM countries WHERE id = countryId
+    activate Database
+    Database --> CountryRepository : Country data
+    deactivate Database
+    CountryRepository --> CountryService : countryEntity
+    deactivate CountryRepository
+
+    CountryService -> CountryResponseModel : Create response model from entity
+    activate CountryResponseModel
+    CountryResponseModel --> CountryService : Response ready
+    deactivate CountryResponseModel
+
+    CountryService --> CountryController : countryResponseModel
+    deactivate CountryService
+    CountryController --> CountriesPage : Display country details
+    deactivate CountryController
+end
+
+@enduml

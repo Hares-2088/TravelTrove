@@ -1,0 +1,65 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!include FONTAWESOME/users.puml
+!include DEVICONS/mongodb.puml
+!include DEVICONS/react.puml
+!include DEVICONS/java.puml
+!includeurl DEVICONS/html5.puml
+!include FONTAWESOME/amazon.puml
+!include FONTAWESOME/stripe.puml
+!include FONTAWESOME/google.puml
+
+AddElementTag("storage", $shape = RoundedBoxShape(), $bgColor="lightSkyBlue", $fontColor="white")
+
+SHOW_PERSON_OUTLINE()
+
+LAYOUT_TOP_DOWN()
+
+title Container Diagram for Dar El Salam Travel Agency System
+
+' Actors placed at the top with icons
+Person(customer, "Customer", "Customer of the travel agency")
+Person(employee, "Employee", "Employee of the travel agency")
+Person(admin, "Admin", "Admin of the travel agency")
+
+' Travel Agency System Boundary
+System_Boundary(travelAgency, "Dar El Salam Travel Agency") {
+
+    Container(singlepage_app, "Single-Page Application", "TypeScript, React", "Main interface for interacting with the Dar El Salam system", $sprite="react")
+    Container(web_app, "Web Application", "TypeScript, React", "Delivers the Static content and the Dar El Salam single page application", $sprite="java")
+    Container(api_app, "API Application", "Java, Spring Boot", "Handles all business logic and integrates with external services", $sprite="java")
+    Container(database, "MongoDB Database", "MongoDB", "Stores all travel agency data", $tags = "storage", $sprite="mongodb")
+}
+
+' External systems placed at the bottom with icons
+System_Ext(Stripe, "Stripe", "External service for processing payments", $sprite="stripe")
+System_Ext(GmailAPI, "Gmail API", "External service for sending emails", $sprite="google")
+System_Ext(Auth0, "Auth0", "External authentication service for user login and security", $sprite="google")
+
+' Relationships between Actors and Containers
+Rel(customer, singlepage_app, "Uses for viewing trips and making reservations", "HTTPS")
+Rel(admin, singlepage_app, "Uses for viewing reports and managing data", "HTTPS")
+Rel(customer, web_app, "Uses for making reservations and viewing information", "HTTPS")
+Rel(employee, web_app, "Uses for managing trips and reservations", "HTTPS")
+Rel(employee, singlepage_app, "Uses for managing trips and reservations", "HTTPS")
+Rel(admin, web_app, "Uses for managing employees and system settings", "HTTPS")
+
+Rel(web_app, singlepage_app, "Interacts with", "HTTPS/JSON")
+Rel(singlepage_app, api_app, "Interacts with", "HTTPS/JSON")
+Rel_D(api_app, database, "Reads from and writes to", "MongoDB queries")
+
+' Authentication Flow
+Rel_D(customer, Auth0, "Authenticates", "OAuth 2.0/JWT")
+Rel_D(employee, Auth0, "Authenticates", "OAuth 2.0/JWT")
+Rel_D(admin, Auth0, "Authenticates", "OAuth 2.0/JWT")
+
+' Relationships with External Systems
+Rel(api_app, GmailAPI, "Sends emails via", "HTTPS")
+Rel(api_app, Stripe, "Processes payments through", "HTTPS")
+Rel_U(GmailAPI, customer, "Sends emails to", "SMTP/HTTPS")
+
+@enduml

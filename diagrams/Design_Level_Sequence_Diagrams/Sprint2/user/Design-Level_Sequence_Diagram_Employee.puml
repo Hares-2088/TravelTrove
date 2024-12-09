@@ -1,0 +1,84 @@
+@startuml
+title Customer Management Sequence Diagram for Employee
+
+actor Employee as "<<Actor>>\nEmployee"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant CustomersPage as "<<View>>\nCustomersPage"
+participant UserController as "<<Controller>>\nUserController"
+participant UserService as "<<Service>>\nUserService"
+participant UserRepository as "<<Repository>>\nUserRepository"
+participant Database as "<<Database>>"
+participant UserResponseModel as "<<Model>>\nUserResponseModel"
+
+Employee -> ReactApplication : Access Customers Page
+activate ReactApplication
+
+ReactApplication -> CustomersPage : render()
+activate CustomersPage
+deactivate ReactApplication
+
+CustomersPage -> UserController : GET /api/v1/users?role=customer
+activate UserController
+
+UserController -> UserService : getUsersByRole("customer")
+activate UserService
+
+UserService -> UserRepository : findAllByRole("customer")
+activate UserRepository
+
+UserRepository -> Database : SELECT * FROM users WHERE role = "customer"
+activate Database
+Database --> UserRepository : List of customers
+deactivate Database
+
+UserRepository --> UserService : customerEntities
+deactivate UserRepository
+
+UserService -> UserResponseModel : Map entities to response models
+activate UserResponseModel
+UserResponseModel --> UserService : Response models ready
+deactivate UserResponseModel
+
+UserService --> UserController : List of CustomerResponseModels
+deactivate UserService
+
+UserController --> CustomersPage : Display customers list
+deactivate UserController
+
+CustomersPage --> Employee : Display customer data
+
+opt View Customer Details
+    Employee -> CustomersPage : Click on a customer
+    CustomersPage -> UserController : GET /api/v1/users/{userId}
+    activate UserController
+
+    UserController -> UserService : getUserById(userId)
+    activate UserService
+
+    UserService -> UserRepository : findById(userId)
+    activate UserRepository
+
+    UserRepository -> Database : SELECT * FROM users WHERE id = userId
+    activate Database
+    Database --> UserRepository : User data
+    deactivate Database
+
+    UserRepository --> UserService : userEntity
+    deactivate UserRepository
+
+    UserService -> UserResponseModel : Map entity to response model
+    activate UserResponseModel
+    UserResponseModel --> UserService : Response model ready
+    deactivate UserResponseModel
+
+    UserService --> UserController : UserResponseModel
+    deactivate UserService
+
+    UserController --> CustomersPage : Display customer details
+    deactivate UserController
+
+    CustomersPage --> Employee : Show customer information
+end
+
+@enduml
