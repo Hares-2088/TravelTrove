@@ -1,16 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import { getAllCountries, getCountryById, addCountry, updateCountry, deleteCountry } from "../../countries/api/countries.api";
-import { CountryResponseModel, CountryRequestModel } from "../../countries/models/country.model";
-import './CountriesTab.css';
+import {
+  getAllCountries,
+  getCountryById,
+  addCountry,
+  updateCountry,
+  deleteCountry,
+} from "../../countries/api/countries.api";
+import {
+  CountryResponseModel,
+  CountryRequestModel,
+} from "../../countries/models/country.model";
+import "./CountriesTab.css";
 
 const CountriesTab: React.FC = () => {
   const [countries, setCountries] = useState<CountryResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
-  const [selectedCountry, setSelectedCountry] = useState<CountryResponseModel | null>(null);
-  const [formData, setFormData] = useState<CountryRequestModel>({ name: "", image: "" });
-  const [viewingCountry, setViewingCountry] = useState<CountryResponseModel | null>(null);
+  const [modalType, setModalType] = useState<"create" | "update" | "delete">(
+    "create"
+  );
+  const [selectedCountry, setSelectedCountry] =
+    useState<CountryResponseModel | null>(null);
+  const [formData, setFormData] = useState<CountryRequestModel>({
+    name: "",
+    image: "",
+  });
+  const [viewingCountry, setViewingCountry] =
+    useState<CountryResponseModel | null>(null);
+
+  //error message for no input in the fields when creating and editing
+  const [countryNameError, setCountryNameError] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     fetchCountries();
@@ -35,6 +55,11 @@ const CountriesTab: React.FC = () => {
   };
 
   const handleSave = async () => {
+    const isCountryNameValid = formData.name.trim() !== "";
+    const isImageValid = !!formData.image.trim();
+    setCountryNameError(!isCountryNameValid);
+    setImageError(!isImageValid);
+
     try {
       if (modalType === "create") {
         await addCountry(formData);
@@ -79,8 +104,13 @@ const CountriesTab: React.FC = () => {
             <span>&larr;</span> Back to List
           </Button>
           <h3>{viewingCountry.name}</h3>
-          <p><strong>Country ID:</strong> {viewingCountry.countryId}</p>
-          <p><strong>Image:</strong> {viewingCountry.image || "No image available"}</p>
+          <p>
+            <strong>Country ID:</strong> {viewingCountry.countryId}
+          </p>
+          <p>
+            <strong>Image:</strong>{" "}
+            {viewingCountry.image || "No image available"}
+          </p>
         </div>
       ) : (
         <>
@@ -98,49 +128,65 @@ const CountriesTab: React.FC = () => {
               Create
             </Button>
           </div>
-          <div className="countries-scrollbar" style={{ maxHeight: "700px", overflowY: "auto" }}>
-            <Table bordered hover responsive className="rounded" style={{ borderRadius: "12px", overflow: "hidden" }}>
+          <div
+            className="countries-scrollbar"
+            style={{ maxHeight: "700px", overflowY: "auto" }}
+          >
+            <Table
+              bordered
+              hover
+              responsive
+              className="rounded"
+              style={{ borderRadius: "12px", overflow: "hidden" }}
+            >
               <thead className="bg-light">
-              <tr>
-                <th>Name</th>
-                <th>Actions</th>
-              </tr>
+                <tr>
+                  <th>Name</th>
+                  <th>Actions</th>
+                </tr>
               </thead>
               <tbody>
-              {countries.map((country) => (
-                <tr key={country.countryId}>
-                  <td
-                    onClick={() => handleViewCountry(country.countryId)}
-                    style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
-                  >
-                    {country.name}
-                  </td>
-                  <td>
-                    <Button
-                      variant="outline-primary"
-                      onClick={() => {
-                        setSelectedCountry(country);
-                        setModalType("update");
-                        setFormData({ name: country.name, image: country.image });
-                        setShowModal(true);
+                {countries.map((country) => (
+                  <tr key={country.countryId}>
+                    <td
+                      onClick={() => handleViewCountry(country.countryId)}
+                      style={{
+                        cursor: "pointer",
+                        color: "#007bff",
+                        textDecoration: "underline",
                       }}
                     >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      className="ms-2"
-                      onClick={() => {
-                        setSelectedCountry(country);
-                        setModalType("delete");
-                        setShowModal(true);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+                      {country.name}
+                    </td>
+                    <td>
+                      <Button
+                        variant="outline-primary"
+                        onClick={() => {
+                          setSelectedCountry(country);
+                          setModalType("update");
+                          setFormData({
+                            name: country.name,
+                            image: country.image,
+                          });
+                          setShowModal(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        className="ms-2"
+                        onClick={() => {
+                          setSelectedCountry(country);
+                          setModalType("delete");
+                          setShowModal(true);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </div>
@@ -151,7 +197,11 @@ const CountriesTab: React.FC = () => {
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalType === "create" ? "Create Country" : modalType === "update" ? "Edit Country" : "Delete Country"}
+            {modalType === "create"
+              ? "Create Country"
+              : modalType === "update"
+              ? "Edit Country"
+              : "Delete Country"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -162,18 +212,32 @@ const CountriesTab: React.FC = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Country Name</Form.Label>
                 <Form.Control
+                  required
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    setCountryNameError(false);
+                  }}
+                  isInvalid={countryNameError}
                 />
+                <div className="invalid-feedback">
+                  Country name is required.
+                </div>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Country Image URL</Form.Label>
                 <Form.Control
+                  required
                   type="text"
                   value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, image: e.target.value });
+                    setImageError(false);
+                  }}
+                  isInvalid = {imageError}
                 />
+                <div className="invalid-feedback">Image URL is required.</div>
               </Form.Group>
             </Form>
           )}

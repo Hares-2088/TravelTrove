@@ -66,6 +66,7 @@ const EventsTab: React.FC = () => {
     } catch (error) {
       console.error("Error fetching countries:", error);
     }
+    setFilteredEvents(filtered);
   };
 
   // const applyFilters = () => { // Commented for filters
@@ -142,6 +143,9 @@ const EventsTab: React.FC = () => {
             <span>&larr;</span> Back to List
           </Button>
           <h3>{viewingEvent.name}</h3>
+          <p>
+            <strong>Event ID:</strong> {viewingEvent.eventId}
+          </p>
           <p>
             <strong>Description:</strong> {viewingEvent.description}
           </p>
