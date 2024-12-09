@@ -1,0 +1,14 @@
+@startuml
+title Customer Management Use Case for Employee
+
+actor "Employee" as Employee
+
+rectangle "Customer Management System" {
+    usecase "View All Customers"
+    usecase "View Customer Details"
+}
+
+Employee -- "View All Customers"
+Employee -- "View Customer Details"
+
+@enduml

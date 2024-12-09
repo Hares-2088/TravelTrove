@@ -1,0 +1,14 @@
+@startuml
+title Customer Profile Management Use Case
+
+actor "Customer" as Customer
+
+rectangle "Customer Profile System" {
+    usecase "View Profile"
+    usecase "Modify Profile Information"
+}
+
+Customer -- "View Profile"
+Customer -- "Modify Profile Information"
+
+@enduml

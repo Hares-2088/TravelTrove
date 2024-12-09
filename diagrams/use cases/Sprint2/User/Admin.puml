@@ -1,0 +1,18 @@
+@startuml
+title User Management Use Case for Admin
+
+actor "Admin" as Admin
+
+rectangle "User Management System" {
+    usecase "View All Users"
+    usecase "Add New User"
+    usecase "Edit User Permissions"
+    usecase "Delete User"
+}
+
+Admin -- "View All Users"
+Admin -- "Add New User"
+Admin -- "Edit User Permissions"
+Admin -- "Delete User"
+
+@enduml
