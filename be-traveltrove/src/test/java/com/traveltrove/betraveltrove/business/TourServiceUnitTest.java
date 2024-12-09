@@ -54,7 +54,7 @@ public class TourServiceUnitTest {
         Mono<TourResponseModel> result = tourService.getTourByTourId(tourId);
 
         StepVerifier.create(result)
-                .expectErrorMatches(error -> error instanceof NotFoundException && error.getMessage().equals("Tour id not found: " + tourId))
+                .expectErrorMatches(error -> error instanceof NotFoundException && error.getMessage().equals("Tour Id not found: " + tourId))
                 .verify();
     }
 }
