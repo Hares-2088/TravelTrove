@@ -7,15 +7,24 @@ import {
   updateEvent,
   deleteEvent,
 } from "../../events/api/events.ts";
-import { EventResponseModel, EventRequestModel } from "../../events/model/tourEvents.models.ts";
+import {
+  EventResponseModel,
+  EventRequestModel,
+} from "../../events/model/tourEvents.models.ts";
 import "./EventsTab.css";
 
 const EventsTab: React.FC = () => {
   const [events, setEvents] = useState<EventResponseModel[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<EventResponseModel[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<EventResponseModel[]>(
+    []
+  );
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
-  const [selectedEvent, setSelectedEvent] = useState<EventResponseModel | null>(null);
+  const [modalType, setModalType] = useState<"create" | "update" | "delete">(
+    "create"
+  );
+  const [selectedEvent, setSelectedEvent] = useState<EventResponseModel | null>(
+    null
+  );
   const [formData, setFormData] = useState<EventRequestModel>({
     cityId: "",
     countryId: "",
@@ -24,7 +33,13 @@ const EventsTab: React.FC = () => {
     image: "",
   });
   const [filter, setFilter] = useState({ cityId: "", countryId: "" });
-  const [viewingEvent, setViewingEvent] = useState<EventResponseModel | null>(null);
+  const [viewingEvent, setViewingEvent] = useState<EventResponseModel | null>(
+    null
+  );
+
+  const [eventNameError, setEventNameError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [imageURLError, setImageURLError] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -50,7 +65,9 @@ const EventsTab: React.FC = () => {
       filtered = filtered.filter((event) => event.cityId === filter.cityId);
     }
     if (filter.countryId) {
-      filtered = filtered.filter((event) => event.countryId === filter.countryId);
+      filtered = filtered.filter(
+        (event) => event.countryId === filter.countryId
+      );
     }
     setFilteredEvents(filtered);
   };
@@ -65,6 +82,18 @@ const EventsTab: React.FC = () => {
   };
 
   const handleSave = async () => {
+    const isEventNameValid = formData.name.trim() !== "";
+    const isDescriptionValid = formData.description.trim() !== "";
+    const isImageURLValid = formData.image.trim() !== "";
+
+    setEventNameError(!isEventNameValid);
+    setDescriptionError(!isDescriptionValid);
+    setImageURLError(!isImageURLValid);
+
+    if (!isEventNameValid || !isDescriptionValid || !isImageURLValid) {
+      return;
+    }
+
     try {
       if (modalType === "create") {
         await addEvent(formData);
@@ -149,7 +178,9 @@ const EventsTab: React.FC = () => {
                   type="text"
                   placeholder="Enter city ID"
                   value={filter.cityId}
-                  onChange={(e) => setFilter({ ...filter, cityId: e.target.value })}
+                  onChange={(e) =>
+                    setFilter({ ...filter, cityId: e.target.value })
+                  }
                 />
               </Form.Group>
               <Form.Group>
@@ -158,7 +189,9 @@ const EventsTab: React.FC = () => {
                   type="text"
                   placeholder="Enter country ID"
                   value={filter.countryId}
-                  onChange={(e) => setFilter({ ...filter, countryId: e.target.value })}
+                  onChange={(e) =>
+                    setFilter({ ...filter, countryId: e.target.value })
+                  }
                 />
               </Form.Group>
             </Form>
@@ -176,7 +209,11 @@ const EventsTab: React.FC = () => {
                 <tr key={event.eventId}>
                   <td
                     onClick={() => handleViewEvent(event.eventId)}
-                    style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+                    style={{
+                      cursor: "pointer",
+                      color: "#007bff",
+                      textDecoration: "underline",
+                    }}
                   >
                     {event.name}
                   </td>
@@ -220,7 +257,11 @@ const EventsTab: React.FC = () => {
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalType === "create" ? "Create Event" : modalType === "update" ? "Edit Event" : "Delete Event"}
+            {modalType === "create"
+              ? "Create Event"
+              : modalType === "update"
+              ? "Edit Event"
+              : "Delete Event"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -231,27 +272,45 @@ const EventsTab: React.FC = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Event Name</Form.Label>
                 <Form.Control
+                  required
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    setEventNameError(false);
+                  }}
+                  isInvalid={eventNameError}
                 />
+                <div className="invalid-feedback">Event name is required.</div>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Event Description</Form.Label>
                 <Form.Control
+                  required
                   as="textarea"
                   rows={3}
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, description: e.target.value });
+                    setDescriptionError(false);
+                  }}
+                  isInvalid={descriptionError}
                 />
+                <div className="invalid-feedback">Description is required.</div>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Image URL</Form.Label>
                 <Form.Control
+                  required
                   type="text"
                   value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, image: e.target.value });
+                    setImageURLError(false);
+                  }}
+                  isInvalid={imageURLError}
                 />
+                <div className="invalid-feedback">Image URL is required.</div>
               </Form.Group>
             </Form>
           )}

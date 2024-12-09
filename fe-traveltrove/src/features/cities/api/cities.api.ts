@@ -1,4 +1,4 @@
-import { CityResponseModel } from "../models/city.model";
+import { CityRequestModel, CityResponseModel } from "../models/city.model";
 import axiosInstance from "../../../shared/axios/axios.instance";
 
 export const getAllCities = async (): Promise<CityResponseModel[]> => {
@@ -33,14 +33,14 @@ export const getCityById = async (cityId: string): Promise<CityResponseModel> =>
   return response.data;
 }
 
-export const addCity = async (city: CityResponseModel): Promise<CityResponseModel> => {
+export const addCity = async (city: CityRequestModel): Promise<CityResponseModel> => {
   const response = await axiosInstance.post<CityResponseModel>("/cities", city);
   return response.data;
 }
 
 export const updateCity = async (
   cityId: string,
-  city: CityResponseModel
+  city: CityRequestModel
 ): Promise<CityResponseModel> => {
   const response = await axiosInstance.put<CityResponseModel>(
     `/cities/${cityId}`,
