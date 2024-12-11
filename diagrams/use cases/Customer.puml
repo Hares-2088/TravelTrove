@@ -25,6 +25,8 @@ rectangle "Travel Trove System" {
     usecase "Set up Profile"
     usecase "View Account"
     usecase "Edit Account"
+    usecase "View Profile"
+    usecase "Modify Profile Information"
 
     usecase "Browse tour packages"
     usecase "Filter search result"
@@ -45,6 +47,9 @@ rectangle "Travel Trove System" {
 "Book a tour package" <.. "Filter search result" : <<extend>>
 "Book a tour package" <.. "Pay for a tour" : <<include>>
 "Cancel a tour" <.. "Request a refund" : <<extend>>
+"Sign up for an Account" <.. "View Profile" : <<extend>>
+"View Profile" <.. "Modify Profile Information" : <<extend>>
+"View Profile" <.. "Set up Profile" : <<extend>>
 
 Customer -- "Sign up for an Account"
 Customer -- "Browse tour packages"
