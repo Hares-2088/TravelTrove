@@ -22,8 +22,6 @@ rectangle "Travel Trove System" {
     usecase "Control Permissions"
     usecase "Generate report"
     usecase "Remove a tour package"
-    usecase "Manage countries"
-    usecase "Manage cities"
 
 }
 
@@ -33,7 +31,5 @@ Admin --- "Add an employee account"
 Admin -- "Manage an employee account"
 Admin -- "Generate report"
 Admin -- "Remove a tour package"
-Admin -- "Manage countries"
-Admin -- "Manage cities"
 
 @enduml
