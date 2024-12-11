@@ -1,10 +1,9 @@
 package com.traveltrove.betraveltrove.business.event;
 
-import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
 import com.traveltrove.betraveltrove.presentation.events.EventRequestModel;
 import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
-import com.traveltrove.betraveltrove.utils.EventEntityModel;
+import com.traveltrove.betraveltrove.utils.entitymodels.EventEntityModel;
 import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
