@@ -20,7 +20,6 @@ export const useAxiosInstance = (): AxiosInstance => {
         const token = await getAccessTokenSilently();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
-          console.log('Access token attached:', token); // Debug log
         } else {
           console.warn('Access token not found.');
         }
