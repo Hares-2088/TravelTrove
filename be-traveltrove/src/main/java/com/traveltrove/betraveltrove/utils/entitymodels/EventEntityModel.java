@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.utils;
+package com.traveltrove.betraveltrove.utils.entitymodels;
 
 import com.traveltrove.betraveltrove.presentation.events.EventRequestModel;
 import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
