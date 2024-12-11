@@ -5,17 +5,15 @@ import DashboardPage from './pages/staff/DashboardPage';
 import ToursPage from './pages/tours/ToursPage';
 import TourDetailsPage from './pages/tours/TourDetailsPage';
 import HomePage from './pages/home/HomePage';
+import Layout from './layouts/Layout';
 
 const router = createBrowserRouter([
   {
+    element: <Layout />,
     children: [
       {
         path: AppRoutes.Home,
-        element: (
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        ),
+        element: <HomePage />,
       },
       {
         path: AppRoutes.ToursPage,

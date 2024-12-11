@@ -7,6 +7,6 @@ export enum AppRoutes {
   Dashboard = '/dashboard',
   CountryDetailsPage = '/countries/:countryId',
   CityDetailsPage = '/cities/:cityId',
-  Login = '/login',
   Register = '/register',
+  Profile = '/profile'
 }

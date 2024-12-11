@@ -1,5 +1,5 @@
-import axiosInstance from '../../../shared/axios/axios.instance';
 import { TourEventRequestModel, TourEventResponseModel } from '../model/tourevents.model';
+import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 // Utility function to parse event-stream data
 const parseEventStream = (data: string): TourEventResponseModel[] => {
@@ -20,52 +20,74 @@ const parseEventStream = (data: string): TourEventResponseModel[] => {
   return events;
 };
 
+// Custom Hook for Tour Events API
+export const useTourEventsApi = () => {
+  const axiosInstance = useAxiosInstance(); // Use Axios Hook
 
-// Get all tour events
-export const getAllTourEvents = async (): Promise<TourEventResponseModel[]> => {
-  const response = await axiosInstance.get('/tourevents', {
-    responseType: 'text',
-    headers: { Accept: 'text/event-stream' },
-  });
-  return parseEventStream(response.data);
-};
+  // Fetch All Tour Events
+  const getAllTourEvents = async (): Promise<TourEventResponseModel[]> => {
+    const response = await axiosInstance.get('/tourevents', {
+      responseType: 'text',
+      headers: { Accept: 'text/event-stream' },
+    });
+    return parseEventStream(response.data);
+  };
 
-// Get tour events by tour ID
-export const getTourEventsByTourId = async (tourId: string): Promise<TourEventResponseModel[]> => {
-  const response = await axiosInstance.get(`/tourevents/tours/${tourId}`, {
-    responseType: 'text',
-    headers: { Accept: 'text/event-stream' },
-  });
-  return parseEventStream(response.data);
-};
+  // Fetch Tour Events by Tour ID
+  const getTourEventsByTourId = async (tourId: string): Promise<TourEventResponseModel[]> => {
+    const response = await axiosInstance.get(`/tourevents/tours/${tourId}`, {
+      responseType: 'text',
+      headers: { Accept: 'text/event-stream' },
+    });
+    return parseEventStream(response.data);
+  };
 
-// Get a tour event by ID
-export const getTourEventById = async (tourEventId: string): Promise<TourEventResponseModel | null> => {
-  try {
-    const response = await axiosInstance.get(`/tourevents/${tourEventId}`);
+  // Fetch a Tour Event by ID
+  const getTourEventById = async (tourEventId: string): Promise<TourEventResponseModel | null> => {
+    try {
+      const response = await axiosInstance.get(`/tourevents/${tourEventId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching tour event ${tourEventId}:`, error);
+      return null;
+    }
+  };
+
+  // Add a New Tour Event
+  const addTourEvent = async (request: TourEventRequestModel): Promise<TourEventResponseModel> => {
+    const response = await axiosInstance.post('/tourevents', request);
     return response.data;
-  } catch {
-    return null;
-  }
-};
+  };
 
-// Add a new tour event
-export const addTourEvent = async (request: TourEventRequestModel): Promise<TourEventResponseModel> => {
-  const response = await axiosInstance.post('/tourevents', request);
-  return response.data;
-};
+  // Update an Existing Tour Event
+  const updateTourEvent = async (
+    tourEventId: string,
+    request: TourEventRequestModel
+  ): Promise<TourEventResponseModel | null> => {
+    try {
+      const response = await axiosInstance.put(`/tourevents/${tourEventId}`, request);
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating tour event ${tourEventId}:`, error);
+      return null;
+    }
+  };
 
-// Update an existing tour event
-export const updateTourEvent = async (tourEventId: string, request: TourEventRequestModel): Promise<TourEventResponseModel | null> => {
-  try {
-    const response = await axiosInstance.put(`/tourevents/${tourEventId}`, request);
-    return response.data;
-  } catch {
-    return null;
-  }
-};
+  // Delete a Tour Event
+  const deleteTourEvent = async (tourEventId: string): Promise<void> => {
+    try {
+      await axiosInstance.delete(`/tourevents/${tourEventId}`);
+    } catch (error) {
+      console.error(`Error deleting tour event ${tourEventId}:`, error);
+    }
+  };
 
-// Delete a tour event
-export const deleteTourEvent = async (tourEventId: string): Promise<void> => {
-  await axiosInstance.delete(`/tourevents/${tourEventId}`);
+  return {
+    getAllTourEvents,
+    getTourEventsByTourId,
+    getTourEventById,
+    addTourEvent,
+    updateTourEvent,
+    deleteTourEvent,
+  };
 };
