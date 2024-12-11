@@ -1,5 +1,7 @@
 package com.traveltrove.betraveltrove.utils;
 
+import com.traveltrove.betraveltrove.dataaccess.airport.Airport;
+import com.traveltrove.betraveltrove.dataaccess.airport.AirportRepository;
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.city.CityRepository;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import jakarta.annotation.PostConstruct;
+
 import java.util.List;
 
 @Service
@@ -373,6 +376,84 @@ public class DatabaseLoader {
                         success -> log.info("Tour events preloaded successfully."),
                         error -> log.error("Error preloading tour events: {}", error.getMessage())
                 );
+
     }
 
+
+    private final AirportRepository airportRepository;
+    @PostConstruct
+    public void loadAirports() {
+        List<Airport> sampleAirports = List.of(
+                Airport.builder()
+                        .id(null)
+                        .airportId("d1e91f6c-723e-43b9-812f-2f3d3bfb4081")
+                        .name("John F. Kennedy International Airport")
+                        .cityId("b713c09a-9c3e-4b30-872a-4d89089badd0")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("f7a7e8e4-cc49-4027-8c4d-881e6179e6d2")
+                        .name("Toronto Pearson International Airport")
+                        .cityId("11a85d86-3fc8-4504-b1e9-25fd87eba3cf")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("b2c4f9ac-0fd6-4327-8e3a-f3c68bd3d62a")
+                        .name("Charles de Gaulle Airport")
+                        .cityId("f5ad630f-830d-47a8-a26c-76b87163a7e4")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("6e3b9f27-7cbe-47aa-b6e9-34f2cd5b5171")
+                        .name("Berlin Brandenburg Airport")
+                        .cityId("000f3f3a-8ee2-4690-be4d-a5bd38a5f06f")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b")
+                        .name("Leonardo da Vinci–Fiumicino Airport")
+                        .cityId("7f15fafc-85f4-4ba5-822b-27b7ddce6c37")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("e8f314c7-716b-4f19-a1d6-fc376b8c81ad")
+                        .name("Narita International Airport")
+                        .cityId("92537e75-3fc2-42af-b105-b6150395acbb")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("3f2e8bbd-84c3-4d3e-bc24-f173acd01be4")
+                        .name("Rio de Janeiro–Galeão International Airport")
+                        .cityId("affc7cc1-b3d8-4146-bc39-6e9ff1e66704")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("aa12fc4b-619e-4d8e-8563-5a09bc6f1ae1")
+                        .name("Sydney Kingsford Smith Airport")
+                        .cityId("f978f76c-abfc-4b25-ba32-9e1b085b5ab0")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("47c8f2e7-3d6b-402c-93b7-8a92ef43e6ab")
+                        .name("Chhatrapati Shivaji Maharaj International Airport")
+                        .cityId("0361c975-fe28-4817-be51-6864b8a2bf38")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
+                        .name("Beijing Capital International Airport")
+                        .cityId("2fce64d8-dfa6-4abe-9a84-af7aaac1293f")
+                        .build()
+        );
+
+        airportRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleAirports))
+                .flatMap(airportRepository::save)
+                .doOnNext(airport -> log.info("Preloaded airport: {}"))
+                .subscribe(
+                        success -> log.info("Airports preloaded successfully."),
+                        error -> log.error("Error preloading airports: {}", error.getMessage())
+                );
+    }
 }
+

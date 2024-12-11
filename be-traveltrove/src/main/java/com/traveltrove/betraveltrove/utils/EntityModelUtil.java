@@ -1,10 +1,14 @@
 package com.traveltrove.betraveltrove.utils;
 
+import com.traveltrove.betraveltrove.dataaccess.airport.Airport;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
+import com.traveltrove.betraveltrove.presentation.airport.AirportController;
+import com.traveltrove.betraveltrove.presentation.airport.AirportRequestModel;
+import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
 import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourEventRequestModel;
@@ -14,6 +18,7 @@ import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.country.CountryRequestModel;
 import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -86,4 +91,17 @@ public class EntityModelUtil {
         return UUID.randomUUID().toString();
     }
 
+    public static AirportResponseModel toAirportResponseModel(Airport airport){
+        AirportResponseModel airportResponseModel = new AirportResponseModel();
+        BeanUtils.copyProperties(airport, airportResponseModel);
+        return airportResponseModel;
+    }
+
+    public static Airport toAirportEntity(AirportRequestModel airportRequestModel) {
+        return Airport.builder()
+                .airportId(UUID.randomUUID().toString())
+                .name(airportRequestModel.getName())
+                .cityId(airportRequestModel.getCityId())
+                .build();
+    }
 }
