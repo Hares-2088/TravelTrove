@@ -1,7 +1,6 @@
 package com.traveltrove.betraveltrove.presentation.country;
 
 import com.traveltrove.betraveltrove.business.country.CountryService;
-import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.utils.EntityModelUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/countries")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class CountryController {
 

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -13,6 +12,9 @@ import org.springframework.security.oauth2.server.resource.authentication.Reacti
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtGrantedAuthoritiesConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,12 +33,12 @@ public class SecurityConfig {
                 .authorizeExchange(authz -> {
                     log.info("Configuring endpoint permissions...");
                     authz.matchers(ServerWebExchangeMatchers.pathMatchers(
-                                    "/api/v1/users/**"
+                                    "/**"
                             )).authenticated()
                             .anyExchange().permitAll();
                     log.info("Finished configuring endpoint permissions.");
                 })
-                .cors(Customizer.withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .oauth2ResourceServer(oauth2ResourceServer -> {
                     log.info("Setting up OAuth2 Resource Server...");
                     oauth2ResourceServer
@@ -73,4 +75,25 @@ public class SecurityConfig {
         log.info("JWT Authentication Converter fully initialized.");
         return jwtAuthConverter;
     }
+
+    @Bean
+    public CorsWebFilter corsWebFilter() {
+        return new CorsWebFilter(corsConfigurationSource());
+    }
+
+    @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.addAllowedOrigin("http://localhost:3000");
+        corsConfig.addAllowedOrigin("https://dev-traveltrove.ca.auth0.com");
+        corsConfig.addAllowedHeader("*");  // Allow all headers
+        corsConfig.addAllowedMethod("*");  // Allow all methods (GET, POST, PUT, DELETE, OPTIONS)
+        corsConfig.setAllowCredentials(true);  // Allow cookies/auth tokens
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+
+        return source;
+    }
+
 }
