@@ -30,14 +30,14 @@ de:
 
 okta:
   oauth2:
-    issuer: ${AUTH0_ISSUER}
-    audience: ${AUTH0_AUDIENCE}
+    issuer: https://dev-traveltrove.ca.auth0.com/
+    audience: https://api.traveltrove.com
 
 auth0:
-  domain: ${AUTH0_DOMAIN}
+  domain: dev-traveltrove.ca.auth0.com
   clientId: ${AUTH0_CLIENT_ID}
   clientSecret: ${AUTH0_CLIENT_SECRET}
-  audience: ${AUTH0_MANAGEMENT_API_AUDIENCE}
+  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
 
 ---
 
