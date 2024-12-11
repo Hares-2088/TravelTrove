@@ -1,32 +1,24 @@
 import { useEffect, useState } from "react";
-import {
-  addTour,
-  deleteTour,
-  getAllTours,
-  getTourByTourId,
-  updateTour,
-} from "../../tours/api/tours.api";
+import { useToursApi } from "../../tours/api/tours.api";
 import { TourRequestModel, TourResponseModel } from "../../tours/models/Tour";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import TourEventsTab from "./TourEventsTab";
 import "../../../shared/css/Scrollbar.css";
 
 const ToursTab: React.FC = () => {
+  const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour } = useToursApi();
+
   const [tours, setTours] = useState<TourResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"create" | "update" | "delete">(
     "create"
   );
-  const [selectedTour, setSelectedTour] = useState<TourResponseModel | null>(
-    null
-  );
+  const [selectedTour, setSelectedTour] = useState<TourResponseModel | null>(null);
   const [formData, setFormData] = useState<TourRequestModel>({
     name: "",
     description: "",
   });
-  const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(
-    null
-  );
+  const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(null);
 
   const [tourNameError, setTourNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
@@ -47,7 +39,7 @@ const ToursTab: React.FC = () => {
   const handleViewTour = async (tourId: string) => {
     try {
       const tour = await getTourByTourId(tourId);
-      setViewingTour(tour); // Show Tour Details View
+      setViewingTour(tour);
     } catch (error) {
       console.error("Error fetching Tour details:", error);
     }
@@ -114,7 +106,6 @@ const ToursTab: React.FC = () => {
           <TourEventsTab tourId={viewingTour.tourId} />
         </div>
       ) : (
-        // Display List of Tours
         <div>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h3>Tours</h3>
@@ -189,7 +180,6 @@ const ToursTab: React.FC = () => {
         </div>
       )}
 
-      {/* Modal for Create, Update, and Delete */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>

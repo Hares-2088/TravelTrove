@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
+import { useEventsApi } from "../../events/api/events.api";
+import { useCitiesApi } from "../../cities/api/cities.api";
+import { useCountriesApi } from "../../countries/api/countries.api";
 import {
-  getAllEvents,
-  getEventById,
-  addEvent,
-  updateEvent,
-  deleteEvent,
-} from "../../events/api/events.api";
-import { getAllCities } from "../../cities/api/cities.api";
-import { getAllCountries } from "../../countries/api/countries.api";
-import { EventResponseModel, EventRequestModel } from "../../events/model/models";
+  EventResponseModel,
+  EventRequestModel,
+} from "../../events/model/events.model";
 import "../../../shared/css/Scrollbar.css";
 
 const EventsTab: React.FC = () => {
+  const { getAllEvents, getEventById, addEvent, updateEvent, deleteEvent } = useEventsApi();
+  const { getAllCities } = useCitiesApi();
+  const { getAllCountries } = useCountriesApi();
+
   const [events, setEvents] = useState<EventResponseModel[]>([]);
-  // const [filteredEvents, setFilteredEvents] = useState<EventResponseModel[]>([]); // Commented for filters
   const [cities, setCities] = useState<{ id: string; name: string }[]>([]);
   const [countries, setCountries] = useState<{ id: string; name: string }[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -27,7 +27,6 @@ const EventsTab: React.FC = () => {
     description: "",
     image: "",
   });
-  // const [filter, setFilter] = useState({ cityId: "", countryId: "" }); // Commented for filters
   const [viewingEvent, setViewingEvent] = useState<EventResponseModel | null>(null);
 
   useEffect(() => {
@@ -36,15 +35,10 @@ const EventsTab: React.FC = () => {
     fetchCountries();
   }, []);
 
-  // useEffect(() => {
-  //   applyFilters(); // Commented for filters
-  // }, [filter, events]);
-
   const fetchEvents = async () => {
     try {
       const data = await getAllEvents();
       setEvents(data);
-      // setFilteredEvents(data); // Commented for filters
     } catch (error) {
       console.error("Error fetching events:", error);
     }
@@ -66,19 +60,7 @@ const EventsTab: React.FC = () => {
     } catch (error) {
       console.error("Error fetching countries:", error);
     }
-    // setFilteredEvents(filtered); // Commented for filters
   };
-
-  // const applyFilters = () => { // Commented for filters
-  //   let filtered = events;
-  //   if (filter.cityId) {
-  //     filtered = filtered.filter((event) => event.cityId === filter.cityId);
-  //   }
-  //   if (filter.countryId) {
-  //     filtered = filtered.filter((event) => event.countryId === filter.countryId);
-  //   }
-  //   setFilteredEvents(filtered);
-  // };
 
   const handleViewEvent = async (eventId: string) => {
     try {
@@ -91,13 +73,8 @@ const EventsTab: React.FC = () => {
 
   const handleSave = async () => {
     try {
-      // Validation for required fields
-      if (!formData.name.trim()) {
-        alert("Event name is required.");
-        return;
-      }
-      if (!formData.description.trim()) {
-        alert("Event description is required.");
+      if (!formData.name.trim() || !formData.description.trim()) {
+        alert("Event name and description are required.");
         return;
       }
 
@@ -172,95 +149,59 @@ const EventsTab: React.FC = () => {
             </Button>
           </div>
 
-          {/* Filters Section Commented */}
-          {/* <div className="mb-3">
-            <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Filter by City</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={filter.cityId}
-                  onChange={(e) => setFilter({ ...filter, cityId: e.target.value })}
-                >
-                  <option value="">All Cities</option>
-                  {cities.map((city) => (
-                    <option key={city.id} value={city.id}>
-                      {city.name}
-                    </option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Filter by Country</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={filter.countryId}
-                  onChange={(e) => setFilter({ ...filter, countryId: e.target.value })}
-                >
-                  <option value="">All Countries</option>
-                  {countries.map((country) => (
-                    <option key={country.id} value={country.id}>
-                      {country.name}
-                    </option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-            </Form>
-          </div> */}
-
           <div className="dashboard-scrollbar" style={{ maxHeight: "700px", overflowY: "auto" }}>
             <Table bordered hover responsive className="rounded">
               <thead className="bg-light">
-                <tr>
-                  <th>Name</th>
-                  <th>Actions</th>
-                </tr>
+              <tr>
+                <th>Name</th>
+                <th>Actions</th>
+              </tr>
               </thead>
               <tbody>
-                {events.map((event) => (
-                  <tr key={event.eventId}>
-                    <td
-                      onClick={() => handleViewEvent(event.eventId)}
-                      style={{
-                        cursor: "pointer",
-                        color: "#007bff",
-                        textDecoration: "underline",
+              {events.map((event) => (
+                <tr key={event.eventId}>
+                  <td
+                    onClick={() => handleViewEvent(event.eventId)}
+                    style={{
+                      cursor: "pointer",
+                      color: "#007bff",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    {event.name}
+                  </td>
+                  <td>
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => {
+                        setSelectedEvent(event);
+                        setModalType("update");
+                        setFormData({
+                          cityId: event.cityId,
+                          countryId: event.countryId,
+                          name: event.name,
+                          description: event.description,
+                          image: event.image,
+                        });
+                        setShowModal(true);
                       }}
                     >
-                      {event.name}
-                    </td>
-                    <td>
-                      <Button
-                        variant="outline-primary"
-                        onClick={() => {
-                          setSelectedEvent(event);
-                          setModalType("update");
-                          setFormData({
-                            cityId: event.cityId,
-                            countryId: event.countryId,
-                            name: event.name,
-                            description: event.description,
-                            image: event.image,
-                          });
-                          setShowModal(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        className="ms-2"
-                        onClick={() => {
-                          setSelectedEvent(event);
-                          setModalType("delete");
-                          setShowModal(true);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      className="ms-2"
+                      onClick={() => {
+                        setSelectedEvent(event);
+                        setModalType("delete");
+                        setShowModal(true);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
               </tbody>
             </Table>
           </div>
@@ -273,8 +214,8 @@ const EventsTab: React.FC = () => {
             {modalType === "create"
               ? "Create Event"
               : modalType === "update"
-              ? "Edit Event"
-              : "Delete Event"}
+                ? "Edit Event"
+                : "Delete Event"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -295,7 +236,7 @@ const EventsTab: React.FC = () => {
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Event Description</Form.Label>
+                <Form.Label>Description</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={3}
@@ -304,46 +245,8 @@ const EventsTab: React.FC = () => {
                   isInvalid={!formData.description.trim()}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Event description is required.
+                  Description is required.
                 </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>City</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={formData.cityId}
-                  onChange={(e) => setFormData({ ...formData, cityId: e.target.value })}
-                >
-                  <option value="">Select a City</option>
-                  {cities.map((city) => (
-                    <option key={city.id} value={city.id}>
-                      {city.name}
-                    </option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Country</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={formData.countryId}
-                  onChange={(e) => setFormData({ ...formData, countryId: e.target.value })}
-                >
-                  <option value="">Select a Country</option>
-                  {countries.map((country) => (
-                    <option key={country.id} value={country.id}>
-                      {country.name}
-                    </option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Image URL</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                />
               </Form.Group>
             </Form>
           )}
@@ -352,10 +255,7 @@ const EventsTab: React.FC = () => {
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancel
           </Button>
-          <Button
-            variant={modalType === "delete" ? "danger" : "primary"}
-            onClick={modalType === "delete" ? handleDelete : handleSave}
-          >
+          <Button variant={modalType === "delete" ? "danger" : "primary"} onClick={modalType === "delete" ? handleDelete : handleSave}>
             {modalType === "delete" ? "Confirm" : "Save"}
           </Button>
         </Modal.Footer>

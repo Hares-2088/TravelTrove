@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import {
-  getAllCountries,
-  getCountryById,
-  addCountry,
-  updateCountry,
-  deleteCountry,
-} from "../../countries/api/countries.api";
+import { useCountriesApi } from "../../countries/api/countries.api";
 import {
   CountryResponseModel,
   CountryRequestModel,
@@ -14,6 +8,14 @@ import {
 import "../../../shared/css/Scrollbar.css";
 
 const CountriesTab: React.FC = () => {
+  const {
+    getAllCountries,
+    getCountryById,
+    addCountry,
+    updateCountry,
+    deleteCountry,
+  } = useCountriesApi(); // Use Hook
+
   const [countries, setCountries] = useState<CountryResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"create" | "update" | "delete">(
@@ -28,10 +30,11 @@ const CountriesTab: React.FC = () => {
   const [viewingCountry, setViewingCountry] =
     useState<CountryResponseModel | null>(null);
 
-  //error message for no input in the fields when creating and editing
+  // Error Messages
   const [countryNameError, setCountryNameError] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  // Fetch All Countries
   useEffect(() => {
     fetchCountries();
   }, []);
@@ -45,6 +48,7 @@ const CountriesTab: React.FC = () => {
     }
   };
 
+  // View Country Details
   const handleViewCountry = async (countryId: string) => {
     try {
       const country = await getCountryById(countryId);
@@ -54,11 +58,15 @@ const CountriesTab: React.FC = () => {
     }
   };
 
+  // Save Country
   const handleSave = async () => {
     const isCountryNameValid = formData.name.trim() !== "";
-    const isImageValid = !!formData.image.trim();
+    const isImageValid = formData.image.trim() !== "";
+
     setCountryNameError(!isCountryNameValid);
     setImageError(!isImageValid);
+
+    if (!isCountryNameValid || !isImageValid) return;
 
     try {
       if (modalType === "create") {
@@ -73,6 +81,7 @@ const CountriesTab: React.FC = () => {
     }
   };
 
+  // Delete Country
   const handleDelete = async () => {
     try {
       if (selectedCountry) {
@@ -87,7 +96,6 @@ const CountriesTab: React.FC = () => {
 
   return (
     <div>
-      {/* Viewing a Single Country */}
       {viewingCountry ? (
         <div>
           <Button
@@ -111,7 +119,6 @@ const CountriesTab: React.FC = () => {
         </div>
       ) : (
         <>
-          {/* List of Countries */}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h3>Countries</h3>
             <Button
@@ -137,68 +144,67 @@ const CountriesTab: React.FC = () => {
               style={{ borderRadius: "12px", overflow: "hidden" }}
             >
               <thead className="bg-light">
-                <tr>
-                  <th>Name</th>
-                  <th>Actions</th>
-                </tr>
+              <tr>
+                <th>Name</th>
+                <th>Actions</th>
+              </tr>
               </thead>
               <tbody>
-                {countries.map((country) => (
-                  <tr key={country.countryId}>
-                    <td
-                      onClick={() => handleViewCountry(country.countryId)}
-                      style={{
-                        cursor: "pointer",
-                        color: "#007bff",
-                        textDecoration: "underline",
+              {countries.map((country) => (
+                <tr key={country.countryId}>
+                  <td
+                    onClick={() => handleViewCountry(country.countryId)}
+                    style={{
+                      cursor: "pointer",
+                      color: "#007bff",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    {country.name}
+                  </td>
+                  <td>
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => {
+                        setSelectedCountry(country);
+                        setModalType("update");
+                        setFormData({
+                          name: country.name,
+                          image: country.image,
+                        });
+                        setShowModal(true);
                       }}
                     >
-                      {country.name}
-                    </td>
-                    <td>
-                      <Button
-                        variant="outline-primary"
-                        onClick={() => {
-                          setSelectedCountry(country);
-                          setModalType("update");
-                          setFormData({
-                            name: country.name,
-                            image: country.image,
-                          });
-                          setShowModal(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        className="ms-2"
-                        onClick={() => {
-                          setSelectedCountry(country);
-                          setModalType("delete");
-                          setShowModal(true);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      className="ms-2"
+                      onClick={() => {
+                        setSelectedCountry(country);
+                        setModalType("delete");
+                        setShowModal(true);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
               </tbody>
             </Table>
           </div>
         </>
       )}
 
-      {/* Modals for Create, Update, and Delete */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
             {modalType === "create"
               ? "Create Country"
               : modalType === "update"
-              ? "Edit Country"
-              : "Delete Country"}
+                ? "Edit Country"
+                : "Delete Country"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -232,7 +238,7 @@ const CountriesTab: React.FC = () => {
                     setFormData({ ...formData, image: e.target.value });
                     setImageError(false);
                   }}
-                  isInvalid = {imageError}
+                  isInvalid={imageError}
                 />
                 <div className="invalid-feedback">Image URL is required.</div>
               </Form.Group>
