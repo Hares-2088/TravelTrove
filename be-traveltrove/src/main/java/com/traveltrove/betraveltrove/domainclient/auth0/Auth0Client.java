@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.domainclient.auth0;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,18 @@ public class Auth0Client {
 
     @Value("${auth0.audience}")
     private String audience;
+
+    /**
+     * Logs Auth0 configuration on initialization
+     */
+    @PostConstruct
+    public void logAuth0Config() {
+        log.info("Auth0 Configuration Loaded:");
+        log.info(" - Domain: {}", domain);
+        log.info(" - Client ID: {}", clientId);
+        log.info(" - Client Secret: [PROTECTED]");
+        log.info(" - Audience: {}", audience);
+    }
 
     /**
      * Get Access Token from Auth0 Management API
