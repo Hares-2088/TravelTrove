@@ -12,6 +12,8 @@ import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
+import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
+import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -453,6 +455,154 @@ public class DatabaseLoader {
                 .subscribe(
                         success -> log.info("Airports preloaded successfully."),
                         error -> log.error("Error preloading airports: {}", error.getMessage())
+                );
+    }
+
+    private final TravelerRepository travelerRepository;
+
+
+    @PostConstruct
+    public void loadTravelers() {
+        List<Traveler> sampleTravelers = List.of(
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("d1e91f6c-723e-43b9-812f-2f3d3bfb4081")
+                        .firstName("Adem")
+                        .lastName("Bessam")
+                        .email("adembessam@gmail.com")
+                        .addressLine1("123 Main St")
+                        .addressLine2("321 Main st")
+                        .city("New York")
+                        .state("NY")
+                        .countryId("ad633b50-83d4-41f3-866a-26452bdd6f33")
+                        .seq(1)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("b2e91f6c-723e-43b9-812f-2f3d3bfb4082")
+                        .firstName("John")
+                        .lastName("Doe")
+                        .email("johndoe@gmail.com")
+                        .addressLine1("456 Elm St")
+                        .addressLine2("654 Elm St")
+                        .city("Toronto")
+                        .state("ON")
+                        .countryId("b1db23af-4f2d-4138-b623-e906f5287e90")
+                        .seq(2)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("c3e91f6c-723e-43b9-812f-2f3d3bfb4083")
+                        .firstName("Jane")
+                        .lastName("Smith")
+                        .email("janesmith@gmail.com")
+                        .addressLine1("789 Oak St")
+                        .addressLine2("987 Oak St")
+                        .city("Paris")
+                        .state("IDF")
+                        .countryId("118495e2-e1ce-4987-bb09-a95f93515bda")
+                        .seq(3)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("d4e91f6c-723e-43b9-812f-2f3d3bfb4084")
+                        .firstName("Hans")
+                        .lastName("Müller")
+                        .email("hansmuller@gmail.com")
+                        .addressLine1("101 Pine St")
+                        .addressLine2("201 Pine St")
+                        .city("Berlin")
+                        .state("BE")
+                        .countryId("cf09374e-6d51-47ec-91e1-2b69a788457f")
+                        .seq(4)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("e5e91f6c-723e-43b9-812f-2f3d3bfb4085")
+                        .firstName("Maria")
+                        .lastName("Rossi")
+                        .email("mariarossi@gmail.com")
+                        .addressLine1("202 Maple St")
+                        .addressLine2("303 Maple St")
+                        .city("Rome")
+                        .state("RM")
+                        .countryId("dde33653-fc58-457c-9d33-a322a2a82835")
+                        .seq(5)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("f6e91f6c-723e-43b9-812f-2f3d3bfb4086")
+                        .firstName("Yuki")
+                        .lastName("Tanaka")
+                        .email("yukitanaka@gmail.com")
+                        .addressLine1("303 Cedar St")
+                        .addressLine2("404 Cedar St")
+                        .city("Tokyo")
+                        .state("TK")
+                        .countryId("f05f8f2c-f86d-4cf5-8a9b-19e70f1b96d5")
+                        .seq(6)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("g7e91f6c-723e-43b9-812f-2f3d3bfb4087")
+                        .firstName("Carlos")
+                        .lastName("Silva")
+                        .email("carlossilva@gmail.com")
+                        .addressLine1("404 Birch St")
+                        .addressLine2("505 Birch St")
+                        .city("Rio de Janeiro")
+                        .state("RJ")
+                        .countryId("b511c7ee-c0f3-4902-9bfa-d50f59ef2b3c")
+                        .seq(7)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("h8e91f6c-723e-43b9-812f-2f3d3bfb4088")
+                        .firstName("Liam")
+                        .lastName("Brown")
+                        .email("liambrown@gmail.com")
+                        .addressLine1("505 Spruce St")
+                        .addressLine2("606 Spruce St")
+                        .city("Sydney")
+                        .state("NSW")
+                        .countryId("d5d4e5e2-f960-4cf4-beed-c38104e5d5b4")
+                        .seq(8)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("i9e91f6c-723e-43b9-812f-2f3d3bfb4089")
+                        .firstName("Amit")
+                        .lastName("Sharma")
+                        .email("amitsharma@gmail.com")
+                        .addressLine1("606 Willow St")
+                        .addressLine2("707 Willow St")
+                        .city("Mumbai")
+                        .state("MH")
+                        .countryId("3cd2ad86-26cc-42ad-8b20-8b0b6e6d2a2e")
+                        .seq(9)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
+                        .travelerId("j0e91f6c-723e-43b9-812f-2f3d3bfb4090")
+                        .firstName("Wei")
+                        .lastName("Li")
+                        .email("weili@gmail.com")
+                        .addressLine1("707 Ash St")
+                        .addressLine2("808 Ash St")
+                        .city("Beijing")
+                        .state("BJ")
+                        .countryId("877ec1c0-ffab-449e-a2ec-08f95db58f55")
+                        .seq(10)
+                        .build()
+        );
+
+        travelerRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleTravelers))
+                .flatMap(travelerRepository::save)
+                .doOnNext(traveler -> log.info("Preloaded traveler: {}"))
+                .subscribe(
+                        success -> log.info("Travelers preloaded successfully."),
+                        error -> log.error("Error preloading travelers: {}", error.getMessage())
                 );
     }
 }

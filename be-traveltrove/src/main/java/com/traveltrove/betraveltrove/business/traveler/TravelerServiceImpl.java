@@ -23,23 +23,24 @@ public class TravelerServiceImpl implements TravelerService {
     }
 
     @Override
-    public Flux<TravelerResponseModel> getAllTravelers() {
-        return travelerRepository.findAll()
-                .map(TravelerEntityModelUtil::toTravelerResponseModel);
-    }
-
-    @Override
-    public Mono<TravelerResponseModel> getTraveler(String travelerId, String firstName) {
+    public Mono<TravelerResponseModel> getTraveler(String travelerId) {
         if (travelerId != null && !travelerId.isEmpty()) {
             return travelerRepository.findTravelerByTravelerId(travelerId)
                     .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Traveler id not found: " + travelerId))))
                     .map(TravelerEntityModelUtil::toTravelerResponseModel);
-        } else if (firstName != null && !firstName.isEmpty()) {
+        } else {
+            return Mono.error(new InvalidInputException("Traveler id must be provided"));
+        }
+    }
+
+    @Override
+    public Flux<TravelerResponseModel> getAllTravelers(String firstName) {
+        if (firstName != null && !firstName.isEmpty()) {
             return travelerRepository.findTravelerByFirstName(firstName)
-                    .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Traveler first name not found: " + firstName))))
                     .map(TravelerEntityModelUtil::toTravelerResponseModel);
         } else {
-            return Mono.error(new InvalidInputException("Either travelerId or firstName must be provided"));
+            return travelerRepository.findAll()
+                    .map(TravelerEntityModelUtil::toTravelerResponseModel);
         }
     }
 

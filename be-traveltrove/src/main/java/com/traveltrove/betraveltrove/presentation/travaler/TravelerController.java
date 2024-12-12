@@ -21,17 +21,16 @@ public class TravelerController {
 
     //get all travelers
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<TravelerResponseModel> getAllTravelers() {
-        return travelerService.getAllTravelers()
+    public Flux<TravelerResponseModel> getAllTravelers(@RequestParam(required = false) String firstName) {
+        return travelerService.getAllTravelers(firstName)
                 .doOnNext(traveler -> log.info("Traveler: {}", traveler));
     }
 
-    //get traveler by id or first name
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<TravelerResponseModel> getTraveler(@RequestParam(required = false) String travelerId,
-                                                   @RequestParam(required = false) String firstName) {
-        log.info("Fetching traveler with filters: travelerId={}, firstName={}", travelerId, firstName);
-        return travelerService.getTraveler(travelerId, firstName);
+    //get traveler by id
+    @GetMapping(value = "/travelerId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<TravelerResponseModel> getTraveler(@RequestParam String travelerId) {
+        log.info("Fetching traveler with id: {}", travelerId);
+        return travelerService.getTraveler(travelerId);
     }
 
     //create traveler
