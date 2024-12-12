@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";  // Importing useTranslation
 import {
   getAllCountries,
   getCountryById,
@@ -14,6 +15,7 @@ import {
 import "../../../shared/css/Scrollbar.css";
 
 const CountriesTab: React.FC = () => {
+  const { t } = useTranslation();  // Initializing the translation hook
   const [countries, setCountries] = useState<CountryResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"create" | "update" | "delete">(
@@ -28,7 +30,7 @@ const CountriesTab: React.FC = () => {
   const [viewingCountry, setViewingCountry] =
     useState<CountryResponseModel | null>(null);
 
-  //error message for no input in the fields when creating and editing
+  // Error message for no input in the fields when creating and editing
   const [countryNameError, setCountryNameError] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -101,19 +103,19 @@ const CountriesTab: React.FC = () => {
               gap: "5px",
             }}
           >
-            <span>&larr;</span> Back to List
+            <span>&larr;</span> {t('backToListC')}
           </Button>
           <h3>{viewingCountry.name}</h3>
           <p>
-            <strong>Image:</strong>{" "}
-            {viewingCountry.image || "No image available"}
+            <strong>{t('countryImage')}:</strong>{" "}
+            {viewingCountry.image || t('noImage')}
           </p>
         </div>
       ) : (
         <>
           {/* List of Countries */}
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3>Countries</h3>
+            <h3>{t('title')}</h3>
             <Button
               variant="primary"
               onClick={() => {
@@ -122,7 +124,7 @@ const CountriesTab: React.FC = () => {
                 setShowModal(true);
               }}
             >
-              Create
+              {t('createC')}
             </Button>
           </div>
           <div
@@ -138,8 +140,8 @@ const CountriesTab: React.FC = () => {
             >
               <thead className="bg-light">
                 <tr>
-                  <th>Name</th>
-                  <th>Actions</th>
+                  <th>{t('name')}</th>
+                  <th>{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -168,7 +170,7 @@ const CountriesTab: React.FC = () => {
                           setShowModal(true);
                         }}
                       >
-                        Edit
+                        {t('editC')}
                       </Button>
                       <Button
                         variant="outline-danger"
@@ -179,7 +181,7 @@ const CountriesTab: React.FC = () => {
                           setShowModal(true);
                         }}
                       >
-                        Delete
+                        {t('deleteC')}
                       </Button>
                     </td>
                   </tr>
@@ -195,19 +197,19 @@ const CountriesTab: React.FC = () => {
         <Modal.Header closeButton>
           <Modal.Title>
             {modalType === "create"
-              ? "Create Country"
+              ? t('createCountry')
               : modalType === "update"
-              ? "Edit Country"
-              : "Delete Country"}
+              ? t('editCountry')
+              : t('deleteCountry')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {modalType === "delete" ? (
-            <p>Are you sure you want to delete this country?</p>
+            <p>{t('areYouSure')}</p>
           ) : (
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>Country Name</Form.Label>
+                <Form.Label>{t('countryName')}</Form.Label>
                 <Form.Control
                   required
                   type="text"
@@ -219,11 +221,11 @@ const CountriesTab: React.FC = () => {
                   isInvalid={countryNameError}
                 />
                 <div className="invalid-feedback">
-                  Country name is required.
+                  {t('nameRequired')}
                 </div>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Country Image URL</Form.Label>
+                <Form.Label>{t('countryImage')}</Form.Label>
                 <Form.Control
                   required
                   type="text"
@@ -232,22 +234,24 @@ const CountriesTab: React.FC = () => {
                     setFormData({ ...formData, image: e.target.value });
                     setImageError(false);
                   }}
-                  isInvalid = {imageError}
+                  isInvalid={imageError}
                 />
-                <div className="invalid-feedback">Image URL is required.</div>
+                <div className="invalid-feedback">
+                  {t('imageRequired')}
+                </div>
               </Form.Group>
             </Form>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancel
+            {t('cancelC')}
           </Button>
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
-            {modalType === "delete" ? "Confirm" : "Save"}
+            {modalType === "delete" ? t('confirmC') : t('saveC')}
           </Button>
         </Modal.Footer>
       </Modal>

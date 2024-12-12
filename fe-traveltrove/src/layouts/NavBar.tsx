@@ -1,8 +1,19 @@
 import React from "react";
 import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap";
 import { AppRoutes } from "../shared/models/app.routes";
+import { useTranslation } from 'react-i18next';
+import i18n from "../i18n";
 
 const NavBar: React.FC = () => {
+  const { t, i18n } = useTranslation();
+
+  const handleLanguageChange = (lng: string) => {
+    i18n.changeLanguage(lng);
+    console.log("Language switched to:", lng);
+  };
+
+  console.log("Current Language:", i18n.language);
+
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
       <Container>
@@ -17,15 +28,15 @@ const NavBar: React.FC = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href={AppRoutes.Home} className="px-3">
-              Home
+              {t("home")}
             </Nav.Link>
             <Nav.Link href={AppRoutes.ToursPage} className="px-3">
-              Trips
+              {t("trips")}
             </Nav.Link>
           </Nav>
           <Nav className="align-items-center">
             <Nav.Link href={AppRoutes.Dashboard} className="px-3">
-              Dashboard
+              {t("dashboard")}
             </Nav.Link>
             <NavDropdown
               title={
@@ -38,18 +49,22 @@ const NavBar: React.FC = () => {
               id="language-dropdown"
               align="end"
             >
-              <NavDropdown.Item href="#">EN</NavDropdown.Item>
-              <NavDropdown.Item href="#">FR</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => handleLanguageChange("en")}>
+                EN
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={() => handleLanguageChange("fr")}>
+                FR
+              </NavDropdown.Item>
             </NavDropdown>
             <Button
               href={AppRoutes.Login}
               variant="outline-dark"
               className="me-2"
             >
-              Sign in
+              {t("signIn")}
             </Button>
             <Button href={AppRoutes.Register} variant="dark">
-              Sign up
+              {t("signUp")}
             </Button>
           </Nav>
         </Navbar.Collapse>

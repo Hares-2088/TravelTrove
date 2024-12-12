@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Modal, Form } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import {
   getTourEventsByTourId,
   addTourEvent,
   updateTourEvent,
   deleteTourEvent
-} from "../../tourevents/api/tourevent.api";
+} from '../../tourEvents/api/tourevent.api';
 import { getAllEvents } from '../../events/api/events.api';
-import { TourEventRequestModel, TourEventResponseModel } from '../../tourevents/model/tourevents.model';
+import { TourEventRequestModel, TourEventResponseModel } from '../../tourEvents/model/tourevents.model';
 import "../../../shared/css/Scrollbar.css";
 
 interface EventResponseModel {
@@ -20,6 +21,7 @@ interface TourEventsTabProps {
 }
 
 const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
+  const { t } = useTranslation(); // Initialize translation hook
   const [tourEvents, setTourEvents] = useState<TourEventResponseModel[]>([]);
   const [events, setEvents] = useState<EventResponseModel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,7 +111,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
   return (
     <div className="tour-events-tab">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>Tour Events</h3>
+        <h3>{t("header")}</h3>
         <Button
           variant="primary"
           onClick={() => {
@@ -123,58 +125,58 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
             setShowModal(true);
           }}
         >
-          Create
+          {t("createButton")}
         </Button>
       </div>
 
       <div className="dashboard-scrollbar" style={{ maxHeight: "550px", overflowY: "auto" }}>
         <Table bordered hover responsive>
           <thead className="bg-light">
-          <tr>
-            <th>Sequence</th>
-            <th>Description</th>
-            <th>Event</th>
-            <th>Actions</th>
-          </tr>
+            <tr>
+              <th>{t("seqLabel")}</th>
+              <th>{t("descLabel")}</th>
+              <th>{t("eventLabel")}</th>
+              <th>{t("actions")}</th>
+            </tr>
           </thead>
           <tbody>
-          {tourEvents.map((event) => (
-            <tr key={event.tourEventId}>
-              <td>{event.seq}</td>
-              <td>{event.seqDesc}</td>
-              <td>{getEventNameById(event.eventId)}</td>
-              <td>
-                <Button
-                  variant="outline-primary"
-                  onClick={() => {
-                    setSelectedEvent(event);
-                    setModalType("update");
-                    setFormData({
-                      tourId,
-                      seq: event.seq,
-                      seqDesc: event.seqDesc,
-                      eventId: event.eventId,
-                    });
-                    setShowModal(true);
-                  }}
-                >
-                  Edit
-                </Button>
+            {tourEvents.map((event) => (
+              <tr key={event.tourEventId}>
+                <td>{event.seq}</td>
+                <td>{event.seqDesc}</td>
+                <td>{getEventNameById(event.eventId)}</td>
+                <td>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => {
+                      setSelectedEvent(event);
+                      setModalType("update");
+                      setFormData({
+                        tourId,
+                        seq: event.seq,
+                        seqDesc: event.seqDesc,
+                        eventId: event.eventId,
+                      });
+                      setShowModal(true);
+                    }}
+                  >
+                    {t("editButton")}
+                  </Button>
 
-                <Button
-                  variant="outline-danger"
-                  className="ms-2"
-                  onClick={() => {
-                    setSelectedEvent(event);
-                    setModalType("delete");
-                    setShowModal(true);
-                  }}
-                >
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
+                  <Button
+                    variant="outline-danger"
+                    className="ms-2"
+                    onClick={() => {
+                      setSelectedEvent(event);
+                      setModalType("delete");
+                      setShowModal(true);
+                    }}
+                  >
+                    {t("deleteButton")}
+                  </Button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </Table>
       </div>
@@ -183,19 +185,19 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
         <Modal.Header closeButton>
           <Modal.Title>
             {modalType === "create"
-              ? "Create Tour Event"
+              ? t("createTitle")
               : modalType === "update"
-                ? "Edit Tour Event"
-                : "Delete Tour Event"}
+                ? t("editTitle")
+                : t("deleteTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {modalType === "delete" ? (
-            <p>Are you sure you want to delete this tour event?</p>
+            <p>{t("deleteConfirmationTE")}</p>
           ) : (
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>Sequence</Form.Label>
+                <Form.Label>{t("seqLabel")}</Form.Label>
                 <Form.Control
                   type="number"
                   min="1"
@@ -206,11 +208,11 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                   }}
                   isInvalid={seqError}
                 />
-                <div className="invalid-feedback">Sequence must be greater than 0.</div>
+                <div className="invalid-feedback">{t("invalidSeq")}</div>
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Description</Form.Label>
+                <Form.Label>{t("descLabel")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={formData.seqDesc}
@@ -220,11 +222,11 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                   }}
                   isInvalid={seqDescError}
                 />
-                <div className="invalid-feedback">Description is required.</div>
+                <div className="invalid-feedback">{t("invalidDesc")}</div>
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Event</Form.Label>
+                <Form.Label>{t("eventLabel")}</Form.Label>
                 <Form.Select
                   value={formData.eventId}
                   onChange={(e) => {
@@ -233,27 +235,27 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                   }}
                   isInvalid={eventIdError}
                 >
-                  <option value="">Select an Event</option>
+                  <option value="">{t("selectEvent")}</option>
                   {events.map((event) => (
                     <option key={event.eventId} value={event.eventId}>
                       {event.name}
                     </option>
                   ))}
                 </Form.Select>
-                <div className="invalid-feedback">Event is required.</div>
+                <div className="invalid-feedback">{t("invalidEvent")}</div>
               </Form.Group>
             </Form>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancel
+            {t("cancelTE")}
           </Button>
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
-            {modalType === "delete" ? "Confirm" : "Save"}
+            {modalType === "delete" ? t("confirmButton") : t("saveTE")}
           </Button>
         </Modal.Footer>
       </Modal>
