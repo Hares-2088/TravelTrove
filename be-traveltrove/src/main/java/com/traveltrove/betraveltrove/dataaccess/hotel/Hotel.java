@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.dataaccess.country;
+package com.traveltrove.betraveltrove.dataaccess.hotel;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,9 +8,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Document(collection = "hotels")
 public class Hotel {
 
