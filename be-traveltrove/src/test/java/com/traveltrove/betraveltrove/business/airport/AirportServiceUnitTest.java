@@ -1,9 +1,13 @@
 package com.traveltrove.betraveltrove.business.airport;
 
+import com.traveltrove.betraveltrove.business.city.CityService;
 import com.traveltrove.betraveltrove.dataaccess.airport.Airport;
 import com.traveltrove.betraveltrove.dataaccess.airport.AirportRepository;
+import com.traveltrove.betraveltrove.dataaccess.city.City;
+import com.traveltrove.betraveltrove.dataaccess.city.CityRepository;
 import com.traveltrove.betraveltrove.presentation.airport.AirportRequestModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +26,9 @@ import java.util.UUID;
 public class AirportServiceUnitTest {
     @Mock
     private AirportRepository airportRepository;
+
+    @Mock
+    private CityService cityService;
 
     @InjectMocks
     private AirportServiceImpl airportServiceImpl;
@@ -59,8 +66,9 @@ public class AirportServiceUnitTest {
                 .verifyComplete();
 
     }
+
     @Test
-    public void whenGetAllAirports_withNoAirports_ReturnEmpty() {
+    public void givenNoAirports_whenGetAllAirports_thenReturnEmpty() {
         when(airportRepository.findAll()).thenReturn(Flux.empty());
 
         StepVerifier
@@ -85,8 +93,9 @@ public class AirportServiceUnitTest {
                 )
                 .verifyComplete();
     }
+
     @Test
-    public void whenGetAirportById_withInvalidAirportId_ReturnNotFound(){
+    public void whenGetAirportById_withInvalidAirportId_ReturnNotFound() {
         String airportId = "invalidID";
 
         when(airportRepository.findAirportByAirportId(airportId)).thenReturn(Mono.empty());
@@ -104,7 +113,7 @@ public class AirportServiceUnitTest {
         AirportRequestModel airportRequestModel = new AirportRequestModel("JFK", "123");
 
 
-//        when(airportRepository.save(newAirport)).thenReturn(Mono.just(newAirport));
+        when(cityService.isCityExistsById(anyString())).thenReturn(Mono.just(true));
         when(airportRepository.save(any(Airport.class))).thenReturn(Mono.just(newAirport));
 
         StepVerifier
@@ -117,23 +126,25 @@ public class AirportServiceUnitTest {
     }
 
     @Test
-    public void whenAddAirport_withInvalidCityId_thenReturnNotFound(){
+    public void whenAddAirport_withInvalidCityId_thenReturnNotFound() {
         AirportRequestModel airportRequestModel = new AirportRequestModel("JFK", "invalidCityId");
 
-        when(airportRepository.save(any(Airport.class))).thenReturn(Mono.error(new NotFoundException("City id not found: " + airportRequestModel.getCityId())));
+        when(cityService.isCityExistsById(anyString())).thenReturn(Mono.just(false));
 
         StepVerifier
                 .create(airportServiceImpl.addAirport(airportRequestModel))
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException &&
-                        throwable.getMessage().equals("City id not found: " + airportRequestModel.getCityId()))
+                        throwable.getMessage().equals("City not found with id: " + airportRequestModel.getCityId()))
                 .verify();
     }
+
     @Test
     public void whenUpdateAirport_thenReturnUpdatedAirport() {
         String airportId = UUID.randomUUID().toString();
         Airport updatedAirport = new Airport("1", airportId, "JFK", "123");
         AirportRequestModel airportRequestModel = new AirportRequestModel("JFK", "123");
 
+        when(cityService.isCityExistsById(anyString())).thenReturn(Mono.just(true));
         when(airportRepository.findAirportByAirportId(airportId)).thenReturn(Mono.just(updatedAirport));
         when(airportRepository.save(updatedAirport)).thenReturn(Mono.just(updatedAirport));
 
@@ -149,8 +160,9 @@ public class AirportServiceUnitTest {
     @Test
     public void whenUpdateAirport_withInvalidId_thenReturnNotFound() {
         String airportId = "InvalidId";
-        AirportRequestModel airportRequestModel = new AirportRequestModel("JFK", "123");
+        AirportRequestModel airportRequestModel = new AirportRequestModel("JFK", "airportId");
 
+        when(cityService.isCityExistsById(anyString())).thenReturn(Mono.just(true));
         when(airportRepository.findAirportByAirportId(airportId)).thenReturn(Mono.empty());
 
         StepVerifier
@@ -173,6 +185,7 @@ public class AirportServiceUnitTest {
                 .expectNextCount(0)
                 .verifyComplete();
     }
+
     @Test
     void whenDeleteAirport_withInvalidId_thenReturnNotFound() {
         String airportId = UUID.randomUUID().toString();
@@ -182,7 +195,7 @@ public class AirportServiceUnitTest {
         StepVerifier
                 .create(airportServiceImpl.deleteAirport(airportId))
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException
-                && throwable.getMessage().equals("Airport id not found: " + airportId))
+                        && throwable.getMessage().equals("Airport id not found: " + airportId))
                 .verify();
     }
 
