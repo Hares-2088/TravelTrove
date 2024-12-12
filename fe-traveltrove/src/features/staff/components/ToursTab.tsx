@@ -10,24 +10,16 @@ import { TourRequestModel, TourResponseModel } from "../../tours/models/Tour";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import TourEventsTab from "./TourEventsTab";
 import "../../../shared/css/Scrollbar.css";
+import { useTranslation } from "react-i18next";
 
 const ToursTab: React.FC = () => {
+  const { t } = useTranslation(); // For i18n translation
   const [tours, setTours] = useState<TourResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">(
-    "create"
-  );
-  const [selectedTour, setSelectedTour] = useState<TourResponseModel | null>(
-    null
-  );
-  const [formData, setFormData] = useState<TourRequestModel>({
-    name: "",
-    description: "",
-  });
-  const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(
-    null
-  );
-
+  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
+  const [selectedTour, setSelectedTour] = useState<TourResponseModel | null>(null);
+  const [formData, setFormData] = useState<TourRequestModel>({ name: "", description: "" });
+  const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(null);
   const [tourNameError, setTourNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
 
@@ -102,22 +94,19 @@ const ToursTab: React.FC = () => {
               gap: "5px",
             }}
           >
-            <span>&larr;</span> Back to List
+            <span>&larr;</span> {t('backToListT')}
           </Button>
           <h3>{viewingTour.name}</h3>
           <p>
-            <strong>Description:</strong>{" "}
-            {viewingTour.description || "No description available"}
+            <strong>{t('tourDescription')}:</strong>{" "}
+            {viewingTour.description || t('noDescriptionT')}
           </p>
-
-          {/* Integrate TourEventsTab */}
           <TourEventsTab tourId={viewingTour.tourId} />
         </div>
       ) : (
-        // Display List of Tours
         <div>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3>Tours</h3>
+            <h3>{t('tours')}</h3>
             <Button
               variant="primary"
               onClick={() => {
@@ -126,7 +115,7 @@ const ToursTab: React.FC = () => {
                 setShowModal(true);
               }}
             >
-              Create
+              {t('createTour')}
             </Button>
           </div>
 
@@ -136,53 +125,53 @@ const ToursTab: React.FC = () => {
           >
             <Table bordered hover responsive className="rounded">
               <thead className="bg-light">
-              <tr>
-                <th>Name</th>
-                <th>Actions</th>
-              </tr>
+                <tr>
+                  <th>{t('tourName')}</th>
+                  <th>{t('actionsT')}</th>
+                </tr>
               </thead>
               <tbody>
-              {tours.map((tour) => (
-                <tr key={tour.tourId}>
-                  <td
-                    onClick={() => handleViewTour(tour.tourId)}
-                    style={{
-                      cursor: "pointer",
-                      color: "#007bff",
-                      textDecoration: "underline",
-                    }}
-                  >
-                    {tour.name}
-                  </td>
-                  <td>
-                    <Button
-                      variant="outline-primary"
-                      onClick={() => {
-                        setSelectedTour(tour);
-                        setModalType("update");
-                        setFormData({
-                          name: tour.name,
-                          description: tour.description,
-                        });
-                        setShowModal(true);
+                {tours.map((tour) => (
+                  <tr key={tour.tourId}>
+                    <td
+                      onClick={() => handleViewTour(tour.tourId)}
+                      style={{
+                        cursor: "pointer",
+                        color: "#007bff",
+                        textDecoration: "underline",
                       }}
                     >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      className="ms-2"
-                      onClick={() => {
-                        setSelectedTour(tour);
-                        setModalType("delete");
-                        setShowModal(true);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+                      {tour.name}
+                    </td>
+                    <td>
+                      <Button
+                        variant="outline-primary"
+                        onClick={() => {
+                          setSelectedTour(tour);
+                          setModalType("update");
+                          setFormData({
+                            name: tour.name,
+                            description: tour.description,
+                          });
+                          setShowModal(true);
+                        }}
+                      >
+                        {t('editTour')}
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        className="ms-2"
+                        onClick={() => {
+                          setSelectedTour(tour);
+                          setModalType("delete");
+                          setShowModal(true);
+                        }}
+                      >
+                        {t('deleteTour')}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </div>
@@ -194,19 +183,19 @@ const ToursTab: React.FC = () => {
         <Modal.Header closeButton>
           <Modal.Title>
             {modalType === "create"
-              ? "Create Tour"
+              ? t('createTour')
               : modalType === "update"
-                ? "Edit Tour"
-                : "Delete Tour"}
+              ? t('editTour')
+              : t('deleteTour')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {modalType === "delete" ? (
-            <p>Are you sure you want to delete this tour?</p>
+            <p>{t('areYouSureDelete')}</p>
           ) : (
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>Tour Name</Form.Label>
+                <Form.Label>{t('tourName')}</Form.Label>
                 <Form.Control
                   required
                   type="text"
@@ -217,10 +206,10 @@ const ToursTab: React.FC = () => {
                   }}
                   isInvalid={tourNameError}
                 />
-                <div className="invalid-feedback">Tour name is required.</div>
+                <div className="invalid-feedback">{t('tourNameRequired')}</div>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Tour Description</Form.Label>
+                <Form.Label>{t('tourDescription')}</Form.Label>
                 <Form.Control
                   as="textarea"
                   value={formData.description}
@@ -231,20 +220,20 @@ const ToursTab: React.FC = () => {
                   isInvalid={descriptionError}
                   rows={3}
                 />
-                <div className="invalid-feedback">Description is required.</div>
+                <div className="invalid-feedback">{t('tourDescriptionRequired')}</div>
               </Form.Group>
             </Form>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancel
+            {t('cancelT')}
           </Button>
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
-            {modalType === "delete" ? "Confirm" : "Save"}
+            {modalType === "delete" ? t('confirmT') : t('saveT')}
           </Button>
         </Modal.Footer>
       </Modal>

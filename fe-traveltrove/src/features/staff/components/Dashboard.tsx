@@ -4,10 +4,14 @@ import CountriesTab from "./CountriesTab";
 import EventsTab from "./EventsTab"; 
 import CitiesTab from "./CitiesTab";
 import ToursTab from "./ToursTab";
+import { useTranslation } from "react-i18next";
+
 
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("tours");
+  const { t } = useTranslation(); // Access i18n functions
+  
 
   return (
     <div
@@ -37,7 +41,7 @@ const Dashboard: React.FC = () => {
               >
                 {/* Dashboard Title */}
                 <h4 className="text-center mb-3" style={{ fontWeight: "bold" }}>
-                  Dashboard
+                {t('dashboard')}
                 </h4>
                 {/* Tab List */}
                 <Nav className="flex-column text-center">
@@ -53,7 +57,7 @@ const Dashboard: React.FC = () => {
                         borderRadius: "10px",
                       }}
                     >
-                      Tours
+                      {t('toursDB')}
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
@@ -68,7 +72,7 @@ const Dashboard: React.FC = () => {
                         borderRadius: "10px",
                       }}
                     >
-                      Events
+                      {t('events')}
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
@@ -83,7 +87,7 @@ const Dashboard: React.FC = () => {
                         borderRadius: "10px",
                       }}
                     >
-                      Cities
+                      {t('citiesDB')}
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
@@ -98,7 +102,7 @@ const Dashboard: React.FC = () => {
                         borderRadius: "10px",
                       }}
                     >
-                      Countries
+                      {t('countries')}
                     </Nav.Link>
                   </Nav.Item>
                 </Nav>
