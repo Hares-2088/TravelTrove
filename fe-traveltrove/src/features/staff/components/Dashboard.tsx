@@ -4,6 +4,7 @@ import CountriesTab from "./CountriesTab";
 import EventsTab from "./EventsTab"; 
 import CitiesTab from "./CitiesTab";
 import ToursTab from "./ToursTab";
+import HotelsTab from "./HotelsTab";
 
 
 const Dashboard: React.FC = () => {
@@ -73,6 +74,21 @@ const Dashboard: React.FC = () => {
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link
+                      eventKey="hotels"
+                      onClick={() => setActiveTab("hotels")}
+                      className={`text-white px-3 py-2 ${
+                        activeTab === "hotels" ? "bg-secondary" : ""
+                      }`}
+                      style={{
+                        fontWeight: activeTab === "hotels" ? "bold" : "normal",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      Hotels
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
                       eventKey="cities"
                       onClick={() => setActiveTab("cities")}
                       className={`text-white px-3 py-2 ${
@@ -120,6 +136,9 @@ const Dashboard: React.FC = () => {
                   </Tab.Pane>
                   <Tab.Pane eventKey="events">
                     <EventsTab /> {/* Use the EventsTab component here */}
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="hotels">
+                    <HotelsTab /> 
                   </Tab.Pane>
                   <Tab.Pane eventKey="cities">
                     <CitiesTab />
