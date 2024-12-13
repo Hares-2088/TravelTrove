@@ -1,4 +1,5 @@
-server.port: 8080
+server:
+  port: 8080
 
 logging:
   level:
@@ -6,7 +7,7 @@ logging:
     com.be-traveltrove: DEBUG
     org.hibernate.SQL: DEBUG
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
-
+    com.traveltrove.betraveltrove.config.security: DEBUG
 
 spring:
   data:
@@ -24,8 +25,19 @@ de:
       embedded:
         version: 5.0.5
 
+okta:
+  oauth2:
+    issuer: https://dev-traveltrove.ca.auth0.com/
+    audience: https://api.traveltrove.com
+
+auth0:
+  domain: dev-traveltrove.ca.auth0.com
+  clientId: ${AUTH0_CLIENT_ID}
+  clientSecret: ${AUTH0_CLIENT_SECRET}
+  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
 
 ---
+
 spring:
   config:
     activate:

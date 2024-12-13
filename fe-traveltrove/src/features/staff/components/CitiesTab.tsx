@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
+import { useCitiesApi } from "../../cities/api/cities.api";
+import { useCountriesApi } from "../../countries/api/countries.api";
 import { useTranslation } from 'react-i18next';
-import { getAllCountries } from "../../countries/api/countries.api";
-import {
-  getAllCities,
-  getCityById,
-  addCity,
-  updateCity,
-  deleteCity,
-} from "../../cities/api/cities.api";
 import {
   CityResponseModel,
   CityRequestModel,
@@ -17,6 +11,9 @@ import { CountryResponseModel } from "../../countries/models/country.model";
 import "../../../shared/css/Scrollbar.css";
 
 const CitiesTab: React.FC = () => {
+  const { getAllCities, getCityById, addCity, updateCity, deleteCity } = useCitiesApi();
+  const { getAllCountries } = useCountriesApi();
+
   const { t } = useTranslation();
   const [cities, setCities] = useState<CityResponseModel[]>([]);
   const [countries, setCountries] = useState<CountryResponseModel[]>([]);

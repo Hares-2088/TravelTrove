@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  addTour,
-  deleteTour,
-  getAllTours,
-  getTourByTourId,
-  updateTour,
-} from "../../tours/api/tours.api";
+import { useToursApi } from "../../tours/api/tours.api";
 import { TourRequestModel, TourResponseModel } from "../../tours/models/Tour";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import TourEventsTab from "./TourEventsTab";
@@ -13,6 +7,8 @@ import "../../../shared/css/Scrollbar.css";
 import { useTranslation } from "react-i18next";
 
 const ToursTab: React.FC = () => {
+  const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour } = useToursApi();
+
   const { t } = useTranslation(); // For i18n translation
   const [tours, setTours] = useState<TourResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);

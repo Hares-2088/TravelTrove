@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next"; // Import i18n hook
+import { useEventsApi } from "../../events/api/events.api";
+import { useCitiesApi } from "../../cities/api/cities.api";
+import { useCountriesApi } from "../../countries/api/countries.api";
 import {
-  getAllEvents,
-  getEventById,
-  addEvent,
-  updateEvent,
-  deleteEvent,
-} from "../../events/api/events.api";
-import { getAllCities } from "../../cities/api/cities.api";
-import { getAllCountries } from "../../countries/api/countries.api";
-import { EventResponseModel, EventRequestModel } from "../../events/model/models";
+  EventResponseModel,
+  EventRequestModel,
+} from "../../events/model/events.model";
 import "../../../shared/css/Scrollbar.css";
 
 const EventsTab: React.FC = () => {
+  const { getAllEvents, getEventById, addEvent, updateEvent, deleteEvent } = useEventsApi();
+  const { getAllCities } = useCitiesApi();
+  const { getAllCountries } = useCountriesApi();
+
   const { t } = useTranslation(); // Access i18n functions
   const [events, setEvents] = useState<EventResponseModel[]>([]);
   const [cities, setCities] = useState<{ id: string; name: string }[]>([]);

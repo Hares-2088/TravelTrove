@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.dataaccess.country;
+package com.traveltrove.betraveltrove.dataaccess.hotel;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

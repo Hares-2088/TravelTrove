@@ -1,13 +1,13 @@
 package com.traveltrove.betraveltrove.presentation.country;
 
 import com.traveltrove.betraveltrove.business.country.CountryService;
-import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.utils.EntityModelUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,7 +17,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/countries")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class CountryController {
 
@@ -32,6 +31,7 @@ public class CountryController {
 
     // Get a country by ID
     @GetMapping(value = "/{countryId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('read:country')")
     public Mono<ResponseEntity<CountryResponseModel>> getCountryById(@PathVariable String countryId) {
         log.info("Fetching country with id: {}", countryId);
         return countryService.getCountryById(countryId)

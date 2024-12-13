@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Table, Modal, Form } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { Button, Table, Modal, Form } from "react-bootstrap";
+import { useTourEventsApi } from '../../tourevents/api/tourevent.api';
+import { useEventsApi } from "../../events/api/events.api";
 import { useTranslation } from 'react-i18next';
 import {
-  getTourEventsByTourId,
-  addTourEvent,
-  updateTourEvent,
-  deleteTourEvent
-} from '../../tourEvents/api/tourevent.api';
-import { getAllEvents } from '../../events/api/events.api';
-import { TourEventRequestModel, TourEventResponseModel } from '../../tourEvents/model/tourevents.model';
+  TourEventRequestModel,
+  TourEventResponseModel,
+} from "../../tourevents/model/tourevents.model";
 import "../../../shared/css/Scrollbar.css";
 
 interface EventResponseModel {
@@ -21,6 +19,15 @@ interface TourEventsTabProps {
 }
 
 const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
+  const {
+    getTourEventsByTourId,
+    addTourEvent,
+    updateTourEvent,
+    deleteTourEvent,
+  } = useTourEventsApi();
+
+  const { getAllEvents } = useEventsApi();
+
   const { t } = useTranslation(); // Initialize translation hook
   const [tourEvents, setTourEvents] = useState<TourEventResponseModel[]>([]);
   const [events, setEvents] = useState<EventResponseModel[]>([]);

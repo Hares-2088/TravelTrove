@@ -19,7 +19,6 @@ public class CityServiceImpl implements CityService {
         this.cityRepository = cityRepository;
     }
 
-
     @Override
     public Mono<CityResponseModel> addCity(CityRequestModel cityRequestModel) {
         return cityRepository.save(EntityModelUtil.toCityEntity(cityRequestModel))

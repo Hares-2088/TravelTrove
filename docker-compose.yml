@@ -11,6 +11,8 @@ services:
         - BUILD_MODE=development
     ports:
       - "3000:3000"
+    env_file:
+      - fe-traveltrove/.env
     volumes:
       - ./fe-traveltrove/src:/app/src
 
@@ -24,6 +26,8 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    env_file:
+      - be-traveltrove/.env
     depends_on:
       - mongo
 
