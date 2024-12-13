@@ -535,6 +535,15 @@ public class DatabaseLoader {
                         .url("https://waldorfastoria3.hilton.com/en/hotels/china/waldorf-astoria-beijing-BJSWAWA/index.html")
                         .build()
         );
+
+        hotelRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleHotels))
+                .flatMap(hotelRepository::save)
+                .doOnNext(hotel -> log.info("Preloaded hotel: {}", hotel))
+                .subscribe(
+                        success -> log.info("Hotels preloaded successfully."),
+                        error -> log.error("Error preloading hotels: {}", error.getMessage())
+                );
     }
 }
 
