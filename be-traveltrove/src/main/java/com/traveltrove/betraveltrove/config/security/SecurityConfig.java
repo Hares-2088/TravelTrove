@@ -32,9 +32,8 @@ public class SecurityConfig {
         return http
                 .authorizeExchange(authz -> {
                     log.info("Configuring endpoint permissions...");
-                    authz.matchers(ServerWebExchangeMatchers.pathMatchers(
-                                    "/**"
-                            )).authenticated()
+                    authz.matchers(ServerWebExchangeMatchers
+                            .pathMatchers("/api/v1/users/**")).authenticated()
                             .anyExchange().permitAll();
                     log.info("Finished configuring endpoint permissions.");
                 })
@@ -86,9 +85,9 @@ public class SecurityConfig {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.addAllowedOrigin("http://localhost:3000");
         corsConfig.addAllowedOrigin("https://dev-traveltrove.ca.auth0.com");
-        corsConfig.addAllowedHeader("*");  // Allow all headers
-        corsConfig.addAllowedMethod("*");  // Allow all methods (GET, POST, PUT, DELETE, OPTIONS)
-        corsConfig.setAllowCredentials(true);  // Allow cookies/auth tokens
+        corsConfig.addAllowedHeader("*");
+        corsConfig.addAllowedMethod("*");
+        corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);

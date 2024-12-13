@@ -6,6 +6,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { auth0Config } from './auth/auth0-config';
+import { AppRoutes } from './shared/models/app.routes';
+
+const onRedirectCallback = () => {
+  window.location.replace(AppRoutes.Callback);
+};
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -21,6 +26,7 @@ root.render(
         audience: auth0Config.audience,
         scope: 'openid profile email'
       }}
+      onRedirectCallback={onRedirectCallback}
       cacheLocation="localstorage"
     >
       <App />

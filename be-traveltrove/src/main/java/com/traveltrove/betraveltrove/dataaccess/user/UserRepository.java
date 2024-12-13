@@ -7,4 +7,3 @@ public interface UserRepository extends ReactiveMongoRepository<User, String> {
 
     Mono<User> findByUserId(String userId);
 }
-

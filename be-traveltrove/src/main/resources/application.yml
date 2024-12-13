@@ -19,9 +19,6 @@ spring:
       password: password
       authentication-database: admin
 
-  config:
-    import: "optional:classpath:.env"
-
 de:
   flapdoodle:
     mongodb:

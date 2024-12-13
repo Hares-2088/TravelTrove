@@ -1,7 +1,6 @@
 package com.traveltrove.betraveltrove.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.joselion.maybe.Maybe;
 import com.traveltrove.betraveltrove.models.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -13,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
 
 @Order(-2)
 @Component
@@ -77,14 +78,14 @@ public record GlobalErrorHandler(ObjectMapper mapper) implements ErrorWebExcepti
     }
 
     private Mono<byte[]> makeBodyBytes(final String message) {
-        return Mono.create(sink -> {
-            log.debug("Creating response body for message: {}", message);
-
-            Maybe.just(message)
-                    .map(ErrorMessage::from)
-                    .resolve(mapper::writeValueAsBytes)
-                    .doOnSuccess(sink::success)
-                    .doOnError(sink::error);
+        return Mono.fromSupplier(() -> {
+            try {
+                ErrorMessage errorMessage = ErrorMessage.from(message);
+                return mapper.writeValueAsBytes(errorMessage);
+            } catch (Exception e) {
+                log.error("Failed to create error response", e);
+                return message.getBytes(StandardCharsets.UTF_8);
+            }
         });
     }
 }

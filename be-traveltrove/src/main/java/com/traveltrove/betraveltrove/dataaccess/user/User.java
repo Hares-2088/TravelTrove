@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,11 +19,12 @@ public class User {
 
     @Id
     private String id;
-    private String userId;   // Auth0's "sub" claim
+    private String userId;
     private String email;
     private String firstName;
     private String lastName;
-    private String password;
+    private List<String> roles;
+    private List<String> permissions;
     private String travelerId;
 }
 

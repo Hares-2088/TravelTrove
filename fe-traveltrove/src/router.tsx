@@ -6,6 +6,13 @@ import ToursPage from './pages/tours/ToursPage';
 import TourDetailsPage from './pages/tours/TourDetailsPage';
 import HomePage from './pages/home/HomePage';
 import Layout from './layouts/Layout';
+import CallbackPage from './pages/CallbackPage';
+import UnauthorizedPage from './pages/errors/UnauthorizedPage';
+import NotFoundPage from './pages/errors/NotFoundPage';
+import ServiceUnavailablePage from './pages/errors/ServiceNotAvailablePage';
+import InternalServerErrorPage from './pages/errors/InternalServerErrorPage';
+import RequestTimeoutPage from './pages/errors/RequestTimeoutPage';
+import ForbiddenPage from './pages/errors/ForbiddenPage';
 
 const router = createBrowserRouter([
   {
@@ -40,10 +47,62 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: AppRoutes.Unauthorized,
+        element: (
+          <ProtectedRoute>
+            <UnauthorizedPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.Forbidden,
+        element: (
+          <ProtectedRoute>
+            <ForbiddenPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.RequestTimeout,
+        element: (
+          <ProtectedRoute>
+            <RequestTimeoutPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.InternalServerError,
+        element: (
+          <ProtectedRoute>
+            <InternalServerErrorPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.ServiceUnavailable,
+        element: (
+          <ProtectedRoute>
+            <ServiceUnavailablePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: AppRoutes.Default,
         element: <Navigate to={AppRoutes.Home} replace />,
       },
+      {
+        path: "*",
+        element: <NotFoundPage />
+      },
     ],
+  },
+  {
+    path: AppRoutes.Callback,
+    element: (
+      <ProtectedRoute>
+        <CallbackPage />
+      </ProtectedRoute>
+    ),
   },
 ]);
 

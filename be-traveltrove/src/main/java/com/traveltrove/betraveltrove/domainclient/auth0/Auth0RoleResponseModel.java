@@ -1,16 +1,10 @@
 package com.traveltrove.betraveltrove.domainclient.auth0;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class Auth0RoleResponse {
+public class Auth0RoleResponseModel {
 
     @JsonProperty("id")
     private String id;
@@ -20,5 +14,4 @@ public class Auth0RoleResponse {
 
     @JsonProperty("description")
     private String description;
-
 }

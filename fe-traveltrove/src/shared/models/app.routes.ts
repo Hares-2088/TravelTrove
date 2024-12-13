@@ -8,5 +8,13 @@ export enum AppRoutes {
   CountryDetailsPage = '/countries/:countryId',
   CityDetailsPage = '/cities/:cityId',
   Register = '/register',
-  Profile = '/profile'
+  Profile = '/profile',
+  Callback = '/callback',
+
+  // Error Routes
+  Unauthorized = '/unauthorized',
+  Forbidden = '/forbidden',
+  RequestTimeout = '/request-timeout',
+  InternalServerError = '/internal-server-error',
+  ServiceUnavailable = '/service-unavailable'
 }
