@@ -7,6 +7,7 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { auth0Config } from './auth/auth0-config';
 import { AppRoutes } from './shared/models/app.routes';
+import "./i18n";
 
 const onRedirectCallback = () => {
   window.location.replace(AppRoutes.Callback);
