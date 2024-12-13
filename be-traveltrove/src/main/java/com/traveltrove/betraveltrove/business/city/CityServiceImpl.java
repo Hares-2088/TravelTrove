@@ -70,4 +70,11 @@ public class CityServiceImpl implements CityService {
                 .switchIfEmpty(Mono.error(new NotFoundException("City id not found: " + cityId + " and country id not found: " + countryId)))
                 .map(EntityModelUtil::toCityResponseModel);
     }
+
+    @Override
+    public Mono<Boolean> isCityExistsById(String cityId) {
+        return cityRepository.findCityByCityId(cityId)
+                .hasElement()
+                .defaultIfEmpty(false); //returns true if city exists
+    }
 }
