@@ -2,7 +2,7 @@ package com.traveltrove.betraveltrove.business.user;
 
 import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
-import com.traveltrove.betraveltrove.domainclient.auth0.Auth0Client;
+import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.utils.UserEntityToModel;
 import lombok.RequiredArgsConstructor;
@@ -17,19 +17,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final Auth0Client auth0Client;
+    private final Auth0Service auth0Service;
     private final UserRepository userRepository;
 
     @Override
     public Mono<UserResponseModel> addUserFromAuth0(String auth0UserId) {
-        return auth0Client.getUserById(auth0UserId)
+        return auth0Service.getUserById(auth0UserId)
                 .flatMap(auth0User ->
                         userRepository.findByUserId(auth0UserId)
                                 .switchIfEmpty(
-                                        auth0Client.assignRoleToUser(auth0UserId, "rol_bGEYlXT5XYsHGhcQ")
+                                        auth0Service.assignRoleToUser(auth0UserId, "rol_bGEYlXT5XYsHGhcQ")
                                                 .doOnSuccess(unused -> log.info("Successfully assigned 'Customer' role to User ID: {}", auth0UserId))
                                                 .doOnError(error -> log.error("Failed to assign 'Customer' role to User ID: {}", auth0UserId, error))
-                                                .then(auth0Client.getUserById(auth0UserId)
+                                                .then(auth0Service.getUserById(auth0UserId)
                                                         .doOnSuccess(updatedAuth0User -> log.info("Updated Auth0 User Details After Role Assignment: {}", updatedAuth0User))
                                                         .flatMap(updatedAuth0User ->
                                                                 userRepository.save(
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     public Mono<UserResponseModel> syncUserWithAuth0(String auth0UserId) {
         log.info("Starting user sync process for Auth0 User ID: {}", auth0UserId);
 
-        return auth0Client.getUserById(auth0UserId)
+        return auth0Service.getUserById(auth0UserId)
                 .doOnSuccess(auth0User -> log.info("Fetched Auth0 User Details: {}", auth0User))
                 .flatMap(auth0User -> userRepository.findByUserId(auth0UserId)
                         .flatMap(existingUser -> {

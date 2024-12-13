@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.domainclient.auth0;
+package com.traveltrove.betraveltrove.externalservices.auth0.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

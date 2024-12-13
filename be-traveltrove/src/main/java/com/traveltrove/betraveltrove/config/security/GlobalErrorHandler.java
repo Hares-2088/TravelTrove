@@ -1,7 +1,7 @@
 package com.traveltrove.betraveltrove.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.traveltrove.betraveltrove.models.ErrorMessage;
+import com.traveltrove.betraveltrove.externalservices.auth0.models.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.annotation.Order;
