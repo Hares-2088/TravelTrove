@@ -22,3 +22,5 @@ public class TourRequestModel {
 //    private String image;
 //    private String itineraryPicture;
 }
+
+
