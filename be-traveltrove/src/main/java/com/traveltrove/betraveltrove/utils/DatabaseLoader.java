@@ -8,6 +8,8 @@ import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.country.CountryRepository;
 import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
+import com.traveltrove.betraveltrove.dataaccess.hotel.Hotel;
+import com.traveltrove.betraveltrove.dataaccess.hotel.HotelRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
@@ -454,6 +456,85 @@ public class DatabaseLoader {
                         success -> log.info("Airports preloaded successfully."),
                         error -> log.error("Error preloading airports: {}", error.getMessage())
                 );
+    }
+
+    // Hotels
+    private final HotelRepository hotelRepository;
+
+    @PostConstruct
+    public void loadHotels() {
+        List<Hotel> sampleHotels = List.of(
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("d1e91f6c-723e-43b9-812f-2f3d3bfb4081")
+                        .name("The Plaza Hotel")
+                        .cityId("b713c09a-9c3e-4b30-872a-4d89089badd0")
+                        .url("https://www.theplazany.com/")
+                        .build(),
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("f7a7e8e4-cc49-4027-8c4d-881e6179e6d2")
+                        .name("The Ritz-Carlton, Toronto")
+                        .cityId("11a85d86-3fc8-4504-b1e9-25fd87eba3cf")
+                        .url("https://www.ritzcarlton.com/en/hotels/canada/toronto")
+                        .build(),
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("b2c4f9ac-0fd6-4327-8e3a-f3c68bd3d62a")
+                        .name("Hôtel Barrière Le Fouquet's")
+                        .cityId("f5ad630f-830d-47a8-a26c-76b87163a7e4")
+                        .url("https://www.hotelsbarriere.com/en/paris/le-fouquets.html")
+                        .build(),
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("6e3b9f27-7cbe-47aa-b6e9-34f2cd5b5171")
+                        .name("Hotel Adlon Kempinski")
+                        .cityId("000f3f3a-8ee2-4690-be4d-a5bd38a5f06f")
+                        .url("https://www.kempinski.com/en/berlin/hotel-adlon/")
+                        .build(),
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b")
+                        .name("Hotel Hassler Roma")
+                        .cityId("7f15fafc-85f4-4ba5-822b-27b7ddce6c37")
+                        .url("https://www.hotelhasslerroma.com/")
+                        .build(),
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("e8f314c7-716b-4f19-a1d6-fc376b8c81ad")
+                        .name("Hotel Nikko Narita")
+                        .cityId("92537e75-3fc2-42af-b105-b6150395acbb")
+                        .url("https://www.nikkonarita.com/")
+                        .build(),
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("3f2e8bbd-84c3-4d3e-bc24-f173acd01be4")
+                        .name("Belmond Copacabana Palace")
+                        .cityId("affc7cc1-b3d8-4146-bc39-6e9ff1e66704")
+                        .url("https://www.belmond.com/hotels/south-america/brazil/rio-de-janeiro/belmond-copacabana-palace/")
+                        .build(),
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("aa12fc4b-619e-4d8e-8563-5a09bc6f1ae1")
+                        .name("Shangri-La Hotel, Sydney")
+                        .cityId("f978f76c-abfc-4b25-ba32-9e1b085b5ab0")
+                        .url("https://www.shangri-la.com/sydney/shangrila/")
+                        .build(),
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("47c8f2e7-3d6b-402c-93b7-8a92ef43e6ab")
+                        .name("The Leela Mumbai")
+                        .cityId("0361c975-fe28-4817-be51-6864b8a2bf38")
+                        .url("https://www.theleela.com/en_us/hotels-in-mumbai/the-leela-mumbai-hotel/")
+                        .build(),
+                Hotel.builder()
+                        .id(null)
+                        .hotelId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
+                        .name("Waldorf Astoria Beijing")
+                        .cityId("2fce64d8-dfa6-4abe-9a84-af7aaac1293f")
+                        .url("https://waldorfastoria3.hilton.com/en/hotels/china/waldorf-astoria-beijing-BJSWAWA/index.html")
+                        .build()
+        );
     }
 }
 
