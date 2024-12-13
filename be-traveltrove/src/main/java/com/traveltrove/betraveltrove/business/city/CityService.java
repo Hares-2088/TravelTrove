@@ -13,4 +13,6 @@ public interface CityService {
     public Mono<Void> deleteCityByCityId(String cityId);
     public Flux<CityResponseModel> getAllCitiesByCountryId(String countryId);
     public Mono<CityResponseModel> getCityByCityIdAndCountryId(String cityId, String countryId);
+
+    public  Mono<Boolean> isCityExistsById(String cityId);
 }
