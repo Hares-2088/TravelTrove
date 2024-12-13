@@ -76,7 +76,7 @@ const HotelsTab: React.FC = () => {
 
   const handleSave = async () => {
     const isNameValid = formData.name.trim() !== "";
-    const isUrlValid = formData.URL.trim() !== "";
+    const isUrlValid = formData.url.trim() !== "";
     const isCityValid = !!formData.cityId.trim();
 
     setNameError(!isNameValid);
@@ -127,7 +127,7 @@ const HotelsTab: React.FC = () => {
           </Button>
           <h3>{viewingHotel.name}</h3>
           <p>
-            <strong>URL:</strong> {viewingHotel.URL}
+            <strong>Hotel url:</strong> {viewingHotel.url}
           </p>
           <p>
             <strong>City:</strong> {getCityName(viewingHotel.cityId)}
@@ -142,7 +142,7 @@ const HotelsTab: React.FC = () => {
               onClick={() => {
                 fetchCities();
                 setModalType("create");
-                setFormData({ name: "", URL: "", cityId: "" });
+                setFormData({ name: "", url: "", cityId: "" });
                 setShowModal(true);
               }}
             >
@@ -188,7 +188,7 @@ const HotelsTab: React.FC = () => {
                           setModalType("update");
                           setFormData({
                             name: hotel.name,
-                            URL: hotel.URL,
+                            url: hotel.url,
                             cityId: hotel.cityId,
                           });
                           setShowModal(true);
@@ -246,18 +246,18 @@ const HotelsTab: React.FC = () => {
                 <div className="invalid-feedback">Hotel name is required.</div>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Hotel URL</Form.Label>
+                <Form.Label>Hotel url</Form.Label>
                 <Form.Control
                   required
                   type="text"
-                  value={formData.name}
+                  value={formData.url}
                   onChange={(e) => {
-                    setFormData({ ...formData, URL: e.target.value });
+                    setFormData({ ...formData, url: e.target.value });
                     setUrlError(false);
                   }}
                   isInvalid={urlError}
                 />
-                <div className="invalid-feedback">Hotel URL is required.</div>
+                <div className="invalid-feedback">Hotel url is required.</div>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>City</Form.Label>
