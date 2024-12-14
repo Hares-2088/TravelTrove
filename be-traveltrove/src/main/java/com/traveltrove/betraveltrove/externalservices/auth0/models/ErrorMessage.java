@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.models;
+package com.traveltrove.betraveltrove.externalservices.auth0.models;
 
 public record ErrorMessage(String message) {
 

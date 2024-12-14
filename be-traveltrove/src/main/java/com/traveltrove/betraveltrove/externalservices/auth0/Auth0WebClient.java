@@ -1,6 +1,6 @@
-package com.traveltrove.betraveltrove.domainclient.auth0;
+package com.traveltrove.betraveltrove.externalservices.auth0;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.traveltrove.betraveltrove.externalservices.auth0.models.*;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class Auth0ClientImpl implements Auth0Client {
+public class Auth0WebClient implements Auth0Service {
 
     @Value("${auth0.domain}")
     private String domain;
@@ -29,7 +29,7 @@ public class Auth0ClientImpl implements Auth0Client {
 
     private final WebClient webClient;
 
-    public Auth0ClientImpl(WebClient.Builder webClientBuilder) {
+    public Auth0WebClient(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
     }
 
