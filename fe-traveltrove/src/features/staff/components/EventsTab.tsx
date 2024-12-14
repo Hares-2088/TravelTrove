@@ -10,6 +10,7 @@ import {
 } from "../../events/model/events.model";
 import "../../../shared/css/Scrollbar.css";
 import FilterBar from "../../../shared/components/FilterBar";
+import { count } from "console";
 
 const EventsTab: React.FC = () => {
   const { t } = useTranslation(); // Access i18n functions
@@ -46,18 +47,10 @@ const EventsTab: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
 
-
-
-  useEffect(() => {
-    fetchEvents();
-    fetchCities();
-    fetchCountries();
-  }, []);
-
   const fetchEvents = async () => {
     try {
-      const data = await getAllEvents();
-      setEvents(data);
+      const fetchedEvents = await getAllEvents();
+      setEvents(fetchedEvents);
     } catch (error) {
       console.error("Error fetching events:", error);
     }
@@ -65,9 +58,9 @@ const EventsTab: React.FC = () => {
 
   const fetchCities = async () => {
     try {
-      const data = await getAllCities();
+      const fetchedCities = await getAllCities();
       setCities(
-        data.map((city) => ({
+        fetchedCities.map((city) => ({
           id: city.cityId,
           name: city.name,
           countryId: city.countryId,
@@ -80,15 +73,23 @@ const EventsTab: React.FC = () => {
 
   const fetchCountries = async () => {
     try {
-      const data = await getAllCountries();
+      const fetchedCountries = await getAllCountries();
       setCountries(
-        data.map((country) => ({ id: country.countryId, name: country.name }))
+        fetchedCountries.map((country) => ({
+          id: country.countryId,
+          name: country.name,
+        }))
       );
     } catch (error) {
       console.error("Error fetching countries:", error);
     }
   };
 
+  useEffect(() => {
+    fetchEvents();
+    fetchCities();
+    fetchCountries();
+  }, []);
   const handleViewEvent = async (eventId: string) => {
     try {
       const event = await getEventById(eventId);
@@ -116,6 +117,8 @@ const EventsTab: React.FC = () => {
       }
       setShowModal(false);
       await fetchEvents();
+      await fetchCities();
+      await fetchCountries();
     } catch (error) {
       console.error("Error saving event:", error);
     }
@@ -127,6 +130,8 @@ const EventsTab: React.FC = () => {
         await deleteEvent(selectedEvent.eventId);
         setShowModal(false);
         await fetchEvents();
+        await fetchCities();
+        await fetchCountries();
       }
     } catch (error) {
       console.error("Error deleting event:", error);
@@ -173,6 +178,8 @@ const EventsTab: React.FC = () => {
             <Button
               variant="primary"
               onClick={() => {
+                fetchCities();
+                fetchCountries();
                 setModalType("create");
                 setFormData({
                   cityId: "",
@@ -190,19 +197,29 @@ const EventsTab: React.FC = () => {
           <FilterBar
             filters={[
               {
-                label: "select Country",
+                label: t("select Country"),
                 value: selectedCountry,
-                options: countries, // List of countries for the dropdown
+                options: countries.map((country) => ({
+                  value: country.id,
+                  label: country.name,
+                })),
                 onChange: setSelectedCountry,
+                onClick: fetchCountries,
               },
               {
                 label: t("select City"),
                 value: selectedCity,
-                options: cities.filter(
-                  (city) =>
-                    !selectedCountry || city.countryId === selectedCountry
-                ), // Show all cities if no country is selected; otherwise, filter by country
+                options: cities
+                  .filter(
+                    (city) =>
+                      !selectedCountry || city.countryId === selectedCountry
+                  )
+                  .map((city) => ({
+                    value: city.id,
+                    label: city.name,
+                  })),
                 onChange: setSelectedCity,
+                onClick: fetchCities,
               },
             ]}
             resetFilters={() => {
@@ -239,6 +256,8 @@ const EventsTab: React.FC = () => {
                         <Button
                           variant="outline-primary"
                           onClick={() => {
+                            fetchCities();
+                            fetchCountries();
                             setSelectedEvent(event);
                             setModalType("update");
                             setFormData({
