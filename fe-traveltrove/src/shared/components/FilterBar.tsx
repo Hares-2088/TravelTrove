@@ -4,7 +4,7 @@ import { Form, Button } from "react-bootstrap";
 type FilterOption = {
   label: string; //Label to display
   value: string; //Current selected value
-  options: { value: string; label: string }[]; // Change this line
+  options: { value: string; label: string }[];
   onChange: (value: string) => void; //Handler for value changes
   onClick?: () => void; // Add onClick handler
   disabled?: boolean; // optional: Whether the drop down should be disabled
