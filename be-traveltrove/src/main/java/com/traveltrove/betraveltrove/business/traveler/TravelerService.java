@@ -7,9 +7,9 @@ import reactor.core.publisher.Mono;
 
 public interface TravelerService {
 
-    public Flux<TravelerResponseModel> getAllTravelers();
+    public Flux<TravelerResponseModel> getAllTravelers(String firstName);
 
-    public Mono<TravelerResponseModel> getTraveler(String travelerId, String firstName);
+    public Mono<TravelerResponseModel> getTravelerByTravelerId(String travelerId);
 
     public Mono<TravelerResponseModel> createTraveler(TravelerRequestModel travelerRequestModel);
 

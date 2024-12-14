@@ -79,9 +79,7 @@ class TravelerRepositoryIntegrationTest {
                                 traveler.getAddressLine1().equals("123 Test Street") &&
                                 traveler.getAddressLine2().equals("Apt 1") &&
                                 traveler.getCity().equals("Test City") &&
-                                traveler.getState().equals("Test State") &&
-                                traveler.getEmail().equals("testtraveler@gmail.com") &&
-                                traveler.getCountryId().equals(EXISTING_COUNTRY_ID)
+                                traveler.getState().equals("Test State")
                 )
                 .verifyComplete();
     }

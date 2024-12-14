@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.business.traveler;
 
+import com.traveltrove.betraveltrove.business.country.CountryService;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.presentation.travaler.TravelerRequestModel;
@@ -18,28 +19,31 @@ public class TravelerServiceImpl implements TravelerService {
 
     public TravelerRepository travelerRepository;
 
+    public CountryService countryService;
+
     public TravelerServiceImpl(TravelerRepository travelerRepository) {
         this.travelerRepository = travelerRepository;
     }
 
     @Override
-    public Flux<TravelerResponseModel> getAllTravelers() {
-        return travelerRepository.findAll()
-                .map(TravelerEntityModelUtil::toTravelerResponseModel);
-    }
-
-    @Override
-    public Mono<TravelerResponseModel> getTraveler(String travelerId, String firstName) {
+    public Mono<TravelerResponseModel> getTravelerByTravelerId(String travelerId) {
         if (travelerId != null && !travelerId.isEmpty()) {
             return travelerRepository.findTravelerByTravelerId(travelerId)
                     .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Traveler id not found: " + travelerId))))
                     .map(TravelerEntityModelUtil::toTravelerResponseModel);
-        } else if (firstName != null && !firstName.isEmpty()) {
+        } else {
+            return Mono.error(new InvalidInputException("Traveler id must be provided"));
+        }
+    }
+
+    @Override
+    public Flux<TravelerResponseModel> getAllTravelers(String firstName) {
+        if (firstName != null && !firstName.isEmpty()) {
             return travelerRepository.findTravelerByFirstName(firstName)
-                    .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Traveler first name not found: " + firstName))))
                     .map(TravelerEntityModelUtil::toTravelerResponseModel);
         } else {
-            return Mono.error(new InvalidInputException("Either travelerId or firstName must be provided"));
+            return travelerRepository.findAll()
+                    .map(TravelerEntityModelUtil::toTravelerResponseModel);
         }
     }
 
@@ -51,18 +55,18 @@ public class TravelerServiceImpl implements TravelerService {
     }
 
     @Override
-public Mono<TravelerResponseModel> updateTraveler(String travelerId, TravelerRequestModel travelerRequestModel) {
-    return travelerRepository.findTravelerByTravelerId(travelerId)
-            .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Traveler id not found: " + travelerId))))
-            .flatMap(traveler -> validateTravelerRequest(travelerRequestModel)
-                    .map(validatedTraveler -> {
-                        validatedTraveler.setTravelerId(traveler.getTravelerId());
-                        validatedTraveler.setId(traveler.getId());
-                        return validatedTraveler;
-                    }))
-            .flatMap(travelerRepository::save)
-            .map(TravelerEntityModelUtil::toTravelerResponseModel);
-}
+    public Mono<TravelerResponseModel> updateTraveler(String travelerId, TravelerRequestModel travelerRequestModel) {
+        return travelerRepository.findTravelerByTravelerId(travelerId)
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Traveler id not found: " + travelerId))))
+                .flatMap(traveler -> validateTravelerRequest(travelerRequestModel)
+                        .map(validatedTraveler -> {
+                            validatedTraveler.setTravelerId(traveler.getTravelerId());
+                            validatedTraveler.setId(traveler.getId());
+                            return validatedTraveler;
+                        }))
+                .flatMap(travelerRepository::save)
+                .map(TravelerEntityModelUtil::toTravelerResponseModel);
+    }
 
     @Override
     public Mono<TravelerResponseModel> deleteTraveler(String travelerId) {
@@ -94,7 +98,10 @@ public Mono<TravelerResponseModel> updateTraveler(String travelerId, TravelerReq
         if (travelerRequestModel.getEmail() == null || travelerRequestModel.getEmail().isBlank()) {
             return Mono.error(new InvalidInputException("Traveler email is required"));
         }
-        // addressLine2 is optional, so it is not validated here
-        return Mono.just(TravelerEntityModelUtil.toTravelerEntity(travelerRequestModel));
+
+        return countryService.getCountryById(travelerRequestModel.getCountryId())
+        .switchIfEmpty(Mono.error(new NotFoundException("Country id not found: " + travelerRequestModel.getCountryId())))
+        .flatMap(country -> Mono.just(TravelerEntityModelUtil.toTravelerEntity(travelerRequestModel)));
+
     }
 }

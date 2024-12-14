@@ -48,6 +48,8 @@ dependencies {
 	implementation('me.paulschwarz:spring-dotenv:4.0.0')
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	compileOnly "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}", "org.projectlombok:lombok:${lombokVersion}", "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
