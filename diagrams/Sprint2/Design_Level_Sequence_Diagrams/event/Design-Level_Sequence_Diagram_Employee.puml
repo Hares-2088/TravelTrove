@@ -24,10 +24,8 @@ activate EventController
 EventController -> EventService : getAllEvents()
 activate EventService
 
-
 EventService -> EventRepository : findAll()
 activate EventRepository
-
 
 EventRepository -> Database : SELECT * FROM events
 activate Database
@@ -49,7 +47,6 @@ EventController --> EventsPage : Display events list
 deactivate EventController
 deactivate EventsPage
 deactivate ReactApplication
-
 ' Front-End Filtering Step
 opt Apply Filters
     EventsPage -> EventsPage : Apply city/country filters (client-side)

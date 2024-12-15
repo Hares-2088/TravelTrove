@@ -1,0 +1,166 @@
+@startuml
+title Airport Management Sequence Diagram for Admin
+
+actor Admin as "<<Actor>>\nAdmin"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant AirportsPage as "<<View>>\nAirportsPage"
+participant AirportController as "<<Controller>>\nAirportController"
+participant AirportService as "<<Service>>\nAirportService"
+participant AirportEntity as "<<Entity>>\nAirportEntity"
+participant AirportRepository as "<<Repository>>\nAirportRepository"
+participant Database as "<<Database>>"
+participant AirportResponseModel as "<<Model>>\nAirportResponseModel"
+
+== Retrieve All Airports ==
+Admin -> ReactApplication : Access Airports Page
+activate ReactApplication
+
+ReactApplication -> AirportsPage : render()
+activate AirportsPage
+deactivate ReactApplication
+
+AirportsPage -> AirportController : GET /api/v1/airports
+activate AirportController
+
+AirportController -> AirportService : getAllAirports()
+activate AirportService
+
+AirportService -> AirportRepository : findAll()
+activate AirportRepository
+
+AirportRepository -> Database : SELECT * FROM airports
+activate Database
+Database --> AirportRepository : List of airports
+deactivate Database
+
+AirportRepository --> AirportService : airportEntities
+deactivate AirportRepository
+
+AirportService -> AirportResponseModel : Map entities to response models
+activate AirportResponseModel
+AirportResponseModel --> AirportService : Response models ready
+deactivate AirportResponseModel
+
+AirportService --> AirportController : List of AirportResponseModels
+deactivate AirportService
+
+AirportController --> AirportsPage : Display airports list
+deactivate AirportController
+
+
+== Add New Airport ==
+opt Add New Airport
+    Admin -> AirportsPage : Fill airport form and submit
+    AirportsPage -> AirportController : POST /api/v1/airports
+    activate AirportController
+
+    AirportController -> AirportRequestModel : Create request model
+    activate AirportRequestModel
+    AirportRequestModel -> AirportService : addAirport(airportRequestModel)
+    deactivate AirportRequestModel
+    activate AirportService
+
+    AirportService -> AirportEntity : Convert request model to entity
+    activate AirportEntity
+    AirportEntity --> AirportService : Airport entity created
+    deactivate AirportEntity
+
+    AirportService -> AirportRepository : Save airport entity
+    activate AirportRepository
+    AirportRepository -> Database : INSERT INTO airports
+    activate Database
+    Database --> AirportRepository : Success
+    deactivate Database
+    AirportRepository --> AirportService : Saved airport entity
+    deactivate AirportRepository
+
+    AirportService -> AirportResponseModel : Map entity to response model
+    activate AirportResponseModel
+    AirportResponseModel --> AirportService : Response model ready
+    deactivate AirportResponseModel
+
+    AirportService --> AirportController : AirportResponseModel
+    deactivate AirportService
+    AirportController --> AirportsPage : New airport added
+    deactivate AirportController
+end
+
+== Update Existing Airport ==
+opt Update Airport
+    Admin -> AirportsPage : Edit airport form and submit
+    AirportsPage -> AirportController : PUT /api/v1/airports/{airportId}
+    activate AirportController
+
+    AirportController -> AirportRequestModel : Create request model
+    activate AirportRequestModel
+    AirportRequestModel -> AirportService : updateAirport(airportId, airportRequestModel)
+    deactivate AirportRequestModel
+    activate AirportService
+
+    AirportService -> AirportRepository : Find airport by ID
+    activate AirportRepository
+    AirportRepository -> Database : SELECT * FROM airports WHERE id = airportId
+    activate Database
+    Database --> AirportRepository : Airport found
+    deactivate Database
+    AirportRepository --> AirportService : Airport entity
+    deactivate AirportRepository
+
+    AirportService -> AirportEntity : Update entity with request model data
+    activate AirportEntity
+    AirportEntity --> AirportService : Updated airport entity
+    deactivate AirportEntity
+
+    AirportService -> AirportRepository : Save updated airport entity
+    activate AirportRepository
+    AirportRepository -> Database : UPDATE airports SET ...
+    Database --> AirportRepository : Success
+    deactivate Database
+    AirportRepository --> AirportService : Updated airport entity
+    deactivate AirportRepository
+
+    AirportService -> AirportResponseModel : Map entity to response model
+    activate AirportResponseModel
+    AirportResponseModel --> AirportService : Response model ready
+    deactivate AirportResponseModel
+
+    AirportService --> AirportController : AirportResponseModel
+    deactivate AirportService
+    AirportController --> AirportsPage : Airport updated successfully
+    deactivate AirportController
+end
+
+== Delete Airport ==
+opt Delete Airport
+    Admin -> AirportsPage : Select airport to delete
+    AirportsPage -> AirportController : DELETE /api/v1/airports/{airportId}
+    activate AirportController
+
+    AirportController -> AirportService : deleteAirport(airportId)
+    activate AirportService
+
+    AirportService -> AirportRepository : Find airport by ID
+    activate AirportRepository
+    AirportRepository -> Database : SELECT * FROM airports WHERE id = airportId
+    activate Database
+    Database --> AirportRepository : Airport found
+    deactivate Database
+    AirportRepository --> AirportService : Airport entity
+    deactivate AirportRepository
+
+    AirportService -> AirportRepository : Delete airport by ID
+    activate AirportRepository
+    AirportRepository -> Database : DELETE FROM airports WHERE id = airportId
+    Database --> AirportRepository : Success
+    deactivate Database
+    AirportRepository --> AirportService : Deletion confirmed
+    deactivate AirportRepository
+
+    AirportService --> AirportController : Deletion success
+    deactivate AirportService
+    AirportController --> AirportsPage : Airport deleted successfully
+    deactivate AirportController
+end
+
+@enduml
