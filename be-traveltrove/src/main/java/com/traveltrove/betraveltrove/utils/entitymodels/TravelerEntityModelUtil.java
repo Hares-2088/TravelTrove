@@ -1,8 +1,8 @@
 package com.traveltrove.betraveltrove.utils.entitymodels;
 
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
-import com.traveltrove.betraveltrove.presentation.travaler.TravelerRequestModel;
-import com.traveltrove.betraveltrove.presentation.travaler.TravelerResponseModel;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
 import org.springframework.beans.BeanUtils;
 
 import java.util.UUID;

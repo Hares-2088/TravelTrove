@@ -1,7 +1,7 @@
 package com.traveltrove.betraveltrove.business.traveler;
 
-import com.traveltrove.betraveltrove.presentation.travaler.TravelerRequestModel;
-import com.traveltrove.betraveltrove.presentation.travaler.TravelerResponseModel;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

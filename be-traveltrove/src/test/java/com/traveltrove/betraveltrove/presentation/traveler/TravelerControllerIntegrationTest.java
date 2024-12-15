@@ -1,18 +1,14 @@
-package com.traveltrove.betraveltrove.presentation.travaler;
+package com.traveltrove.betraveltrove.presentation.traveler;
 
 import com.traveltrove.betraveltrove.business.country.CountryService;
-import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigCountryService;
 import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigTravelerService;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +25,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.data.mongodb.port=0"})
