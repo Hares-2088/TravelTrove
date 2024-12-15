@@ -2,11 +2,7 @@ package com.traveltrove.betraveltrove.business.city;
 
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.city.CityRepository;
-import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
-import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
-import com.traveltrove.betraveltrove.presentation.city.CityRequestModel;
-import com.traveltrove.betraveltrove.utils.EntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
