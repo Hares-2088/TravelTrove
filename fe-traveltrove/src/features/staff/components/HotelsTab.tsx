@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import { getAllCities } from "../../cities/api/cities.api";
-import {
-  getAllHotels,
-  getHotelById,
-  addHotel,
-  updateHotel,
-  deleteHotel,
-} from "../../hotels/api/hotels.api";
+import { useCitiesApi } from "../../cities/api/cities.api";
+import { useHotelsApi } from "../../hotels/api/hotels.api";
 import {
   HotelResponseModel,
   HotelRequestModel,
@@ -16,6 +10,8 @@ import { CityResponseModel } from "../../cities/models/city.model";
 import "../../../shared/css/Scrollbar.css";
 
 const HotelsTab: React.FC = () => {
+  const { getAllHotels, getHotelById, addHotel, updateHotel, deleteHotel } = useHotelsApi();
+  const { getAllCities } = useCitiesApi();
   const [hotels, setHotels] = useState<HotelResponseModel[]>([]);
   const [cities, setCities] = useState<CityResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
