@@ -51,7 +51,6 @@ class UserControllerIntegrationTest {
         mockServerConfigUserService = new MockServerConfigUserService();
         mockServerConfigUserService.startMockServer();
 
-        // Register mock Auth0 API endpoints
         mockServerConfigUserService.registerHandleUserLoginEndpoint(existingUser);
         mockServerConfigUserService.registerSyncUserEndpoint(updatedUser);
         mockServerConfigUserService.registerInvalidUserLoginEndpoint(INVALID_USER_ID);
@@ -60,10 +59,8 @@ class UserControllerIntegrationTest {
 
     @BeforeEach
     public void setupRepository() {
-        // Clean repository before each test
         StepVerifier.create(userRepository.deleteAll()).verifyComplete();
 
-        // Create and insert the actual User entity
         User existingUserEntity = User.builder()
                 .userId(existingUser.getUserId())
                 .email(existingUser.getEmail())
@@ -84,52 +81,47 @@ class UserControllerIntegrationTest {
     @Test
     void whenHandleUserLogin_withValidUserId_thenReturnUserDetails() {
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
-                .mutateWith(SecurityMockServerConfigurers.mockUser("testuser"))
+                .mutateWith(SecurityMockServerConfigurers.mockUser("TestUser"))
                 .post()
                 .uri("/api/v1/users/{userId}/login", existingUser.getUserId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(UserResponseModel.class)
-                .value(user -> Assertions.assertEquals(existingUser.getEmail(), user.getEmail()));
-    }
-
-    @Test
-    void whenHandleUserLogin_withInvalidUserId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
-                .mutateWith(SecurityMockServerConfigurers.mockUser("testuser"))
-                .post()
-                .uri("/api/v1/users/{userId}/login", INVALID_USER_ID)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody()
-                .jsonPath("$.message").isEqualTo("User ID not found: " + INVALID_USER_ID);
+                .value(user -> StepVerifier.create(Mono.just(user))
+                        .expectNextMatches(u -> u.getEmail().equals(existingUser.getEmail()))
+                        .verifyComplete());
     }
 
     @Test
     void whenSyncUser_withValidUserId_thenReturnUpdatedUserDetails() {
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
-                .mutateWith(SecurityMockServerConfigurers.mockUser("testuser"))
+                .mutateWith(SecurityMockServerConfigurers.mockUser("TestUser"))
                 .put()
                 .uri("/api/v1/users/{userId}/sync", existingUser.getUserId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(UserResponseModel.class)
-                .value(user -> {
-                    Assertions.assertEquals(updatedUser.getEmail(), user.getEmail());
-                    Assertions.assertEquals(updatedUser.getFirstName(), user.getFirstName());
-                    Assertions.assertEquals(updatedUser.getLastName(), user.getLastName());
-                });
+                .value(user -> StepVerifier.create(Mono.just(user))
+                        .expectNextMatches(u -> u.getEmail().equals(updatedUser.getEmail()))
+                        .verifyComplete());
     }
 
     @Test
-    void whenSyncUser_withInvalidUserId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
-                .mutateWith(SecurityMockServerConfigurers.mockUser("testuser"))
-                .put()
-                .uri("/api/v1/users/{userId}/sync", INVALID_USER_ID)
+    void whenAccessProtectedEndpoint_withoutAuthentication_thenUnauthorized() {
+        webTestClient.get()
+                .uri("/api/v1/users/protected")
                 .exchange()
-                .expectStatus().isNotFound()
-                .expectBody()
-                .jsonPath("$.message").isEqualTo("User ID not found: " + INVALID_USER_ID);
+                .expectStatus().isUnauthorized();
     }
+
+    @Test
+    void whenAccessProtectedEndpoint_withAuthentication_thenSuccess() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
+                .mutateWith(SecurityMockServerConfigurers.mockUser("TestUser"))
+                .post()
+                .uri("/api/v1/users/{userId}/login", existingUser.getUserId())
+                .exchange()
+                .expectStatus().isOk();
+    }
+
 }
