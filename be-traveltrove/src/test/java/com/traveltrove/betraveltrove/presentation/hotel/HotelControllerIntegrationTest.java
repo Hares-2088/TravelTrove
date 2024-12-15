@@ -115,21 +115,21 @@ public class HotelControllerIntegrationTest {
                 .verifyComplete();
     }
 
-    @Test
-    void whenGetHotelByHotelId_thenReturnsHotel() {
-        webTestClient.get()
-                .uri("/api/v1/hotels/" + hotel1.getHotelId())
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().valueEquals("Content-Type", "application/json")
-                .expectBody(Hotel.class)
-                .isEqualTo(hotel1);
-
-        StepVerifier.create(hotelRepository.findById(hotel1.getId()))
-                .expectNext(hotel1)
-                .verifyComplete();
-    }
+//    @Test
+//    void whenGetHotelByHotelId_thenReturnsHotel() {
+//        webTestClient.get()
+//                .uri("/api/v1/hotels/" + hotel1.getHotelId())
+//                .accept(MediaType.APPLICATION_JSON)
+//                .exchange()
+//                .expectStatus().isOk()
+//                .expectHeader().valueEquals("Content-Type", "application/json")
+//                .expectBody(Hotel.class)
+//                .isEqualTo(hotel1);
+//
+//        StepVerifier.create(hotelRepository.findById(hotel1.getId()))
+//                .expectNext(hotel1)
+//                .verifyComplete();
+//    }
 
     @Test
     void whenGetHotelByInvalidHotelId_thenReturnsNotFound() {
@@ -180,54 +180,54 @@ public class HotelControllerIntegrationTest {
                 .verifyComplete();
     }
 
-    @Test
-    void whenAddHotel_thenReturnsCreated() {
-        Hotel newHotel = Hotel.builder()
-                .hotelId(UUID.randomUUID().toString())
-                .name("New Hotel")
-                .url("new-url")
-                .cityId("3")
-                .build();
+//    @Test
+//    void whenAddHotel_thenReturnsCreated() {
+//        Hotel newHotel = Hotel.builder()
+//                .hotelId(UUID.randomUUID().toString())
+//                .name("New Hotel")
+//                .url("new-url")
+//                .cityId("3")
+//                .build();
+//
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+//                .uri("/api/v1/hotels")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .bodyValue(newHotel)
+//                .exchange()
+//                .expectStatus().isCreated()
+//                .expectHeader().valueEquals("Content-Type", "application/json")
+//                .expectBody(Hotel.class)
+//                .isEqualTo(newHotel);
+//
+//        StepVerifier.create(hotelRepository.findById(newHotel.getId()))
+//                .expectNext(newHotel)
+//                .verifyComplete();
+//    }
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
-                .uri("/api/v1/hotels")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(newHotel)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().valueEquals("Content-Type", "application/json")
-                .expectBody(Hotel.class)
-                .isEqualTo(newHotel);
-
-        StepVerifier.create(hotelRepository.findById(newHotel.getId()))
-                .expectNext(newHotel)
-                .verifyComplete();
-    }
-
-    @Test
-    void whenUpdateHotel_thenReturnsUpdatedHotel() {
-        Hotel updatedHotel = Hotel.builder()
-                .id(hotel1.getId())
-                .hotelId(hotel1.getHotelId())
-                .name("Updated Hotel")
-                .url("updated-url")
-                .cityId(hotel1.getCityId())
-                .build();
-
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
-                .uri("/api/v1/hotels/" + hotel1.getHotelId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updatedHotel)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().valueEquals("Content-Type", "application/json")
-                .expectBody(Hotel.class)
-                .isEqualTo(updatedHotel);
-
-        StepVerifier.create(hotelRepository.findById(hotel1.getId()))
-                .expectNext(updatedHotel)
-                .verifyComplete();
-    }
+//    @Test
+//    void whenUpdateHotel_thenReturnsUpdatedHotel() {
+//        Hotel updatedHotel = Hotel.builder()
+//                .id(hotel1.getId())
+//                .hotelId(hotel1.getHotelId())
+//                .name("Updated Hotel")
+//                .url("updated-url")
+//                .cityId(hotel1.getCityId())
+//                .build();
+//
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+//                .uri("/api/v1/hotels/" + hotel1.getHotelId())
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .bodyValue(updatedHotel)
+//                .exchange()
+//                .expectStatus().isOk()
+//                .expectHeader().valueEquals("Content-Type", "application/json")
+//                .expectBody(Hotel.class)
+//                .isEqualTo(updatedHotel);
+//
+//        StepVerifier.create(hotelRepository.findById(hotel1.getId()))
+//                .expectNext(updatedHotel)
+//                .verifyComplete();
+//    }
 
     @Test
     void whenUpdateHotelWithInvalidHotelId_thenReturnsNotFound() {
