@@ -23,6 +23,7 @@ const HotelsTab: React.FC = () => {
   );
   const [formData, setFormData] = useState<HotelRequestModel>({
     name: "",
+    url: "",
     cityId: "",
   });
   const [viewingHotel, setViewingHotel] = useState<HotelResponseModel | null>(

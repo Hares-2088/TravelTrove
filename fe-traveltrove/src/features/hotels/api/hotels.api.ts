@@ -3,7 +3,7 @@ import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 export const useHotelsApi = () => {
   const axiosInstance = useAxiosInstance(); // Use Axios Hook
-    
+
   const getAllHotels = async (): Promise<HotelResponseModel[]> => {
     const hotels: HotelResponseModel[] = [];
 
@@ -55,7 +55,7 @@ export const useHotelsApi = () => {
   const deleteHotel = async (hotelId: string): Promise<void> => {
     await axiosInstance.delete(`/hotels/${hotelId}`);
   }
-  
+
     return {
       getAllHotels,
       getHotelById,
