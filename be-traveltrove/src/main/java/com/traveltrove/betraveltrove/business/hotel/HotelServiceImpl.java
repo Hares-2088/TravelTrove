@@ -89,7 +89,6 @@ public class HotelServiceImpl implements HotelService {
     public Mono<Void> deleteHotel(String hotelId) {
         return hotelRepository.findHotelByHotelId(hotelId)
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Hotel id not found: " + hotelId))))
-                .flatMap(hotelRepository::delete)
-                .doOnSuccess(hotel -> log.info("Deleted hotel: {}", hotel));
+                .flatMap(hotelRepository::delete);
     }
 }
