@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -120,7 +121,7 @@ class TourEventControllerIntegrationTest {
                 .eventId("event456")
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/tourevents/{tourEventId}", INVALID_EVENT_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedEvent)
@@ -139,7 +140,7 @@ class TourEventControllerIntegrationTest {
                 .eventId("event456")
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/tourevents/{tourEventId}", event1.getTourEventId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedEvent)
@@ -156,7 +157,7 @@ class TourEventControllerIntegrationTest {
 
     @Test
     void whenDeleteTourEvent_thenReturnNoContent() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/tourevents/{tourEventId}", event1.getTourEventId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -167,7 +168,7 @@ class TourEventControllerIntegrationTest {
 
     @Test
     void whenDeleteInvalidTourEvent_thenReturnNotFound() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/tourevents/{tourEventId}", INVALID_EVENT_ID)
                 .exchange()
                 .expectStatus().isNotFound();

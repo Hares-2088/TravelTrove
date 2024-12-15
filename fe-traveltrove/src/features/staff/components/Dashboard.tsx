@@ -5,8 +5,8 @@ import EventsTab from "./EventsTab";
 import CitiesTab from "./CitiesTab";
 import ToursTab from "./ToursTab";
 import AirportsTab from "./AirportsTab";
+import TravelersTab from "./travelersTab"; // Import the new TravelersTab component
 import { useTranslation } from "react-i18next";
-
 
 
 const Dashboard: React.FC = () => {
@@ -121,6 +121,21 @@ const Dashboard: React.FC = () => {
                       Airports
                     </Nav.Link>
                   </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
+                      eventKey="travelers"
+                      onClick={() => setActiveTab("travelers")}
+                      className={`text-white px-3 py-2 ${
+                        activeTab === "travelers" ? "bg-secondary" : ""
+                      }`}
+                      style={{
+                        fontWeight: activeTab === "travelers" ? "bold" : "normal",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      Travelers
+                    </Nav.Link>
+                  </Nav.Item>
                 </Nav>
               </Col>
 
@@ -149,6 +164,9 @@ const Dashboard: React.FC = () => {
                   </Tab.Pane>
                   <Tab.Pane eventKey="airports" style={{ height: "100%" }}>
                     <AirportsTab />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="travelers" style={{ height: "100%" }}>
+                    <TravelersTab />
                   </Tab.Pane>
                 </Tab.Content>
               </Col>

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -104,7 +105,7 @@ class CountryControllerIntegrationTest {
                 .image("new_image.jpg")
                 .build();
 
-        webTestClient.post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/countries")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newCountry)
@@ -131,7 +132,7 @@ class CountryControllerIntegrationTest {
                 .image("updated_image.jpg")
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/countries/{countryId}", country1.getCountryId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCountry)
@@ -147,7 +148,7 @@ class CountryControllerIntegrationTest {
 
     @Test
     void whenDeleteCountry_thenReturnNoContent() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/countries/{countryId}", country1.getCountryId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -164,7 +165,7 @@ class CountryControllerIntegrationTest {
                 .image("updated_image.jpg")
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/countries/{countryId}", INVALID_COUNTRY_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCountry)
@@ -176,7 +177,7 @@ class CountryControllerIntegrationTest {
 
     @Test
     void whenDeleteCountry_withInvalidId_thenReturnNotFound() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/countries/{countryId}", INVALID_COUNTRY_ID)
                 .exchange()
                 .expectStatus().isNotFound()
@@ -186,7 +187,7 @@ class CountryControllerIntegrationTest {
 
     @Test
     void whenGetCountryById_withNonExistingId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).get()
                 .uri("/api/v1/countries/{countryId}", "non-existing-id")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
