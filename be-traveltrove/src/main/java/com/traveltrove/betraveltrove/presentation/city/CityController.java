@@ -58,11 +58,4 @@ public class CityController {
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @GetMapping(value = "/{cityId}/country/{countryId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<CityResponseModel>> getCityByCityIdAndCountryId(@PathVariable String cityId, @PathVariable String countryId) {
-        return cityService.getCityByCityIdAndCountryId(cityId, countryId)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
-
 }
