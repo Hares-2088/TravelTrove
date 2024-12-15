@@ -747,7 +747,7 @@ public class DatabaseLoader {
                         .build(),
                 User.builder()
                         .id(null)
-                        .userId("employee-3")
+                        .userId("auth0|675f6ad19a80612ce548e0a5")
                         .email("william.taylor@traveltrove.com")
                         .firstName("William")
                         .lastName("Taylor")
