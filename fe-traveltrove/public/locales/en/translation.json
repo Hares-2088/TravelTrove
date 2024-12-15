@@ -54,6 +54,7 @@
     "imageRequired": "Image URL is required.",
     "backToListC": "Back to List",
     "areYouSure": "Are you sure you want to delete this country?",
+    "areYouSureDeleteTraveler": "Are you sure you want to delete this traveler?",
     "saveC": "Save",
     "confirmC": "Confirm",
     "cancelC": "Cancel",

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -157,7 +158,7 @@ public class AirportControllerIntegrationTest {
                 .cityId(city1.getCityId())
                 .build();
 
-        webTestClient.post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/airports")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newAirport)
@@ -182,7 +183,7 @@ public class AirportControllerIntegrationTest {
                 .cityId("Invalid City")
                 .build();
 
-        webTestClient.post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/airports")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newAirport)
@@ -198,7 +199,7 @@ public class AirportControllerIntegrationTest {
                 .cityId(city2.getCityId())
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/airports/" + airport1.getAirportId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedAirport)
@@ -213,7 +214,7 @@ public class AirportControllerIntegrationTest {
 
     @Test
     public void whenDeleteAirport_thenAirportIsDeleted() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/airports/" + airport1.getAirportId())
                 .exchange()
                 .expectStatus().isNoContent();

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -158,7 +159,7 @@ class EventControllerIntegrationTest {
                 .image("image3.jpg")
                 .build();
 
-        webTestClient.post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/events")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newEvent)
@@ -191,7 +192,7 @@ class EventControllerIntegrationTest {
                 .image("updated_image.jpg")
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/events/{eventId}", event1.getEventId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedEvent)
@@ -217,7 +218,7 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenDeleteEvent_thenEventIsDeleted() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/events/{eventId}", event1.getEventId())
                 .exchange()
                 .expectStatus().isOk();
@@ -228,7 +229,7 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenDeleteEvent_withInvalidId_thenReturnNotFound() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/events/{eventId}", INVALID_EVENT_ID)
                 .exchange()
                 .expectStatus().isNotFound();

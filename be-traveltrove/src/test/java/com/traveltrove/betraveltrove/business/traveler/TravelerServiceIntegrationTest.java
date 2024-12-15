@@ -1,14 +1,21 @@
 package com.traveltrove.betraveltrove.business.traveler;
 
+import com.traveltrove.betraveltrove.business.country.CountryService;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
+import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
 import com.traveltrove.betraveltrove.presentation.travaler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.travaler.TravelerResponseModel;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -24,6 +31,10 @@ class TravelerServiceIntegrationTest {
 
     @InjectMocks
     private TravelerServiceImpl travelerService;
+
+    @Mock
+    private CountryService countryService;
+
 
     @Test
     void whenGetAllTravelers_WithoutName_thenReturnAllTravelers() {
@@ -128,6 +139,36 @@ class TravelerServiceIntegrationTest {
     }
 
     @Test
+    void whenGetTravelerById_thenReturnTraveler() {
+
+        Traveler traveler = Traveler.builder()
+                .travelerId("1")
+                .firstName("John")
+                .lastName("Doe")
+                .email("johndoe@gmail.com")
+                .addressLine1("123 Main St")
+                .city("Anytown")
+                .state("NY")
+                .countryId("1")
+                .build();
+
+        when(travelerRepository.findTravelerByTravelerId("1")).thenReturn(Mono.just(traveler));
+
+        StepVerifier.create(travelerService.getTravelerByTravelerId("1"))
+                .expectNextMatches(response ->
+                        response.getTravelerId().equals("1") &&
+                                response.getFirstName().equals("John") &&
+                                response.getLastName().equals("Doe") &&
+                                response.getEmail().equals("johndoe@gmail.com") &&
+                                response.getAddressLine1().equals("123 Main St") &&
+                                response.getCity().equals("Anytown") &&
+                                response.getState().equals("NY") &&
+                                response.getCountryId().equals("1")
+                )
+                .verifyComplete();
+    }
+
+    @Test
     void whenCreateTraveler_thenReturnCreatedTraveler() {
 
         Traveler traveler = Traveler.builder()
@@ -151,6 +192,7 @@ class TravelerServiceIntegrationTest {
                 .countryId("1")
                 .build();
 
+        when(countryService.getCountryById("1")).thenReturn(Mono.just(new CountryResponseModel("1", "USA", "USA.png")));
         when(travelerRepository.save(any(Traveler.class))).thenReturn(Mono.just(traveler));
 
         StepVerifier.create(travelerService.createTraveler(travelerRequestModel))
@@ -203,6 +245,7 @@ class TravelerServiceIntegrationTest {
                 .build();
 
         when(travelerRepository.findTravelerByTravelerId("1")).thenReturn(Mono.just(traveler));
+        when(countryService.getCountryById("1")).thenReturn(Mono.just(new CountryResponseModel("1", "USA", "USA.png")));
 
         when(travelerRepository.save(any(Traveler.class))).thenReturn(Mono.just(traveler));
 

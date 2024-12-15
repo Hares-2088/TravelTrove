@@ -21,10 +21,10 @@ public class TravelerServiceImpl implements TravelerService {
 
     public CountryService countryService;
 
-    public TravelerServiceImpl(TravelerRepository travelerRepository) {
+    public TravelerServiceImpl(TravelerRepository travelerRepository, CountryService countryService) {
         this.travelerRepository = travelerRepository;
+        this.countryService = countryService;
     }
-
     @Override
     public Mono<TravelerResponseModel> getTravelerByTravelerId(String travelerId) {
         if (travelerId != null && !travelerId.isEmpty()) {
@@ -77,6 +77,7 @@ public class TravelerServiceImpl implements TravelerService {
     }
 
     public Mono<Traveler> validateTravelerRequest(TravelerRequestModel travelerRequestModel) {
+        log.info("Validating traveler request with countryId: {}", travelerRequestModel.getCountryId());
         if (travelerRequestModel.getFirstName() == null || travelerRequestModel.getFirstName().isBlank()) {
             return Mono.error(new InvalidInputException("Traveler first name is required"));
         }
@@ -100,8 +101,11 @@ public class TravelerServiceImpl implements TravelerService {
         }
 
         return countryService.getCountryById(travelerRequestModel.getCountryId())
-        .switchIfEmpty(Mono.error(new NotFoundException("Country id not found: " + travelerRequestModel.getCountryId())))
-        .flatMap(country -> Mono.just(TravelerEntityModelUtil.toTravelerEntity(travelerRequestModel)));
+                .switchIfEmpty(Mono.error(new NotFoundException("Country id not found: " + travelerRequestModel.getCountryId())))
+                .flatMap(country -> {
+                    log.info("Country validated: {}", country);
+                    return Mono.just(TravelerEntityModelUtil.toTravelerEntity(travelerRequestModel));
+                });
 
     }
 }

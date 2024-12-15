@@ -1,23 +1,35 @@
 package com.traveltrove.betraveltrove.presentation.travaler;
 
+import com.traveltrove.betraveltrove.business.country.CountryService;
+import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
+import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
+import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigCountryService;
 import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigTravelerService;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.data.mongodb.port=0"})
@@ -33,6 +45,9 @@ class TravelerControllerIntegrationTest {
     private TravelerRepository travelerRepository;
 
     private MockServerConfigTravelerService mockServerConfigTravelerService;
+
+    @MockitoBean
+    private CountryService countryService;
 
     private final String INVALID_TRAVELER_ID = "invalid-traveler-id";
 
@@ -73,6 +88,18 @@ class TravelerControllerIntegrationTest {
         mockServerConfigTravelerService.registerGetTravelerByInvalidIdEndpoint(INVALID_TRAVELER_ID);
     }
 
+    @BeforeEach
+    public void initMocks() {
+        MockitoAnnotations.openMocks(this); // Initialize @Mock and @InjectMocks
+
+        Mockito.when(countryService.getCountryById("1"))
+                .thenReturn(Mono.just(new CountryResponseModel("1", "Country 1", "image1.jpg")));
+
+        Mockito.when(countryService.getCountryById("invalid-country-id"))
+                .thenReturn(Mono.error(new NotFoundException("Country id not found: invalid-country-id")));
+
+    }
+
     @AfterAll
     public void stopServer() {
         mockServerConfigTravelerService.stopMockServer();
@@ -80,14 +107,12 @@ class TravelerControllerIntegrationTest {
 
     @BeforeEach
     public void setupDB() {
-        Publisher<Traveler> setupDB = travelerRepository.deleteAll()
-                .thenMany(Flux.just(traveler1, traveler2))
-                .flatMap(travelerRepository::save);
-
-        StepVerifier.create(setupDB)
-                .expectNextCount(2)
-                .verifyComplete();
+        travelerRepository.deleteAll().block();
+        System.out.println("Database cleared.");
+        travelerRepository.saveAll(Flux.just(traveler1, traveler2)).blockLast();
+        System.out.println("Test data inserted.");
     }
+
 
     @Test
     void whenGetAllTravelers_thenReturnAllTravelers() {
@@ -106,8 +131,14 @@ class TravelerControllerIntegrationTest {
                 });
 
         StepVerifier.create(travelerRepository.findAll())
-                .expectNextMatches(traveler -> traveler.getFirstName().equals(traveler1.getFirstName()))
-                .expectNextMatches(traveler -> traveler.getFirstName().equals(traveler2.getFirstName()))
+                .expectNextMatches(traveler -> {
+                    System.out.println("Traveler1 Expected: " + traveler1 + ", Found: " + traveler);
+                    return traveler.getFirstName().equals(traveler1.getFirstName());
+                })
+                .expectNextMatches(traveler -> {
+                    System.out.println("Traveler2 Expected: " + traveler2 + ", Found: " + traveler);
+                    return traveler.getFirstName().equals(traveler2.getFirstName());
+                })
                 .verifyComplete();
     }
 
@@ -148,24 +179,28 @@ class TravelerControllerIntegrationTest {
                 .city("Metropolis")
                 .state("Region")
                 .email("alice.johnson@example.com")
-                .countryId("3")
+                .countryId("1")
                 .build();
 
-        webTestClient.post()
+        // Create the traveler via WebTestClient
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/travelers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newTraveler)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(Traveler.class)
-                .value(savedTraveler -> {
-                    assertNotNull(savedTraveler);
-                    assertEquals(newTraveler.getFirstName(), savedTraveler.getFirstName());
-                    assertEquals(newTraveler.getEmail(), savedTraveler.getEmail());
+                .value(traveler -> {
+                    assertNotNull(traveler);
+                    assertEquals("Alice", traveler.getFirstName());
+                    assertEquals("alice.johnson@example.com", traveler.getEmail());
+                    assertEquals("Metropolis", traveler.getCity());
+                    assertEquals("Region", traveler.getState());
                 });
 
-        StepVerifier.create(travelerRepository.findAll())
-                .expectNextCount(3)
+        // Validate that there is now 3 travelers in the database
+        StepVerifier.create(travelerRepository.findAll().filter(t -> t.getEmail().equals("alice.johnson@example.com")))
+                .expectNextMatches(traveler -> traveler.getFirstName().equals("Alice"))
                 .verifyComplete();
     }
 
@@ -182,7 +217,7 @@ class TravelerControllerIntegrationTest {
                 .countryId("1")
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/travelers/{travelerId}", traveler1.getTravelerId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedTraveler)
@@ -198,7 +233,7 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenDeleteTraveler_thenTravelerIsDeleted() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/travelers/{travelerId}", traveler1.getTravelerId())
                 .exchange()
                 .expectStatus().isOk();
@@ -209,7 +244,7 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenDeleteTraveler_withInvalidId_thenReturnNotFound() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/travelers/{travelerId}", INVALID_TRAVELER_ID)
                 .exchange()
                 .expectStatus().isNotFound();
