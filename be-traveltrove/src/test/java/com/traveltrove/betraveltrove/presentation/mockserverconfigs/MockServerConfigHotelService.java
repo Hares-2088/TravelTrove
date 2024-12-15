@@ -20,7 +20,7 @@ public class MockServerConfigHotelService {
     }
 
     // Register GET /api/v1/hotels/{hotelId}
-    public void registerGetHotelByIdEndpoint(String hotelId) {
+    public void registerGetHotelByIdEndpoint(String hotelId, Hotel hotel) {
         mockServer.when(org.mockserver.model.HttpRequest.request()
                         .withMethod("GET")
                         .withPath("/api/v1/hotels/" + hotelId))
@@ -29,13 +29,11 @@ public class MockServerConfigHotelService {
                         .withBody(String.format("""
                     {
                         "hotelId": "%s",
-                        "name": "Hotel 1",
-                        "description": "Description 1",
-                        "cityId": "1",
-                        "countryId": "1",
-                        "image": "image1.jpg"
+                        "name": "%s",
+                        "url": "%s",
+                        "cityId": "%s",
                     }
-                    """, hotelId)));
+                    """, hotelId, hotel.getName(), hotel.getUrl(), hotel.getCityId())));
     }
 
     // Register GET /api/v1/hotels

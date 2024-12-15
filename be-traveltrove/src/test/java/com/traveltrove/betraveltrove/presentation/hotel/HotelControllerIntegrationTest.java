@@ -1,17 +1,25 @@
 package com.traveltrove.betraveltrove.presentation.hotel;
 
+import com.traveltrove.betraveltrove.business.city.CityService;
 import com.traveltrove.betraveltrove.dataaccess.hotel.Hotel;
 import com.traveltrove.betraveltrove.dataaccess.hotel.HotelRepository;
+import com.traveltrove.betraveltrove.presentation.city.CityResponseModel;
 import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigHotelService;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
@@ -32,6 +40,9 @@ public class HotelControllerIntegrationTest {
     private HotelRepository hotelRepository;
 
     private MockServerConfigHotelService mockServerConfigHotelService;
+
+    @MockitoBean
+    private CityService cityService;
 
     private final String INVALID_HOTEL_ID = "invalid-hotel-id";
 
@@ -55,9 +66,21 @@ public class HotelControllerIntegrationTest {
     public void setUp() {
         mockServerConfigHotelService = new MockServerConfigHotelService();
         mockServerConfigHotelService.startMockServer();
-        mockServerConfigHotelService.registerGetHotelByIdEndpoint(hotel1.getHotelId());
-        mockServerConfigHotelService.registerGetHotelByIdEndpoint(hotel2.getHotelId());
+        mockServerConfigHotelService.registerGetHotelByIdEndpoint(hotel1.getHotelId(), hotel1);
+        mockServerConfigHotelService.registerGetHotelByIdEndpoint(hotel2.getHotelId(), hotel2);
         mockServerConfigHotelService.registerGetHotelByIdWithInvalidHotelIdEndpoint(INVALID_HOTEL_ID);
+    }
+
+    @BeforeEach
+    public void initMocks() {
+        MockitoAnnotations.openMocks(this);
+
+        Mockito.when(cityService.getCityById(hotel1.getCityId()))
+                .thenReturn(Mono.just(new CityResponseModel(hotel1.getCityId(), "City 1", "Country 1")));
+
+        Mockito.when(cityService.getCityById("invalid-city-id"))
+                .thenReturn(Mono.error(new NotFoundException("City not found: invalid-city-id")));
+
     }
 
     @AfterAll
@@ -67,13 +90,8 @@ public class HotelControllerIntegrationTest {
 
     @BeforeEach
     public void setupDB() {
-        Publisher<Hotel> setupDB = hotelRepository.deleteAll()
-                .thenMany(Flux.just(hotel1, hotel2))
-                .flatMap(hotelRepository::save);
-
-        StepVerifier.create(setupDB)
-                .expectNextCount(2)
-                .verifyComplete();
+        hotelRepository.deleteAll().block();
+        hotelRepository.saveAll(Flux.just(hotel1, hotel2)).blockLast();
     }
 
     @Test
@@ -171,7 +189,7 @@ public class HotelControllerIntegrationTest {
                 .cityId("3")
                 .build();
 
-        webTestClient.post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/hotels")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newHotel)
@@ -196,7 +214,7 @@ public class HotelControllerIntegrationTest {
                 .cityId(hotel1.getCityId())
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/hotels/" + hotel1.getHotelId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedHotel)
@@ -221,7 +239,7 @@ public class HotelControllerIntegrationTest {
                 .cityId(hotel1.getCityId())
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/hotels/" + INVALID_HOTEL_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedHotel)
@@ -235,7 +253,7 @@ public class HotelControllerIntegrationTest {
 
     @Test
     void whenDeleteHotel_thenReturnsNoContent() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/hotels/" + hotel1.getHotelId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -247,7 +265,7 @@ public class HotelControllerIntegrationTest {
 
     @Test
     void whenDeleteHotelWithInvalidHotelId_thenReturnsNotFound() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/hotels/" + INVALID_HOTEL_ID)
                 .exchange()
                 .expectStatus().isNotFound();
