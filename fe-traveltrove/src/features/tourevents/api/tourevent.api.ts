@@ -1,4 +1,4 @@
-import { TourEventRequestModel, TourEventResponseModel } from '../model/tourevents.model';
+import { TourEventRequestModel, TourEventResponseModel } from '../model/tourevents.model.ts';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 // Utility function to parse event-stream data

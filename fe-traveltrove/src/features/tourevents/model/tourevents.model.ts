@@ -4,6 +4,7 @@ export interface TourEventResponseModel {
   seqDesc: string;
   tourId: string;
   eventId: string;
+  hotelId: string;
 }
 
 export interface TourEventRequestModel {
@@ -11,4 +12,5 @@ export interface TourEventRequestModel {
   seqDesc: string;
   tourId: string;
   eventId: string;
+  hotelId: string;
 }
