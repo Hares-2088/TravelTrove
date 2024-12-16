@@ -11,9 +11,9 @@ public interface PackageService {
 
     Mono<PackageResponseModel> getPackageByPackageId(String packageId);
 
-    Mono<PackageResponseModel> createPackage(PackageRequestModel packageRequestModel, String tourId, String airportId);
+    Mono<PackageResponseModel> createPackage(Mono<PackageRequestModel> packageRequestModel);
 
-    Mono<PackageResponseModel> updatePackage(String packageId, PackageRequestModel packageRequestModel);
+    Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel);
 
     Mono<PackageResponseModel> deletePackage(String packageId);
 }

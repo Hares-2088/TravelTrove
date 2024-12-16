@@ -35,12 +35,21 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public Flux<PackageResponseModel> getAllPackages(String tourId) {
+        if (tourId == null) {
+            log.info("No tourId provided, fetching all packages.");
+            return packageRepository.findAll()
+                    .map(PackageEntityModelUtil::toPackageResponseModel);
+        }
         return getTour(tourId)
-                .flatMapMany(tour -> packageRepository.findPackagesByTourId(tourId)
-                        .map(PackageEntityModelUtil::toPackageResponseModel))
-                .switchIfEmpty(packageRepository.findAll()
-                        .map(PackageEntityModelUtil::toPackageResponseModel));
+                .flatMapMany(tour -> {
+                    log.info("Fetching packages for tourId={}", tourId);
+                    return packageRepository.findPackagesByTourId(tourId)
+                            .doOnComplete(() -> log.info("Finished fetching packages for tourId={}", tourId))
+                            .doOnError(error -> log.error("Error fetching packages: {}", error.getMessage()))
+                            .map(PackageEntityModelUtil::toPackageResponseModel);
+                });
     }
+
 
     @Override
     public Mono<PackageResponseModel> getPackageByPackageId(String packageId) {
@@ -50,34 +59,35 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Mono<PackageResponseModel> createPackage(PackageRequestModel packageRequestModel, String tourId, String airportId) {
-        // get the tour and airport to check if they exist, then check if the package request model is valid
-        return Mono.zip(getTour(tourId), getAirport(airportId))
-                .doOnNext(tuple -> validatePackageRequestModel(packageRequestModel))
-                .flatMap(tuple -> {
-                    Package pk = PackageEntityModelUtil.toPackage(packageRequestModel, tuple.getT1(), tuple.getT2());
-                    // save the package entity model
-                    return packageRepository.save(pk)
-                            .map(PackageEntityModelUtil::toPackageResponseModel);
-                });
+    public Mono<PackageResponseModel> createPackage(Mono<PackageRequestModel> packageRequestModel) {
+        return packageRequestModel
+                .flatMap(requestModel -> Mono.zip(getTour(requestModel.getTourId()), getAirport(requestModel.getAirportId()))
+                        .doOnNext(tuple -> validatePackageRequestModel(requestModel))
+                        .flatMap(tuple -> {
+                            Package pk = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());
+                            return packageRepository.save(pk)
+                                    .map(PackageEntityModelUtil::toPackageResponseModel);
+                        }));
     }
 
     @Override
-    public Mono<PackageResponseModel> updatePackage(String packageId, PackageRequestModel packageRequestModel) {
+    public Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel) {
         return packageRepository.findPackageByPackageId(packageId)
-                // get the package using the packageId and return a notfound exception if the package is not found
                 .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
-                // then check if the package response model is valid using the validatePackageRequestModel method
-                .doOnNext(pk -> validatePackageRequestModel(packageRequestModel))
-                // then get the tour and airport to check if they exist using the getTour and getAirport methods
-                .flatMap(pk -> Mono.zip(getTour(packageRequestModel.getTourId()), getAirport(packageRequestModel.getAirportId()))
-                        // then return the package entity model
-                        .map(tuple -> PackageEntityModelUtil.toPackage(packageRequestModel, tuple.getT1(), tuple.getT2()))
-                        // then save the package entity model
-                        .flatMap(packageRepository::save)
-                        // then return the package response model
-                        .map(PackageEntityModelUtil::toPackageResponseModel));
+                .flatMap(existingPackage -> packageRequestModel
+                        .flatMap(requestModel -> {
+                            validatePackageRequestModel(requestModel);
+                            return Mono.zip(getTour(requestModel.getTourId()), getAirport(requestModel.getAirportId()))
+                                    .flatMap(tuple -> {
+                                        Package updatedPackage = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());
+                                        updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
+                                        updatedPackage.setPackageId(existingPackage.getPackageId()); // Retain the original packageId
+                                        return packageRepository.save(updatedPackage)
+                                                .map(PackageEntityModelUtil::toPackageResponseModel);
+                                    });
+                        }));
     }
+
 
     @Override
     public Mono<PackageResponseModel> deletePackage(String packageId) {
@@ -93,16 +103,19 @@ public class PackageServiceImpl implements PackageService {
     // a method to get the tour using the tourService and the tourId and return a notfound exception if the tour is not found
     private Mono<String> getTour(String tourId) {
         return tourService.getTourByTourId(tourId)
+                .doOnNext(tour -> log.info("Found tour: {}", tour))
+                .doOnError(error -> log.error("Error fetching tour: {}", error.getMessage()))
                 .switchIfEmpty(Mono.error(new NotFoundException("Tour not found: " + tourId)))
                 .map(TourResponseModel::getTourId);
     }
 
-    // a method to get the airport using the airportService and the airportId and return a notfound exception if the airport is not found
     private Mono<String> getAirport(String airportId) {
-        return airportService.getAirportById(airportId)
+        return Mono.justOrEmpty(airportId) // Guard against null `airportId`
+                .flatMap(airportService::getAirportById)
                 .switchIfEmpty(Mono.error(new NotFoundException("Airport not found: " + airportId)))
                 .map(AirportResponseModel::getAirportId);
     }
+
 
     // a method to check that the package request model is valid
     private void validatePackageRequestModel(PackageRequestModel packageRequestModel) {

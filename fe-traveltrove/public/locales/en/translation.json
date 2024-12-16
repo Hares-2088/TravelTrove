@@ -105,7 +105,7 @@
 
 
     "header": "Tour Events",
-    "createButton": "Create",
+    "createButton": "Create Tour Event",
     "editButton": "Edit",
     "saveTE": "Save",
     "cancelTE": "Cancel",
