@@ -1,0 +1,32 @@
+@startuml
+scale 1
+left to right direction
+
+header
+Dar El Salam
+endheader
+
+' Custom skin parameters for use cases
+skinparam usecase {
+    BackgroundColor lightblue
+    BorderColor DarkSlateGray
+    ArrowColor Black
+}
+
+actor "Customer" as Customer
+
+rectangle "Travel Trove System" {
+
+    usecase "View Package Reviews"
+    usecase "Add a Review to a Package"
+    usecase "Edit their Review"
+    usecase "Remove their Review"
+
+}
+
+Customer -- "View Package Reviews"
+Customer -- "Add a Review to a Package"
+Customer -- "Edit their Review"
+"View Package Reviews" ..> "Remove their Review" : <<extend>>
+
+@enduml
