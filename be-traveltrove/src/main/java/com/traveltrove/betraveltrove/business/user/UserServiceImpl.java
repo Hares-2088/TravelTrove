@@ -4,7 +4,7 @@ import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
-import com.traveltrove.betraveltrove.utils.UserEntityToModel;
+import com.traveltrove.betraveltrove.utils.entitymodels.UserEntityToModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

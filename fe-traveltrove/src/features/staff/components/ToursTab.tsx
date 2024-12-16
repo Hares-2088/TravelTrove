@@ -3,6 +3,7 @@ import { useToursApi } from "../../tours/api/tours.api";
 import { TourRequestModel, TourResponseModel } from "../../tours/models/Tour";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import TourEventsTab from "./TourEventsTab";
+import TourPackagesTab from "./TourPackagesTab";
 import "../../../shared/css/Scrollbar.css";
 import { useTranslation } from "react-i18next";
 
@@ -98,6 +99,7 @@ const ToursTab: React.FC = () => {
             {viewingTour.description || t('noDescriptionT')}
           </p>
           <TourEventsTab tourId={viewingTour.tourId} />
+          <TourPackagesTab tourId={viewingTour.tourId} />
         </div>
       ) : (
         <div>
