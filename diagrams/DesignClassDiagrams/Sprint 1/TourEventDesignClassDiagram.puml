@@ -32,6 +32,7 @@ package "toureventsubdomain" {
             - seqDesc: String
             - tourId: String
             - eventId: String
+            -hotelId: String
         }
 
         interface TourEventRepository extends ReactiveMongoRepository {
@@ -47,6 +48,7 @@ package "toureventsubdomain" {
             - seqDesc: String
             - tourId: String
             - eventId: String
+            - hotelId: String
         }
 
         class TourEventResponseModel {
@@ -55,6 +57,7 @@ package "toureventsubdomain" {
             - seqDesc: String
             - tourId: String
             - eventId: String
+            - hotelId: String
         }
 
         class TourEventController {
