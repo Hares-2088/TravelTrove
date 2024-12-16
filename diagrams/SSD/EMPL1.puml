@@ -11,23 +11,6 @@ participant "Gmail API" as GmailAPI #FFFFFF
 Employee -> TMS : Request to Browse Tour Packages
 TMS -> Employee : Tour Packages Data (e.g., Destination, Price, Dates, Availability)
 
-opt EMPL5 - Filter Search Result
-    Employee -> TMS : Apply Search Filters
-    TMS -> Employee : Filtered Tour Packages Data
-    opt EMPL3 - Modify Tour Package
-        Employee -> TMS : Select a Tour Package to Modify
-        Employee -> TMS : Update Tour Package Details
-        TMS -> Employee : Modified Tour Package Data (e.g., Updated Dates, Price)
-
-        opt EMPL4 - Custom Notification
-            Employee -> TMS : Create Custom Notification
-            TMS -> GmailAPI : Send Notification Email
-            GmailAPI -> TMS : Notification Email Data (e.g., Status, Email IDs)
-            TMS -> Employee : Notification Data (e.g., Success/Failure, Email Recipients)
-        end
-    end
-end
-
 opt EMPL3 - Modify Tour Package
     Employee -> TMS : Select a Tour Package to Modify
     Employee -> TMS : Update Tour Package Details
