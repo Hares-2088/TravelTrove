@@ -177,7 +177,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
               <th>{t("seqLabel")}</th>
               <th>{t("descLabel")}</th>
               <th>{t("eventLabel")}</th>
-              <th>{t("hotelLabel")}</th>
+              <th>{t("Hotel")}</th>
               <th>{t("actions")}</th>
             </tr>
           </thead>
@@ -293,7 +293,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
 
 
               <Form.Group className="mb-3">
-                <Form.Label>{t("hotelLabel")}</Form.Label>
+                <Form.Label>{t("Hotel")}</Form.Label>
                 <Form.Select
                   value={formData.hotelId}
                   onChange={(e) => {
