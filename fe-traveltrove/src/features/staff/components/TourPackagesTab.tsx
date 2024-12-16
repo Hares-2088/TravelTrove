@@ -118,7 +118,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3>{t("Packages")}</h3>
+                <h3>{t("packages")}</h3>
                 <Button
                     variant="primary"
                     onClick={() => {
@@ -194,7 +194,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                         setShowModal(true);
                                     }}
                                 >
-                                    {t("Edit Package")}
+                                    {t("editPackage")}
                                 </Button>
                                 <Button
                                     variant="outline-danger"
@@ -205,7 +205,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                         setShowModal(true);
                                     }}
                                 >
-                                    {t("Delete Package")}
+                                    {t("deletePackage")}
                                 </Button>
                             </td>
                         </tr>
@@ -217,11 +217,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {modalType === "create"
-                            ? t("Create Package")
+                            ? t("createPackage")
                             : modalType === "update"
-                            ? t("Edit Package")
+                            ? t("editPackage")
                             : modalType === "delete"
-                            ? t("Delete Package")
+                            ? t("deletePackage")
                             : t("viewPackage")}
                     </Modal.Title>
                 </Modal.Header>
