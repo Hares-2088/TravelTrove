@@ -23,14 +23,15 @@ public class PackageEntityModelUtil {
                 .packageId(generateUUIDString())
                 .name(packageRequestModel.getName())
                 .description(packageRequestModel.getDescription())
+                .airportId(airportId)
+                .tourId(tourId)
                 .startDate(packageRequestModel.getStartDate())
                 .endDate(packageRequestModel.getEndDate())
                 .priceSingle(packageRequestModel.getPriceSingle())
                 .priceDouble(packageRequestModel.getPriceDouble())
                 .priceTriple(packageRequestModel.getPriceTriple())
-                .tourId(tourId)
-                .airportId(airportId)
                 .build();
+
     }
 
     private static String generateUUIDString() {

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -25,10 +27,10 @@ public class Package {
     private String packageId; //public id
     private String name;
     private String description;
-    private String startDate;
-    private String endDate;
-    private String priceSingle;
-    private String priceDouble;
-    private String priceTriple;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Double priceSingle;
+    private Double priceDouble;
+    private Double priceTriple;
 
 }

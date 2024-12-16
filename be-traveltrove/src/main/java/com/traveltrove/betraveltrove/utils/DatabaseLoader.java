@@ -12,6 +12,7 @@ import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import reactor.core.publisher.Flux;
 
 import jakarta.annotation.PostConstruct;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -604,6 +606,165 @@ public class DatabaseLoader {
                         success -> log.info("Travelers preloaded successfully."),
                         error -> log.error("Error preloading travelers: {}", error.getMessage())
                 );
+    }
+
+    // now for packages
+
+    private final PackageRepository packageRepository;
+
+    @PostConstruct
+    public void loadPackages() {
+        List<com.traveltrove.betraveltrove.dataaccess.tourpackage.Package> samplePackages = List.of(
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .name("New York Adventure Package")
+                        .description("Experience the thrill of New York City with a complete package including flights and guided tours.")
+                        .startDate(LocalDate.of(2024, 5, 15))
+                        .endDate(LocalDate.of(2024, 5, 22))
+                        .airportId("d1e91f6c-723e-43b9-812f-2f3d3bfb4081")
+                        .tourId("7f54a45d-8c1d-432f-a5c8-1f93b89bfe29")
+                        .priceSingle(1800.0)
+                        .priceDouble(1600.0)
+                        .priceTriple(1400.0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .name("Toronto Winter Lights Escape")
+                        .description("Explore the magic of Toronto’s Winter Lights Festival with this all-inclusive package.")
+                        .startDate(LocalDate.of(2024, 1, 10))
+                        .endDate(LocalDate.of(2024, 1, 17))
+                        .airportId("f7a7e8e4-cc49-4027-8c4d-881e6179e6d2")
+                        .tourId("90af5e42-b8a7-4b59-939f-8fa2c4e384d1")
+                        .priceSingle(1500.0)
+                        .priceDouble(1300.0)
+                        .priceTriple(1100.0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .name("Parisian Fashion Week Package")
+                        .description("Indulge in Paris Fashion Week with flights, accommodations, and VIP access.")
+                        .startDate(LocalDate.of(2024, 3, 20))
+                        .endDate(LocalDate.of(2024, 3, 27))
+                        .airportId("b2c4f9ac-0fd6-4327-8e3a-f3c68bd3d62a")
+                        .tourId("f1f4ac8e-4e24-4bb3-97d3-e5b7b5b7f912")
+                        .priceSingle(2200.0)
+                        .priceDouble(2000.0)
+                        .priceTriple(1800.0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .name("Berlin Tech Conference Package")
+                        .description("Join Europe’s largest tech conference with this exclusive package.")
+                        .startDate(LocalDate.of(2024, 6, 5))
+                        .endDate(LocalDate.of(2024, 6, 12))
+                        .airportId("6e3b9f27-7cbe-47aa-b6e9-34f2cd5b5171")
+                        .tourId("83e6f7ba-0567-426a-b43f-456f947c576b")
+                        .priceSingle(1800.0)
+                        .priceDouble(1600.0)
+                        .priceTriple(1400.0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .name("Rome Culinary Experience")
+                        .description("Savor authentic Italian cuisine and wines in this culinary retreat.")
+                        .startDate(LocalDate.of(2024, 9, 15))
+                        .endDate(LocalDate.of(2024, 9, 22))
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b")
+                        .tourId("d12a7bf7-dc94-4953-9189-68f6a70f7844")
+                        .priceSingle(1900.0)
+                        .priceDouble(1700.0)
+                        .priceTriple(1500.0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("9d3f8b7e-a6c1-4f42-b6d8-7a9b4e2d5cf3")
+                        .name("Tokyo Blossom Festival Package")
+                        .description("Experience Japan's iconic cherry blossoms and vibrant culture.")
+                        .startDate(LocalDate.of(2024, 4, 1))
+                        .endDate(LocalDate.of(2024, 4, 8))
+                        .airportId("e8f314c7-716b-4f19-a1d6-fc376b8c81ad")
+                        .tourId("7e14cb83-3e2a-41c6-b26f-09ebd62a5e39")
+                        .priceSingle(2400.0)
+                        .priceDouble(2200.0)
+                        .priceTriple(2000.0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
+                        .name("Rio Carnival Adventure")
+                        .description("Join the world’s biggest carnival in Rio with this unforgettable package.")
+                        .startDate(LocalDate.of(2024, 2, 10))
+                        .endDate(LocalDate.of(2024, 2, 17))
+                        .airportId("3f2e8bbd-84c3-4d3e-bc24-f173acd01be4")
+                        .tourId("42cf8561-6f83-4f2f-becb-e3c72a1bb572")
+                        .priceSingle(2000.0)
+                        .priceDouble(1800.0)
+                        .priceTriple(1600.0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
+                        .name("Australian Outback Safari")
+                        .description("Discover Australia’s rugged wilderness with this unique outback package.")
+                        .startDate(LocalDate.of(2024, 7, 20))
+                        .endDate(LocalDate.of(2024, 7, 27))
+                        .airportId("aa12fc4b-619e-4d8e-8563-5a09bc6f1ae1")
+                        .tourId("f4a9c2ef-8473-4b67-b527-44fcb3a6eec5")
+                        .priceSingle(2100.0)
+                        .priceDouble(1900.0)
+                        .priceTriple(1700.0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("9b5e2c1a-6f7d-4b9e-b8a7-d3f2b1c9a4e5")
+                        .name("Indian Heritage Exploration")
+                        .description("Explore India’s vibrant heritage and landmarks with this cultural package.")
+                        .startDate(LocalDate.of(2024, 8, 1))
+                        .endDate(LocalDate.of(2024, 8, 10))
+                        .airportId("47c8f2e7-3d6b-402c-93b7-8a92ef43e6ab")
+                        .tourId("7b82cb14-2ff5-4d8f-b84c-3bfb7b6cda1e")
+                        .priceSingle(1700.0)
+                        .priceDouble(1500.0)
+                        .priceTriple(1300.0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
+                        .name("Silk Road Adventure")
+                        .description("Experience the historic wonders of the Silk Road with guided tours and more.")
+                        .startDate(LocalDate.of(2024, 10, 5))
+                        .endDate(LocalDate.of(2024, 10, 15))
+                        .airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
+                        .priceSingle(2200.0)
+                        .priceDouble(2000.0)
+                        .priceTriple(1800.0)
+                        .build()
+        );
+
+        packageRepository.deleteAll()
+                .thenMany(Flux.fromIterable(samplePackages))
+                .flatMap(packageRepository::save)
+                .doOnNext(pkg -> log.info("Preloaded package: {}"))
+                .subscribe(
+                        success -> log.info("Packages preloaded successfully."),
+                        error -> log.error("Error preloading packages: {}", error.getMessage())
+                );
+
     }
 }
 

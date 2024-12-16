@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,9 +20,9 @@ public class PackageResponseModel {
     private String packageId; //public id
     private String name;
     private String description;
-    private String startDate;
-    private String endDate;
-    private String priceSingle;
-    private String priceDouble;
-    private String priceTriple;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Double priceSingle;
+    private Double priceDouble;
+    private Double priceTriple;
 }
