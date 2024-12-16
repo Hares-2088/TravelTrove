@@ -5,6 +5,8 @@ import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodels.UserEntityToModel;
+import com.traveltrove.betraveltrove.utils.UserEntityToModel;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<UserResponseModel> addUserFromAuth0(String auth0UserId) {
         return auth0Service.getUserById(auth0UserId)
+                .switchIfEmpty(Mono.error(new NotFoundException("User not found with Auth0 ID: " + auth0UserId)))
                 .flatMap(auth0User ->
                         userRepository.findByUserId(auth0UserId)
                                 .switchIfEmpty(
@@ -51,6 +54,7 @@ public class UserServiceImpl implements UserService {
                 .doOnSuccess(user -> log.info("Final User Response: {}", user))
                 .doOnError(error -> log.error("Error processing user with ID: {}", auth0UserId, error));
     }
+
 
     @Override
     public Mono<UserResponseModel> syncUserWithAuth0(String auth0UserId) {

@@ -4,6 +4,7 @@ import CountriesTab from "./CountriesTab";
 import EventsTab from "./EventsTab"; 
 import CitiesTab from "./CitiesTab";
 import ToursTab from "./ToursTab";
+import HotelsTab from "./HotelsTab";
 import AirportsTab from "./AirportsTab";
 import TravelersTab from "./travelersTab"; // Import the new TravelersTab component
 import { useTranslation } from "react-i18next";
@@ -12,7 +13,7 @@ import { useTranslation } from "react-i18next";
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("tours");
   const { t } = useTranslation(); // Access i18n functions
-  
+
 
   return (
     <div
@@ -74,6 +75,21 @@ const Dashboard: React.FC = () => {
                       }}
                     >
                       {t('events')}
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
+                      eventKey="hotels"
+                      onClick={() => setActiveTab("hotels")}
+                      className={`text-white px-3 py-2 ${
+                        activeTab === "hotels" ? "bg-secondary" : ""
+                      }`}
+                      style={{
+                        fontWeight: activeTab === "hotels" ? "bold" : "normal",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      Hotels
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
@@ -154,7 +170,10 @@ const Dashboard: React.FC = () => {
                    <ToursTab />
                   </Tab.Pane>
                   <Tab.Pane eventKey="events">
-                    <EventsTab />
+                    <EventsTab /> {/* Use the EventsTab component here */}
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="hotels">
+                    <HotelsTab />
                   </Tab.Pane>
                   <Tab.Pane eventKey="cities">
                     <CitiesTab />

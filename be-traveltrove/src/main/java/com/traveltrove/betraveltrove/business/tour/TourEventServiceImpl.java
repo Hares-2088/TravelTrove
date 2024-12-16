@@ -56,6 +56,7 @@ public class TourEventServiceImpl implements TourEventService {
                     existingEvent.setSeqDesc(request.getSeqDesc());
                     existingEvent.setTourId(request.getTourId());
                     existingEvent.setEventId(request.getEventId());
+                    existingEvent.setHotelId(request.getHotelId());
                     return tourEventRepository.save(existingEvent);
                 })
                 .doOnSuccess(updatedEvent -> log.info("Updated TourEvent: {}", updatedEvent))

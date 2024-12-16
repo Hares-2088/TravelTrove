@@ -42,6 +42,7 @@ const EventsTab: React.FC = () => {
   const [viewingEvent, setViewingEvent] = useState<EventResponseModel | null>(
     null
   );
+  
 
   //filtering variables
   const [selectedCountry, setSelectedCountry] = useState<string>("");
@@ -235,7 +236,7 @@ const EventsTab: React.FC = () => {
               <thead className="bg-light">
                 <tr>
                   <th>{t("nameE")}</th>
-                  <th>{t("actionsE")}</th>
+                  <th>{t("Actions")}</th>
                 </tr>
               </thead>
               <tbody>

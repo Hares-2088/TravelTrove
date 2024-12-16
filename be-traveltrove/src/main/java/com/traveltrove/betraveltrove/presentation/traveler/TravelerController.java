@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.presentation.travaler;
+package com.traveltrove.betraveltrove.presentation.traveler;
 
 import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import lombok.extern.slf4j.Slf4j;

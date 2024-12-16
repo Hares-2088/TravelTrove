@@ -65,13 +65,6 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public Mono<CityResponseModel> getCityByCityIdAndCountryId(String cityId, String countryId) {
-        return cityRepository.findCityByCityIdAndCountryId(cityId, countryId)
-                .switchIfEmpty(Mono.error(new NotFoundException("City id not found: " + cityId + " and country id not found: " + countryId)))
-                .map(EntityModelUtil::toCityResponseModel);
-    }
-
-    @Override
     public Mono<Boolean> isCityExistsById(String cityId) {
         return cityRepository.findCityByCityId(cityId)
                 .hasElement()
