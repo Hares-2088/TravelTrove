@@ -28,11 +28,11 @@ rectangle "Travel Trove System" {
     usecase "View Profile"
     usecase "Modify Profile Information"
 
-    usecase "Browse tour packages"
+    usecase "Browse packages"
     usecase "Filter search result"
     usecase "Subscribe to notifications"
 
-    usecase "Book a tour package"
+    usecase "Book a package"
     usecase "Pay for a tour"
 
     usecase "Cancel a tour"
@@ -45,33 +45,44 @@ rectangle "Travel Trove System" {
     usecase "Assign a Traveler to booking"
     usecase "Remove a Traveler from booking"
 
-    usecase "Access package bookings"
+    usecase "Access their package bookings"
+
+    usecase "View Package Reviews"
+    usecase "Add a Review to a Package"
+    usecase "Edit their Review"
+    usecase "Remove their Review"
 }
 
 "Sign up for an Account" <.. "Set up Profile" : <<extend>>
 "Sign up for an Account" <.. "View Account" : <<extend>>
 "View Account" <.. "Edit Account" : <<extend>>
-"Browse tour packages" <.. "Book a tour package" : <<extend>>
-"Browse tour packages" <.. "Subscribe to notifications" : <<extend>>
-"Book a tour package" <.. "Filter search result" : <<extend>>
-"Book a tour package" <.. "Pay for a tour" : <<include>>
+"Browse packages" <.. "Book a package" : <<extend>>
+"Browse packages" <.. "Subscribe to notifications" : <<extend>>
+"Browse packages" <.. "View Package Reviews" : <<extend>>
+"Browse packages" <.. "Remove their Review" : <<extend>>
+"Book a package" <.. "Filter search result" : <<extend>>
+"Book a package" <.. "Pay for a tour" : <<include>>
 "Cancel a tour" <.. "Request a refund" : <<extend>>
 "Sign up for an Account" <.. "View Profile" : <<extend>>
 "View Profile" <.. "Modify Profile Information" : <<extend>>
 "View Profile" <.. "Set up Profile" : <<extend>>
-"Access package bookings" <.. "View Travelers" : <<extend>>
-"Access package bookings" <.. "View Traveler Details" : <<extend>>
-"Access package bookings" <.. "Add a Traveler" : <<extend>>
-"Access package bookings" <.. "Edit a Traveler" : <<extend>>
-"Access package bookings" <.. "Remove a Traveler from booking" : <<extend>>
-"Book a tour package" <.. "View Travelers" : <<extend>>"
-"Book a tour package" <.. "View Traveler Details" : <<extend>>"
-"Book a tour package" <.. "Remove a Traveler from booking" : <<extend>>"
-"Book a tour package" <.. "Assign a Traveler to booking" : <<extend>>"
+"Access their package bookings" <.. "View Travelers" : <<extend>>
+"Access their package bookings" <.. "View Traveler Details" : <<extend>>
+"Access their package bookings" <.. "Add a Traveler" : <<extend>>
+"Access their package bookings" <.. "Edit a Traveler" : <<extend>>
+"Access their package bookings" <.. "Remove a Traveler from booking" : <<extend>>
+"Book a package" <.. "View Travelers" : <<extend>>"
+"Book a package" <.. "View Traveler Details" : <<extend>>"
+"Book a package" <.. "Remove a Traveler from booking" : <<extend>>"
+"Book a package" <.. "Assign a Traveler to booking" : <<extend>>"
+"Book a package" <.. "View Package Reviews" : <<extend>>"
+"Book a package" <.. "Add a Review to a Package" : <<extend>>"
+"Book a package" <.. "Edit their Review" : <<extend>>"
+"Book a package" <.. "Remove their Review" : <<extend>>"
 
 Customer -- "Sign up for an Account"
-Customer -- "Browse tour packages"
-Customer -- "Access package bookings"
+Customer -- "Browse packages"
+Customer -- "Access their package bookings"
 Customer -- "Cancel a tour"
 
 @enduml

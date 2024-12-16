@@ -17,9 +17,9 @@ actor "Dar El Salam's Employee" as Employee
 
 rectangle "Travel Trove System" {
 
-    usecase "Browse tour packages"
-    usecase "Add tour package"
-    usecase "Modify tour package"
+    usecase "Browse packages"
+    usecase "Add package"
+    usecase "Modify package"
     usecase "Filter search result"
     usecase "Custom notification"
     usecase "Manage events"
@@ -37,8 +37,12 @@ rectangle "Travel Trove System" {
     usecase "Remove a Traveler from booking"
     usecase "View Travelers"
     usecase "View Traveler Details"
+    
+    usecase "View Package Reviews"
+    usecase "View All Reviews"
+    usecase "Remove a Review"
 }
-Employee -- "Browse tour packages"
+Employee -- "Browse packages"
 Employee -- "Manage events"
 Employee -- "Manage tours"
 Employee -- "Manage countries"
@@ -47,17 +51,21 @@ Employee -- "View Account"
 Employee -- "Manage hotels"
 Employee -- "Manage airports"
 Employee -- "Access package bookings"
+Employee -- "View All Reviews"
 
-"Browse tour packages" <.. "Filter search result" : <<extend>>
-"Browse tour packages" <.. "Add tour package" : <<extend>>
-"Browse tour packages" <.. "Modify tour package" : <<extend>>
-"Modify tour package" <.. "Custom notification" : <<extend>>
-"Modify tour package" <.. "Filter search result" : <<extend>>
+"Browse packages" <.. "Filter search result" : <<extend>>
+"Browse packages" <.. "Add package" : <<extend>>
+"Browse packages" <.. "Modify package" : <<extend>>
+"Browse packages" <.. "View Package Reviews" : <<extend>>
+"Modify package" <.. "Custom notification" : <<extend>>
+"Modify package" <.. "Filter search result" : <<extend>>
 "Manage tours" <.. "Manage tour events" : <<extend>>
 "View Account" <.. "Edit Account" : <<extend>>
 "Access package bookings" <.. "Assign a Traveler to booking" : <<extend>>
 "Access package bookings" <.. "Remove a Traveler from booking" : <<extend>>
 "Access package bookings" <.. "View Travelers" : <<extend>>
 "View Travelers" <.. "View Traveler Details" : <<extend>>
+"View All Reviews" ..> "Remove a Review" : <<extend>>
+"View Package Reviews" ..> "Remove a Review" : <<extend>>
 
 @enduml

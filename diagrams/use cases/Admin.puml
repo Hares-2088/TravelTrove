@@ -26,10 +26,11 @@ rectangle "Travel Trove System" {
 }
 
 "Manage an employee account" ..> "Control Permissions" : <<include>>
-Admin<|-- Employee
+Admin <|-- Employee
 Admin --- "Add an employee account"
 Admin -- "Manage an employee account"
 Admin -- "Generate report"
 Admin -- "Remove a tour package"
+
 
 @enduml
