@@ -37,6 +37,15 @@ rectangle "Travel Trove System" {
 
     usecase "Cancel a tour"
     usecase "Request a refund"
+
+    usecase "View Travelers"
+    usecase "View Traveler Details"
+    usecase "Add a Traveler"
+    usecase "Edit a Traveler"
+    usecase "Assign a Traveler to booking"
+    usecase "Remove a Traveler from booking"
+
+    usecase "Access package bookings"
 }
 
 "Sign up for an Account" <.. "Set up Profile" : <<extend>>
@@ -50,10 +59,19 @@ rectangle "Travel Trove System" {
 "Sign up for an Account" <.. "View Profile" : <<extend>>
 "View Profile" <.. "Modify Profile Information" : <<extend>>
 "View Profile" <.. "Set up Profile" : <<extend>>
+"Access package bookings" <.. "View Travelers" : <<extend>>
+"Access package bookings" <.. "View Traveler Details" : <<extend>>
+"Access package bookings" <.. "Add a Traveler" : <<extend>>
+"Access package bookings" <.. "Edit a Traveler" : <<extend>>
+"Access package bookings" <.. "Remove a Traveler from booking" : <<extend>>
+"Book a tour package" <.. "View Travelers" : <<extend>>"
+"Book a tour package" <.. "View Traveler Details" : <<extend>>"
+"Book a tour package" <.. "Remove a Traveler from booking" : <<extend>>"
+"Book a tour package" <.. "Assign a Traveler to booking" : <<extend>>"
 
 Customer -- "Sign up for an Account"
 Customer -- "Browse tour packages"
-'Customer -- "Book a tour package"
+Customer -- "Access package bookings"
 Customer -- "Cancel a tour"
 
 @enduml

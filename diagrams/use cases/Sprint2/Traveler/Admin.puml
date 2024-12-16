@@ -1,0 +1,29 @@
+@startuml
+scale 1
+left to right direction
+
+header
+Dar El Salam
+endheader
+
+' Custom skin parameters for use cases
+skinparam usecase {
+    BackgroundColor lightblue
+    BorderColor DarkSlateGray
+    ArrowColor Black
+}
+
+actor "Dar El Salam's Admin" as Admin
+
+rectangle "Travel Trove System" {
+
+    usecase "View Travelers"
+    usecase "View Traveler Details"
+    usecase "Remove a Traveler"
+}
+
+Admin -- "View Travelers"
+Admin -- "View Traveler Details"
+Admin -- "Remove a Traveler"
+
+@enduml
