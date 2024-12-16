@@ -84,6 +84,10 @@ Container_Boundary(spa, "Web Application (React)") {
 
         Component(ReportsPage, "Reports Page", "React Component", "Displays reporting tools for admin", $tags = "page", $sprite="react")
         Component(GenerateReportFeature, "Generate Report Feature", "React Module", "Generates reports based on criteria", $tags = "feature", $sprite="react")
+
+    Component(TravelerPage, "Traveler Page", "React Component", "Displays traveler profiles and details", $tags = "page", $sprite="react")
+        Component(AddTravelerFeature, "Add Traveler Feature", "React Module", "Allows users to manage traveler information", $tags = "feature", $sprite="react")
+
     }
 
     ' Employee-specific pages and features
@@ -136,7 +140,6 @@ Rel(ReservationFeature, AxiosInstance, "Fetches reservation data using", "HTTP")
 Rel(PaymentFeature, AxiosInstance, "Processes payment via", "HTTP")
 Rel(EmailingFeature, AxiosInstance, "Sends email notifications using", "HTTP")
 Rel(AddReviewFeature, AxiosInstance, "Adds reviews using", "HTTP")
-
 Rel(CustomEmailNotificationFeature, AxiosInstance , "Provides user context to")
 Rel(AddTourPackageFeature, AxiosInstance, "Provides user context to")
 Rel(ModifyTourPackageFeature, AxiosInstance, "Provides user context to")
@@ -207,5 +210,9 @@ Person(admin, "Admin", "Admin of the travel agency")
 Rel(customer, IndexHTML, "Interacts with", "Web Browser / Mobile App")
 Rel(admin, IndexHTML, "Interacts with", "Web Browser")
 Rel(employee, IndexHTML, "Interacts with", "API Client")
+
+'traveler
+Rel(TravelerPage, AxiosInstance, "Fetches traveler data using", "HTTP")
+Rel(AddTravelerFeature, AxiosInstance, "Manages traveler data using", "HTTP")
 
 @enduml

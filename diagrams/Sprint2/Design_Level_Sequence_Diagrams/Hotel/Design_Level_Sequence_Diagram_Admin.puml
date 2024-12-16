@@ -1,0 +1,205 @@
+@startuml
+title Hotel Management Sequence Diagram for Admin
+
+actor Admin as "<<Actor>>\nAdmin"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant HotelsPage as "<<View>>\nHotelsPage"
+participant HotelController as "<<Controller>>\nHotelController"
+participant HotelService as "<<Service>>\nHotelService"
+participant HotelEntity as "<<Entity>>\nHotelEntity"
+participant HotelRepository as "<<Repository>>\nHotelRepository"
+participant Database as "<<Database>>"
+participant HotelResponseModel as "<<Model>>\nHotelResponseModel"
+
+Admin -> ReactApplication : Access Hotels Page
+activate ReactApplication
+
+ReactApplication -> HotelsPage : render()
+activate HotelsPage
+deactivate ReactApplication
+
+HotelsPage -> HotelController : GET /api/v1/hotels
+activate HotelController
+
+HotelController -> HotelService : getHotels()
+activate HotelService
+
+HotelService -> HotelRepository : findAll()
+activate HotelRepository
+
+HotelRepository -> Database : SELECT * FROM hotels
+activate Database
+Database --> HotelRepository : List of hotels
+deactivate Database
+
+HotelRepository --> HotelService : hotelEntities
+deactivate HotelRepository
+
+HotelService -> HotelResponseModel : Map entities to response models
+activate HotelResponseModel
+HotelResponseModel --> HotelService : Response models ready
+deactivate HotelResponseModel
+
+HotelService --> HotelController : List of HotelResponseModels
+deactivate HotelService
+
+HotelController --> HotelsPage : Display hotels list
+deactivate HotelController
+
+opt Get Hotel by ID
+    Admin -> HotelsPage : Click on hotel name
+    HotelsPage -> HotelController : GET /api/v1/hotels/{hotelId}
+    activate HotelController
+
+    HotelController -> HotelService : getHotelByHotelId(hotelId)
+    activate HotelService
+
+    HotelService -> HotelRepository : findHotelByHotelId(hotelId)
+    activate HotelRepository
+    alt Invalid hotelId
+        HotelRepository --> HotelService : Hotel not found
+        deactivate HotelRepository
+        HotelService --> HotelController : Return error message
+        deactivate HotelService
+        HotelController --> HotelsPage : Display error message
+        deactivate HotelController
+    else Valid hotelId
+        HotelRepository --> HotelService : hotelEntity
+        deactivate HotelRepository
+
+        HotelService -> HotelResponseModel : Create response model from entity
+        activate HotelResponseModel
+        HotelResponseModel --> HotelService : Response ready
+        deactivate HotelResponseModel
+
+        HotelService --> HotelController : hotelResponseModel
+        deactivate HotelService
+        HotelController --> HotelsPage : Display hotel details
+        deactivate HotelController
+    end
+end
+
+opt Add New Hotel
+    Admin -> HotelsPage : Fill hotel form and submit
+    HotelsPage -> HotelController : POST /api/v1/hotels
+    activate HotelController
+
+    HotelController -> HotelRequestModel : Create request model
+    activate HotelRequestModel
+    HotelRequestModel -> HotelService : createHotel(hotelRequestModel)
+    deactivate HotelRequestModel
+    activate HotelService
+
+    HotelService -> HotelEntity : Instantiate from request model
+    activate HotelEntity
+    HotelEntity --> HotelService : Entity created
+    deactivate HotelEntity
+
+    HotelService -> HotelRepository : save(hotelEntity)
+    activate HotelRepository
+    HotelRepository -> Database : INSERT INTO hotels
+    activate Database
+    Database --> HotelRepository : Success
+    deactivate Database
+    HotelRepository --> HotelService : Saved hotel
+    deactivate HotelRepository
+
+    HotelService -> HotelResponseModel : Create response model from entity
+    activate HotelResponseModel
+    HotelResponseModel --> HotelService : Response ready
+    deactivate HotelResponseModel
+
+    HotelService --> HotelController : hotelResponseModel
+    deactivate HotelService
+    HotelController --> HotelsPage : Hotel added successfully
+    deactivate HotelController
+end
+
+opt Modify Hotel
+    Admin -> HotelsPage : Edit hotel form and submit
+    HotelsPage -> HotelController : PUT /api/v1/hotels/{hotelId}
+    activate HotelController
+
+    HotelController -> HotelRequestModel : Create request model
+    activate HotelRequestModel
+    HotelRequestModel -> HotelService : updateHotel(hotelId, hotelRequestModel)
+    deactivate HotelRequestModel
+    activate HotelService
+
+    HotelService -> HotelRepository : Find hotel by ID
+    activate HotelRepository
+    alt Invalid hotelId
+        HotelRepository --> HotelService : Hotel not found
+        deactivate HotelRepository
+        HotelService --> HotelController : Return error message
+        deactivate HotelService
+        HotelController --> HotelsPage : Display error message
+        deactivate HotelController
+    else Valid hotelId
+        HotelRepository --> HotelService : hotelEntity
+        deactivate HotelRepository
+
+        HotelService -> HotelEntity : Update entity with request data
+        activate HotelEntity
+        HotelEntity --> HotelService : Updated entity
+        deactivate HotelEntity
+
+        HotelService -> HotelRepository : save(updatedHotelEntity)
+        activate HotelRepository
+        HotelRepository -> Database : UPDATE hotels SET ...
+        Database --> HotelRepository : Success
+        deactivate Database
+        HotelRepository --> HotelService : Updated hotel
+        deactivate HotelRepository
+
+        HotelService -> HotelResponseModel : Create response model from updated entity
+        activate HotelResponseModel
+        HotelResponseModel --> HotelService : Response ready
+        deactivate HotelResponseModel
+
+        HotelService --> HotelController : hotelResponseModel
+        deactivate HotelService
+        HotelController --> HotelsPage : Hotel updated successfully
+        deactivate HotelController
+    end
+end
+
+opt Delete Hotel
+    Admin -> HotelsPage : Select hotel to delete
+    HotelsPage -> HotelController : DELETE /api/v1/hotels/{hotelId}
+    activate HotelController
+
+    HotelController -> HotelService : deleteHotel(hotelId)
+    activate HotelService
+    HotelService -> HotelRepository : Find hotel by ID
+    activate HotelRepository
+    alt Invalid hotelId
+        HotelRepository --> HotelService : Hotel not found
+        deactivate HotelRepository
+        HotelService --> HotelController : Return error message
+        deactivate HotelService
+        HotelController --> HotelsPage : Display error message
+        deactivate HotelController
+    else Valid hotelId
+        HotelRepository --> HotelService : hotelEntity
+        deactivate HotelRepository
+
+        HotelService -> HotelRepository : deleteById(hotelId)
+        activate HotelRepository
+        HotelRepository -> Database : DELETE FROM hotels WHERE hotel_id = hotelId
+        Database --> HotelRepository : Success
+        deactivate Database
+        HotelRepository --> HotelService : Hotel deleted
+        deactivate HotelRepository
+
+        HotelService --> HotelController : Deletion confirmation
+        deactivate HotelService
+        HotelController --> HotelsPage : Hotel deleted successfully
+        deactivate HotelController
+    end
+end
+
+
+
+@enduml
