@@ -1,0 +1,104 @@
+@startuml
+title Traveler Subdomain Design Class Diagram
+
+package "travelersubdomain" {
+
+    package "businesslayer" {
+        interface TravelerService {
+            + getAllTravelers(firstName: String) : Flux<TravelerResponseModel>
+            + getTravelerByTravelerId(travelerId: String) : Mono<TravelerResponseModel>
+            + createTraveler(travelerRequestModel: TravelerRequestModel) : Mono<TravelerResponseModel>
+            + updateTraveler(travelerId: String, travelerRequestModel: TravelerRequestModel) : Mono<TravelerResponseModel>
+            + deleteTraveler(travelerId: String) : Mono<TravelerResponseModel>
+        }
+
+        class TravelerServiceImpl {
+            - travelerRepository: TravelerRepository
+            - countryService: CountryService
+            + getAllTravelers(firstName: String) : Flux<TravelerResponseModel>
+            + getTravelerByTravelerId(travelerId: String) : Mono<TravelerResponseModel>
+            + createTraveler(travelerRequestModel: TravelerRequestModel) : Mono<TravelerResponseModel>
+            + updateTraveler(travelerId: String, travelerRequestModel: TravelerRequestModel) : Mono<TravelerResponseModel>
+            + deleteTraveler(travelerId: String) : Mono<TravelerResponseModel>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Traveler {
+            + id: String
+            + travelerId: String
+            + seq: Integer
+            + firstName: String
+            + lastName: String
+            + addressLine1: String
+            + addressLine2: String
+            + city: String
+            + state: String
+            + email: String
+            + countryId: String
+        }
+
+        interface TravelerRepository extends ReactiveMongoRepository {
+            + findTravelerByTravelerId(travelerId: String) : Mono<Traveler>
+            + findTravelerByFirstName(firstName: String) : Flux<Traveler>
+            + findAll() : Flux<Traveler>
+        }
+    }
+
+    package "presentationlayer" {
+        class TravelerRequestModel {
+            + seq: Integer
+            + firstName: String
+            + lastName: String
+            + addressLine1: String
+            + addressLine2: String
+            + city: String
+            + state: String
+            + email: String
+            + countryId: String
+        }
+
+        class TravelerResponseModel {
+            + travelerId: String
+            + seq: Integer
+            + firstName: String
+            + lastName: String
+            + addressLine1: String
+            + addressLine2: String
+            + city: String
+            + state: String
+            + email: String
+            + countryId: String
+        }
+
+        class TravelerController {
+            - travelerService: TravelerService
+            + getAllTravelers(firstName: String) : Flux<TravelerResponseModel>
+            + getTravelerByTravelerId(travelerId: String) : Mono<ResponseEntity<TravelerResponseModel>>
+            + createTraveler(travelerRequestModel: TravelerRequestModel) : Mono<ResponseEntity<TravelerResponseModel>>
+            + updateTraveler(travelerId: String, travelerRequestModel: TravelerRequestModel) : Mono<ResponseEntity<TravelerResponseModel>>
+            + deleteTraveler(travelerId: String) : Mono<ResponseEntity<TravelerResponseModel>>
+        }
+    }
+
+    package "utils" {
+        class TravelerEntityModelUtil {
+            + toTravelerResponseModel(traveler: Traveler) : TravelerResponseModel
+            + toTravelerEntity(travelerRequestModel: TravelerRequestModel) : Traveler
+        }
+    }
+
+    TravelerServiceImpl -down-|> TravelerService : implements
+    TravelerServiceImpl -down-> TravelerRepository : uses
+    TravelerController -down-> TravelerService : uses
+    TravelerController -down-> TravelerRequestModel : uses
+    TravelerController -down-> TravelerResponseModel : uses
+    TravelerServiceImpl -down-> Traveler : manipulates
+    TravelerServiceImpl -down-> TravelerRequestModel : uses
+    TravelerServiceImpl -down-> TravelerResponseModel : returns
+    TravelerEntityModelUtil -up-^ Traveler : converts
+    TravelerEntityModelUtil -up-^ TravelerRequestModel : maps
+    TravelerEntityModelUtil -up-^ TravelerResponseModel : maps
+}
+
+@enduml

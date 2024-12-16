@@ -48,88 +48,76 @@ deactivate AirportService
 AirportController --> AirportsPage : Display airports list
 deactivate AirportController
 
-
 == Add New Airport ==
 opt Add New Airport
     Admin -> AirportsPage : Fill airport form and submit
     AirportsPage -> AirportController : POST /api/v1/airports
     activate AirportController
 
-    AirportController -> AirportRequestModel : Create request model
-    activate AirportRequestModel
-    AirportRequestModel -> AirportService : addAirport(airportRequestModel)
-    deactivate AirportRequestModel
+    AirportController -> AirportService : saveAirport(airportRequestModel)
     activate AirportService
 
-    AirportService -> AirportEntity : Convert request model to entity
+    AirportService -> AirportEntity : Instantiate from request model
     activate AirportEntity
-    AirportEntity --> AirportService : Airport entity created
+    AirportEntity --> AirportService : Entity created
     deactivate AirportEntity
 
-    AirportService -> AirportRepository : Save airport entity
+    AirportService -> AirportRepository : save(airportEntity)
     activate AirportRepository
     AirportRepository -> Database : INSERT INTO airports
     activate Database
     Database --> AirportRepository : Success
     deactivate Database
-    AirportRepository --> AirportService : Saved airport entity
+    AirportRepository --> AirportService : Saved airport
     deactivate AirportRepository
 
-    AirportService -> AirportResponseModel : Map entity to response model
+    AirportService -> AirportResponseModel : Create response model from entity
     activate AirportResponseModel
-    AirportResponseModel --> AirportService : Response model ready
+    AirportResponseModel --> AirportService : Response ready
     deactivate AirportResponseModel
 
-    AirportService --> AirportController : AirportResponseModel
+    AirportService --> AirportController : airportResponseModel
     deactivate AirportService
-    AirportController --> AirportsPage : New airport added
+    AirportController --> AirportsPage : Airport added successfully
     deactivate AirportController
 end
 
-== Update Existing Airport ==
 opt Update Airport
     Admin -> AirportsPage : Edit airport form and submit
     AirportsPage -> AirportController : PUT /api/v1/airports/{airportId}
     activate AirportController
 
-    AirportController -> AirportRequestModel : Create request model
-    activate AirportRequestModel
-    AirportRequestModel -> AirportService : updateAirport(airportId, airportRequestModel)
-    deactivate AirportRequestModel
+    AirportController -> AirportService : updateAirport(airportId, airportRequestModel)
     activate AirportService
 
     AirportService -> AirportRepository : Find airport by ID
     activate AirportRepository
     AirportRepository -> Database : SELECT * FROM airports WHERE id = airportId
     activate Database
-    Database --> AirportRepository : Airport found
+    Database --> AirportRepository : Airport data
     deactivate Database
-    AirportRepository --> AirportService : Airport entity
+
+    alt airportId found
+        AirportRepository --> AirportService : airportEntity
+        AirportService -> AirportEntity : Update entity with request model
+        AirportEntity --> AirportService : Updated entity
+        AirportService -> AirportRepository : Save updated entity
+        AirportRepository --> AirportService : Updated airportEntity
+        AirportService -> AirportResponseModel : Create response model
+        AirportResponseModel --> AirportService : airportResponseModel
+        AirportService --> AirportController : airportResponseModel
+        AirportController --> AirportsPage : Airport updated successfully
+    else airportId not found
+        AirportRepository --> AirportService : Null
+        AirportService --> AirportController : NotFoundException
+        AirportController --> AirportsPage : Display error: Airport ID not found
+    end
     deactivate AirportRepository
-
-    AirportService -> AirportEntity : Update entity with request model data
-    activate AirportEntity
-    AirportEntity --> AirportService : Updated airport entity
-    deactivate AirportEntity
-
-    AirportService -> AirportRepository : Save updated airport entity
-    activate AirportRepository
-    AirportRepository -> Database : UPDATE airports SET ...
-    Database --> AirportRepository : Success
-    deactivate Database
-    AirportRepository --> AirportService : Updated airport entity
-    deactivate AirportRepository
-
-    AirportService -> AirportResponseModel : Map entity to response model
-    activate AirportResponseModel
-    AirportResponseModel --> AirportService : Response model ready
-    deactivate AirportResponseModel
-
-    AirportService --> AirportController : AirportResponseModel
     deactivate AirportService
-    AirportController --> AirportsPage : Airport updated successfully
     deactivate AirportController
 end
+
+
 
 == Delete Airport ==
 opt Delete Airport
@@ -144,23 +132,24 @@ opt Delete Airport
     activate AirportRepository
     AirportRepository -> Database : SELECT * FROM airports WHERE id = airportId
     activate Database
-    Database --> AirportRepository : Airport found
+    Database --> AirportRepository : Airport data
     deactivate Database
-    AirportRepository --> AirportService : Airport entity
-    deactivate AirportRepository
 
-    AirportService -> AirportRepository : Delete airport by ID
-    activate AirportRepository
-    AirportRepository -> Database : DELETE FROM airports WHERE id = airportId
-    Database --> AirportRepository : Success
-    deactivate Database
-    AirportRepository --> AirportService : Deletion confirmed
+    alt airportId found
+        AirportRepository --> AirportService : airportEntity
+        AirportService -> AirportRepository : Delete airportEntity
+        AirportRepository --> AirportService : Deletion success
+        AirportService --> AirportController : Deletion confirmation
+        AirportController --> AirportsPage : Airport deleted successfully
+    else airportId not found
+        AirportRepository --> AirportService : Null
+        AirportService --> AirportController : NotFoundException
+        AirportController --> AirportsPage : Display error: Airport ID not found
+    end
     deactivate AirportRepository
-
-    AirportService --> AirportController : Deletion success
     deactivate AirportService
-    AirportController --> AirportsPage : Airport deleted successfully
     deactivate AirportController
 end
+
 
 @enduml
