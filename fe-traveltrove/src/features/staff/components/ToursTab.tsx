@@ -7,6 +7,7 @@ import TourPackagesTab from "./TourPackagesTab";
 import "../../../shared/css/Scrollbar.css";
 import { useTranslation } from "react-i18next";
 
+
 const ToursTab: React.FC = () => {
   const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour } = useToursApi();
 
@@ -79,7 +80,10 @@ const ToursTab: React.FC = () => {
   return (
     <div>
       {viewingTour ? (
-        <div>
+        <div
+          className="dashboard-scrollbar"
+          style={{ maxHeight: "700px", overflowY: "auto" }}
+        >
           <Button
             variant="link"
             className="text-primary mb-3"
