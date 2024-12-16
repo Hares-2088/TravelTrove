@@ -2,7 +2,7 @@ import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 import {
   TourEventRequestModel,
   TourEventResponseModel,
-} from "../model/tourevents.model";
+} from '../../tourEvents/model/tourevents.model.ts';
 
 // Utility function to parse event-stream data
 const parseEventStream = (data: string): TourEventResponseModel[] => {

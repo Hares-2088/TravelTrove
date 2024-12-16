@@ -24,8 +24,8 @@ Deployment_Node(CloudProvider, "Cloud Provider", "AWS or similar", $sprite="amaz
         Container(api_app, "API Application", "Java, Spring Boot", "Handles business logic and API interactions", $sprite="java")
     }
 
-    Deployment_Node(DatabaseServer, "Database Server", "MongoDB Atlas") {
-        ContainerDb(database, "MongoDB Database", "MongoDB", "Stores all travel agency data", $sprite="mongodb")
+    Deployment_Node(DatabaseServer, "Database Server", "MySQL Atlas") {
+        ContainerDb(database, "MySQL Database", "MySQL", "Stores all travel agency data", $sprite="mysql")
     }
 
 }
@@ -56,7 +56,7 @@ Rel(employee, spa, "Interacts with", "API Client")
 
 Rel(spa, api_app, "Interacts with", "HTTPS")
 Rel(web_app, spa, "Routes requests to", "HTTPS")
-Rel(api_app, database, "Reads/Writes data to", "MongoDB Queries")
+Rel(api_app, database, "Reads/Writes data to", "MySQL Queries")
 Rel(api_app, Auth0, "Authenticates via", "OAuth 2.0/JWT")
 Rel(api_app, Stripe, "Processes payments through", "HTTPS API")
 Rel(api_app, GmailAPI, "Sends emails through", "HTTPS API")
