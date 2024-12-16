@@ -56,10 +56,26 @@ entity "Bookings" as Bookings {
     bookingId: String <<Unique>>
     userId: String <<FK>>
     packageId: String <<FK>>
-    refundId:String <<FK>>
+    refundId: String <<FK>>
     bookingDate: DateTime
     totalAmount: Decimal
     status: String
+}
+
+entity "Traveler" as Traveler {
+    + _id: ObjectId
+    --
+    travelerId: String <<Unique>>
+    seq: Integer
+    firstName: String
+    lastName: String
+    addressLine1: String
+    addressLine2: String
+    city: String
+    state: String
+    email: String
+    countryId: String <<FK>>
+    userId: String <<FK>> <<Optional>>
 }
 
 entity "Refunds" as Refunds {
@@ -150,16 +166,6 @@ entity "TourEvents" as TourEvents {
     hotelId: String <<FK>>
 }
 
-'entity "EventImages" as EventImages {
-'    + _id: ObjectId
-'    --
-'    eventImageId: String <<Unique>>
-'    eventId: String <<FK>>
-'    seq: Integer
-'    imagePath: String
-'    description: String
-'}
-
 ' Relationships
 Users ||--o{ Bookings : "1:N"
 Users ||--o{ Reviews : "1:N"
@@ -169,7 +175,6 @@ Bookings ||--|| Payments : "1:1"
 Cities ||--o{ Hotels : "1:N"
 Cities ||--o{ Airports : "1:N"
 Countries ||--o{ Cities : "1:N"
-'Events ||--o{ EventImages : "1:N"
 Cities ||--o{ Events : "1:N"
 TourPackages ||--o{ Airports : "1:1"
 TourPackages ||--o{ TourEvents : "1:N"
@@ -177,6 +182,7 @@ TourEvents ||--o{ Events : "1:N"
 TourEvents ||--o{ Hotels : "1:M"
 "Bookings" ||--o{ "Refunds" : "1:N"
 Travelers ||--o{ Countries : "1:1"
-
+Traveler }o--o| Users : "Optional"
+Traveler ||--o{ Bookings : "1:N"
 
 @enduml
