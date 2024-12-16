@@ -1,0 +1,90 @@
+@startuml
+title Standalone Class Diagram for TourEvents
+
+package "toureventsubdomain" {
+
+
+    package "businesslayer" {
+        interface TourEventService {
+            + getAllTourEvents() : Flux<TourEventResponseModel>
+            + getTourEventById(tourEventId: String) : Mono<TourEventResponseModel>
+            + addTourEvent(tourEvent: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + updateTourEvent(tourEventId: String, tourEventRequestModel: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + deleteTourEvent(tourEventId: String) : Mono<Void>
+        }
+
+        class TourEventServiceImpl {
+            - tourEventRepository: TourEventRepository
+            + getAllTourEvents() : Flux<TourEventResponseModel>
+            + getTourEventById(tourEventId: String) : Mono<TourEventResponseModel>
+            + addTourEvent(tourEvent: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + updateTourEvent(tourEventId: String, tourEventRequestModel: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + deleteTourEvent(tourEventId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class TourEvent {
+            + _id: ObjectId
+            + tourEventId: String
+            + seq: Integer
+            + seqDesc: String
+            + tourId: String
+            + eventId: String
+            + hotelId: String
+        }
+
+        interface TourEventRepository extends ReactiveMongoRepository {
+            + findTourEventByTourEventId(tourEventId: String) : Mono<TourEvent>
+            + findAll() : Flux<TourEvent>
+        }
+    }
+
+    package "presentationlayer" {
+        class TourEventRequestModel {
+            + seq: Integer
+            + seqDesc: String
+            + tourId: String
+            + eventId: String
+        }
+
+        class TourEventResponseModel {
+            + tourEventId: String
+            + seq: Integer
+            + seqDesc: String
+            + tourId: String
+            + eventId: String
+        }
+
+        class TourEventController {
+            - tourEventService: TourEventService
+            + getAllTourEvents() : Flux<TourEventResponseModel>
+            + getTourEventById(tourEventId: String) : Mono<ResponseEntity<TourEventResponseModel>>
+            + addTourEvent(tourEventRequestModel: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + updateTourEvent(tourEventId: String, tourEventRequestModel: TourEventRequestModel) : Mono<ResponseEntity<TourEventResponseModel>>
+            + deleteTourEvent(tourEventId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toTourEventResponseModel(tourEvent: TourEvent) : TourEventResponseModel
+            + toTourEventEntity(tourEventRequestModel: TourEventRequestModel) : TourEvent
+            + generateUUIDString() : String
+        }
+    }
+
+    TourEventServiceImpl -down-|> TourEventService : implements
+    TourEventServiceImpl -down-> TourEventRepository : uses
+    TourEventController -down-> TourEventService : uses
+    TourEventController -down-> TourEventRequestModel : uses
+    TourEventController -down-> TourEventResponseModel : uses
+    TourEventServiceImpl -down-> TourEvent : manipulates
+    TourEventServiceImpl -down-> TourEventRequestModel : uses
+    TourEventServiceImpl -down-> TourEventResponseModel : returns
+    EntityModelUtil -up-^ TourEvent : converts
+    EntityModelUtil -up-^ TourEventRequestModel : maps
+    EntityModelUtil -up-^ TourEventResponseModel : maps
+}
+
+@enduml
