@@ -214,12 +214,16 @@ public class AirportControllerIntegrationTest {
 
     @Test
     public void whenDeleteAirport_thenAirportIsDeleted() {
+        // Perform delete operation
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/airports/" + airport1.getAirportId())
                 .exchange()
                 .expectStatus().isNoContent();
 
-
+        StepVerifier
+                .create(airportRepository.findById(airport1.getId()))
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -126,7 +127,7 @@ public class CityControllerIntegrationTest {
                 .countryId("3")
                 .build();
 
-        webTestClient.post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/cities")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newCity)
@@ -152,7 +153,7 @@ public class CityControllerIntegrationTest {
                 .countryId("3")
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/cities/{cityId}", city1.getCityId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCity)
@@ -171,7 +172,7 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenDeleteCity_thenReturnNoContent() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/cities/{cityId}", city1.getCityId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -187,7 +188,7 @@ public class CityControllerIntegrationTest {
                 .countryId("3")
                 .build();
 
-        webTestClient.put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/cities/{cityId}", INVALID_CITY_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCity)
@@ -197,7 +198,7 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenDeleteCity_withInvalidId_thenReturnNotFound() {
-        webTestClient.delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/cities/{cityId}", INVALID_CITY_ID)
                 .exchange()
                 .expectStatus().isNotFound();

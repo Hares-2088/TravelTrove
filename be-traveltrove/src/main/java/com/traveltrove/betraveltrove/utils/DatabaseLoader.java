@@ -16,6 +16,8 @@ import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
+import com.traveltrove.betraveltrove.dataaccess.user.User;
+import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -383,7 +385,6 @@ public class DatabaseLoader {
 
     }
 
-
     private final AirportRepository airportRepository;
     @PostConstruct
     public void loadAirports() {
@@ -693,6 +694,128 @@ public class DatabaseLoader {
                 .subscribe(
                         success -> log.info("Travelers preloaded successfully."),
                         error -> log.error("Error preloading travelers: {}", error.getMessage())
+                );
+    }
+
+    private final UserRepository userRepository;
+
+    @PostConstruct
+    public void loadUsers() {
+        List<User> sampleUsers = List.of(
+                // Admins
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f4a7b9a80612ce548e063")
+                        .email("amelia.clark@traveltrove.com")
+                        .firstName("Amelia")
+                        .lastName("Clark")
+                        .roles(List.of("admin"))
+                        .permissions(null)
+                        .travelerId("c69fa655-d480-48e4-8b66-0d54c1b2b46d")
+                        .build(),
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f4aa9e184fd643a8ed8fe")
+                        .email("liam.jones@traveltrove.com")
+                        .firstName("Liam")
+                        .lastName("Jones")
+                        .roles(List.of("admin"))
+                        .permissions(null)
+                        .travelerId("b3904b84-9cd3-46ca-bcf3-f2206411a842")
+                        .build(),
+
+                // Employees
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f4af1e184fd643a8ed900")
+                        .email("oliver.smith@traveltrove.com")
+                        .firstName("Oliver")
+                        .lastName("Smith")
+                        .roles(List.of("employee"))
+                        .permissions(null)
+                        .travelerId("9e96ca09-1048-4e7e-b246-51ddfd556e14")
+                        .build(),
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f4b169a80612ce548e066")
+                        .email("emma.brown@traveltrove.com")
+                        .firstName("Emma")
+                        .lastName("Brown")
+                        .roles(List.of("employee"))
+                        .permissions(null)
+                        .travelerId("2c2cfa3d-de07-42e8-930a-4e63ad39a2b1")
+                        .build(),
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f6ad19a80612ce548e0a5")
+                        .email("william.taylor@traveltrove.com")
+                        .firstName("William")
+                        .lastName("Taylor")
+                        .roles(List.of("employee"))
+                        .permissions(null)
+                        .travelerId("2a75f97e-f77b-468c-83cd-c9340283a125")
+                        .build(),
+
+                // Customers
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .email("sophia.johnson@example.com")
+                        .firstName("Sophia")
+                        .lastName("Johnson")
+                        .roles(List.of("customer"))
+                        .permissions(null)
+                        .travelerId("ec1c67c8-af60-4956-a84a-fa569897a065")
+                        .build(),
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f4b619a80612ce548e068")
+                        .email("james.williams@example.com")
+                        .firstName("James")
+                        .lastName("Williams")
+                        .roles(List.of("customer"))
+                        .permissions(null)
+                        .travelerId("7491755b-1904-4432-96f6-d7c14d3d1532")
+                        .build(),
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f4b7ae184fd643a8ed902")
+                        .email("ava.davis@example.com")
+                        .firstName("Ava")
+                        .lastName("Davis")
+                        .roles(List.of("customer"))
+                        .permissions(null)
+                        .travelerId("fd96c9f3-1429-4a32-b8f1-033fdd4aa0eb")
+                        .build(),
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f4b9d9a80612ce548e069")
+                        .email("mason.miller@example.com")
+                        .firstName("Mason")
+                        .lastName("Miller")
+                        .roles(List.of("customer"))
+                        .permissions(null)
+                        .travelerId("565ac69b-5022-42d7-89f4-e031f67da710")
+                        .build(),
+                User.builder()
+                        .id(null)
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .email("mia.moore@example.com")
+                        .firstName("Mia")
+                        .lastName("Moore")
+                        .roles(List.of("customer"))
+                        .permissions(null)
+                        .travelerId("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31")
+                        .build()
+        );
+
+        userRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleUsers))
+                .flatMap(userRepository::save)
+                .doOnNext(user -> log.info("Preloaded user: {}", user))
+                .subscribe(
+                        success -> log.info("Users preloaded successfully."),
+                        error -> log.error("Error preloading users: {}", error.getMessage())
                 );
     }
 }

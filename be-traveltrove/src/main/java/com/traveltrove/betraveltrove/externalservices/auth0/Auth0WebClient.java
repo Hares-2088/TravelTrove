@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.externalservices.auth0;
 
 import com.traveltrove.betraveltrove.externalservices.auth0.models.*;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -67,14 +68,16 @@ public class Auth0WebClient implements Auth0Service {
         log.info("Fetching Auth0 User Details for User ID: {}", auth0UserId);
 
         return getAccessToken()
-                .flatMap(token -> {
-                    Mono<Auth0UserResponseModel> userMono = fetchUser(auth0UserId, token);
+                .flatMap(token -> Mono.defer(() -> {
+                    Mono<Auth0UserResponseModel> userMono = fetchUser(auth0UserId, token)
+                            .switchIfEmpty(Mono.error(new NotFoundException("User Not Found in Auth0: " + auth0UserId)));
+
                     Flux<Auth0RoleResponseModel> rolesFlux = fetchRoles(auth0UserId, token);
                     Flux<Auth0PermissionResponseModel> permissionsFlux = fetchPermissions(auth0UserId, token);
 
                     return Mono.zip(userMono, rolesFlux.collectList(), permissionsFlux.collectList())
                             .map(tuple -> mapToUserResponseModel(auth0UserId, tuple.getT1(), tuple.getT2(), tuple.getT3()));
-                })
+                }))
                 .doOnSuccess(user -> log.info("Successfully Retrieved User Response: {}", user))
                 .doOnError(error -> log.error("Failed to retrieve user by ID {}", auth0UserId, error));
     }
@@ -86,6 +89,7 @@ public class Auth0WebClient implements Auth0Service {
                 .retrieve()
                 .bodyToMono(Auth0UserResponseModel.class)
                 .doOnSuccess(user -> log.info("Fetched Auth0 User with ID {}: {}", auth0UserId, user))
+                .switchIfEmpty(Mono.error(new NotFoundException("User Not Found in Auth0: " + auth0UserId)))
                 .doOnError(error -> log.error("Failed to fetch Auth0 User with ID: {}", auth0UserId, error));
     }
 
@@ -129,6 +133,7 @@ public class Auth0WebClient implements Auth0Service {
                 .permissions(permissionNames)
                 .build();
     }
+
 
     @Override
     public Mono<Void> assignRoleToUser(String auth0UserId, String roleName) {

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -187,13 +188,16 @@ class CountryControllerIntegrationTest {
 
     @Test
     void whenGetCountryById_withNonExistingId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).get()
-                .uri("/api/v1/countries/{countryId}", "non-existing-id")
-                .accept(MediaType.APPLICATION_JSON)
+        webTestClient
+                .mutateWith(SecurityMockServerConfigurers.mockUser()
+                        .authorities(new SimpleGrantedAuthority("read:country")))
+                .get()
+                .uri("/api/v1/countries/non-existing-id")
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
                 .jsonPath("$.message").isEqualTo("Country id not found: non-existing-id");
+
     }
 
 }
