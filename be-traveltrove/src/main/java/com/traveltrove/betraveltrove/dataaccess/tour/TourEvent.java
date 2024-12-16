@@ -20,6 +20,7 @@ public class TourEvent {
     private String seqDesc;
     private String tourId;
     private String eventId;
+    private String hotelId;
 
 
 }

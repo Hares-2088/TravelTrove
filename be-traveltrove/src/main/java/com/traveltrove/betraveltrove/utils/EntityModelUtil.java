@@ -78,6 +78,7 @@ public class EntityModelUtil {
                 .seqDesc(tourEventRequestModel.getSeqDesc())
                 .tourId(tourEventRequestModel.getTourId())
                 .eventId(tourEventRequestModel.getEventId())
+                .hotelId(tourEventRequestModel.getHotelId())
                 .build();
     }
 

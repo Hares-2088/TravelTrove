@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import { useTourEventsApi } from '../../tourevents/api/tourevent.api';
+import { useTourEventsApi } from '../../tourEvents/api/tourevent.api';
 import { useEventsApi } from "../../events/api/events.api";
+import { useHotelsApi } from "../../hotels/api/hotels.api";
 import { useTranslation } from 'react-i18next';
 import {
   TourEventRequestModel,
   TourEventResponseModel,
-} from "../../tourevents/model/tourevents.model";
+} from "../../tourEvents/model/tourevents.model";
 import "../../../shared/css/Scrollbar.css";
 
 interface EventResponseModel {
   eventId: string;
+  name: string;
+}
+
+interface HotelResponseModel {
+  hotelId: string;
   name: string;
 }
 
@@ -28,9 +34,12 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
 
   const { getAllEvents } = useEventsApi();
 
+  const { getAllHotels } = useHotelsApi();
+
   const { t } = useTranslation(); // Initialize translation hook
   const [tourEvents, setTourEvents] = useState<TourEventResponseModel[]>([]);
   const [events, setEvents] = useState<EventResponseModel[]>([]);
+  const [hotels, setHotels] = useState<HotelResponseModel[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
@@ -42,15 +51,19 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     seq: 0,
     seqDesc: "",
     eventId: "",
+    hotelId: "",
   });
 
   const [seqError, setSeqError] = useState(false);
   const [seqDescError, setSeqDescError] = useState(false);
   const [eventIdError, setEventIdError] = useState(false);
+  const [hotelIdError, setHotelIdError] = useState(false);
+
 
   useEffect(() => {
     fetchTourEvents();
     fetchAllEvents();
+    fetchAllHotels();
   }, [tourId]);
 
   const fetchTourEvents = async () => {
@@ -74,29 +87,43 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     }
   };
 
+  const fetchAllHotels = async () => {
+    try {
+      const allHotels = await getAllHotels();
+      setHotels(allHotels);
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    }
+  };
+
   const handleSave = async () => {
     const isSeqValid = formData.seq > 0;
     const isSeqDescValid = formData.seqDesc.trim() !== "";
     const isEventIdValid = formData.eventId.trim() !== "";
-
+    const isHotelIdValid = formData.hotelId.trim() !== ""; // Validate hotelId
+  
     setSeqError(!isSeqValid);
     setSeqDescError(!isSeqDescValid);
     setEventIdError(!isEventIdValid);
-
-    if (!isSeqValid || !isSeqDescValid || !isEventIdValid) return;
-
+    setHotelIdError(!isHotelIdValid); // Set error state for hotelId
+  
+    if (!isSeqValid || !isSeqDescValid || !isEventIdValid || !isHotelIdValid) return;
+  
     try {
       if (modalType === "create") {
-        await addTourEvent(formData);
+        const highestSeq = Math.max(...tourEvents.map(event => event.seq), 0); // Get highest seq number
+        setFormData({ ...formData, seq: highestSeq + 1 }); // Set next seq value
+        await addTourEvent(formData); // Save new event with hotelId
       } else if (modalType === "update" && selectedEvent) {
-        await updateTourEvent(selectedEvent.tourEventId, formData);
+        await updateTourEvent(selectedEvent.tourEventId, formData); // Update existing event
       }
       setShowModal(false);
-      await fetchTourEvents();
+      await fetchTourEvents(); // Refresh the list after saving
     } catch (error) {
       console.error("Error saving tour event:", error);
     }
   };
+  
 
   const handleDelete = async () => {
     try {
@@ -115,6 +142,12 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     return event ? event.name : "Unknown Event";
   };
 
+
+  const getHotelNameById = (hotelId: string) => {
+    const hotel = hotels.find((h) => h.hotelId === hotelId);
+    return hotel ? hotel.name : "Unknown Hotel";
+  };
+
   return (
     <div className="tour-events-tab">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -125,9 +158,10 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
             setModalType("create");
             setFormData({
               tourId,
-              seq: tourEvents.length + 1,
+              seq: Math.max(...tourEvents.map(event => event.seq), 0) + 1,
               seqDesc: "",
               eventId: "",
+              hotelId: "",
             });
             setShowModal(true);
           }}
@@ -143,47 +177,52 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
               <th>{t("seqLabel")}</th>
               <th>{t("descLabel")}</th>
               <th>{t("eventLabel")}</th>
+              <th>{t("hotelLabel")}</th>
               <th>{t("actions")}</th>
             </tr>
           </thead>
           <tbody>
-            {tourEvents.map((event) => (
-              <tr key={event.tourEventId}>
-                <td>{event.seq}</td>
-                <td>{event.seqDesc}</td>
-                <td>{getEventNameById(event.eventId)}</td>
-                <td>
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => {
-                      setSelectedEvent(event);
-                      setModalType("update");
-                      setFormData({
-                        tourId,
-                        seq: event.seq,
-                        seqDesc: event.seqDesc,
-                        eventId: event.eventId,
-                      });
-                      setShowModal(true);
-                    }}
-                  >
-                    {t("editButton")}
-                  </Button>
+            {tourEvents
+              .sort((a, b) => a.seq - b.seq) // Sort by `seq` in ascending order
+              .map((event) => (
+                <tr key={event.tourEventId}>
+                  <td>{event.seq}</td>
+                  <td>{event.seqDesc}</td>
+                  <td>{getEventNameById(event.eventId)}</td>
+                  <td>{getHotelNameById(event.hotelId)}</td>
+                  <td>
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => {
+                        setSelectedEvent(event);
+                        setModalType("update");
+                        setFormData({
+                          tourId,
+                          seq: event.seq,
+                          seqDesc: event.seqDesc,
+                          eventId: event.eventId,
+                          hotelId: event.hotelId,
+                        });
+                        setShowModal(true);
+                      }}
+                    >
+                      {t("editButton")}
+                    </Button>
 
-                  <Button
-                    variant="outline-danger"
-                    className="ms-2"
-                    onClick={() => {
-                      setSelectedEvent(event);
-                      setModalType("delete");
-                      setShowModal(true);
-                    }}
-                  >
-                    {t("deleteButton")}
-                  </Button>
-                </td>
-              </tr>
-            ))}
+                    <Button
+                      variant="outline-danger"
+                      className="ms-2"
+                      onClick={() => {
+                        setSelectedEvent(event);
+                        setModalType("delete");
+                        setShowModal(true);
+                      }}
+                    >
+                      {t("deleteButton")}
+                    </Button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </Table>
       </div>
@@ -251,6 +290,30 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                 </Form.Select>
                 <div className="invalid-feedback">{t("invalidEvent")}</div>
               </Form.Group>
+
+
+              <Form.Group className="mb-3">
+                <Form.Label>{t("hotelLabel")}</Form.Label>
+                <Form.Select
+                  value={formData.hotelId}
+                  onChange={(e) => {
+                    setFormData({ ...formData, hotelId: e.target.value });
+                    setHotelIdError(false);
+                  }}
+                  isInvalid={hotelIdError}
+                  disabled={loading}
+                >
+                  <option value="">{t("selectHotel")}</option>
+                  {hotels.map((hotel) => (
+                    <option key={hotel.hotelId} value={hotel.hotelId}>
+                      {hotel.name}
+                    </option>
+                  ))}
+                </Form.Select>
+                <div className="invalid-feedback">{t("invalidHotel")}</div>
+              </Form.Group>
+
+
             </Form>
           )}
         </Modal.Body>
