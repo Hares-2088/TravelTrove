@@ -364,6 +364,7 @@ public class DatabaseLoader {
                         .seqDesc("Start at New York Summer Carnival")
                         .tourId("7f54a45d-8c1d-432f-a5c8-1f93b89bfe29")
                         .eventId("91c940b1-24e8-463f-96ef-f54f7e4aaf1d")
+                        .hotelId("d1e91f6c-723e-43b9-812f-2f3d3bfb4081")
                         .build(),
 
                 // Canadian Rockies Expedition
