@@ -20,6 +20,21 @@ entity "Users" as Users {
     role: Enum [Admin, Customer, Employee]
 }
 
+entity "Travelers" as Travelers {
+    + _id: ObjectId
+    --
+    travelerId: String <<Unique>>
+    seq: Integer
+    firstName: String
+    lastName: String
+    addressLine1: String
+    addressLine2: String
+    city: String
+    state: String
+    email: String
+    countryId: String <<FK>>
+}
+
 entity "TourPackages" as TourPackages {
     + _id: ObjectId
     --
@@ -161,5 +176,7 @@ TourPackages ||--o{ TourEvents : "1:N"
 TourEvents ||--o{ Events : "1:N"
 TourEvents ||--o{ Hotels : "1:M"
 "Bookings" ||--o{ "Refunds" : "1:N"
+Travelers ||--o{ Countries : "1:1"
+
 
 @enduml

@@ -41,6 +41,7 @@ Container_Boundary(api_app, "API Application") {
         Component(ReservationController, "Reservation Controller", "Spring REST Controller", "Handles HTTP requests related to reservations", $sprite="java")
         Component(StaffController, "Staff Controller", "Spring REST Controller", "Handles HTTP requests related to staff", $sprite="java")
         Component(AuthenticationController, "Authentication Controller", "Spring REST Controller", "Handles HTTP requests related to authentication", $sprite="java")
+        Component(TravelerController, "Traveler Controller", "Spring REST Controller", "Handles HTTP requests related to travelers", $sprite="java")
     }
 
     Container_Boundary(services, "Services") {
@@ -60,6 +61,7 @@ Container_Boundary(api_app, "API Application") {
         Component(AuthenticationService, "Authentication Service", "Spring Service", "Handles user authentication and authorization", $sprite="java")
         Component(ReservationService, "Reservation Service", "Spring Service", "Contains business logic for reservation-related operations", $sprite="java")
         Component(CustomerService, "Customer Service", "Spring Service", "Contains business logic for customer-related operations", $sprite="java")
+        Component(TravelerService, "Traveler Service", "Spring Service", "Contains business logic for traveler-related operations", $sprite="java")
 
     }
 
@@ -80,6 +82,7 @@ Container_Boundary(api_app, "API Application") {
         Component(ReservationRepo, "Reservation Repository", "MongoDB Repository", "Handles persistence of reservation data", $sprite="java")
         Component(CustomerRepo, "Customer Repository", "MongoDB Repository", "Handles persistence of customer data", $sprite="java")
         Component(TourRepo, "Tour Repository", "MongoDB Repository", "Handles persistence of tour data", $sprite="java")
+        Component(TravelerRepo, "Traveler Repository", "MongoDB Repository", "Handles persistence of traveler data", $sprite="java")
    }
 
     Rel(CustomerController, CustomerService, "Receives HTTP requests and forwards to", "REST API")
@@ -89,6 +92,7 @@ Container_Boundary(api_app, "API Application") {
     Rel(PaymentController, PaymentService, "Receives HTTP requests and forwards to", "REST API")
     Rel(StaffController, StaffService, "Receives HTTP requests and forwards to", "REST API")
     Rel(AuthenticationController, AuthenticationService, "Receives HTTP requests and forwards to", "REST API")
+    Rel(TravelerController, TravelerService, "Receives HTTP requests and forwards to", "REST API")
 
     Rel(EventController, EventService, "Receives HTTP requests and forwards to", "REST API")
     Rel(CityController, CityService, "Receives HTTP requests and forwards to", "REST API")
@@ -99,7 +103,6 @@ Container_Boundary(api_app, "API Application") {
     Rel(TourEventController, TourEventService, "Receives HTTP requests and forwards to", "REST API")
     Rel(BookingController, BookingService, "Receives HTTP requests and forwards to", "REST API")
     Rel(TourPackageController, TourPackageService, "Receives HTTP requests and forwards to", "REST API")
-
 
     Rel(CustomerService, CustomerRepo, "Uses to read/write customer data", "MySQL Queries")
     Rel(TourService, TourRepo, "Uses to read/write tour data", "MySQL Queries")
@@ -123,6 +126,8 @@ Container_Boundary(api_app, "API Application") {
     Rel(TourEventService, TourEventRepo, "Uses to read/write tour event data", "MySQL Queries")
     Rel(BookingService, BookingRepo, "Uses to read/write booking data", "MySQL Queries")
     Rel(TourPackageService, TourPackageRepo, "Uses to read/write tour package data", "MySQL Queries")
+    Rel(TravelerService, TravelerRepo, "Uses to read/write traveler data", "MongoDB Queries")
+
 
 
     Rel(ReservationService, CustomerService, "Fetches customer data for reservation creation", "HTTP API")
@@ -132,6 +137,7 @@ Container_Boundary(api_app, "API Application") {
     Rel(NotificationService, CustomerService, "Fetches customer contact details for sending notifications", "HTTP API")
     Rel(NotificationService, ReservationService, "Fetches reservation data for notification", "HTTP API")
     Rel(NotificationService, TourService, "Fetches tour data for sending notifications", "HTTP API")
+    Rel(TravelerService, CountryService, "Fetches country data for traveler", "HTTP API")
 
     Rel(AuthenticationService, CustomerService, "Verifies customer ownership", "HTTP API")
     Rel(AuthenticationService, StaffService, "Verifies staff roles and permissions", "HTTP API")
@@ -160,13 +166,15 @@ Container_Boundary(api_app, "API Application") {
 
 Container(mysql, "MySQL", "Database", "Stores all travel agency data", $tags = "storage", $sprite="mysql")
 
-Rel(CustomerRepo, mysql, "Reads/Writes customer data to", "MySQL Queries")
-Rel(TourRepo, mysql, "Reads/Writes tour data to", "MySQL Queries")
-Rel(ReservationRepo, mysql, "Reads/Writes reservation data to", "MySQL Queries")
-Rel(NotificationRepo, mysql, "Reads/Writes notification data to", "MySQL Queries")
-Rel(PaymentRepo, mysql, "Reads/Writes payment data to", "MySQL Queries")
-Rel(StaffRepo, mysql, "Reads/Writes staff data to", "MySQL Queries")
-Rel(AuthenticationRepo, mysql, "Reads/Writes user authentication data to", "MySQL Queries")
+Rel(CustomerRepo, mongoDB, "Reads/Writes customer data to", "MongoDB Queries")
+Rel(TourRepo, mongoDB, "Reads/Writes tour data to", "MongoDB Queries")
+Rel(ReservationRepo, mongoDB, "Reads/Writes reservation data to", "MongoDB Queries")
+Rel(NotificationRepo, mongoDB, "Reads/Writes notification data to", "MongoDB Queries")
+Rel(PaymentRepo, mongoDB, "Reads/Writes payment data to", "MongoDB Queries")
+Rel(StaffRepo, mongoDB, "Reads/Writes staff data to", "MongoDB Queries")
+Rel(AuthenticationRepo, mongoDB, "Reads/Writes user authentication data to", "MongoDB Queries")
+Rel(TravelerRepo, mongoDB, "Reads/Writes traveler data to", "MongoDB Queries")
+
 
 Container(spa, "Single-Page Application", "TypeScript, React", "Main interface for interacting with the Dar El Salam system", $sprite="react")
 Container(web_app, "Web Application", "TypeScript, React", "Delivers static content and main interface", $sprite="react")
@@ -188,6 +196,7 @@ Rel(web_app, UserController, "Makes HTTP requests for user operations", "HTTPS/J
 Rel(web_app, TourEventController, "Makes HTTP requests for tour event operations", "HTTPS/JSON")
 Rel(web_app, BookingController, "Makes HTTP requests for booking operations", "HTTPS/JSON")
 Rel(web_app, TourPackageController, "Makes HTTP requests for tour package operations", "HTTPS/JSON")
+Rel(web_app, TravelerController, "Makes HTTP requests for traveler operations", "HTTPS/JSON")
 
 
 System_Ext(Stripe, "Stripe", "External service for processing payments", $sprite="stripe")

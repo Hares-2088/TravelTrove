@@ -118,7 +118,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3>{t("packages")}</h3>
+                <h3>{t("Packages")}</h3>
                 <Button
                     variant="primary"
                     onClick={() => {
@@ -153,7 +153,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             <Table bordered hover responsive className="rounded">
                 <thead className="bg-light">
                     <tr>
-                        <th>{t("packageName")}</th>
+                        <th>{t("Name")}</th>
                         <th>{t("actions")}</th>
                     </tr>
                 </thead>
@@ -194,7 +194,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                         setShowModal(true);
                                     }}
                                 >
-                                    {t("editPackage")}
+                                    {t("Edit Package")}
                                 </Button>
                                 <Button
                                     variant="outline-danger"
@@ -205,7 +205,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                         setShowModal(true);
                                     }}
                                 >
-                                    {t("deletePackage")}
+                                    {t("Delete Package")}
                                 </Button>
                             </td>
                         </tr>
@@ -217,12 +217,12 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {modalType === "create"
-                            ? t("createPackage")
+                            ? t("Create Package")
                             : modalType === "update"
-                            ? t("editPackage")
+                            ? t("Edit Package")
                             : modalType === "delete"
-                            ? t("deletePackage")
-                            : t("viewPackage")}
+                            ? t("Delete Package")
+                            : t("View Package")}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
