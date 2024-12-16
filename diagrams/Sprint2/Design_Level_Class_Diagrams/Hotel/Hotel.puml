@@ -1,0 +1,86 @@
+@startuml
+title Hotel Subdomain Design Class Diagram
+
+package "hotelSubdomain" {
+
+    package "businesslayer" {
+        interface HotelService {
+            + getHotelByHotelId(hotelId: String) : Mono<HotelResponseModel>
+            + getHotels(cityId: String) : Flux<HotelResponseModel>
+            + createHotel(hotelRequestModel: Mono<HotelRequestModel>) : Mono<HotelResponseModel>
+            + updateHotel(hotelId: String, hotelRequestModel: Mono<HotelRequestModel>) : Mono<HotelResponseModel>
+            + deleteHotel(hotelId: String) : Mono<Void>
+        }
+
+        class HotelServiceImpl {
+            - hotelRepository: HotelRepository
+            + getHotelByHotelId(hotelId: String) : Mono<HotelResponseModel>
+            + getHotels(cityId: String) : Flux<HotelResponseModel>
+            + createHotel(hotelRequestModel: Mono<HotelRequestModel>) : Mono<HotelResponseModel>
+            + updateHotel(hotelId: String, hotelRequestModel: Mono<HotelRequestModel>) : Mono<HotelResponseModel>
+            + deleteHotel(hotelId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Hotel {
+            + id: String
+            + hotelId: String
+            + name: String
+            + cityId: String
+            + url: String
+        }
+
+        interface HotelRepository extends ReactiveMongoRepository {
+            + findHotelByHotelId(hotelId: String) : Mono<Hotel>
+            + findAllByCityId(cityId: String) : Flux<Hotel>
+            + findAll() : Flux<Hotel>
+        }
+    }
+
+    package "presentationlayer" {
+        class HotelRequestModel {
+            + name: String
+            + cityId: String
+            + url: String
+        }
+
+        class HotelResponseModel {
+            + hotelId: String
+            + name: String
+            + cityId: String
+            + url: String
+        }
+
+        class HotelController {
+            - hotelService: HotelService
+            + getHotels(cityId: String) : Flux<HotelResponseModel>
+            + getHotelByHotelId(hotelId: String) : Mono<ResponseEntity<HotelResponseModel>>
+            + createHotel(hotelRequestModel: Mono<HotelRequestModel>) : Mono<ResponseEntity<HotelResponseModel>>
+            + updateHotel(hotelId: String, hotelRequestModel: Mono<HotelRequestModel>) : Mono<ResponseEntity<HotelResponseModel>>
+            + deleteHotel(hotelId: String) : Mono<ResponseEntity<Void>>
+        }
+    }
+
+    package "utils" {
+        class HotelEntityModel {
+            + toHotelResponseModel(hotel: Hotel) : HotelResponseModel
+            + toHotelEntity(hotelRequestModel: HotelRequestModel) : Hotel
+            + generateUUIDString() : String
+        }
+    }
+
+    HotelServiceImpl -down-|> HotelService : implements
+    HotelServiceImpl -down-> HotelRepository : uses
+    HotelController -down-> HotelService : uses
+    HotelController -down-> HotelRequestModel : uses
+    HotelController -down-> HotelResponseModel : uses
+    HotelServiceImpl -down-> Hotel : manipulates
+    HotelServiceImpl -down-> HotelRequestModel : uses
+    HotelServiceImpl -down-> HotelResponseModel : returns
+    HotelEntityModel -up-^ Hotel : converts
+    HotelEntityModel -up-^ HotelRequestModel : maps
+    HotelEntityModel -up-^ HotelResponseModel : maps
+}
+
+@enduml

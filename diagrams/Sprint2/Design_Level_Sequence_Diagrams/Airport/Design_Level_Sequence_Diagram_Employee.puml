@@ -1,0 +1,155 @@
+@startuml
+title Airport Management Sequence Diagram for Employee
+
+actor Employee as "<<Actor>>\nEmployee"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant AirportsPage as "<<View>>\nAirportsPage"
+participant AirportController as "<<Controller>>\nAirportController"
+participant AirportService as "<<Service>>\nAirportService"
+participant AirportEntity as "<<Entity>>\nAirportEntity"
+participant AirportRepository as "<<Repository>>\nAirportRepository"
+participant Database as "<<Database>>"
+participant AirportResponseModel as "<<Model>>\nAirportResponseModel"
+
+== Retrieve All Airports ==
+Employee -> ReactApplication : Access Airports Page
+activate ReactApplication
+
+ReactApplication -> AirportsPage : render()
+activate AirportsPage
+deactivate ReactApplication
+
+AirportsPage -> AirportController : GET /api/v1/airports
+activate AirportController
+
+AirportController -> AirportService : getAllAirports()
+activate AirportService
+
+AirportService -> AirportRepository : findAll()
+activate AirportRepository
+
+AirportRepository -> Database : SELECT * FROM airports
+activate Database
+Database --> AirportRepository : List of airports
+deactivate Database
+
+AirportRepository --> AirportService : airportEntities
+deactivate AirportRepository
+
+AirportService -> AirportResponseModel : Map entities to response models
+activate AirportResponseModel
+AirportResponseModel --> AirportService : Response models ready
+deactivate AirportResponseModel
+
+AirportService --> AirportController : List of AirportResponseModels
+deactivate AirportService
+
+AirportController --> AirportsPage : Display airports list
+deactivate AirportController
+
+== Add New Airport ==
+opt Add New Airport
+    Employee -> AirportsPage : Fill airport form and submit
+    AirportsPage -> AirportController : POST /api/v1/airports
+    activate AirportController
+
+    AirportController -> AirportService : saveAirport(airportRequestModel)
+    activate AirportService
+
+    AirportService -> AirportEntity : Instantiate from request model
+    activate AirportEntity
+    AirportEntity --> AirportService : Entity created
+    deactivate AirportEntity
+
+    AirportService -> AirportRepository : save(airportEntity)
+    activate AirportRepository
+    AirportRepository -> Database : INSERT INTO airports
+    activate Database
+    Database --> AirportRepository : Success
+    deactivate Database
+    AirportRepository --> AirportService : Saved airport
+    deactivate AirportRepository
+
+    AirportService -> AirportResponseModel : Create response model from entity
+    activate AirportResponseModel
+    AirportResponseModel --> AirportService : Response ready
+    deactivate AirportResponseModel
+
+    AirportService --> AirportController : airportResponseModel
+    deactivate AirportService
+    AirportController --> AirportsPage : Airport added successfully
+    deactivate AirportController
+end
+
+opt Update Airport
+    Employee -> AirportsPage : Edit airport form and submit
+    AirportsPage -> AirportController : PUT /api/v1/airports/{airportId}
+    activate AirportController
+
+    AirportController -> AirportService : updateAirport(airportId, airportRequestModel)
+    activate AirportService
+
+    AirportService -> AirportRepository : Find airport by ID
+    activate AirportRepository
+    AirportRepository -> Database : SELECT * FROM airports WHERE id = airportId
+    activate Database
+    Database --> AirportRepository : Airport data
+    deactivate Database
+
+    alt airportId found
+        AirportRepository --> AirportService : airportEntity
+        AirportService -> AirportEntity : Update entity with request model
+        AirportEntity --> AirportService : Updated entity
+        AirportService -> AirportRepository : Save updated entity
+        AirportRepository --> AirportService : Updated airportEntity
+        AirportService -> AirportResponseModel : Create response model
+        AirportResponseModel --> AirportService : airportResponseModel
+        AirportService --> AirportController : airportResponseModel
+        AirportController --> AirportsPage : Airport updated successfully
+    else airportId not found
+        AirportRepository --> AirportService : Null
+        AirportService --> AirportController : NotFoundException
+        AirportController --> AirportsPage : Display error: Airport ID not found
+    end
+    deactivate AirportRepository
+    deactivate AirportService
+    deactivate AirportController
+end
+
+
+
+== Delete Airport ==
+opt Delete Airport
+    Employee -> AirportsPage : Select airport to delete
+    AirportsPage -> AirportController : DELETE /api/v1/airports/{airportId}
+    activate AirportController
+
+    AirportController -> AirportService : deleteAirport(airportId)
+    activate AirportService
+
+    AirportService -> AirportRepository : Find airport by ID
+    activate AirportRepository
+    AirportRepository -> Database : SELECT * FROM airports WHERE id = airportId
+    activate Database
+    Database --> AirportRepository : Airport data
+    deactivate Database
+
+    alt airportId found
+        AirportRepository --> AirportService : airportEntity
+        AirportService -> AirportRepository : Delete airportEntity
+        AirportRepository --> AirportService : Deletion success
+        AirportService --> AirportController : Deletion confirmation
+        AirportController --> AirportsPage : Airport deleted successfully
+    else airportId not found
+        AirportRepository --> AirportService : Null
+        AirportService --> AirportController : NotFoundException
+        AirportController --> AirportsPage : Display error: Airport ID not found
+    end
+    deactivate AirportRepository
+    deactivate AirportService
+    deactivate AirportController
+end
+
+
+@enduml
