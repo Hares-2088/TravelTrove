@@ -8,58 +8,16 @@ skinparam entity {
 }
 
 ' Entities
-entity "Users" as Users {
+entity "User" as User {
     + _id: ObjectId
     --
-    userId: String <<Unique>>
-    firstName: String
-    lastName: String
-    email: String <<Unique>>
-    password: String
-    phoneNumber: String
-    role: Enum [Admin, Customer, Employee]
-}
-
-entity "Travelers" as Travelers {
-    + _id: ObjectId
-    --
-    travelerId: String <<Unique>>
-    seq: Integer
-    firstName: String
-    lastName: String
-    addressLine1: String
-    addressLine2: String
-    city: String
-    state: String
-    email: String
-    countryId: String <<FK>>
-}
-
-entity "TourPackages" as TourPackages {
-    + _id: ObjectId
-    --
-    packageId: String <<Unique>>
-    name: String
-    description: String
-    startDate: DateTime
-    endDate: DateTime
-    priceForOne: Decimal
-    priceForTwo: Decimal
-    priceForThree: Decimal
-    airportId: String <<FK>>
-    tourId: String <<FK>>
-}
-
-entity "Bookings" as Bookings {
-    + _id: ObjectId
-    --
-    bookingId: String <<Unique>>
-    userId: String <<FK>>
-    packageId: String <<FK>>
-    refundId: String <<FK>>
-    bookingDate: DateTime
-    totalAmount: Decimal
-    status: String
+      userId: String <<Unique>>
+      email: String <<Unique>>
+      firstName: String
+      lastName: String
+      roles: List<String>
+      permissions: List<String>
+      travelerId: String <<Optional FK>>
 }
 
 entity "Traveler" as Traveler {
@@ -76,30 +34,55 @@ entity "Traveler" as Traveler {
     email: String
     countryId: String <<FK>>
     userId: String <<FK>> <<Optional>>
+    bookingId: String <<FK>>
 }
 
-entity "Refunds" as Refunds {
+entity "Tour" as Tour {
     + _id: ObjectId
     --
-    refundId: String <<Unique>>
-    bookingId: String <<FK>>
-    userID: String <<FK>>
-    refundedAmount: Decimal
-    totalTransactionAmount: Decimal
+    tourId: String <<Unique>>
+    name: String
+    description: String
 }
 
-entity "Payments" as Payments {
+entity "Package" as Package {
+    + _id: ObjectId
+    --
+    packageId: String <<Unique>>
+    name: String
+    description: String
+    startDate: DateTime
+    endDate: DateTime
+    priceForOne: Decimal
+    priceForTwo: Decimal
+    priceForThree: Decimal
+    airportId: String <<FK>>
+    tourId: String <<FK>>
+}
+
+entity "Booking" as Booking {
+    + _id: ObjectId
+    --
+    bookingId: String <<Unique>>
+    userId: String <<FK>> "User who made the booking"
+    packageId: String <<FK>> "Package being booked"
+    bookingDate: DateTime
+    totalPrice: Decimal
+    status: String
+}
+
+entity "Payment" as Payment {
     + _id: ObjectId
     --
     paymentId: String <<Unique>>
     bookingId: String <<FK>>
     stripePaymentId: String <<Unique>>
     paymentDate: DateTime
-    amount: Decimal
+    price: Decimal
     status: String
 }
 
-entity "Reviews" as Reviews {
+entity "Review" as Review {
     + _id: ObjectId
     --
     reviewId: String <<Unique>>
@@ -111,7 +94,7 @@ entity "Reviews" as Reviews {
     reviewDate: DateTime
 }
 
-entity "Hotels" as Hotels {
+entity "Hotel" as Hotel {
     + _id: ObjectId
     --
     hotelId: String <<Unique>>
@@ -122,7 +105,7 @@ entity "Hotels" as Hotels {
     hotelUrl: String
 }
 
-entity "Airports" as Airports {
+entity "Airport" as Airport {
     + _id: ObjectId
     --
     airportId: String <<Unique>>
@@ -130,7 +113,7 @@ entity "Airports" as Airports {
     cityId: String <<FK>>
 }
 
-entity "Cities" as Cities {
+entity "City" as City {
     + _id: ObjectId
     --
     cityId: String <<Unique>>
@@ -138,7 +121,7 @@ entity "Cities" as Cities {
     countryId: String <<FK>>
 }
 
-entity "Countries" as Countries {
+entity "Country" as Country {
     + _id: ObjectId
     --
     countryId: String <<Unique>>
@@ -146,7 +129,7 @@ entity "Countries" as Countries {
     imagePath: String
 }
 
-entity "Events" as Events {
+entity "Event" as Event {
     + _id: ObjectId
     --
     eventId: String <<Unique>>
@@ -155,7 +138,7 @@ entity "Events" as Events {
     cityId: String <<FK>>
 }
 
-entity "TourEvents" as TourEvents {
+entity "TourEvent" as TourEvent {
     + _id: ObjectId
     --
     tourEventId: String <<Unique>>
@@ -167,22 +150,22 @@ entity "TourEvents" as TourEvents {
 }
 
 ' Relationships
-Users ||--o{ Bookings : "1:N"
-Users ||--o{ Reviews : "1:N"
-TourPackages ||--o{ Bookings : "1:N"
-TourPackages ||--o{ Reviews : "1:N"
-Bookings ||--|| Payments : "1:1"
-Cities ||--o{ Hotels : "1:N"
-Cities ||--o{ Airports : "1:N"
-Countries ||--o{ Cities : "1:N"
-Cities ||--o{ Events : "1:N"
-TourPackages ||--o{ Airports : "1:1"
-TourPackages ||--o{ TourEvents : "1:N"
-TourEvents ||--o{ Events : "1:N"
-TourEvents ||--o{ Hotels : "1:M"
-"Bookings" ||--o{ "Refunds" : "1:N"
-Travelers ||--o{ Countries : "1:1"
-Traveler }o--o| Users : "Optional"
-Traveler ||--o{ Bookings : "1:N"
-
+User ||--o{ Booking : "1:M"
+User ||--o{ Review : "1:M"
+Package ||--o{ Booking : "1:M"
+Package ||--o{ Review : "1:M"
+Package ||--o{ Tour : "1:1"
+Booking ||--|| Payment : "1:1"
+City ||--o{ Hotel : "1:M"
+City ||--o{ Airport : "1:M"
+Country ||--o{ City : "1:M"
+City ||--o{ Event : "1:M"
+Package ||--o{ Airport : "1:1"
+Package ||--o{ TourEvent : "1:M"
+TourEvent ||--o{ Event : "1:M"
+TourEvent ||--o{ Hotel : "1:M"
+Traveler ||--|| Country : "1:1"
+Traveler ||--o{ Booking : "1:M"
+Traveler }o--o| User : "Optional"
+"Tour" ||--o{ "TourEvent" : "1:M"
 @enduml
