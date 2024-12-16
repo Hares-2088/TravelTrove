@@ -35,7 +35,7 @@ test("add a package to a tour and then delete it", async ({ page }) => {
     await page.getByRole('cell', { name: 'Adem is having fun' }).click();
     await expect(page.getByText('packageName: Adem is having funpackageDescription: yes i really dostartDate:')).toBeVisible();
     await page.getByLabel('Close').click();
-    await page.getByRole('button', { name: 'deletePackage' }).nth(1).click();
+    await page.getByRole('button', { name: 'Delete Package' }).nth(1).click();
     await page.getByRole('button', { name: 'Confirm' }).click();
 
     await page.close();
@@ -56,12 +56,12 @@ test("edit a package for a tour", async ({ page }) => {
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     await page.getByRole('link', { name: 'Dashboard' }).click();
     await page.getByRole('cell', { name: 'Grand American Adventure' }).click();
-    await page.getByRole('button', { name: 'editPackage' }).click();
+    await page.getByRole('button', { name: 'Edit Package' }).click();
     await page.locator('input[type="text"]').click();
     await page.locator('input[type="text"]').fill('New York Adventure Package2');
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('cell', { name: 'New York Adventure Package2' })).toBeVisible();
-    await page.getByRole('button', { name: 'editPackage' }).click();
+    await page.getByRole('button', { name: 'Edit Package' }).click();
     await page.locator('input[type="text"]').click();
     await page.locator('input[type="text"]').fill('New York Adventure Package');
     await page.getByRole('button', { name: 'Save' }).click();
