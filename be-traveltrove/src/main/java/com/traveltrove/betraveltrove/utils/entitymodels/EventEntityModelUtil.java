@@ -7,7 +7,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.UUID;
 
-public class EventEntityModel {
+public class EventEntityModelUtil {
 
     // Method to convert an Event entity to an EventResponseModel
     public static EventResponseModel toEventResponseModel(Event event) {
