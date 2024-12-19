@@ -23,3 +23,4 @@ public class BookingResponseModel {
 
     private LocalDate bookingDate;
 }
+

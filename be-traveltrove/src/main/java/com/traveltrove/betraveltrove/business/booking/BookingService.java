@@ -18,8 +18,6 @@ public interface BookingService {
 
     Mono<BookingResponseModel> createBooking(BookingRequestModel bookingRequestModel);
 
-    Mono<BookingResponseModel> updateBooking(String bookingId, BookingRequestModel bookingRequestModel);
-
     // a method for each status transition
     Mono<BookingResponseModel> confirmBooking(String bookingId);
     Mono<BookingResponseModel> paymentPending(String bookingId);

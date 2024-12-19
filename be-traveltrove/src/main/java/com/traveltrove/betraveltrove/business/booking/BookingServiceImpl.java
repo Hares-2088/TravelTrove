@@ -88,21 +88,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Mono<BookingResponseModel> updateBooking(String bookingId, BookingRequestModel bookingRequestModel) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .filter(booking -> userExists(booking.getUserId()))
-                .filter(booking -> packageExists(booking.getPackageId()))
-                .flatMap(foundBooking -> {
-                    BookingEntityModelUtil.toBookingEntity(bookingRequestModel);
-                    foundBooking.setBookingId(bookingId);
-                    foundBooking.setId(foundBooking.getId());
-                    return bookingRepository.save(foundBooking);
-                })
-                .map(BookingEntityModelUtil::toBookingResponseModel);
-    }
-
-    @Override
     public Mono<BookingResponseModel> confirmBooking(String bookingId) {
         return bookingRepository.findBookingByBookingId(bookingId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
