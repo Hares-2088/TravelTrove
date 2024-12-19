@@ -5,6 +5,7 @@ import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.dataaccess.airport.Airport;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourEventResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
@@ -98,6 +99,26 @@ public class PackageServiceImpl implements PackageService {
                 .flatMap(pk -> packageRepository.delete(pk)
                         // then return the package response model using the package entity model we just deleted
                         .thenReturn(PackageEntityModelUtil.toPackageResponseModel(pk)));
+    }
+
+    @Override
+    public Mono<PackageResponseModel> decreaseAvailableSeats(String packageId, Integer quantity) {
+        return null;
+    }
+
+    @Override
+    public Mono<PackageResponseModel> increaseAvailableSeats(String packageId, Integer quantity) {
+        return null;
+    }
+
+    @Override
+    public Mono<PackageResponseModel> refreshPackageStatus(String packageId) {
+        return null;
+    }
+
+    @Override
+    public Mono<PackageResponseModel> updatePackageStatus(String packageId, PackageStatus packageStatus) {
+        return null;
     }
 
     // a method to get the tour using the tourService and the tourId and return a notfound exception if the tour is not found

@@ -33,4 +33,6 @@ public class Package {
     private Double priceDouble;
     private Double priceTriple;
 
+    private Integer availableSeats;
+
 }
