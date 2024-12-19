@@ -8,6 +8,8 @@ public enum BookingStatus {
     PAYMENT_SUCCESS,
     BOOKING_CONFIRMED,
     BOOKING_FINALIZED,
-    EXPIRED
+    BOOKING_EXPIRED,
+    BOOKING_CANCELLED,
+    REFUNDED
 }
 //For the related diagram go to State transition diagrams -> Booking Status Diagram

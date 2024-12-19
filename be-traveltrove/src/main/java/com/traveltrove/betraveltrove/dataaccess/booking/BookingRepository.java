@@ -8,9 +8,9 @@ public interface BookingRepository extends ReactiveMongoRepository<Booking, Stri
 
     Flux<Booking> findBookingsByPackageId(String packageId);
     Flux<Booking> findBookingsByUserId(String userId);
-    Flux<Booking> findBookingsByPackageIdAndUserId(String packageId, String userId);
-
     Flux<Booking> findBookingsByStatus(BookingStatus status);
 
     Mono<Booking> findBookingByBookingId(String bookingId);
+    Mono<Booking> findBookingByPackageIdAndUserId(String packageId,String userId);
+
 }
