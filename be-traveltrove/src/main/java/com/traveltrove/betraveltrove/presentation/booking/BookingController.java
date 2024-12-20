@@ -23,7 +23,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<BookingResponseModel> getBookings(@RequestParam String userId, @RequestParam String PackageId, @RequestParam String status) {
+    public Flux<BookingResponseModel> getBookings(@RequestParam(required = false) String userId, @RequestParam(required = false) String PackageId, @RequestParam(required = false) String status) {
         if (status != null && !status.isEmpty()) {
             return bookingService.getBookingsByStatus(BookingStatus.valueOf(status));
         } else if (userId != null && !userId.isEmpty()) {
