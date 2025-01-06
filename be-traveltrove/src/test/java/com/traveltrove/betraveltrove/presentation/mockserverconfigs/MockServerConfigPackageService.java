@@ -24,29 +24,33 @@ public class MockServerConfigPackageService {
         [
             {
                 "packageId": "1",
-                "seq": 1,
                 "tourId": "1",
-                "packageName": "Package 1",
-                "packageDescription": "Package 1 Description",
-                "packagePrice": 100.0,
-                "packageStartDate": "2021-01-01",
-                "packageEndDate": "2021-01-10",
-                "packageDuration": 10,
-                "packageLocation": "Location 1",
-                "packageImage": "Image 1"
+                "airportId": "1",
+                "name": "Package 1",
+                "description": "Package 1 Description",
+                "startDate": "2021-01-01",
+                "endDate": "2021-01-10",
+                "priceSingle": 100.0,
+                "priceDouble": 200.0,
+                "priceTriple": 300.0,
+                "availableSeats": 90,
+                "totalSeats": 100,
+                "packageStatus": "EXPIRED"
             },
             {
                 "packageId": "2",
-                "seq": 2,
                 "tourId": "1",
-                "packageName": "Package 2",
-                "packageDescription": "Package 2 Description",
-                "packagePrice": 200.0,
-                "packageStartDate": "2021-02-01",
-                "packageEndDate": "2021-02-10",
-                "packageDuration": 10,
-                "packageLocation": "Location 2",
-                "packageImage": "Image 2"
+                "airportId": "1",
+                "name": "Package 2",
+                "description": "Package 2 Description",
+                "startDate": "2021-02-01",
+                "endDate": "2021-02-10",
+                "priceSingle": 100.0,
+                "priceDouble": 200.0,
+                "priceTriple": 300.0,
+                "availableSeats": 90,
+                "totalSeats": 100,
+                "packageStatus": "EXPIRED"
             }
         ]
         """;
@@ -65,29 +69,33 @@ public class MockServerConfigPackageService {
         [
             {
                 "packageId": "1",
-                "seq": 1,
                 "tourId": "1",
-                "packageName": "Package 1",
-                "packageDescription": "Package 1 Description",
-                "packagePrice": 100.0,
-                "packageStartDate": "2021-01-01",
-                "packageEndDate": "2021-01-10",
-                "packageDuration": 10,
-                "packageLocation": "Location 1",
-                "packageImage": "Image 1"
+                "airportId": "1",
+                "name": "Package 1",
+                "description": "Package 1 Description",
+                "startDate": "2021-01-01",
+                "endDate": "2021-01-10",
+                "priceSingle": 100.0,
+                "priceDouble": 200.0,
+                "priceTriple": 300.0,
+                "availableSeats": 90,
+                "totalSeats": 100,
+                "packageStatus": "EXPIRED"
             },
             {
                 "packageId": "2",
-                "seq": 2,
                 "tourId": "1",
-                "packageName": "Package 2",
-                "packageDescription": "Package 2 Description",
-                "packagePrice": 200.0,
-                "packageStartDate": "2021-02-01",
-                "packageEndDate": "2021-02-10",
-                "packageDuration": 10,
-                "packageLocation": "Location 2",
-                "packageImage": "Image 2"
+                "airportId": "1",
+                "name": "Package 2",
+                "description": "Package 2 Description",
+                "startDate": "2021-02-01",
+                "endDate": "2021-02-10",
+                "priceSingle": 100.0,
+                "priceDouble": 200.0,
+                "priceTriple": 300.0,
+                "availableSeats": 90,
+                "totalSeats": 100,
+                "packageStatus": "EXPIRED"
             }
         ]
         """;
@@ -106,16 +114,18 @@ public class MockServerConfigPackageService {
         String packageJson = """
         {
             "packageId": "1",
-            "seq": 1,
             "tourId": "1",
-            "packageName": "Package 1",
-            "packageDescription": "Package 1 Description",
-            "packagePrice": 100.0,
-            "packageStartDate": "2021-01-01",
-            "packageEndDate": "2021-01-10",
-            "packageDuration": 10,
-            "packageLocation": "Location 1",
-            "packageImage": "Image 1"
+            "airportId": "1",
+            "name": "Package 1",
+            "description": "Package 1 Description",
+            "startDate": "2021-01-01",
+            "endDate": "2021-01-10",
+            "priceSingle": 100.0,
+            "priceDouble": 200.0,
+            "priceTriple": 300.0,
+            "availableSeats": 90,
+            "totalSeats": 100,
+            "packageStatus": "EXPIRED"
         }
         """;
 
@@ -135,14 +145,15 @@ public class MockServerConfigPackageService {
                 .withBody("""
                         {
                             "tourId": "1",
-                            "packageName": "Package 1",
-                            "packageDescription": "Package 1 Description",
-                            "packagePrice": 100.0,
-                            "packageStartDate": "2021-01-01",
-                            "packageEndDate": "2021-01-10",
-                            "packageDuration": 10,
-                            "packageLocation": "Location 1",
-                            "packageImage": "Image 1"
+                            "airportId": "1",
+                            "name": "Package 1",
+                            "description": "Package 1 Description",
+                            "startDate": "2021-01-01",
+                            "endDate": "2021-01-10",
+                            "priceSingle": 100.0,
+                            "priceDouble": 200.0,
+                            "priceTriple": 300.0,
+                            "totalSeats": 100
                         }
                         """))
                 .respond(org.mockserver.model.HttpResponse.response()
@@ -151,16 +162,18 @@ public class MockServerConfigPackageService {
                         .withBody("""
                         {
                             "packageId": "1",
-                            "seq": 1,
                             "tourId": "1",
-                            "packageName": "Package 1",
-                            "packageDescription": "Package 1 Description",
-                            "packagePrice": 100.0,
-                            "packageStartDate": "2021-01-01",
-                            "packageEndDate": "2021-01-10",
-                            "packageDuration": 10,
-                            "packageLocation": "Location 1",
-                            "packageImage": "Image 1"
+                            "airportId": "1",
+                            "name": "Package 1",
+                            "description": "Package 1 Description",
+                            "startDate": "2021-01-01",
+                            "endDate": "2021-01-10",
+                            "priceSingle": 100.0,
+                            "priceDouble": 200.0,
+                            "priceTriple": 300.0,
+                            "availableSeats": 90,
+                            "totalSeats": 100,
+                            "packageStatus": "EXPIRED"
                         }
                         """));
     }
@@ -172,16 +185,16 @@ public class MockServerConfigPackageService {
                         .withPath("/api/v1/packages/" + packageId)
                         .withBody("""
                         {
-                            "seq": 2,
                             "tourId": "1",
-                            "packageName": "Updated Package 1",
-                            "packageDescription": "Updated Package 1 Description",
-                            "packagePrice": 200.0,
-                            "packageStartDate": "2021-02-01",
-                            "packageEndDate": "2021-02-10",
-                            "packageDuration": 10,
-                            "packageLocation": "Updated Location 1",
-                            "packageImage": "Updated Image 1"
+                            "airportId": "1",
+                            "name": "Package 1",
+                            "description": "Package 1 Description",
+                            "startDate": "2021-01-01",
+                            "endDate": "2021-01-10",
+                            "priceSingle": 100.0,
+                            "priceDouble": 200.0,
+                            "priceTriple": 300.0,
+                            "totalSeats": 100
                         }
                         """))
                 .respond(org.mockserver.model.HttpResponse.response()
@@ -189,16 +202,18 @@ public class MockServerConfigPackageService {
                         .withBody("""
                         {
                             "packageId": "1",
-                            "seq": 2,
                             "tourId": "1",
-                            "packageName": "Updated Package 1",
-                            "packageDescription": "Updated Package 1 Description",
-                            "packagePrice": 200.0,
-                            "packageStartDate": "2021-02-01",
-                            "packageEndDate": "2021-02-10",
-                            "packageDuration": 10,
-                            "packageLocation": "Updated Location 1",
-                            "packageImage": "Updated Image 1"
+                            "airportId": "1",
+                            "name": "Package 1",
+                            "description": "Package 1 Description",
+                            "startDate": "2021-01-01",
+                            "endDate": "2021-01-10",
+                            "priceSingle": 100.0,
+                            "priceDouble": 200.0,
+                            "priceTriple": 300.0,
+                            "availableSeats": 90,
+                            "totalSeats": 100,
+                            "packageStatus": "EXPIRED"
                         }
                         """));
     }
@@ -225,4 +240,202 @@ public class MockServerConfigPackageService {
                         }
                         """));
     }
+
+    // Register PATCH /api/v1/packages/{packageId}/decreaseAvailableSeats
+    public void registerDecreaseAvailableSeatsEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/decreaseAvailableSeats")
+                        .withQueryStringParameter("quantity", "1"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withContentType(org.mockserver.model.MediaType.APPLICATION_JSON)
+                        .withBody("""
+                        {
+                            "packageId": "1",
+                            "tourId": "1",
+                            "airportId": "1",
+                            "name": "Package 1",
+                            "description": "Package 1 Description",
+                            "startDate": "2021-01-01",
+                            "endDate": "2021-01-10",
+                            "priceSingle": 100.0,
+                            "priceDouble": 200.0,
+                            "priceTriple": 300.0,
+                            "availableSeats": 89,
+                            "totalSeats": 100,
+                            "packageStatus": "EXPIRED"
+                        }
+                        """));
+    }
+
+    // Register PATCH /api/v1/packages/{invalidId}/decreaseAvailableSeats
+    public void registerDecreaseAvailableSeatsWithInvalidIdEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/decreaseAvailableSeats")
+                        .withQueryStringParameter("quantity", "1"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withStatusCode(404)
+                        .withBody("""
+                        {
+                            "message": "Package not found"
+                        }
+                        """));
+    }
+
+    // Register PATCH /api/v1/packages/{packageId}/decreaseAvailableSeats with invalid quantity
+    public void registerDecreaseAvailableSeatsWithInvalidQuantityEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/decreaseAvailableSeats")
+                        .withQueryStringParameter("quantity", "101"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withStatusCode(400)
+                        .withBody("""
+                        {
+                            "message": "Invalid quantity"
+                        }
+                        """));
+    }
+
+    // Register PATCH /api/v1/packages/{packageId}/increaseAvailableSeats
+    public void registerIncreaseAvailableSeatsEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/increaseAvailableSeats")
+                        .withQueryStringParameter("quantity", "1"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withContentType(org.mockserver.model.MediaType.APPLICATION_JSON)
+                        .withBody("""
+                        {
+                            "packageId": "1",
+                            "tourId": "1",
+                            "airportId": "1",
+                            "name": "Package 1",
+                            "description": "Package 1 Description",
+                            "startDate": "2021-01-01",
+                            "endDate": "2021-01-10",
+                            "priceSingle": 100.0,
+                            "priceDouble": 200.0,
+                            "priceTriple": 300.0,
+                            "availableSeats": 91,
+                            "totalSeats": 100,
+                            "packageStatus": "EXPIRED"
+                        }
+                        """));
+    }
+
+    // Register PATCH /api/v1/packages/{invalidId}/increaseAvailableSeats
+    public void registerIncreaseAvailableSeatsWithInvalidIdEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/increaseAvailableSeats")
+                        .withQueryStringParameter("quantity", "1"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withStatusCode(404)
+                        .withBody("""
+                        {
+                            "message": "Package not found"
+                        }
+                        """));
+    }
+
+    // Register PATCH /api/v1/packages/{packageId}/increaseAvailableSeats with invalid quantity
+    public void registerIncreaseAvailableSeatsWithInvalidQuantityEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/increaseAvailableSeats")
+                        .withQueryStringParameter("quantity", "101"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withStatusCode(400)
+                        .withBody("""
+                        {
+                            "message": "Invalid quantity"
+                        }
+                        """));
+    }
+
+    // Register PATCH /api/v1/packages/{packageId}/refreshAvailableSeats
+    public void registerRefreshAvailableSeatsEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/refreshAvailableSeats"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withContentType(org.mockserver.model.MediaType.APPLICATION_JSON)
+                        .withBody("""
+                        {
+                            "packageId": "1",
+                            "tourId": "1",
+                            "airportId": "1",
+                            "name": "Package 1",
+                            "description": "Package 1 Description",
+                            "startDate": "2021-01-01",
+                            "endDate": "2021-01-10",
+                            "priceSingle": 100.0,
+                            "priceDouble": 200.0,
+                            "priceTriple": 300.0,
+                            "availableSeats": 90,
+                            "totalSeats": 100,
+                            "packageStatus": "EXPIRED"
+                        }
+                        """));
+    }
+
+    // Register PATCH /api/v1/packages/{invalidId}/refreshAvailableSeats
+    public void registerRefreshAvailableSeatsWithInvalidIdEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/refreshAvailableSeats"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withStatusCode(404)
+                        .withBody("""
+                        {
+                            "message": "Package not found"
+                        }
+                        """));
+    }
+
+    // Register PATCH /api/v1/packages/{packageId}/updatePackageStatus
+    public void registerUpdatePackageStatusEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/updatePackageStatus")
+                        .withQueryStringParameter("packageStatus", "CLOSED"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withContentType(org.mockserver.model.MediaType.APPLICATION_JSON)
+                        .withBody("""
+                        {
+                            "packageId": "1",
+                            "tourId": "1",
+                            "airportId": "1",
+                            "name": "Package 1",
+                            "description": "Package 1 Description",
+                            "startDate": "2021-01-01",
+                            "endDate": "2021-01-10",
+                            "priceSingle": 100.0,
+                            "priceDouble": 200.0,
+                            "priceTriple": 300.0,
+                            "availableSeats": 90,
+                            "totalSeats": 100,
+                            "packageStatus": "CLOSED"
+                        }
+                        """));
+    }
+
+    // Register PATCH /api/v1/packages/{invalidId}/updatePackageStatus
+    public void registerUpdatePackageStatusWithInvalidIdEndpoint(String packageId) {
+        mockServer.when(org.mockserver.model.HttpRequest.request()
+                        .withMethod("PATCH")
+                        .withPath("/api/v1/packages/" + packageId + "/updatePackageStatus")
+                        .withQueryStringParameter("packageStatus", "CLOSED"))
+                .respond(org.mockserver.model.HttpResponse.response()
+                        .withStatusCode(404)
+                        .withBody("""
+                        {
+                            "message": "Package not found"
+                        }
+                        """));
+    }
+
+
 }

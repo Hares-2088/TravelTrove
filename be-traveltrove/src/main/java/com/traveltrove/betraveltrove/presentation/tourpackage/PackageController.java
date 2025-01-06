@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.presentation.tourpackage;
 
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,4 +59,37 @@ public class PackageController {
                 .map(ResponseEntity::ok)
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
+
+    @PatchMapping(value = "/{packageId}/decreaseAvailableSeats", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<PackageResponseModel>> decreaseAvailableSeats(@PathVariable String packageId, @RequestParam Integer quantity) {
+        log.info("Decreasing available seats for package with package ID: {}", packageId);
+        return packageService.decreaseAvailableSeats(packageId, quantity)
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
+    @PatchMapping(value = "/{packageId}/increaseAvailableSeats", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<PackageResponseModel>> increaseAvailableSeats(@PathVariable String packageId, @RequestParam Integer quantity) {
+        log.info("Increasing available seats for package with package ID: {}", packageId);
+        return packageService.increaseAvailableSeats(packageId, quantity)
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
+    @PatchMapping(value = "/{packageId}/refreshPackageStatus", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<PackageResponseModel>> refreshPackageStatus(@PathVariable String packageId) {
+        log.info("Refreshing package status for package with package ID: {}", packageId);
+        return packageService.refreshPackageStatus(packageId)
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
+    @PatchMapping(value = "/{packageId}/updatePackageStatus", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<PackageResponseModel>> updatePackageStatus(@PathVariable String packageId, @RequestParam PackageStatus packageStatus) {
+        log.info("Updating package status for package with package ID: {}", packageId);
+        return packageService.updatePackageStatus(packageId, packageStatus)
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
 }

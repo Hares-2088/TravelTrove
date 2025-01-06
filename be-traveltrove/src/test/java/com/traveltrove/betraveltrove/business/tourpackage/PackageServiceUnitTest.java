@@ -7,6 +7,7 @@ import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
@@ -47,9 +48,19 @@ class PackageServiceUnitTest {
             .packageId("1")
             .name("Sample Package")
             .description("A sample package description")
+            .startDate(LocalDate.of(2024, 10, 5))
+            .endDate(LocalDate.of(2024, 10, 15))
+            .airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
+            .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
+            .priceSingle(2200.0)
+            .priceDouble(2000.0)
+            .priceTriple(1800.0)
+            .totalSeats(130)
+            .availableSeats(130)
+            .packageStatus(PackageStatus.OPEN)
             .build();
 
-    com.traveltrove.betraveltrove.dataaccess.tourpackage.Package package1 = Package.builder()
+    Package package1 = Package.builder()
             .packageId("1")
             .name("Silk Road Adventure")
             .description("Experience the historic wonders of the Silk Road with guided tours and more.")
@@ -60,9 +71,12 @@ class PackageServiceUnitTest {
             .priceSingle(2200.0)
             .priceDouble(2000.0)
             .priceTriple(1800.0)
+            .totalSeats(130)
+            .availableSeats(120)
+            .packageStatus(PackageStatus.OPEN)
             .build();
 
-    com.traveltrove.betraveltrove.dataaccess.tourpackage.Package package2 = Package.builder()
+    Package package2 = Package.builder()
         .packageId("2")
         .name("Indian Heritage Exploration")
         .description("Explore India’s vibrant heritage and landmarks with this cultural package.")
@@ -73,6 +87,9 @@ class PackageServiceUnitTest {
         .priceSingle(1700.0)
         .priceDouble(1500.0)
         .priceTriple(1300.0)
+        .totalSeats(130)
+        .availableSeats(130)
+        .packageStatus(PackageStatus.OPEN)
         .build();
 
     @Test
@@ -173,6 +190,7 @@ class PackageServiceUnitTest {
                 .priceSingle(2200.0)
                 .priceDouble(2000.0)
                 .priceTriple(1800.0)
+                .totalSeats(130)
                 .build();
 
         when(tourService.getTourByTourId(packageRequestModel.getTourId()))
@@ -201,7 +219,10 @@ class PackageServiceUnitTest {
                                 packageResponseModel.getTourId().equals("6a237fda-4924-4c73-a6df-73c1e0c37af2") &&
                                 packageResponseModel.getPriceSingle().equals(2200.0) &&
                                 packageResponseModel.getPriceDouble().equals(2000.0) &&
-                                packageResponseModel.getPriceTriple().equals(1800.0))
+                                packageResponseModel.getPriceTriple().equals(1800.0) &&
+                                packageResponseModel.getTotalSeats().equals(130) &&
+                                packageResponseModel.getAvailableSeats().equals(120)
+                        )
                 .verifyComplete();
     }
 
@@ -265,22 +286,23 @@ class PackageServiceUnitTest {
     void whenUpdatePackage_withExistingId_thenReturnUpdatedPackage() {
         String packageId = "1";
         PackageRequestModel packageRequestModel = PackageRequestModel.builder()
-                .name("Sample Package")
+                .name("Silk Road Adventure")
                 .description("A sample package description")
                 .startDate(LocalDate.of(2024, 10, 5))
                 .endDate(LocalDate.of(2024, 10, 15))
                 .airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
-                .tourId("7b82cb14-2ff5-4d8f-b84c-3bfb7b6cda1e")
+                .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
                 .priceSingle(2200.0)
                 .priceDouble(2000.0)
                 .priceTriple(1800.0)
+                .totalSeats(130)
                 .build();
 
         when(packageRepository.findPackageByPackageId(packageId))
                 .thenReturn(Mono.just(package1));
 
         when(tourService.getTourByTourId(packageRequestModel.getTourId()))
-                .thenReturn(Mono.just(TourResponseModel.builder().tourId("7b82cb14-2ff5-4d8f-b84c-3bfb7b6cda1e").build()));
+                .thenReturn(Mono.just(TourResponseModel.builder().tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2").build()));
 
         when(airportService.getAirportById(packageRequestModel.getAirportId()))
                 .thenReturn(Mono.just(AirportResponseModel.builder().airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634").build()));
@@ -293,15 +315,16 @@ class PackageServiceUnitTest {
         StepVerifier.create(result)
                 .assertNext(packageResponseModel -> {
                     assertEquals("1", packageResponseModel.getPackageId()); // Ensure the original packageId is retained
-                    assertEquals("Sample Package", packageResponseModel.getName());
-                    assertEquals("A sample package description", packageResponseModel.getDescription());
+                    assertEquals("Silk Road Adventure", packageResponseModel.getName());
+                    assertEquals("Experience the historic wonders of the Silk Road with guided tours and more.", packageResponseModel.getDescription());
                     assertEquals(LocalDate.of(2024, 10, 5), packageResponseModel.getStartDate());
                     assertEquals(LocalDate.of(2024, 10, 15), packageResponseModel.getEndDate());
                     assertEquals("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634", packageResponseModel.getAirportId());
-                    assertEquals("7b82cb14-2ff5-4d8f-b84c-3bfb7b6cda1e", packageResponseModel.getTourId());
+                    assertEquals("6a237fda-4924-4c73-a6df-73c1e0c37af2", packageResponseModel.getTourId());
                     assertEquals(2200.0, packageResponseModel.getPriceSingle());
                     assertEquals(2000.0, packageResponseModel.getPriceDouble());
                     assertEquals(1800.0, packageResponseModel.getPriceTriple());
+                    assertEquals(130, packageResponseModel.getTotalSeats());
                 })
                 .verifyComplete();
     }
@@ -345,6 +368,7 @@ class PackageServiceUnitTest {
                 .priceSingle(2200.0)
                 .priceDouble(2000.0)
                 .priceTriple(1800.0)
+                .totalSeats(130)
                 .build();
 
         when(packageRepository.findPackageByPackageId(packageId))
@@ -381,6 +405,7 @@ class PackageServiceUnitTest {
                 .priceSingle(2200.0)
                 .priceDouble(2000.0)
                 .priceTriple(1800.0)
+                .totalSeats(130)
                 .build();
 
         when(packageRepository.findPackageByPackageId(packageId))
@@ -424,6 +449,148 @@ class PackageServiceUnitTest {
                 .thenReturn(Mono.empty());
 
         Mono<PackageResponseModel> result = packageService.deletePackage(packageId);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
+                .verify();
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_withExistingId_thenReturnUpdatedPackage() {
+        String packageId = "1";
+        Integer quantity = 10;
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.just(package1));
+
+        when(packageRepository.save(any(Package.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0))); // Mock the save
+
+        Mono<PackageResponseModel> result = packageService.decreaseAvailableSeats(packageId, quantity);
+
+        StepVerifier.create(result)
+                .assertNext(packageResponseModel -> {
+                    assertEquals("1", packageResponseModel.getPackageId()); // Ensure the original packageId is retained
+                    assertEquals(110, packageResponseModel.getAvailableSeats());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_withNonExistingId_thenReturnNotFound() {
+        String packageId = "NonExistingId";
+        Integer quantity = 10;
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.empty());
+
+        Mono<PackageResponseModel> result = packageService.decreaseAvailableSeats(packageId, quantity);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
+                .verify();
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_withExistingId_thenReturnUpdatedPackage() {
+        String packageId = "1";
+        Integer quantity = 10;
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.just(package1));
+
+        when(packageRepository.save(any(Package.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0))); // Mock the save
+
+        Mono<PackageResponseModel> result = packageService.increaseAvailableSeats(packageId, quantity);
+
+        StepVerifier.create(result)
+                .assertNext(packageResponseModel -> {
+                    assertEquals("1", packageResponseModel.getPackageId()); // Ensure the original packageId is retained
+                    assertEquals(130, packageResponseModel.getAvailableSeats());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_withNonExistingId_thenReturnNotFound() {
+        String packageId = "NonExistingId";
+        Integer quantity = 10;
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.empty());
+
+        Mono<PackageResponseModel> result = packageService.increaseAvailableSeats(packageId, quantity);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
+                .verify();
+    }
+
+    @Test
+    void whenRefreshPackageStatus_withExistingId_thenReturnUpdatedPackage() {
+        String packageId = "1";
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.just(package1));
+
+        when(packageRepository.save(any(Package.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0))); // Mock the save
+
+        Mono<PackageResponseModel> result = packageService.refreshPackageStatus(packageId);
+
+        StepVerifier.create(result)
+                .assertNext(packageResponseModel -> {
+                    assertEquals("1", packageResponseModel.getPackageId()); // Ensure the original packageId is retained
+                    assertEquals(PackageStatus.EXPIRED, packageResponseModel.getPackageStatus());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void whenRefreshPackageStatus_withNonExistingId_thenReturnNotFound() {
+        String packageId = "NonExistingId";
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.empty());
+
+        Mono<PackageResponseModel> result = packageService.refreshPackageStatus(packageId);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
+                .verify();
+    }
+
+    @Test
+    void whenUpdatePackageStatus_withExistingId_thenReturnUpdatedPackage() {
+        String packageId = "1";
+        PackageStatus packageStatus = PackageStatus.CLOSED;
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.just(package1));
+
+        when(packageRepository.save(any(Package.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0))); // Mock the save
+
+        Mono<PackageResponseModel> result = packageService.updatePackageStatus(packageId, packageStatus);
+
+        StepVerifier.create(result)
+                .assertNext(packageResponseModel -> {
+                    assertEquals("1", packageResponseModel.getPackageId()); // Ensure the original packageId is retained
+                    assertEquals(PackageStatus.CLOSED, packageResponseModel.getPackageStatus());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void whenUpdatePackageStatus_withNonExistingId_thenReturnNotFound() {
+        String packageId = "NonExistingId";
+        PackageStatus packageStatus = PackageStatus.CLOSED;
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.empty());
+
+        Mono<PackageResponseModel> result = packageService.updatePackageStatus(packageId, packageStatus);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException)

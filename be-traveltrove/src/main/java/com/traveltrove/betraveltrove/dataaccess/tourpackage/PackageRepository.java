@@ -8,4 +8,5 @@ public interface PackageRepository extends ReactiveMongoRepository<Package, Stri
 
     public Mono<Package> findPackageByPackageId(String packageId);
     public Flux<Package> findPackagesByTourId(String tourId);
+    public Flux<Package> findPackagesByPackageStatus(PackageStatus packageStatus);
 }

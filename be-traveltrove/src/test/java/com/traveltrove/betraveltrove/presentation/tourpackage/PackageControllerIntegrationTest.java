@@ -5,6 +5,7 @@ import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigPackageService;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
@@ -58,6 +59,9 @@ class PackageControllerIntegrationTest {
             .priceSingle(2200.0)
             .priceDouble(2000.0)
             .priceTriple(1800.0)
+            .totalSeats(130)
+            .availableSeats(120)
+            .packageStatus(PackageStatus.EXPIRED)
             .build();
 
     private final Package package2 = Package.builder()
@@ -71,6 +75,9 @@ class PackageControllerIntegrationTest {
             .priceSingle(1800.0)
             .priceDouble(1600.0)
             .priceTriple(1400.0)
+            .totalSeats(130)
+            .availableSeats(120)
+            .packageStatus(PackageStatus.EXPIRED)
             .build();
 
     @BeforeAll
@@ -120,7 +127,7 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenGetAllPackages_withValidTourId_thenReturnPackages() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).get()
                 .uri("/api/v1/packages?tourId=" + package1.getTourId())
                 .exchange()
                 .expectStatus().isOk()
@@ -137,6 +144,9 @@ class PackageControllerIntegrationTest {
                         .priceSingle(2200.0)
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
+                        .totalSeats(130)
+                        .availableSeats(120)
+                        .packageStatus(PackageStatus.EXPIRED)
                         .build());
     }
 
@@ -168,6 +178,9 @@ class PackageControllerIntegrationTest {
                                 .priceSingle(2200.0)
                                 .priceDouble(2000.0)
                                 .priceTriple(1800.0)
+                                .totalSeats(130)
+                                .availableSeats(120)
+                                .packageStatus(PackageStatus.EXPIRED)
                                 .build(),
                         PackageResponseModel.builder()
                                 .packageId("2")
@@ -180,6 +193,9 @@ class PackageControllerIntegrationTest {
                                 .priceSingle(1800.0)
                                 .priceDouble(1600.0)
                                 .priceTriple(1400.0)
+                                .totalSeats(130)
+                                .availableSeats(120)
+                                .packageStatus(PackageStatus.EXPIRED)
                                 .build()
                 );
     }
@@ -202,6 +218,9 @@ class PackageControllerIntegrationTest {
                         .priceSingle(2200.0)
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
+                        .totalSeats(130)
+                        .availableSeats(120)
+                        .packageStatus(PackageStatus.EXPIRED)
                         .build());
     }
 
@@ -225,6 +244,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
@@ -246,6 +266,9 @@ class PackageControllerIntegrationTest {
                     assertEquals(2000.0, actualResponse.getPriceSingle());
                     assertEquals(1800.0, actualResponse.getPriceDouble());
                     assertEquals(1600.0, actualResponse.getPriceTriple());
+                    assertEquals(130, actualResponse.getTotalSeats());
+                    assertEquals(130, actualResponse.getAvailableSeats());
+                    assertEquals(PackageStatus.OPEN, actualResponse.getPackageStatus());
                 });
     }
 
@@ -262,6 +285,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
@@ -283,6 +307,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
@@ -304,6 +329,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
@@ -323,6 +349,9 @@ class PackageControllerIntegrationTest {
                         .priceSingle(2000.0)
                         .priceDouble(1800.0)
                         .priceTriple(1600.0)
+                        .totalSeats(130)
+                        .availableSeats(120)
+                        .packageStatus(PackageStatus.EXPIRED)
                         .build());
     }
 
@@ -338,6 +367,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
@@ -359,6 +389,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
@@ -380,6 +411,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
@@ -407,6 +439,9 @@ class PackageControllerIntegrationTest {
                         .priceSingle(2200.0)
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
+                        .totalSeats(130)
+                        .availableSeats(120)
+                        .packageStatus(PackageStatus.EXPIRED)
                         .build());
     }
 
