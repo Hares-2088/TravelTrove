@@ -27,6 +27,10 @@ public class PackageRequestModel {
     private Double priceTriple;
 
     private Integer totalSeats;
-    // private Integer availableSeats; //commented out because it will be managed by the system
-    // private PackageStatus packageStatus; //commented out because it will be updated by the system to avoid conflicts with the number of available seats and date
+
+    /*
+    private Integer availableSeats; //commented out because it will be managed by the system
+    private PackageStatus packageStatus; //commented out because it will be updated by the system to avoid conflicts with the number of available seats and date
+     */
+
 }

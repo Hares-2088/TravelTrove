@@ -114,6 +114,8 @@ public class PackageServiceImpl implements PackageService {
                 .flatMap(pk -> {
                     if (pk.getAvailableSeats() < quantity) {
                         return Mono.error(new IllegalArgumentException("Not enough available seats to decrease by " + quantity));
+                    } else if (quantity < 0) {
+                        return Mono.error(new IllegalArgumentException("Quantity of seats decreased cannot be less than 0"));
                     }
                     pk.setAvailableSeats(pk.getAvailableSeats() - quantity);
                     return packageRepository.save(pk)
@@ -129,6 +131,8 @@ public class PackageServiceImpl implements PackageService {
                 .flatMap(pk -> {
                     if (pk.getAvailableSeats() + quantity > pk.getTotalSeats()) {
                         return Mono.error(new IllegalArgumentException("Not enough total seats to increase by " + quantity));
+                    } else if (quantity < 0) {
+                        return Mono.error(new IllegalArgumentException("Quantity of seats increased cannot be less than 0"));
                     }
                     pk.setAvailableSeats(pk.getAvailableSeats() + quantity);
                     return packageRepository.save(pk)

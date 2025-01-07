@@ -239,6 +239,7 @@ class PackageServiceUnitTest {
                 .priceSingle(2200.0)
                 .priceDouble(2000.0)
                 .priceTriple(1800.0)
+                .totalSeats(130)
                 .build();
 
         // Mock the `getTourByTourId` to return an empty Mono
@@ -269,6 +270,7 @@ class PackageServiceUnitTest {
                 .priceSingle(2200.0)
                 .priceDouble(2000.0)
                 .priceTriple(1800.0)
+                .totalSeats(130)
                 .build();
 
         when(tourService.getTourByTourId(packageRequestModel.getTourId()))
@@ -343,6 +345,7 @@ class PackageServiceUnitTest {
                 .priceSingle(2200.0)
                 .priceDouble(2000.0)
                 .priceTriple(1800.0)
+                .totalSeats(130)
                 .build();
 
         when(packageRepository.findPackageByPackageId(packageId))

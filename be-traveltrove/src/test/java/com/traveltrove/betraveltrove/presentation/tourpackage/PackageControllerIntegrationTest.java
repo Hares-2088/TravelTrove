@@ -3,6 +3,7 @@ package com.traveltrove.betraveltrove.presentation.tourpackage;
 import com.traveltrove.betraveltrove.business.airport.AirportService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.business.tourpackage.PackageServiceImpl;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
@@ -26,7 +27,9 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static reactor.core.publisher.Mono.when;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.data.mongodb.port=0"})
 @ActiveProfiles("test")
@@ -79,6 +82,8 @@ class PackageControllerIntegrationTest {
             .availableSeats(120)
             .packageStatus(PackageStatus.EXPIRED)
             .build();
+    @Autowired
+    private PackageServiceImpl packageServiceImpl;
 
     @BeforeAll
     void startServer() {
@@ -449,6 +454,126 @@ class PackageControllerIntegrationTest {
     void whenDeletePackage_withInvalidPackageId_thenReturnNotFound() {
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/packages/invalid")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_thenAvailableSeatsDecreased() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=10")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PackageResponseModel.class)
+                .consumeWith(response -> {
+                    PackageResponseModel actualResponse = response.getResponseBody();
+                    assertNotNull(actualResponse);
+                    assertEquals(110, actualResponse.getAvailableSeats());
+                });
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_withInvalidPackageId_thenReturnNotFound() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/invalid/decreaseAvailableSeats?quantity=10")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_withInvalidQuantity_thenReturnBadRequest() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=-10")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_withQuantityGreaterThanAvailableSeats_thenReturnBadRequest() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=200")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_thenAvailableSeatsIncreased() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=10")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PackageResponseModel.class)
+                .consumeWith(response -> {
+                    PackageResponseModel actualResponse = response.getResponseBody();
+                    assertNotNull(actualResponse);
+                    assertEquals(130, actualResponse.getAvailableSeats());
+                });
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_withInvalidPackageId_thenReturnNotFound() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/invalid/increaseAvailableSeats?quantity=10")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_withInvalidQuantity_thenReturnBadRequest() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=-10")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_withQuantityGreaterThanTotalSeats_thenReturnBadRequest() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=200")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenRefreshPackageStatus_thenPackageStatusRefreshed() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/refreshPackageStatus")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PackageResponseModel.class)
+                .consumeWith(response -> {
+                    PackageResponseModel actualResponse = response.getResponseBody();
+                    assertNotNull(actualResponse);
+                    assertEquals(PackageStatus.EXPIRED, actualResponse.getPackageStatus());
+                });
+    }
+
+    @Test
+    void whenRefreshPackageStatus_withInvalidPackageId_thenReturnNotFound() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/invalid/refreshPackageStatus")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void whenUpdatePackageStatus_thenPackageStatusUpdated() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/updatePackageStatus?packageStatus=OPEN")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PackageResponseModel.class)
+                .consumeWith(response -> {
+                    PackageResponseModel actualResponse = response.getResponseBody();
+                    assertNotNull(actualResponse);
+                    assertEquals(PackageStatus.OPEN, actualResponse.getPackageStatus());
+                });
+    }
+
+    @Test
+    void whenUpdatePackageStatus_withInvalidPackageId_thenReturnNotFound() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/invalid/updatePackageStatus?packageStatus=OPEN")
                 .exchange()
                 .expectStatus().isNotFound();
     }

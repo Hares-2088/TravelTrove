@@ -27,7 +27,7 @@ public class PackageResponseModel {
     private Double priceDouble;
     private Double priceTriple;
 
-    private Integer availableSeats;
     private Integer totalSeats;
+    private Integer availableSeats;
     private PackageStatus packageStatus;
 }

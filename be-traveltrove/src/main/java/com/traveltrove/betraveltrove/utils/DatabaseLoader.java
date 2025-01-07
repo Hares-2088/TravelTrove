@@ -15,6 +15,7 @@ import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
@@ -1541,6 +1542,9 @@ public class DatabaseLoader {
                         .priceSingle(1800.0)
                         .priceDouble(1600.0)
                         .priceTriple(1400.0)
+                        .totalSeats(130)
+                        .availableSeats(50)
+                        .packageStatus(PackageStatus.EXPIRED)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1555,6 +1559,9 @@ public class DatabaseLoader {
                         .priceSingle(1500.0)
                         .priceDouble(1300.0)
                         .priceTriple(1100.0)
+                        .totalSeats(125)
+                        .availableSeats(10)
+                        .packageStatus(PackageStatus.EXPIRED)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1569,6 +1576,9 @@ public class DatabaseLoader {
                         .priceSingle(2200.0)
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
+                        .totalSeats(120)
+                        .availableSeats(0)
+                        .packageStatus(PackageStatus.EXPIRED)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1583,6 +1593,9 @@ public class DatabaseLoader {
                         .priceSingle(1800.0)
                         .priceDouble(1600.0)
                         .priceTriple(1400.0)
+                        .totalSeats(135)
+                        .availableSeats(-1)
+                        .packageStatus(PackageStatus.EXPIRED)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1597,76 +1610,9 @@ public class DatabaseLoader {
                         .priceSingle(1900.0)
                         .priceDouble(1700.0)
                         .priceTriple(1500.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("9d3f8b7e-a6c1-4f42-b6d8-7a9b4e2d5cf3")
-                        .name("Tokyo Blossom Festival Package")
-                        .description("Experience Japan's iconic cherry blossoms and vibrant culture.")
-                        .startDate(LocalDate.of(2024, 4, 1))
-                        .endDate(LocalDate.of(2024, 4, 8))
-                        .airportId("e8f314c7-716b-4f19-a1d6-fc376b8c81ad")
-                        .tourId("7e14cb83-3e2a-41c6-b26f-09ebd62a5e39")
-                        .priceSingle(2400.0)
-                        .priceDouble(2200.0)
-                        .priceTriple(2000.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
-                        .name("Rio Carnival Adventure")
-                        .description("Join the world’s biggest carnival in Rio with this unforgettable package.")
-                        .startDate(LocalDate.of(2024, 2, 10))
-                        .endDate(LocalDate.of(2024, 2, 17))
-                        .airportId("3f2e8bbd-84c3-4d3e-bc24-f173acd01be4")
-                        .tourId("42cf8561-6f83-4f2f-becb-e3c72a1bb572")
-                        .priceSingle(2000.0)
-                        .priceDouble(1800.0)
-                        .priceTriple(1600.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
-                        .name("Australian Outback Safari")
-                        .description("Discover Australia’s rugged wilderness with this unique outback package.")
-                        .startDate(LocalDate.of(2024, 7, 20))
-                        .endDate(LocalDate.of(2024, 7, 27))
-                        .airportId("aa12fc4b-619e-4d8e-8563-5a09bc6f1ae1")
-                        .tourId("f4a9c2ef-8473-4b67-b527-44fcb3a6eec5")
-                        .priceSingle(2100.0)
-                        .priceDouble(1900.0)
-                        .priceTriple(1700.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("9b5e2c1a-6f7d-4b9e-b8a7-d3f2b1c9a4e5")
-                        .name("Indian Heritage Exploration")
-                        .description("Explore India’s vibrant heritage and landmarks with this cultural package.")
-                        .startDate(LocalDate.of(2024, 8, 1))
-                        .endDate(LocalDate.of(2024, 8, 10))
-                        .airportId("47c8f2e7-3d6b-402c-93b7-8a92ef43e6ab")
-                        .tourId("7b82cb14-2ff5-4d8f-b84c-3bfb7b6cda1e")
-                        .priceSingle(1700.0)
-                        .priceDouble(1500.0)
-                        .priceTriple(1300.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
-                        .name("Silk Road Adventure")
-                        .description("Experience the historic wonders of the Silk Road with guided tours and more.")
-                        .startDate(LocalDate.of(2024, 10, 5))
-                        .endDate(LocalDate.of(2024, 10, 15))
-                        .airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
-                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
-                        .priceSingle(2200.0)
-                        .priceDouble(2000.0)
-                        .priceTriple(1800.0)
+                        .totalSeats(130)
+                        .availableSeats(100)
+                        .packageStatus(PackageStatus.EXPIRED)
                         .build()
         );
 
