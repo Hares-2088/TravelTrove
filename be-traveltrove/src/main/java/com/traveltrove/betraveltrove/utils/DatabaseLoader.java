@@ -15,7 +15,6 @@ import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
-import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
@@ -1544,7 +1543,6 @@ public class DatabaseLoader {
                         .priceTriple(1400.0)
                         .totalSeats(130)
                         .availableSeats(50)
-                        .packageStatus(PackageStatus.EXPIRED)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1561,7 +1559,6 @@ public class DatabaseLoader {
                         .priceTriple(1100.0)
                         .totalSeats(125)
                         .availableSeats(10)
-                        .packageStatus(PackageStatus.EXPIRED)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1578,7 +1575,6 @@ public class DatabaseLoader {
                         .priceTriple(1800.0)
                         .totalSeats(120)
                         .availableSeats(0)
-                        .packageStatus(PackageStatus.EXPIRED)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1594,8 +1590,7 @@ public class DatabaseLoader {
                         .priceDouble(1600.0)
                         .priceTriple(1400.0)
                         .totalSeats(135)
-                        .availableSeats(-1)
-                        .packageStatus(PackageStatus.EXPIRED)
+                        .availableSeats(0)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1612,7 +1607,6 @@ public class DatabaseLoader {
                         .priceTriple(1500.0)
                         .totalSeats(130)
                         .availableSeats(100)
-                        .packageStatus(PackageStatus.EXPIRED)
                         .build()
         );
 

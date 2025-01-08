@@ -1,6 +1,5 @@
 package com.traveltrove.betraveltrove.presentation.tourpackage;
 
-import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,5 +28,4 @@ public class PackageResponseModel {
 
     private Integer totalSeats;
     private Integer availableSeats;
-    private PackageStatus packageStatus;
 }

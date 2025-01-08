@@ -2,12 +2,9 @@ package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
-import com.traveltrove.betraveltrove.dataaccess.airport.Airport;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
-import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
-import com.traveltrove.betraveltrove.presentation.tour.TourEventResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
@@ -67,7 +64,6 @@ public class PackageServiceImpl implements PackageService {
                         .flatMap(tuple -> {
                             Package pk = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());
                             pk.setAvailableSeats(pk.getTotalSeats());
-                            pk.setPackageStatus(PackageStatus.OPEN);
                             return packageRepository.save(pk)
                                     .map(PackageEntityModelUtil::toPackageResponseModel);
                         }));
@@ -90,8 +86,7 @@ public class PackageServiceImpl implements PackageService {
                                         }
                                         return packageRepository.save(updatedPackage)
                                                 .map(PackageEntityModelUtil::toPackageResponseModel);
-                                    })
-                                    .then(refreshPackageStatus(packageId));
+                                    });
                         }));
     }
 
@@ -120,8 +115,7 @@ public class PackageServiceImpl implements PackageService {
                     pk.setAvailableSeats(pk.getAvailableSeats() - quantity);
                     return packageRepository.save(pk)
                             .map(PackageEntityModelUtil::toPackageResponseModel);
-                })
-                .then(refreshPackageStatus(packageId));
+                });
     }
 
     @Override
@@ -135,42 +129,6 @@ public class PackageServiceImpl implements PackageService {
                         return Mono.error(new IllegalArgumentException("Quantity of seats increased cannot be less than 0"));
                     }
                     pk.setAvailableSeats(pk.getAvailableSeats() + quantity);
-                    return packageRepository.save(pk)
-                            .map(PackageEntityModelUtil::toPackageResponseModel);
-                })
-                .then(refreshPackageStatus(packageId));
-    }
-
-    @Override
-    public Mono<PackageResponseModel> refreshPackageStatus(String packageId) {
-        return packageRepository.findPackageByPackageId(packageId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
-                .flatMap(pk -> {
-                    if (pk.getEndDate().isBefore(java.time.LocalDate.now())) {  // if the package end date is before today, the status is automatically expired
-                        pk.setPackageStatus(PackageStatus.EXPIRED);
-                    } else if (pk.getPackageStatus() == PackageStatus.CLOSED) { // if the package status is closed, it remains closed
-                        pk.setPackageStatus(PackageStatus.CLOSED);
-                    } else if (pk.getAvailableSeats() == 0) {   // if the available seats is 0, the status is full
-                        pk.setPackageStatus(PackageStatus.FULL);
-                    } else if (pk.getAvailableSeats() < pk.getTotalSeats() * 0.1) { // if the available seats is less than 10% of the total seats, the status is near capacity
-                        pk.setPackageStatus(PackageStatus.NEAR_CAPACITY);
-                    } else if (pk.getAvailableSeats() < 0) { // if the available seats is less than 0, the status is closed and a notification is sent to the admin
-                        pk.setPackageStatus(PackageStatus.CLOSED);
-                        // send notification to admin
-                    } else {
-                        pk.setPackageStatus(PackageStatus.OPEN);
-                    }
-                    return packageRepository.save(pk)
-                            .map(PackageEntityModelUtil::toPackageResponseModel);
-                });
-    }
-
-    @Override
-    public Mono<PackageResponseModel> updatePackageStatus(String packageId, PackageStatus packageStatus) {
-        return packageRepository.findPackageByPackageId(packageId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
-                .flatMap(pk -> {
-                    pk.setPackageStatus(packageStatus);
                     return packageRepository.save(pk)
                             .map(PackageEntityModelUtil::toPackageResponseModel);
                 });

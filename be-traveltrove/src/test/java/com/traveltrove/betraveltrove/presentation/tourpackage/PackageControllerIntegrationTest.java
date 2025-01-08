@@ -6,7 +6,6 @@ import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageServiceImpl;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
-import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigPackageService;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
@@ -64,7 +63,6 @@ class PackageControllerIntegrationTest {
             .priceTriple(1800.0)
             .totalSeats(130)
             .availableSeats(120)
-            .packageStatus(PackageStatus.EXPIRED)
             .build();
 
     private final Package package2 = Package.builder()
@@ -80,7 +78,6 @@ class PackageControllerIntegrationTest {
             .priceTriple(1400.0)
             .totalSeats(130)
             .availableSeats(120)
-            .packageStatus(PackageStatus.EXPIRED)
             .build();
     @Autowired
     private PackageServiceImpl packageServiceImpl;
@@ -151,7 +148,6 @@ class PackageControllerIntegrationTest {
                         .priceTriple(1800.0)
                         .totalSeats(130)
                         .availableSeats(120)
-                        .packageStatus(PackageStatus.EXPIRED)
                         .build());
     }
 
@@ -185,7 +181,6 @@ class PackageControllerIntegrationTest {
                                 .priceTriple(1800.0)
                                 .totalSeats(130)
                                 .availableSeats(120)
-                                .packageStatus(PackageStatus.EXPIRED)
                                 .build(),
                         PackageResponseModel.builder()
                                 .packageId("2")
@@ -200,7 +195,6 @@ class PackageControllerIntegrationTest {
                                 .priceTriple(1400.0)
                                 .totalSeats(130)
                                 .availableSeats(120)
-                                .packageStatus(PackageStatus.EXPIRED)
                                 .build()
                 );
     }
@@ -225,7 +219,6 @@ class PackageControllerIntegrationTest {
                         .priceTriple(1800.0)
                         .totalSeats(130)
                         .availableSeats(120)
-                        .packageStatus(PackageStatus.EXPIRED)
                         .build());
     }
 
@@ -273,7 +266,6 @@ class PackageControllerIntegrationTest {
                     assertEquals(1600.0, actualResponse.getPriceTriple());
                     assertEquals(130, actualResponse.getTotalSeats());
                     assertEquals(130, actualResponse.getAvailableSeats());
-                    assertEquals(PackageStatus.OPEN, actualResponse.getPackageStatus());
                 });
     }
 
@@ -356,7 +348,6 @@ class PackageControllerIntegrationTest {
                         .priceTriple(1600.0)
                         .totalSeats(130)
                         .availableSeats(120)
-                        .packageStatus(PackageStatus.EXPIRED)
                         .build());
     }
 
@@ -446,7 +437,6 @@ class PackageControllerIntegrationTest {
                         .priceTriple(1800.0)
                         .totalSeats(130)
                         .availableSeats(120)
-                        .packageStatus(PackageStatus.EXPIRED)
                         .build());
     }
 
@@ -532,49 +522,5 @@ class PackageControllerIntegrationTest {
                 .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=200")
                 .exchange()
                 .expectStatus().isBadRequest();
-    }
-
-    @Test
-    void whenRefreshPackageStatus_thenPackageStatusRefreshed() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/1/refreshPackageStatus")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(PackageResponseModel.class)
-                .consumeWith(response -> {
-                    PackageResponseModel actualResponse = response.getResponseBody();
-                    assertNotNull(actualResponse);
-                    assertEquals(PackageStatus.EXPIRED, actualResponse.getPackageStatus());
-                });
-    }
-
-    @Test
-    void whenRefreshPackageStatus_withInvalidPackageId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/invalid/refreshPackageStatus")
-                .exchange()
-                .expectStatus().isNotFound();
-    }
-
-    @Test
-    void whenUpdatePackageStatus_thenPackageStatusUpdated() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/1/updatePackageStatus?packageStatus=OPEN")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(PackageResponseModel.class)
-                .consumeWith(response -> {
-                    PackageResponseModel actualResponse = response.getResponseBody();
-                    assertNotNull(actualResponse);
-                    assertEquals(PackageStatus.OPEN, actualResponse.getPackageStatus());
-                });
-    }
-
-    @Test
-    void whenUpdatePackageStatus_withInvalidPackageId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/invalid/updatePackageStatus?packageStatus=OPEN")
-                .exchange()
-                .expectStatus().isNotFound();
     }
 }

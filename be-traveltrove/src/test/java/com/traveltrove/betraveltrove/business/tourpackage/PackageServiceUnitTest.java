@@ -7,7 +7,6 @@ import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
-import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
@@ -57,7 +56,6 @@ class PackageServiceUnitTest {
             .priceTriple(1800.0)
             .totalSeats(130)
             .availableSeats(130)
-            .packageStatus(PackageStatus.OPEN)
             .build();
 
     Package package1 = Package.builder()
@@ -73,7 +71,6 @@ class PackageServiceUnitTest {
             .priceTriple(1800.0)
             .totalSeats(130)
             .availableSeats(120)
-            .packageStatus(PackageStatus.OPEN)
             .build();
 
     Package package2 = Package.builder()
@@ -89,7 +86,6 @@ class PackageServiceUnitTest {
         .priceTriple(1300.0)
         .totalSeats(130)
         .availableSeats(130)
-        .packageStatus(PackageStatus.OPEN)
         .build();
 
     @Test
@@ -524,76 +520,6 @@ class PackageServiceUnitTest {
                 .thenReturn(Mono.empty());
 
         Mono<PackageResponseModel> result = packageService.increaseAvailableSeats(packageId, quantity);
-
-        StepVerifier.create(result)
-                .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
-                .verify();
-    }
-
-    @Test
-    void whenRefreshPackageStatus_withExistingId_thenReturnUpdatedPackage() {
-        String packageId = "1";
-
-        when(packageRepository.findPackageByPackageId(packageId))
-                .thenReturn(Mono.just(package1));
-
-        when(packageRepository.save(any(Package.class)))
-                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0))); // Mock the save
-
-        Mono<PackageResponseModel> result = packageService.refreshPackageStatus(packageId);
-
-        StepVerifier.create(result)
-                .assertNext(packageResponseModel -> {
-                    assertEquals("1", packageResponseModel.getPackageId()); // Ensure the original packageId is retained
-                    assertEquals(PackageStatus.EXPIRED, packageResponseModel.getPackageStatus());
-                })
-                .verifyComplete();
-    }
-
-    @Test
-    void whenRefreshPackageStatus_withNonExistingId_thenReturnNotFound() {
-        String packageId = "NonExistingId";
-
-        when(packageRepository.findPackageByPackageId(packageId))
-                .thenReturn(Mono.empty());
-
-        Mono<PackageResponseModel> result = packageService.refreshPackageStatus(packageId);
-
-        StepVerifier.create(result)
-                .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
-                .verify();
-    }
-
-    @Test
-    void whenUpdatePackageStatus_withExistingId_thenReturnUpdatedPackage() {
-        String packageId = "1";
-        PackageStatus packageStatus = PackageStatus.CLOSED;
-
-        when(packageRepository.findPackageByPackageId(packageId))
-                .thenReturn(Mono.just(package1));
-
-        when(packageRepository.save(any(Package.class)))
-                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0))); // Mock the save
-
-        Mono<PackageResponseModel> result = packageService.updatePackageStatus(packageId, packageStatus);
-
-        StepVerifier.create(result)
-                .assertNext(packageResponseModel -> {
-                    assertEquals("1", packageResponseModel.getPackageId()); // Ensure the original packageId is retained
-                    assertEquals(PackageStatus.CLOSED, packageResponseModel.getPackageStatus());
-                })
-                .verifyComplete();
-    }
-
-    @Test
-    void whenUpdatePackageStatus_withNonExistingId_thenReturnNotFound() {
-        String packageId = "NonExistingId";
-        PackageStatus packageStatus = PackageStatus.CLOSED;
-
-        when(packageRepository.findPackageByPackageId(packageId))
-                .thenReturn(Mono.empty());
-
-        Mono<PackageResponseModel> result = packageService.updatePackageStatus(packageId, packageStatus);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException)

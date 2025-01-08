@@ -42,7 +42,6 @@ class PackageRepositoryIntegrationTest {
                 .endDate(LocalDate.of(2021, 12, 10))
                 .totalSeats(130)
                 .availableSeats(120)
-                .packageStatus(PackageStatus.OPEN)
                 .build();
 
         StepVerifier.create(packageRepository.save(pk))
@@ -71,8 +70,7 @@ class PackageRepositoryIntegrationTest {
                                 pk.getStartDate().equals(LocalDate.of(2021, 12, 1)) &&
                                 pk.getEndDate().equals(LocalDate.of(2021, 12, 10)) &&
                                 pk.getTotalSeats().equals(130) &&
-                                pk.getAvailableSeats().equals(120) &&
-                                pk.getPackageStatus().equals(PackageStatus.OPEN)
+                                pk.getAvailableSeats().equals(120)
                 )
                 .verifyComplete();
     }
@@ -98,8 +96,7 @@ class PackageRepositoryIntegrationTest {
                                 pk.getStartDate().equals(LocalDate.of(2021, 12, 1)) &&
                                 pk.getEndDate().equals(LocalDate.of(2021, 12, 10)) &&
                                 pk.getTotalSeats().equals(130) &&
-                                pk.getAvailableSeats().equals(120) &&
-                                pk.getPackageStatus().equals(PackageStatus.OPEN)
+                                pk.getAvailableSeats().equals(120)
                 )
                 .verifyComplete();
     }
@@ -107,33 +104,6 @@ class PackageRepositoryIntegrationTest {
     @Test
     void whenFindAllByTourId_withNonExistingId_thenReturnEmptyFlux() {
         StepVerifier.create(packageRepository.findPackagesByTourId(NON_EXISTING_TOUR_ID))
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindAllByPackageStatus_withExistingStatus_thenReturnExistingPackage() {
-        StepVerifier.create(packageRepository.findPackagesByPackageStatus(PackageStatus.OPEN))
-                .expectNextMatches(pk ->
-                        pk.getPackageId().equals(EXISTING_PACKAGE_ID) &&
-                                pk.getName().equals("Test Package") &&
-                                pk.getDescription().equals("Test Package Description") &&
-                                pk.getAirportId().equals(EXISTING_AIRPORT_ID) &&
-                                pk.getTourId().equals(EXISTING_TOUR_ID) &&
-                                pk.getPriceSingle().equals(100.0) &&
-                                pk.getPriceDouble().equals(200.0) &&
-                                pk.getPriceTriple().equals(300.0) &&
-                                pk.getStartDate().equals(LocalDate.of(2021, 12, 1)) &&
-                                pk.getEndDate().equals(LocalDate.of(2021, 12, 10)) &&
-                                pk.getTotalSeats().equals(130) &&
-                                pk.getAvailableSeats().equals(120) &&
-                                pk.getPackageStatus().equals(PackageStatus.OPEN)
-                )
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindAllByPackageStatus_withNoResultStatus_thenReturnEmptyFlux() {
-        StepVerifier.create(packageRepository.findPackagesByPackageStatus(PackageStatus.CLOSED)) // No data with status CLOSED
                 .verifyComplete();
     }
 

@@ -1,6 +1,5 @@
 package com.traveltrove.betraveltrove.business.tourpackage;
 
-import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import reactor.core.publisher.Flux;
@@ -21,8 +20,4 @@ public interface PackageService {
     Mono<PackageResponseModel> decreaseAvailableSeats(String packageId, Integer quantity);
 
     Mono<PackageResponseModel> increaseAvailableSeats(String packageId, Integer quantity);
-
-    Mono<PackageResponseModel> refreshPackageStatus(String packageId);
-
-    Mono<PackageResponseModel> updatePackageStatus(String packageId, PackageStatus packageStatus);
 }
