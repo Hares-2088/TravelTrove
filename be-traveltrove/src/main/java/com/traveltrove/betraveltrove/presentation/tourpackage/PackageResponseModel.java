@@ -25,4 +25,7 @@ public class PackageResponseModel {
     private Double priceSingle;
     private Double priceDouble;
     private Double priceTriple;
+
+    private Integer totalSeats;
+    private Integer availableSeats;
 }
