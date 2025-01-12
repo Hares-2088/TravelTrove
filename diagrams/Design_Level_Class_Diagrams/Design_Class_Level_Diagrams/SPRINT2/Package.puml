@@ -1,0 +1,115 @@
+@startuml
+title Standalone Class Diagram for Packages
+
+package "packagesubdomain" {
+
+
+    package "businesslayer" {
+        interface PackageService {
+            + getAllPackages() : Flux<PackageResponseModel>
+            + getPackageById(packageId: String) : Mono<PackageResponseModel>
+            + addPackage(package: PackageRequestModel) : Mono<PackageResponseModel>
+            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
+            + deletePackage(packageId: String) : Mono<Void>
+            + increaseAvailableSeats(packageId: String, seats: Integer) : Mono<PackageResponseModel>
+            + decreaseAvailableSeats(packageId: String, seats: Integer) : Mono<PackageResponseModel>
+        }
+
+        class PackageServiceImpl {
+            - packageRepository: PackageRepository
+            + getAllPackages() : Flux<PackageResponseModel>
+            + getPackageById(packageId: String) : Mono<PackageResponseModel>
+            + addPackage(package: PackageRequestModel) : Mono<PackageResponseModel>
+            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
+            + deletePackage(packageId: String) : Mono<Void>
+            + increaseAvailableSeats(packageId: String, seats: Integer) : Mono<PackageResponseModel>
+            + decreaseAvailableSeats(packageId: String, seats: Integer) : Mono<PackageResponseModel>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Package {
+            + _id: ObjectId
+            + packageId: String
+            + name: String
+            + description: String
+            + startDate: DateTime
+            + endDate: DateTime
+            + priceForOne: Decimal
+            + priceForTwo: Decimal
+            + priceForThree: Decimal
+            + totalSeats: Integer
+            + availableSeats: Integer
+            + airportId: String
+            + tourId: String
+        }
+
+        interface PackageRepository extends ReactiveMongoRepository {
+            + findPackageByPackageId(packageId: String) : Mono<Package>
+            + findAll() : Flux<Package>
+        }
+    }
+
+    package "presentationlayer" {
+        class PackageRequestModel {
+            + name: String
+            + description: String
+            + startDate: DateTime
+            + endDate: DateTime
+            + priceForOne: Decimal
+            + priceForTwo: Decimal
+            + priceForThree: Decimal
+            + totalSeats: Integer
+            + airportId: String
+            + tourId: String
+        }
+
+        class PackageResponseModel {
+            + packageId: String
+            + name: String
+            + description: String
+            + startDate: DateTime
+            + endDate: DateTime
+            + priceForOne: Decimal
+            + priceForTwo: Decimal
+            + priceForThree: Decimal
+            + totalSeats: Integer
+            + availableSeats: Integer
+            + airportId: String
+            + tourId: String
+        }
+
+        class PackageController {
+            - packageService: PackageService
+            + getAllPackages() : Flux<PackageResponseModel>
+            + getPackageById(packageId: String) : Mono<ResponseEntity<PackageResponseModel>>
+            + addPackage(packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
+            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<ResponseEntity<PackageResponseModel>>
+            + deletePackage(packageId: String) : Mono<Void>
+            + increaseAvailableSeats(packageId: String, seats: Integer) : Mono<ResponseEntity<PackageResponseModel>>
+            + decreaseAvailableSeats(packageId: String, seats: Integer) : Mono<ResponseEntity<PackageResponseModel>>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toPackageResponseModel(package: Package) : PackageResponseModel
+            + toPackageEntity(packageRequestModel: PackageRequestModel) : Package
+            + generateUUIDString() : String
+        }
+    }
+
+    PackageServiceImpl -down-|> PackageService : implements
+    PackageServiceImpl -down-> PackageRepository : uses
+    PackageController -down-> PackageService : uses
+    PackageController -down-> PackageRequestModel : uses
+    PackageController -down-> PackageResponseModel : uses
+    PackageServiceImpl -down-> Package : manipulates
+    PackageServiceImpl -down-> PackageRequestModel : uses
+    PackageServiceImpl -down-> PackageResponseModel : returns
+    EntityModelUtil -up-^ Package : converts
+    EntityModelUtil -up-^ PackageRequestModel : maps
+    EntityModelUtil -up-^ PackageResponseModel : maps
+}
+
+@enduml
