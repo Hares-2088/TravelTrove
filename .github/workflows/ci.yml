@@ -35,8 +35,19 @@ jobs:
         working-directory: be-traveltrove
         run: chmod +x gradlew
 
+      - name: Set up environment variables
+        working-directory: be-traveltrove
+        run: |
+          echo "DB_URL=jdbc:mysql://localhost:3306/testdb" >> .env
+          echo "DB_USERNAME=test_user" >> .env
+          echo "DB_PASSWORD=test_password" >> .env
+
       - name: Build and test backend
         working-directory: be-traveltrove
+        env:
+          DB_URL: jdbc:mysql://localhost:3306/testdb
+          DB_USERNAME: test_user
+          DB_PASSWORD: test_password
         run: ./gradlew clean build
 
   frontend-tests:
@@ -58,4 +69,4 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: fe-traveltrove
-        run: npm run test:tests # Adjust to match your Playwright test script
+        run: npm run test:tests
