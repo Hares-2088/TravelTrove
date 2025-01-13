@@ -9,6 +9,13 @@ import { auth0Config } from './auth/auth0-config';
 import { AppRoutes } from './shared/models/app.routes';
 import "./i18n";
 
+
+const elfsightScript = document.createElement('script');
+elfsightScript.src = 'https://static.elfsight.com/platform/platform.js';
+elfsightScript.async = true;
+document.body.appendChild(elfsightScript);
+
+
 const onRedirectCallback = () => {
   window.location.replace(AppRoutes.Callback);
 };
