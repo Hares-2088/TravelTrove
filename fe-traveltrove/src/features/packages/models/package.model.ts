@@ -24,4 +24,5 @@ export interface PackageResponseModel {
     priceTriple: number;
     availableSeats: number;
     totalSeats: number;
+    status?: string; // Add status property
 }

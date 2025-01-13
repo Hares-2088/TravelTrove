@@ -1,0 +1,28 @@
+.custom-table {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.custom-table thead th {
+    background-color: #e9ecef;
+    font-weight: bold;
+    text-align: center;
+}
+
+.custom-table tbody tr {
+    background-color: #ffffff;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.custom-table tbody td {
+    padding: 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.modal-content {
+    border-radius: 15px;
+}

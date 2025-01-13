@@ -8,6 +8,8 @@ import {
     BookingResponseModel,
     BookingStatus,
 } from "../../../bookings/models/bookings.model";
+import "./Bookings.css"; // Import custom CSS file
+import "../../../../shared/css/Scrollbar.css"; // Import scrollbar CSS
 
 const Bookings: React.FC = () => {
     const { t } = useTranslation();
@@ -94,7 +96,7 @@ const Bookings: React.FC = () => {
 
     return (
         <div
-            className="d-flex justify-content-center align-items-center p-4"
+            className="d-flex justify-content-center align-items-center p-4 dashboard-scrollbar"
             style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}
         >
             <Card
@@ -135,7 +137,7 @@ const Bookings: React.FC = () => {
 
                     <Card className="rounded shadow-sm border-0">
                         <Card.Body>
-                            <Table bordered hover responsive className="rounded">
+                            <Table bordered hover responsive className="rounded custom-table">
                                 <thead className="bg-light">
                                     <tr>
                                         <th>{t("User ID")}</th>
@@ -195,7 +197,7 @@ const Bookings: React.FC = () => {
                         </Card.Body>
                     </Card>
 
-                    <Modal show={showModal} onHide={() => setShowModal(false)}>
+                    <Modal show={showModal} onHide={() => setShowModal(false)} className="rounded">
                         <Modal.Header closeButton>
                             <Modal.Title>
                                 {modalType === "create"
