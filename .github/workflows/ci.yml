@@ -31,6 +31,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Grant execute permissions to gradlew
+        working-directory: be-traveltrove
+        run: chmod +x gradlew
+
       - name: Build and test backend
         working-directory: be-traveltrove
         run: ./gradlew clean build
@@ -54,4 +58,4 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: fe-traveltrove
-        run: npm run test:e2e # Adjust to match your Playwright test script
+        run: npm run test:tests # Adjust to match your Playwright test script
