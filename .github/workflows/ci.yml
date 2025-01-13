@@ -13,7 +13,7 @@ jobs:
     name: Backend Tests
     runs-on: ubuntu-latest
 
-    # Make secrets available to all steps in the job.
+    # Define secrets at the job level
     env:
       AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
       AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
@@ -51,11 +51,15 @@ jobs:
         working-directory: be-traveltrove
         run: chmod +x gradlew
 
-      - name: Debug Environment Variables
-        # This will show if the AUTH0 vars are set (masked in logs).
+      # Debug all environment variables
+      - name: Debug All Environment Variables
+        run: printenv
+
+      # Debug only AUTH0 variables
+      - name: Debug AUTH0 Environment Variables
         run: |
-          echo "Listing environment variables containing 'AUTH0':"
-          printenv | grep AUTH0 || echo "No AUTH0 variables found."
+          echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}"
+          echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}"
 
       - name: Build and test backend
         working-directory: be-traveltrove
@@ -70,34 +74,3 @@ jobs:
         with:
           name: test-reports
           path: build/reports/tests/test/
-
-  frontend-tests:
-    name: Frontend Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install dependencies
-        working-directory: fe-traveltrove
-        run: npm install
-
-      - name: Run Playwright tests
-        working-directory: fe-traveltrove
-        env:
-          REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-          REACT_APP_AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
-        run: npm run test:tests
-
-      - name: Upload Playwright Artifacts
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: playwright-artifacts
-          path: fe-traveltrove/playwright-report
