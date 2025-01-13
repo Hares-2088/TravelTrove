@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI for TravelTrove
 
 on:
   push:
@@ -9,7 +9,8 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  backend-tests:
+    name: Backend Tests
     runs-on: ubuntu-latest
 
     services:
@@ -24,40 +25,64 @@ jobs:
           --health-retries=3
 
     steps:
-      # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Java
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # Cache dependencies
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
+          path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle
+            ${{ runner.os }}-gradle-
 
-      # Run Gradle build
-      - name: Build and Test
-        run: ./gradlew clean build test --info
+      - name: Grant execute permissions to gradlew
+        working-directory: be-traveltrove
+        run: chmod +x gradlew
 
-      # Generate test coverage report
-      - name: Generate Jacoco Report
-        if: success()
-        run: ./gradlew jacocoTestReport
+      - name: Build and test backend
+        working-directory: be-traveltrove
+        env:
+          SPRING_PROFILES_ACTIVE: test
+          SPRING_DATA_MONGODB_DATABASE: testdb
+          SPRING_DATA_MONGODB_HOST: localhost
+          SPRING_DATA_MONGODB_PORT: 27017
+          SERVER_PORT: 8080
+          AUTH0_CLIENT_ID: test-client-id
+          AUTH0_CLIENT_SECRET: test-client-secret
+          AUTH0_AUDIENCE: https://dev-traveltrove.ca.auth0.com/api/v2/
+        run: ./gradlew clean build -Dspring.profiles.active=test
 
-      # Upload test coverage results
-      - name: Upload Jacoco Report
+      - name: Upload Test Reports
+        if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: jacoco-report
-          path: build/reports/jacoco/test/html/
+          name: test-reports
+          path: build/reports/tests/test/
+
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        working-directory: fe-traveltrove
+        run: npm install
+
+      - name: Run Playwright tests
+        working-directory: fe-traveltrove
+        run: npm run test:tests
