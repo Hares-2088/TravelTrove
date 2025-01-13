@@ -50,12 +50,13 @@ jobs:
         working-directory: be-traveltrove
         run: chmod +x gradlew
 
-      # Debug environment variables
-      - name: Debug AUTH0 Environment Variables
+      # Debug environment variables at the workflow level
+      - name: Debug Environment Variables
         run: |
           echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}"
           echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}"
 
+      # Run backend tests
       - name: Build and test backend
         working-directory: be-traveltrove
         run: |
@@ -64,9 +65,16 @@ jobs:
             -Dauth0.clientSecret=${AUTH0_CLIENT_SECRET} \
             -Dspring.profiles.active=ci
 
+      # Upload test reports for review
       - name: Upload Test Reports
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test-reports
           path: be-traveltrove/build/reports/tests/test/
+
+      # Debug spring application logs for troubleshooting
+      - name: Check Application Logs
+        if: failure()
+        run: |
+          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
