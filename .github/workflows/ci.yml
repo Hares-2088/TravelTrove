@@ -50,11 +50,7 @@ jobs:
         working-directory: be-traveltrove
         run: chmod +x gradlew
 
-      # Debug all environment variables (optional; remove in production)
-      - name: Debug All Environment Variables
-        run: printenv
-
-      # Debug only AUTH0 variables (optional; remove in production)
+      # Debug environment variables
       - name: Debug AUTH0 Environment Variables
         run: |
           echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}"
@@ -62,17 +58,14 @@ jobs:
 
       - name: Build and test backend
         working-directory: be-traveltrove
-        env:
-          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
         run: |
           ./gradlew clean build \
-            -Dauth0.clientId=$AUTH0_CLIENT_ID \
-            -Dauth0.clientSecret=$AUTH0_CLIENT_SECRET \
+            -Dauth0.clientId=${AUTH0_CLIENT_ID} \
+            -Dauth0.clientSecret=${AUTH0_CLIENT_SECRET} \
             -Dspring.profiles.active=ci
 
       - name: Upload Test Reports
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test-reports
