@@ -23,7 +23,6 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -46,11 +45,14 @@ jobs:
         working-directory: be-traveltrove
         run: chmod +x gradlew
 
+      - name: Debug Environment Variables
+        run: printenv | grep AUTH0
+
       - name: Build and test backend
         working-directory: be-traveltrove
         env:
-            AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-            AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
+          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
         run: ./gradlew clean build
 
       - name: Upload Test Reports
@@ -79,4 +81,14 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: fe-traveltrove
+        env:
+          REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+          REACT_APP_AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
         run: npm run test:tests
+
+      - name: Upload Playwright Artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-artifacts
+          path: fe-traveltrove/playwright-report
