@@ -17,7 +17,7 @@ interface TourPackagesTabProps {
 const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const { t } = useTranslation();
     const navigate = useNavigate(); // Initialize useNavigate
-    const { getAllPackages, addPackage, updatePackage, deletePackage } = usePackagesApi();
+    const { getAllPackages, addPackage, updatePackage, deletePackage, getPackageStatus } = usePackagesApi();
     const { getAllAirports } = useAirportsApi(); // Use the airports API hook
     const [packages, setPackages] = useState<PackageResponseModel[]>([]);
     const [airports, setAirports] = useState<AirportResponseModel[]>([]); // State for airports
@@ -37,6 +37,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         priceSingle: 0,
         priceDouble: 0,
         priceTriple: 0,
+        totalSeats: 0,
     });
     const [formErrors, setFormErrors] = useState({
         name: false,
@@ -46,6 +47,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         priceSingle: false,
         airportId: false,
         dateOrder: false,
+        totalSeats: false,
     });
 
     useEffect(() => {
@@ -80,6 +82,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             priceSingle: formData.priceSingle === null,
             airportId: !formData.airportId,
             dateOrder: new Date(formData.startDate) >= new Date(formData.endDate),
+            totalSeats: formData.totalSeats === null,
         };
         setFormErrors(errors);
 
@@ -135,6 +138,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             priceSingle: 0,
                             priceDouble: 0,
                             priceTriple: 0,
+                            totalSeats: 0,
                         });
                         setFormErrors({
                             name: false,
@@ -144,6 +148,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             priceSingle: false,
                             airportId: false,
                             dateOrder: false,
+                            totalSeats: false,
                         });
                         setShowModal(true);
                     }}
@@ -156,16 +161,28 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 <thead className="bg-light">
                     <tr>
                         <th>{t("Name")}</th>
+                        <th>{t("Package Status")}</th>
                         <th>{t("actions")}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {packages.map((pkg) => (
-                        <tr key={pkg.packageId}>
-                            <td onClick={() => navigate(`/bookings?packageId=${pkg.packageId}`)}>
-                                {pkg.name}
-                            </td>
-                            <td>
+                {packages.map((pkg) => (
+                    <tr key={pkg.packageId}>
+                        <td onClick={() => {
+                            setSelectedPackage(pkg);
+                            setModalType("view");
+                            setShowModal(true);
+                        }}>
+                            {pkg.name}
+                        </td>
+
+                        <td onClick={() => navigate(`/bookings?packageId=${pkg.packageId}`)}>
+                            {pkg.name}
+                        </td>
+
+                        <td>{getPackageStatus(pkg)}</td>
+
+                        <td>
                                 <Button
                                     variant="outline-primary"
                                     onClick={() => {
@@ -181,6 +198,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                             priceSingle: pkg.priceSingle,
                                             priceDouble: pkg.priceDouble,
                                             priceTriple: pkg.priceTriple,
+                                            totalSeats: pkg.totalSeats,
                                         });
                                         setFormErrors({
                                             name: false,
@@ -190,6 +208,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                             priceSingle: false,
                                             airportId: false,
                                             dateOrder: false,
+                                            totalSeats: false,
                                         });
                                         setShowModal(true);
                                     }}
@@ -237,6 +256,9 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             <p><strong>{t("priceSingle")}:</strong> {selectedPackage?.priceSingle}</p>
                             <p><strong>{t("priceDouble")}:</strong> {selectedPackage?.priceDouble}</p>
                             <p><strong>{t("priceTriple")}:</strong> {selectedPackage?.priceTriple}</p>
+                            <p><strong>{("availableSeats")}:</strong> {selectedPackage?.availableSeats}</p>
+                            <p><strong>{("totalSeats")}:</strong> {selectedPackage?.totalSeats}</p>
+                            <p><strong>{("packageStatus")}:</strong> {selectedPackage && getPackageStatus(selectedPackage)}</p>
                         </div>
                     ) : (
                         <Form onSubmit={handleSubmit}>
@@ -351,6 +373,20 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 </Form.Control>
                                 <Form.Control.Feedback type="invalid">
                                     {t("airportRequired")}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>{("totalSeats")}</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    value={formData.totalSeats}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, totalSeats: +e.target.value })
+                                    }
+                                    isInvalid={formErrors.totalSeats}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {("totalSeatsRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Modal.Footer>

@@ -30,6 +30,7 @@ public class PackageEntityModelUtil {
                 .priceSingle(packageRequestModel.getPriceSingle())
                 .priceDouble(packageRequestModel.getPriceDouble())
                 .priceTriple(packageRequestModel.getPriceTriple())
+                .totalSeats(packageRequestModel.getTotalSeats())
                 .build();
 
     }

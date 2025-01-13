@@ -10,8 +10,6 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @DataMongoTest
 @ActiveProfiles("test")
 class PackageRepositoryIntegrationTest {
@@ -25,7 +23,7 @@ class PackageRepositoryIntegrationTest {
     private final String EXISTING_TOUR_ID = "ad633b50-83d4-41f3-866a-26452bdd6f33";
 
     private final String NON_EXISTING_AIRPORT_ID = "non-existing-airport-id";
-    private final String NON_EXISTING_tOUR_ID = "non-existing-tour-id";
+    private final String NON_EXISTING_TOUR_ID = "non-existing-tour-id";
 
     @BeforeEach
     void setUp() {
@@ -42,6 +40,8 @@ class PackageRepositoryIntegrationTest {
                 // start date and end date in LocalDate format
                 .startDate(LocalDate.of(2021, 12, 1))
                 .endDate(LocalDate.of(2021, 12, 10))
+                .totalSeats(130)
+                .availableSeats(120)
                 .build();
 
         StepVerifier.create(packageRepository.save(pk))
@@ -68,7 +68,9 @@ class PackageRepositoryIntegrationTest {
                                 pk.getPriceDouble().equals(200.0) &&
                                 pk.getPriceTriple().equals(300.0) &&
                                 pk.getStartDate().equals(LocalDate.of(2021, 12, 1)) &&
-                                pk.getEndDate().equals(LocalDate.of(2021, 12, 10))
+                                pk.getEndDate().equals(LocalDate.of(2021, 12, 10)) &&
+                                pk.getTotalSeats().equals(130) &&
+                                pk.getAvailableSeats().equals(120)
                 )
                 .verifyComplete();
     }
@@ -92,14 +94,16 @@ class PackageRepositoryIntegrationTest {
                                 pk.getPriceDouble().equals(200.0) &&
                                 pk.getPriceTriple().equals(300.0) &&
                                 pk.getStartDate().equals(LocalDate.of(2021, 12, 1)) &&
-                                pk.getEndDate().equals(LocalDate.of(2021, 12, 10))
+                                pk.getEndDate().equals(LocalDate.of(2021, 12, 10)) &&
+                                pk.getTotalSeats().equals(130) &&
+                                pk.getAvailableSeats().equals(120)
                 )
                 .verifyComplete();
     }
 
     @Test
     void whenFindAllByTourId_withNonExistingId_thenReturnEmptyFlux() {
-        StepVerifier.create(packageRepository.findPackagesByTourId(NON_EXISTING_tOUR_ID))
+        StepVerifier.create(packageRepository.findPackagesByTourId(NON_EXISTING_TOUR_ID))
                 .verifyComplete();
     }
 
