@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.debug;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,10 @@ public class EnvVariableDebugger {
     @org.springframework.beans.factory.annotation.Value("${spring.profiles.active:NOT_SET}")
     private String activeProfile;
 
-    public EnvVariableDebugger() {
+    @PostConstruct
+    public void logEnvVariables() {
         logger.info("Auth0 Client ID: {}", clientId);
         logger.info("Auth0 Client Secret: {}", clientSecret);
-        logger.info("Active Profile: {}", activeProfile);
+        logger.info("Active Spring Profile: {}", activeProfile);
     }
 }
