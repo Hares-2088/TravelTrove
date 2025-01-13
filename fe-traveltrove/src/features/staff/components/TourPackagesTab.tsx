@@ -8,6 +8,7 @@ import {
     PackageResponseModel,
 } from "../../packages/models/package.model";
 import { AirportResponseModel } from "../../airports/models/airports.model"; // Import the airport model
+import FilterBar from "../../../shared/components/FilterBar";
 
 interface TourPackagesTabProps {
     tourId: string;
@@ -25,6 +26,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     );
     const [selectedPackage, setSelectedPackage] =
         useState<PackageResponseModel | null>(null);
+    
     const [formData, setFormData] = useState<PackageRequestModel>({
         airportId: "",
         tourId: tourId,
@@ -47,11 +49,24 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         dateOrder: false,
         totalSeats: false,
     });
+    const [filteredPackages, setFilteredPackages] = useState<PackageResponseModel[]>([]);
+
+    // States for filters
+    const [filterName, setFilterName] = useState("");
+    const [filterStatus, setFilterStatus] = useState("");
+    const [filterDate, setFilterDate] = useState<Date | null>(null);
+    const [sortField, setSortField] = useState<"price" | "date" | "popularity" | null>(null);
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
 
     useEffect(() => {
         fetchPackages();
         fetchAirports(); // Fetch airports when the component mounts
     }, [tourId]);
+
+    useEffect(() => {
+        applyFilters();
+    }, [filterName, filterStatus, filterDate, sortField, sortOrder, packages]);
 
     const fetchPackages = async () => {
         try {
@@ -118,11 +133,55 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         handleSave();
     };
 
+    const applyFilters = () => {
+        let filtered = packages;
+
+        // Filter by name
+        if (filterName) {
+            filtered = filtered.filter((pkg) =>
+                pkg.name.toLowerCase().includes(filterName.toLowerCase())
+            );
+        }
+
+        // Filter by status
+        if (filterStatus) {
+            filtered = filtered.filter((pkg) => pkg.status === filterStatus);
+        }
+
+        // Filter by date
+        if (filterDate) {
+            filtered = filtered.filter((pkg) =>
+                pkg.startDate.includes(filterDate)
+            );
+        }
+    
+        // Sort packages
+        if (sortField) {
+          filtered = filtered.sort((a, b) => {
+            const aValue = a[sortField];
+            const bValue = b[sortField];
+            return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+          });
+        }
+    
+        setFilteredPackages(filtered);
+      };
+
+
+      const handleResetFilters = () => {
+        setFilterName("");
+        setFilterStatus("");
+        setFilterDate(null);
+        setSortField(null);
+        setSortOrder("asc");
+    };
+      
+
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3>{t("Packages")}</h3>
-                <Button
+
+            <Button
                     variant="primary"
                     onClick={() => {
                         setModalType("create");
@@ -155,6 +214,53 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 </Button>
             </div>
 
+            <h3>{t("Packages")}</h3>
+            <div className="filter-bar">
+                <Form.Control
+                    type="text"
+                    placeholder={t("Filter by name")}
+                    value={filterName}
+                    onChange={(e) => setFilterName(e.target.value)}
+                />
+                <Form.Control
+                    as="select"
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                    <option value="">{t("All Statuses")}</option>
+                    <option value="Active">{t("Active")}</option>
+                    <option value="Inactive">{t("Inactive")}</option>
+                </Form.Control>
+                <Form.Control
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                />
+                <Form.Control
+                    as="select"
+                    value={sortField || ""}
+                    onChange={(e) => setSortField(e.target.value as any)}
+                >
+                    <option value="">{t("Sort by")}</option>
+                    <option value="price">{t("Price")}</option>
+                    <option value="date">{t("Date")}</option>
+                    <option value="popularity">{t("Popularity")}</option>
+                </Form.Control>
+                <Form.Control
+                    as="select"
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
+                >
+                    <option value="asc">{t("Ascending")}</option>
+                    <option value="desc">{t("Descending")}</option>
+                </Form.Control>
+                <Button variant="secondary" onClick={handleResetFilters}>
+                    {t("Reset Filters")}
+                </Button>
+            </div>
+            
+            
+                
             <Table bordered hover responsive className="rounded">
                 <thead className="bg-light">
                     <tr>
@@ -164,6 +270,17 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     </tr>
                 </thead>
                 <tbody>
+                        {filteredPackages.map((pkg) => (
+                    <tr key={pkg.packageId}>
+                    <td>{pkg.name}</td>
+                    <td>{pkg.status}</td>
+                    <td>{new Date(pkg.date).toLocaleDateString()}</td>
+                    <td>{pkg.location}</td>
+                    <td>{pkg.price}</td>
+                    <td>{pkg.rating}</td>
+                    <td>{/* Actions */}</td>
+                    </tr>
+                         ))}
                     {packages.map((pkg) => (
                         <tr key={pkg.packageId}>
                             <td onClick={() => {
