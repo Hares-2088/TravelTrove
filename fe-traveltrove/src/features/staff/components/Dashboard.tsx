@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Tab, Nav, Row, Col, Card } from "react-bootstrap";
-import CountriesTab from "./CountriesTab";
-import EventsTab from "./EventsTab"; 
-import CitiesTab from "./CitiesTab";
-import ToursTab from "./ToursTab";
-import HotelsTab from "./HotelsTab";
-import AirportsTab from "./AirportsTab";
-import TravelersTab from "./travelersTab"; // Import the new TravelersTab component
+import CountriesTab from "./Tabs/CountriesTab";
+import EventsTab from "./Tabs/EventsTab"; 
+import CitiesTab from "./Tabs/CitiesTab";
+import ToursTab from "./Tabs/ToursTab";
+import HotelsTab from "./Tabs/HotelsTab";
+import AirportsTab from "./Tabs/AirportsTab";
+import TravelersTab from "./Tabs/travelersTab"; // Import the new TravelersTab component
 import { useTranslation } from "react-i18next";
 
 
@@ -170,7 +170,7 @@ const Dashboard: React.FC = () => {
                    <ToursTab />
                   </Tab.Pane>
                   <Tab.Pane eventKey="events">
-                    <EventsTab /> {/* Use the EventsTab component here */}
+                    <EventsTab />
                   </Tab.Pane>
                   <Tab.Pane eventKey="hotels">
                     <HotelsTab />

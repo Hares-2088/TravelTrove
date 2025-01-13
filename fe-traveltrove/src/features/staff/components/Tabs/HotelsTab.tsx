@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import { useCitiesApi } from "../../cities/api/cities.api";
-import { useHotelsApi } from "../../hotels/api/hotels.api";
+import { useCitiesApi } from "../../../cities/api/cities.api";
+import { useHotelsApi } from "../../../hotels/api/hotels.api";
 import {
   HotelResponseModel,
   HotelRequestModel,
-} from "../../hotels/models/hotel.model";
-import { CityResponseModel } from "../../cities/models/city.model";
-import "../../../shared/css/Scrollbar.css";
+} from "../../../hotels/models/hotel.model";
+import { CityResponseModel } from "../../../cities/models/city.model";
+import "../../../../shared/css/Scrollbar.css";
 
 const HotelsTab: React.FC = () => {
   const { getAllHotels, getHotelById, addHotel, updateHotel, deleteHotel } = useHotelsApi();

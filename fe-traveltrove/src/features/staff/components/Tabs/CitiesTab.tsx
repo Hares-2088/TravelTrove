@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import { useCitiesApi } from "../../cities/api/cities.api";
-import { useCountriesApi } from "../../countries/api/countries.api";
+import { useCitiesApi } from "../../../cities/api/cities.api";
+import { useCountriesApi } from "../../../countries/api/countries.api";
 import { useTranslation } from 'react-i18next';
 import {
   CityResponseModel,
   CityRequestModel,
-} from "../../cities/models/city.model";
-import { CountryResponseModel } from "../../countries/models/country.model";
-import "../../../shared/css/Scrollbar.css";
+} from "../../../cities/models/city.model";
+import { CountryResponseModel } from "../../../countries/models/country.model";
+import "../../../../shared/css/Scrollbar.css";
 
 const CitiesTab: React.FC = () => {
   const { getAllCities, getCityById, addCity, updateCity, deleteCity } = useCitiesApi();

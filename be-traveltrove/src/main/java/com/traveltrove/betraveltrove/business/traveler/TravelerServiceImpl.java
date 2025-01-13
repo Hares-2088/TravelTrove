@@ -5,7 +5,7 @@ import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
-import com.traveltrove.betraveltrove.utils.entitymodels.TravelerEntityModelUtil;
+import com.traveltrove.betraveltrove.utils.entitymodelyutils.TravelerEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;

@@ -8,7 +8,7 @@ import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
-import com.traveltrove.betraveltrove.utils.entitymodels.PackageEntityModelUtil;
+import com.traveltrove.betraveltrove.utils.entitymodelyutils.PackageEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

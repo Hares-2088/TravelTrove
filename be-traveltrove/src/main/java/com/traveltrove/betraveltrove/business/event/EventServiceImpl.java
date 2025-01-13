@@ -3,7 +3,7 @@ package com.traveltrove.betraveltrove.business.event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
 import com.traveltrove.betraveltrove.presentation.events.EventRequestModel;
 import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
-import com.traveltrove.betraveltrove.utils.entitymodels.EventEntityModel;
+import com.traveltrove.betraveltrove.utils.entitymodelyutils.EventEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class EventServiceImpl implements EventService {
     public Mono<EventResponseModel> getEventByEventId(String eventId) {
         return eventRepository.findEventByEventId(eventId)
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Event id not found: " + eventId))))
-                .map(EventEntityModel::toEventResponseModel);
+                .map(EventEntityModelUtil::toEventResponseModel);
     }
 
     @Override
@@ -33,14 +33,14 @@ public class EventServiceImpl implements EventService {
         // Handle filtering logic based on query parameters
         if (cityId != null && !cityId.isEmpty()) {
             return eventRepository.findAllByCityId(cityId)
-                    .map(EventEntityModel::toEventResponseModel);
+                    .map(EventEntityModelUtil::toEventResponseModel);
         } else if (countryId != null && !countryId.isEmpty()) {
             return eventRepository.findAllByCountryId(countryId)
-                    .map(EventEntityModel::toEventResponseModel);
+                    .map(EventEntityModelUtil::toEventResponseModel);
         }
         // Return all events if no filters are provided
         return eventRepository.findAll()
-                .map(EventEntityModel::toEventResponseModel);
+                .map(EventEntityModelUtil::toEventResponseModel);
     }
 
     @Override
@@ -55,10 +55,10 @@ public class EventServiceImpl implements EventService {
                         return Mono.error(new InvalidInputException("Event description is required"));
                     }
                     // cityId and countryId are optional, so they are not validated here
-                    return Mono.just(EventEntityModel.toEventEntity(requestModel));
+                    return Mono.just(EventEntityModelUtil.toEventEntity(requestModel));
                 })
                 .flatMap(eventRepository::save)
-                .map(EventEntityModel::toEventResponseModel);
+                .map(EventEntityModelUtil::toEventResponseModel);
     }
 
 
@@ -81,12 +81,12 @@ public Mono<EventResponseModel> updateEvent(String eventId, Mono<EventRequestMod
                         if (requestModel.getCountryId() == null || requestModel.getCountryId().isBlank()) {
                             return Mono.error(new InvalidInputException("Country ID is required"));
                         }
-                        return Mono.just(EventEntityModel.toEventEntity(requestModel))
+                        return Mono.just(EventEntityModelUtil.toEventEntity(requestModel))
                                 .doOnNext(event -> event.setEventId(foundEvent.getEventId()))
                                 .doOnNext(event -> event.setId(foundEvent.getId()));
                     }))
             .flatMap(eventRepository::save)
-            .map(EventEntityModel::toEventResponseModel);
+            .map(EventEntityModelUtil::toEventResponseModel);
 }
 
 
@@ -95,6 +95,6 @@ public Mono<EventResponseModel> updateEvent(String eventId, Mono<EventRequestMod
         return eventRepository.findEventByEventId(eventId)
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Event id not found: " + eventId))))
                 .flatMap(event -> eventRepository.delete(event).thenReturn(event))
-                .map(EventEntityModel::toEventResponseModel);
+                .map(EventEntityModelUtil::toEventResponseModel);
     }
 }

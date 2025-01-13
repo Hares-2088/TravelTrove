@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.utils.entitymodels;
+package com.traveltrove.betraveltrove.utils.entitymodelyutils;
 
 import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;

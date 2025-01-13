@@ -9,6 +9,7 @@ export enum AppRoutes {
   CityDetailsPage = '/cities/:cityId',
   Register = '/register',
   Profile = '/profile',
+  Bookings = '/bookings',
   Callback = '/callback',
 
   // Error Routes

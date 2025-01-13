@@ -1,7 +1,9 @@
 package com.traveltrove.betraveltrove.utils;
 
 import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
+import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -28,6 +30,17 @@ public class GlobalControllerExceptionHandler {
         return createHttpErrorInfo(UNPROCESSABLE_ENTITY, request, ex);
     }
 
+    @ResponseStatus(UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(InvalidStatusException.class)
+    public HttpErrorInfo handleInvalidStatusException(ServerHttpRequest request, Exception ex) {
+        return createHttpErrorInfo(UNPROCESSABLE_ENTITY, request, ex);
+    }
+
+    @ResponseStatus(UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(SameStatusException.class)
+    public HttpErrorInfo handleSameStatusException(ServerHttpRequest request, Exception ex) {
+        return createHttpErrorInfo(UNPROCESSABLE_ENTITY, request, ex);
+    }
 
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, ServerHttpRequest request, Exception ex) {
         final String path = request.getPath().value();

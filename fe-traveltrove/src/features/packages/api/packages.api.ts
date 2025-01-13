@@ -24,6 +24,7 @@ export const usePackagesApi = () => {
             if (trimmedLine.startsWith('data:')) {
                 try {
                     const pkg = JSON.parse(trimmedLine.substring(5).trim());
+                    pkg.status = getPackageStatus(pkg); // Add status to package
                     packages.push(pkg);
                 } catch (error) {
                     console.error('Error parsing line:', trimmedLine, error);
