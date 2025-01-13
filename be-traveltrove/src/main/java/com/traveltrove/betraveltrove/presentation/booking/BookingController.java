@@ -3,6 +3,9 @@ package com.traveltrove.betraveltrove.presentation.booking;
 import com.traveltrove.betraveltrove.business.booking.BookingService;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
 import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
+import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusException;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,7 +37,7 @@ public class BookingController {
         return bookingService.getBookings();
     }
 
-    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/booking", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<BookingResponseModel>> getBookingByPackageIdAndUserIdOrBookingId(
             @RequestParam(required = false) String packageId,
             @RequestParam(required = false) String userId,
@@ -57,67 +60,38 @@ public class BookingController {
     public Mono<ResponseEntity<BookingResponseModel>> createBooking(@RequestBody BookingRequestModel bookingRequestModel) {
         return bookingService.createBooking(bookingRequestModel)
                 .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.badRequest().build());
+                .onErrorResume(NotFoundException.class, e -> {
+                    log.error("User or Package Not Found: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+                })
+                .onErrorResume(InvalidStatusException.class, e -> {
+                    log.error("Invalid Booking Status: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).body(null));
+                })
+                .onErrorResume(Exception.class, e -> {
+                    log.error("Unhandled Error: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
+                });
     }
 
-    @PatchMapping("/{bookingId}/confirm")
-    public Mono<ResponseEntity<BookingResponseModel>> confirmBooking(@PathVariable String bookingId) {
-        return bookingService.confirmBooking(bookingId)
-                .map(ResponseEntity::ok);
-    }
-
-    @PatchMapping("/{bookingId}/payment/pending")
-    public Mono<ResponseEntity<BookingResponseModel>> paymentPending(@PathVariable String bookingId) {
-        return bookingService.paymentPending(bookingId)
-                .map(ResponseEntity::ok);
-    }
-
-    @PatchMapping("/{bookingId}/payment/tentative2")
-    public Mono<ResponseEntity<BookingResponseModel>> paymentTentative2(@PathVariable String bookingId) {
-        return bookingService.paymentTentative2(bookingId)
-                .map(ResponseEntity::ok);
-    }
-
-    @PatchMapping("/{bookingId}/payment/tentative3")
-    public Mono<ResponseEntity<BookingResponseModel>> paymentTentative3(@PathVariable String bookingId) {
-        return bookingService.paymentTentative3(bookingId)
-                .map(ResponseEntity::ok);
-    }
-
-    @PatchMapping("/{bookingId}/fail")
-    public Mono<ResponseEntity<BookingResponseModel>> bookingFailed(@PathVariable String bookingId) {
-        return bookingService.bookingFailed(bookingId)
-                .map(ResponseEntity::ok);
-    }
-
-    @PatchMapping("/{bookingId}/payment/success")
-    public Mono<ResponseEntity<BookingResponseModel>> paymentSuccess(@PathVariable String bookingId) {
-        return bookingService.paymentSuccess(bookingId)
-                .map(ResponseEntity::ok);
-    }
-
-    @PatchMapping("/{bookingId}/finalize")
-    public Mono<ResponseEntity<BookingResponseModel>> finalizeBooking(@PathVariable String bookingId) {
-        return bookingService.finalizeBooking(bookingId)
-                .map(ResponseEntity::ok);
-    }
-
-    @PatchMapping("/{bookingId}/expire")
-    public Mono<ResponseEntity<BookingResponseModel>> expireBooking(@PathVariable String bookingId) {
-        return bookingService.expireBooking(bookingId)
-                .map(ResponseEntity::ok);
-    }
-
-    @PatchMapping("/{bookingId}/refund")
-    public Mono<ResponseEntity<BookingResponseModel>> refundBooking(@PathVariable String bookingId) {
-        return bookingService.refundBooking(bookingId)
-                .map(ResponseEntity::ok);
-    }
-
-    @PatchMapping("/{bookingId}/cancel")
-    public Mono<ResponseEntity<BookingResponseModel>> cancelBooking(@PathVariable String bookingId) {
-        return bookingService.cancelBooking(bookingId)
-                .map(ResponseEntity::ok);
+    @PatchMapping("/{bookingId}")
+    public Mono<ResponseEntity<BookingResponseModel>> updateBookingStatus(
+            @PathVariable String bookingId,
+            @RequestBody BookingStatusUpdateRequest statusUpdateRequest) {
+        return bookingService.updateBookingStatus(bookingId, statusUpdateRequest.getStatus())
+                .map(ResponseEntity::ok)
+                .onErrorResume(NotFoundException.class, e -> {
+                    log.error("Booking not found: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                })
+                .onErrorResume(SameStatusException.class, e -> {
+                    log.error("Invalid status transition: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+                })
+                .onErrorResume(Exception.class, e -> {
+                    log.error("Unexpected error: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
     @DeleteMapping("/{bookingId}")

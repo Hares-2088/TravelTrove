@@ -2,8 +2,8 @@ package com.traveltrove.betraveltrove.dataaccess.booking;
 
 public enum BookingStatus {
     PAYMENT_PENDING,
-    PAYMENT_TENTATIVE2_PENDING,
-    PAYMENT_TENTATIVE3_PENDING,
+    PAYMENT_ATTEMPT2_PENDING,
+    PAYMENT_ATTEMPT3_PENDING,
     BOOKING_FAILED,
     PAYMENT_SUCCESS,
     BOOKING_CONFIRMED,

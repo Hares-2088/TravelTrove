@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { usePackagesApi } from "../../packages/api/packages.api";
-import { useAirportsApi } from "../../airports/api/airports.api"; // Import the airports API hook
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { usePackagesApi } from "../../../packages/api/packages.api";
+import { useAirportsApi } from "../../../airports/api/airports.api"; // Import the airports API hook
 import {
     PackageRequestModel,
     PackageResponseModel,
-} from "../../packages/models/package.model";
-import { AirportResponseModel } from "../../airports/models/airports.model"; // Import the airport model
+} from "../../../packages/models/package.model";
+import { AirportResponseModel } from "../../../airports/models/airports.model"; // Import the airport model
 
 interface TourPackagesTabProps {
     tourId: string;
@@ -15,6 +16,7 @@ interface TourPackagesTabProps {
 
 const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate(); // Initialize useNavigate
     const { getAllPackages, addPackage, updatePackage, deletePackage } = usePackagesApi();
     const { getAllAirports } = useAirportsApi(); // Use the airports API hook
     const [packages, setPackages] = useState<PackageResponseModel[]>([]);
@@ -160,11 +162,9 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 <tbody>
                     {packages.map((pkg) => (
                         <tr key={pkg.packageId}>
-                            <td onClick={() => {
-                                setSelectedPackage(pkg);
-                                setModalType("view");
-                                setShowModal(true);
-                            }}>{pkg.name}</td>
+                            <td onClick={() => navigate(`/bookings?packageId=${pkg.packageId}`)}>
+                                {pkg.name}
+                            </td>
                             <td>
                                 <Button
                                     variant="outline-primary"

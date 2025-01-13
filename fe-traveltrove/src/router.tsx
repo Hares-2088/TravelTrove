@@ -13,6 +13,7 @@ import ServiceUnavailablePage from './pages/errors/ServiceNotAvailablePage';
 import InternalServerErrorPage from './pages/errors/InternalServerErrorPage';
 import RequestTimeoutPage from './pages/errors/RequestTimeoutPage';
 import ForbiddenPage from './pages/errors/ForbiddenPage';
+import Bookings from './features/staff/components/Pages/Bookings'; // Import the Bookings component
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.Bookings, 
+        element: (
+          <ProtectedRoute>
+            <Bookings />
           </ProtectedRoute>
         ),
       },

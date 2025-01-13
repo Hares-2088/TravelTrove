@@ -3,10 +3,10 @@ import { Button, Table, Modal, Form } from "react-bootstrap";
 import {
   AirportRequestModel,
   AirportResponseModel,
-} from "../../airports/models/airports.model";
-import { CityResponseModel } from "../../cities/models/city.model";
-import { useAirportsApi} from "../../airports/api/airports.api";
-import { useCitiesApi} from "../../cities/api/cities.api";
+} from "../../../airports/models/airports.model";
+import { CityResponseModel } from "../../../cities/models/city.model";
+import { useAirportsApi} from "../../../airports/api/airports.api";
+import { useCitiesApi} from "../../../cities/api/cities.api";
 
 const AirportsTab: React.FC = () => {
   const { getAllAirports, getAirportById, addAirport, updateAirport, deleteAirport } = useAirportsApi();

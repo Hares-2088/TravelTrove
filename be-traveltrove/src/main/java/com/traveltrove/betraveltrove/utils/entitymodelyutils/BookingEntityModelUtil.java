@@ -37,6 +37,7 @@ public class BookingEntityModelUtil {
     public static Booking toBookingEntity(BookingRequestModel bookingRequestModel) {
         return Booking.builder()
                 .bookingId(generateUUIDString()) // Generate a unique bookingId
+                .userId(bookingRequestModel.getUserId()) // Map the userId from the request model
                 .packageId(bookingRequestModel.getPackageId())
                 .totalPrice(bookingRequestModel.getTotalPrice())
                 .status(bookingRequestModel.getStatus())

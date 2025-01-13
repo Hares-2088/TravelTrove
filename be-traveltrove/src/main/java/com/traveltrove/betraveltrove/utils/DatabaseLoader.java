@@ -1880,7 +1880,7 @@ public class DatabaseLoader {
                     .bookingId("c63430a2-6535-4c2e-8036-6d952dbe1448")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
-                    .status(BookingStatus.PAYMENT_TENTATIVE2_PENDING)
+                    .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
                     .bookingDate(LocalDate.now().minusDays(3))
                     .totalPrice(2100.0)
                     .build(),
@@ -1926,7 +1926,7 @@ public class DatabaseLoader {
                         .bookingId("c63430a2-6535-4c2e-8036-6d952dbe1448")
                         .userId("auth0|675f4b619a80612ce548e068")
                         .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
-                        .status(BookingStatus.PAYMENT_TENTATIVE2_PENDING)
+                        .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
                         .bookingDate(LocalDate.now().minusWeeks(2))
                         .totalPrice(2000.0)
                         .build(),
@@ -2072,7 +2072,7 @@ public class DatabaseLoader {
                         .bookingId("2fb6db54-8c75-49ed-9e87-f656c73101d5")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
-                        .status(BookingStatus.PAYMENT_TENTATIVE2_PENDING)
+                        .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
                         .bookingDate(LocalDate.now().plusWeeks(2))
                         .totalPrice(1800.0)
                         .build(),
@@ -2099,7 +2099,7 @@ public class DatabaseLoader {
                         .bookingId("e8f9b624-0fd8-4db7-8fdf-e28af7e652cb")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
-                        .status(BookingStatus.PAYMENT_TENTATIVE3_PENDING)
+                        .status(BookingStatus.PAYMENT_ATTEMPT3_PENDING)
                         .bookingDate(LocalDate.now().plusMonths(3))
                         .totalPrice(2000.0)
                         .build()

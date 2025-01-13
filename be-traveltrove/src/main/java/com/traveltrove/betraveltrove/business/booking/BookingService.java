@@ -8,28 +8,22 @@ import reactor.core.publisher.Mono;
 
 public interface BookingService {
 
+    // Retrieve bookings based on different criteria
     Flux<BookingResponseModel> getBookings();
     Flux<BookingResponseModel> getBookingsByUserId(String userId);
     Flux<BookingResponseModel> getBookingsByPackageId(String packageId);
     Flux<BookingResponseModel> getBookingsByStatus(BookingStatus status);
 
+    // Retrieve specific booking details
     Mono<BookingResponseModel> getBooking(String bookingId);
     Mono<BookingResponseModel> getBookingByPackageIdAndUserId(String packageId, String userId);
 
+    // Create a new booking
     Mono<BookingResponseModel> createBooking(BookingRequestModel bookingRequestModel);
 
-    // a method for each status transition
-    Mono<BookingResponseModel> confirmBooking(String bookingId);
-    Mono<BookingResponseModel> paymentPending(String bookingId);
-    Mono<BookingResponseModel> paymentTentative2(String bookingId);
-    Mono<BookingResponseModel> paymentTentative3(String bookingId);
-    Mono<BookingResponseModel> bookingFailed(String bookingId);
-    Mono<BookingResponseModel> paymentSuccess(String bookingId);
-    Mono<BookingResponseModel> finalizeBooking(String bookingId);
-    Mono<BookingResponseModel> expireBooking(String bookingId);
-    Mono<BookingResponseModel> refundBooking(String bookingId);
-    Mono<BookingResponseModel> cancelBooking(String bookingId);
+    // Generalized method for updating booking status
+    Mono<BookingResponseModel> updateBookingStatus(String bookingId, BookingStatus newStatus);
 
-
+    // Delete a booking
     Mono<BookingResponseModel> deleteBooking(String bookingId);
 }

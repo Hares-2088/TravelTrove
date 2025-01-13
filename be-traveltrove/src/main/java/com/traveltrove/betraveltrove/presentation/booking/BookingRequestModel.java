@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class BookingRequestModel {
 
-    private String bookingId; //public id
     private String userId;
     private String packageId;
 

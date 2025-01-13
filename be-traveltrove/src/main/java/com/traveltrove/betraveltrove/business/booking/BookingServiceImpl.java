@@ -41,17 +41,19 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Flux<BookingResponseModel> getBookingsByUserId(String userId) {
-        return bookingRepository.findBookingsByUserId(userId)
-                .filter(booking -> userExists(booking.getUserId()))
+        return userExistsReactive(userId) // Validate the user reactively
+                .thenMany(bookingRepository.findBookingsByUserId(userId)) // Fetch bookings if user exists
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
+
     @Override
     public Flux<BookingResponseModel> getBookingsByPackageId(String packageId) {
-        return bookingRepository.findBookingsByPackageId(packageId)
-                .filter(booking -> packageExists(booking.getPackageId()))
+        return packageExistsReactive(packageId) // Validate the package reactively
+                .thenMany(bookingRepository.findBookingsByPackageId(packageId)) // Fetch bookings if package exists
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
+
 
     @Override
     public Flux<BookingResponseModel> getBookingsByStatus(BookingStatus status) {
@@ -73,169 +75,47 @@ public class BookingServiceImpl implements BookingService {
     public Mono<BookingResponseModel> getBookingByPackageIdAndUserId(String packageId, String userId) {
         return bookingRepository.findBookingByPackageIdAndUserId(packageId, userId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with package ID: " + packageId + " and user ID: " + userId)))
-                .filter(booking -> userExists(booking.getUserId()))
-                .filter(booking -> packageExists(booking.getPackageId()))
-                .map(BookingEntityModelUtil::toBookingResponseModel);
-    }
-
-@Override
-public Mono<BookingResponseModel> createBooking(BookingRequestModel bookingRequestModel) {
-    return Mono.just(bookingRequestModel)
-            .map(BookingEntityModelUtil::toBookingEntity)
-            .filter(booking -> userExists(booking.getUserId()))
-            .filter(booking -> packageExists(booking.getPackageId()))
-            .flatMap(booking -> bookingRepository.findBookingByPackageIdAndUserId(booking.getPackageId(), booking.getUserId())
-                    .hasElement()
-                    .flatMap(exists -> {
-                        if (exists) {
-                            return Mono.error(new InvalidStatusException("User already has a booking for this package"));
-                        } else {
-                            return bookingRepository.save(booking);
-                        }
-                    }))
-            .map(BookingEntityModelUtil::toBookingResponseModel);
-}
-
-    @Override
-    public Mono<BookingResponseModel> confirmBooking(String bookingId) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.BOOKING_CONFIRMED) {
-                        return Mono.error(new SameStatusException("Booking is already confirmed."));
-                    }
-                    booking.setStatus(BookingStatus.BOOKING_CONFIRMED);
-                    return bookingRepository.save(booking);
-                })
+                .flatMap(booking ->
+                        userExistsReactive(booking.getUserId())
+                                .then(packageExistsReactive(booking.getPackageId()))
+                                .thenReturn(booking) // Continue with the booking after validation
+                )
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
     @Override
-    public Mono<BookingResponseModel> paymentPending(String bookingId) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.PAYMENT_PENDING) {
-                        return Mono.error(new SameStatusException("Booking is already in payment pending status."));
-                    }
-                    booking.setStatus(BookingStatus.PAYMENT_PENDING);
-                    return bookingRepository.save(booking);
-                })
+    public Mono<BookingResponseModel> createBooking(BookingRequestModel bookingRequestModel) {
+        return Mono.just(bookingRequestModel)
+                .map(BookingEntityModelUtil::toBookingEntity)
+                .flatMap(booking ->
+                        userExistsReactive(booking.getUserId())
+                                .then(packageExistsReactive(booking.getPackageId()))
+                                .then(bookingRepository.findBookingByPackageIdAndUserId(booking.getPackageId(), booking.getUserId())
+                                        .hasElement()
+                                        .flatMap(exists -> {
+                                            if (exists) {
+                                                return Mono.error(new InvalidStatusException("User already has a booking for this package"));
+                                            }
+                                            return bookingRepository.save(booking);
+                                        })
+                                )
+                )
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
     @Override
-    public Mono<BookingResponseModel> paymentTentative2(String bookingId) {
+    public Mono<BookingResponseModel> updateBookingStatus(String bookingId, BookingStatus newStatus) {
         return bookingRepository.findBookingByBookingId(bookingId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
                 .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.PAYMENT_TENTATIVE2_PENDING) {
-                        return Mono.error(new SameStatusException("Booking is already in its tentative 2 pending status."));
+                    if (booking.getStatus() == newStatus) {
+                        return Mono.error(new SameStatusException("Booking is already in the status: " + newStatus));
                     }
-                    booking.setStatus(BookingStatus.PAYMENT_TENTATIVE2_PENDING);
+                    booking.setStatus(newStatus);
                     return bookingRepository.save(booking);
                 })
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
-
-    @Override
-    public Mono<BookingResponseModel> paymentTentative3(String bookingId) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.PAYMENT_TENTATIVE3_PENDING) {
-                        return Mono.error(new SameStatusException("Booking is already in its tentative 3 pending status."));
-                    }
-                    booking.setStatus(BookingStatus.PAYMENT_TENTATIVE3_PENDING);
-                    return bookingRepository.save(booking);
-                })
-                .map(BookingEntityModelUtil::toBookingResponseModel);
-    }
-
-    @Override
-    public Mono<BookingResponseModel> bookingFailed(String bookingId) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.BOOKING_FAILED) {
-                        return Mono.error(new SameStatusException("Booking is already in failed status."));
-                    }
-                    booking.setStatus(BookingStatus.BOOKING_FAILED);
-                    return bookingRepository.save(booking);
-                })
-                .map(BookingEntityModelUtil::toBookingResponseModel);
-    }
-
-    @Override
-    public Mono<BookingResponseModel> paymentSuccess(String bookingId) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.PAYMENT_SUCCESS) {
-                        return Mono.error(new SameStatusException("Booking is already in payment success status."));
-                    }
-                    booking.setStatus(BookingStatus.PAYMENT_SUCCESS);
-                    return bookingRepository.save(booking);
-                })
-                .map(BookingEntityModelUtil::toBookingResponseModel);
-    }
-
-    @Override
-    public Mono<BookingResponseModel> finalizeBooking(String bookingId) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.BOOKING_FINALIZED) {
-                        return Mono.error(new SameStatusException("Booking is already in finalized status."));
-                    }
-                    booking.setStatus(BookingStatus.BOOKING_FINALIZED);
-                    return bookingRepository.save(booking);
-                })
-                .map(BookingEntityModelUtil::toBookingResponseModel);
-    }
-
-    @Override
-    public Mono<BookingResponseModel> expireBooking(String bookingId) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.BOOKING_EXPIRED) {
-                        return Mono.error(new SameStatusException("Booking is already in expired status."));
-                    }
-                    booking.setStatus(BookingStatus.BOOKING_EXPIRED);
-                    return bookingRepository.save(booking);
-                })
-                .map(BookingEntityModelUtil::toBookingResponseModel);
-    }
-
-    @Override
-    public Mono<BookingResponseModel> refundBooking(String bookingId) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.REFUNDED) {
-                        return Mono.error(new SameStatusException("Booking is already in refunded status."));
-                    }
-                    booking.setStatus(BookingStatus.REFUNDED);
-                    return bookingRepository.save(booking);
-                })
-                .map(BookingEntityModelUtil::toBookingResponseModel);
-    }
-
-    @Override
-    public Mono<BookingResponseModel> cancelBooking(String bookingId) {
-        return bookingRepository.findBookingByBookingId(bookingId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
-                .flatMap(booking -> {
-                    if (booking.getStatus() == BookingStatus.BOOKING_CANCELLED) {
-                        return Mono.error(new SameStatusException("Booking is already in canceled status."));
-                    }
-                    booking.setStatus(BookingStatus.BOOKING_CANCELLED);
-                    return bookingRepository.save(booking);
-                })
-                .map(BookingEntityModelUtil::toBookingResponseModel);
-    }
-
 
     @Override
     public Mono<BookingResponseModel> deleteBooking(String bookingId) {
@@ -246,18 +126,16 @@ public Mono<BookingResponseModel> createBooking(BookingRequestModel bookingReque
     }
 
     // methods for validation -> userExists, packageExists, isValidStatus
-    private boolean userExists(String userId) {
+    private Mono<Void> userExistsReactive(String userId) {
         return userService.syncUserWithAuth0(userId)
                 .hasElement()
-                .blockOptional()
-                .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
+                .flatMap(exists -> exists ? Mono.empty() : Mono.error(new NotFoundException("User not found with ID: " + userId)));
     }
 
-    private boolean packageExists(String packageId) {
+    private Mono<Void> packageExistsReactive(String packageId) {
         return packageService.getPackageByPackageId(packageId)
                 .hasElement()
-                .blockOptional()
-                .orElseThrow(() -> new NotFoundException("Package not found with ID: " + packageId));
+                .flatMap(exists -> exists ? Mono.empty() : Mono.error(new NotFoundException("Package not found with ID: " + packageId)));
     }
 
     private boolean isValidStatus(BookingStatus status) {
