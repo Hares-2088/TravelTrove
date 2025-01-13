@@ -166,23 +166,17 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     </tr>
                 </thead>
                 <tbody>
-                {packages.map((pkg) => (
-                    <tr key={pkg.packageId}>
-                        <td onClick={() => {
-                            setSelectedPackage(pkg);
-                            setModalType("view");
-                            setShowModal(true);
-                        }}>
-                            {pkg.name}
-                        </td>
-
-                        <td onClick={() => navigate(`/bookings?packageId=${pkg.packageId}`)}>
-                            {pkg.name}
-                        </td>
-
-                        <td>{getPackageStatus(pkg)}</td>
-
-                        <td>
+                    {packages.map((pkg) => (
+                        <tr key={pkg.packageId}>
+                            <td onClick={() => {
+                                setSelectedPackage(pkg);
+                                setModalType("view");
+                                setShowModal(true);
+                            }}>
+                                {pkg.name}
+                            </td>
+                            <td>{getPackageStatus(pkg)}</td>
+                            <td>
                                 <Button
                                     variant="outline-primary"
                                     onClick={() => {
@@ -226,6 +220,13 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 >
                                     {t("Delete Package")}
                                 </Button>
+                                <Button
+                                    variant="outline-secondary"
+                                    className="ms-2"
+                                    onClick={() => navigate(`/bookings?packageId=${pkg.packageId}`)}
+                                >
+                                    {t("View Bookings")}
+                                </Button>
                             </td>
                         </tr>
                     ))}
@@ -238,10 +239,10 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                         {modalType === "create"
                             ? t("Create Package")
                             : modalType === "update"
-                            ? t("Edit Package")
-                            : modalType === "delete"
-                            ? t("Delete Package")
-                            : t("View Package")}
+                                ? t("Edit Package")
+                                : modalType === "delete"
+                                    ? t("Delete Package")
+                                    : t("View Package")}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
