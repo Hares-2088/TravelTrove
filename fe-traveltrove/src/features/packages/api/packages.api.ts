@@ -24,6 +24,7 @@ export const usePackagesApi = () => {
             if (trimmedLine.startsWith('data:')) {
                 try {
                     const pkg = JSON.parse(trimmedLine.substring(5).trim());
+                    pkg.status = getPackageStatus(pkg); // Add status to package
                     packages.push(pkg);
                 } catch (error) {
                     console.error('Error parsing line:', trimmedLine, error);
@@ -61,11 +62,36 @@ export const usePackagesApi = () => {
         return response.data;
     };
 
+    const decreaseAvailableSeats = async (packageId: string, quantity: number): Promise<PackageResponseModel> => {
+        const response = await axiosInstance.patch<PackageResponseModel>(`/packages/${packageId}/decreaseAvailableSeats?quantity=${quantity}`);
+        return response.data;
+    }
+
+    const increaseAvailableSeats = async (packageId: string, quantity: number): Promise<PackageResponseModel> => {
+        const response = await axiosInstance.patch<PackageResponseModel>(`/packages/${packageId}/increaseAvailableSeats?quantity=${quantity}`);
+        return response.data
+    }
+
+    const getPackageStatus = (pkg: PackageResponseModel): string => {
+        if (!pkg) { return 'UNAVAILABLE';}
+        
+        const packageEndDate = new Date(pkg.endDate); // End date
+        const today = new Date(); // Today's date
+
+        if (packageEndDate < today) { return 'EXPIRED';}
+        else if (pkg.availableSeats === 0) { return 'FULL';}
+        else if (pkg.availableSeats <= pkg.totalSeats * 0.1) { return 'NEAR CAPACITY';}
+        else { return 'AVAILABLE';}    
+    }
+
     return {
         getAllPackages,
         getPackageById,
         addPackage,
         updatePackage,
         deletePackage,
+        decreaseAvailableSeats,
+        increaseAvailableSeats,
+        getPackageStatus,
     };
 };

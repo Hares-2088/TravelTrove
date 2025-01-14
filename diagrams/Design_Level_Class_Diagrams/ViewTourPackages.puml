@@ -54,37 +54,54 @@ package "Data Access Layer" <<Rectangle>> #LightCyan {
     class Tour {
         + tourId: UUID
         + name: String
+        + description: String
+    }
+
+    class Package {
+        + packageId: UUID
+        + name: String
+        + description: String
         + startDate: LocalDate
         + endDate: LocalDate
-        + overallDescription: String
-        + image: String
-        + cities: List<City>
-        + availability: Boolean
-        + spotsAvailable: Integer
-        + reviews: List<Review>
-        + bookings: List<Booking>
-        + itineraryPicture: String
-        + price: Decimal
+        + priceForOne: Double
+        + priceForTwo: Double
+        + priceForThree: Double
+        + totalSeats: Integer
+        + availableSeats: Integer
+        + airportId: UUID
+        + tourId: UUID
+    }
+
+    class Country {
+        + countryId: UUID
+        + name: String
+        + imagePath: String
     }
 
     class City {
         + cityId: UUID
         + name: String
-        + description: String
-        + image: String
-        + startDate: LocalDate
-        + events: List<Event>
-        + hotel: String
+        + countryId: UUID
+    }
+
+    class Hotel {
+        + hotelId: UUID
+        + name: String
+        + cityId: UUID
+        + url: String
     }
 
     class Event {
         + eventId: UUID
-        + date: LocalDate
-        + name: String
-        + image: String [optional]
-        + gatheringTime: LocalDateTime
-        + departureTime: LocalDateTime
-        + endTime: LocalDateTime
+        + title: String
+        + description: String
+        + cityId: UUID
+    }
+
+    class EventImage {
+        + eventId: UUID
+        + seq: Integer
+        + imagePath: String
         + description: String
     }
 
@@ -94,23 +111,61 @@ package "Data Access Layer" <<Rectangle>> #LightCyan {
         + rating: Integer
         + review: String
         + date: LocalDateTime
+        + bookingId: UUID
     }
 
     class Booking {
         + bookingId: UUID
-        + customerName: String
+        + userId: UUID
+        + packageId: UUID
+        + totalPrice: Double
+        + status: BookingStatus
         + bookingDate: LocalDate
-        + numberOfSpots: Integer
-        + totalAmount: Decimal
+    }
+
+    enum BookingStatus {
+        PAYMENT_PENDING,
+        PAYMENT_ATTEMPT2_PENDING,
+        PAYMENT_ATTEMPT3_PENDING,
+        BOOKING_FAILED,
+        PAYMENT_SUCCESS,
+        BOOKING_CONFIRMED,
+        BOOKING_FINALIZED,
+        BOOKING_EXPIRED,
+        BOOKING_CANCELLED,
+        REFUNDED
+    }
+
+    class Traveler {
+        + travelerId: UUID
+        + seq: Integer
+        + firstName: String
+        + lastName: String
+        + addrLine1: String
+        + addrLine2: String
+        + city: String
+        + state: String
+        + countryId: UUID
+    }
+
+    class BookingTraveler {
+        + bookingId: UUID
+        + travelerId: UUID
     }
 
     class TourEvent {
-            + tourEventId: UUID
-            + seq: String
-            + seqDesc: String
-            + eventId: String
-            + tourId: String
-        }
+        + tourId: UUID
+        + seq: String
+        + seqDesc: String
+        + eventId: UUID
+        + hotelId: UUID
+    }
+
+    class Airport {
+        + airportId: UUID
+        + name: String
+        + cityId: UUID
+    }
 
     class TourRepository {
         + findTours(criteria: FilterCriteria): List<Tour>
@@ -124,6 +179,14 @@ package "Data Access Layer" <<Rectangle>> #LightCyan {
     TourRepository --> Review : "queries"
     TourRepository --> Booking : "queries"
     TourRepository --> TourEvent : "queries"
+    TourRepository --> Airport : "queries"
+    TourRepository --> Package : "queries"
+    TourRepository --> Country : "queries"
+    TourRepository --> Hotel : "queries"
+    TourRepository --> EventImage : "queries"
+    TourRepository --> BookingTraveler : "queries"
+    TourRepository --> Traveler : "queries"
+    Booking --> BookingStatus : "has"
 }
 
 ' Data Transfer Objects

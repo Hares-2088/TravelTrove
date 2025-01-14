@@ -23,6 +23,45 @@ public class MockServerConfigUserService {
         }
     }
 
+    public void registerGetUserEndpoint(UserResponseModel user) {
+        mockServer.when(HttpRequest.request()
+                        .withMethod("GET")
+                        .withPath("/api/v1/users/" + user.getUserId()))
+                .respond(HttpResponse.response()
+                        .withContentType(org.mockserver.model.MediaType.APPLICATION_JSON)
+                        .withBody(String.format("""
+                    {
+                        "userId": "%s",
+                        "email": "%s",
+                        "firstName": "%s",
+                        "lastName": "%s",
+                        "roles": %s,
+                        "permissions": %s
+                    }
+                    """,
+                                user.getUserId(),
+                                user.getEmail(),
+                                user.getFirstName(),
+                                user.getLastName(),
+                                user.getRoles(),
+                                user.getPermissions())));
+    }
+
+    // Register Invalid GET /api/v1/users/{userId}
+    public void registerInvalidGetUserEndpoint(String invalidUserId) {
+        mockServer.when(HttpRequest.request()
+                        .withMethod("GET")
+                        .withPath("/api/v1/users/" + invalidUserId))
+                .respond(HttpResponse.response()
+                        .withStatusCode(404)
+                        .withContentType(org.mockserver.model.MediaType.APPLICATION_JSON)
+                        .withBody(String.format("""
+                    {
+                        "message": "User ID not found: %s"
+                    }
+                    """, invalidUserId)));
+    }
+
     // Register POST /api/v1/users/{userId}/login
     public void registerHandleUserLoginEndpoint(UserResponseModel user) {
         mockServer.when(HttpRequest.request()

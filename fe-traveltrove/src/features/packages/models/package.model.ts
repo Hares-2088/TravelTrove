@@ -8,6 +8,7 @@ export interface PackageRequestModel {
     priceSingle: number;
     priceDouble: number;
     priceTriple: number;
+    totalSeats: number;
 }
 
 export interface PackageResponseModel {
@@ -21,4 +22,7 @@ export interface PackageResponseModel {
     priceSingle: number;
     priceDouble: number;
     priceTriple: number;
+    availableSeats: number;
+    totalSeats: number;
+    status?: string; // Add status property
 }

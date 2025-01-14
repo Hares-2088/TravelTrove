@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next"; // Import i18n hook
-import { useEventsApi } from "../../events/api/events.api";
-import { useCitiesApi } from "../../cities/api/cities.api";
-import { useCountriesApi } from "../../countries/api/countries.api";
+import { useEventsApi } from "../../../events/api/events.api";
+import { useCitiesApi } from "../../../cities/api/cities.api";
+import { useCountriesApi } from "../../../countries/api/countries.api";
 import {
   EventResponseModel,
   EventRequestModel,
-} from "../../events/model/events.model";
-import "../../../shared/css/Scrollbar.css";
-import FilterBar from "../../../shared/components/FilterBar";
+} from "../../../events/model/events.model";
+import "../../../../shared/css/Scrollbar.css"; // Corrected import path
+import FilterBar from "../../../../shared/components/FilterBar";
 import { count } from "console";
 
 const EventsTab: React.FC = () => {

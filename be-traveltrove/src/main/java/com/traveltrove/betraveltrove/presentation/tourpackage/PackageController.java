@@ -58,4 +58,23 @@ public class PackageController {
                 .map(ResponseEntity::ok)
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
+
+    @PatchMapping(value = "/{packageId}/decreaseAvailableSeats", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<PackageResponseModel>> decreaseAvailableSeats(@PathVariable String packageId, @RequestParam Integer quantity) {
+        log.info("Decreasing available seats for package with package ID: {}", packageId);
+        return packageService.decreaseAvailableSeats(packageId, quantity)
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
+                .onErrorResume(throwable -> Mono.just(ResponseEntity.badRequest().build()));
+    }
+
+    @PatchMapping(value = "/{packageId}/increaseAvailableSeats", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<PackageResponseModel>> increaseAvailableSeats(@PathVariable String packageId, @RequestParam Integer quantity) {
+        log.info("Increasing available seats for package with package ID: {}", packageId);
+        return packageService.increaseAvailableSeats(packageId, quantity)
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
+                .onErrorResume(throwable -> Mono.just(ResponseEntity.badRequest().build()));
+    }
+
 }

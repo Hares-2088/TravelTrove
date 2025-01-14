@@ -2,6 +2,9 @@ package com.traveltrove.betraveltrove.utils;
 
 import com.traveltrove.betraveltrove.dataaccess.airport.Airport;
 import com.traveltrove.betraveltrove.dataaccess.airport.AirportRepository;
+import com.traveltrove.betraveltrove.dataaccess.booking.Booking;
+import com.traveltrove.betraveltrove.dataaccess.booking.BookingRepository;
+import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.city.CityRepository;
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
@@ -21,6 +24,7 @@ import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -1541,6 +1545,8 @@ public class DatabaseLoader {
                         .priceSingle(1800.0)
                         .priceDouble(1600.0)
                         .priceTriple(1400.0)
+                        .totalSeats(130)
+                        .availableSeats(50)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1555,6 +1561,8 @@ public class DatabaseLoader {
                         .priceSingle(1500.0)
                         .priceDouble(1300.0)
                         .priceTriple(1100.0)
+                        .totalSeats(125)
+                        .availableSeats(10)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1569,6 +1577,8 @@ public class DatabaseLoader {
                         .priceSingle(2200.0)
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
+                        .totalSeats(120)
+                        .availableSeats(0)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1583,6 +1593,8 @@ public class DatabaseLoader {
                         .priceSingle(1800.0)
                         .priceDouble(1600.0)
                         .priceTriple(1400.0)
+                        .totalSeats(135)
+                        .availableSeats(0)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1597,76 +1609,8 @@ public class DatabaseLoader {
                         .priceSingle(1900.0)
                         .priceDouble(1700.0)
                         .priceTriple(1500.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("9d3f8b7e-a6c1-4f42-b6d8-7a9b4e2d5cf3")
-                        .name("Tokyo Blossom Festival Package")
-                        .description("Experience Japan's iconic cherry blossoms and vibrant culture.")
-                        .startDate(LocalDate.of(2024, 4, 1))
-                        .endDate(LocalDate.of(2024, 4, 8))
-                        .airportId("e8f314c7-716b-4f19-a1d6-fc376b8c81ad")
-                        .tourId("7e14cb83-3e2a-41c6-b26f-09ebd62a5e39")
-                        .priceSingle(2400.0)
-                        .priceDouble(2200.0)
-                        .priceTriple(2000.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
-                        .name("Rio Carnival Adventure")
-                        .description("Join the world’s biggest carnival in Rio with this unforgettable package.")
-                        .startDate(LocalDate.of(2024, 2, 10))
-                        .endDate(LocalDate.of(2024, 2, 17))
-                        .airportId("3f2e8bbd-84c3-4d3e-bc24-f173acd01be4")
-                        .tourId("42cf8561-6f83-4f2f-becb-e3c72a1bb572")
-                        .priceSingle(2000.0)
-                        .priceDouble(1800.0)
-                        .priceTriple(1600.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
-                        .name("Australian Outback Safari")
-                        .description("Discover Australia’s rugged wilderness with this unique outback package.")
-                        .startDate(LocalDate.of(2024, 7, 20))
-                        .endDate(LocalDate.of(2024, 7, 27))
-                        .airportId("aa12fc4b-619e-4d8e-8563-5a09bc6f1ae1")
-                        .tourId("f4a9c2ef-8473-4b67-b527-44fcb3a6eec5")
-                        .priceSingle(2100.0)
-                        .priceDouble(1900.0)
-                        .priceTriple(1700.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("9b5e2c1a-6f7d-4b9e-b8a7-d3f2b1c9a4e5")
-                        .name("Indian Heritage Exploration")
-                        .description("Explore India’s vibrant heritage and landmarks with this cultural package.")
-                        .startDate(LocalDate.of(2024, 8, 1))
-                        .endDate(LocalDate.of(2024, 8, 10))
-                        .airportId("47c8f2e7-3d6b-402c-93b7-8a92ef43e6ab")
-                        .tourId("7b82cb14-2ff5-4d8f-b84c-3bfb7b6cda1e")
-                        .priceSingle(1700.0)
-                        .priceDouble(1500.0)
-                        .priceTriple(1300.0)
-                        .build(),
-
-                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
-                        .id(null)
-                        .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
-                        .name("Silk Road Adventure")
-                        .description("Experience the historic wonders of the Silk Road with guided tours and more.")
-                        .startDate(LocalDate.of(2024, 10, 5))
-                        .endDate(LocalDate.of(2024, 10, 15))
-                        .airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
-                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
-                        .priceSingle(2200.0)
-                        .priceDouble(2000.0)
-                        .priceTriple(1800.0)
+                        .totalSeats(130)
+                        .availableSeats(100)
                         .build()
         );
 
@@ -1800,6 +1744,315 @@ public class DatabaseLoader {
                 .subscribe(
                         success -> log.info("Users preloaded successfully."),
                         error -> log.error("Error preloading users: {}", error.getMessage())
+                );
+    }
+
+    private final BookingRepository bookingRepository;
+
+    @PostConstruct
+    public void loadBookings() {
+        List<Booking> sampleBookings = List.of(
+        // user : auth0|675f4b3c9a80612ce548e067
+            Booking.builder()
+                    .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda29")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                    .status(BookingStatus.BOOKING_CONFIRMED)
+                    .bookingDate(LocalDate.now().minusMonths(1))
+                    .totalPrice(1600.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b177")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                    .status(BookingStatus.BOOKING_FINALIZED)
+                    .bookingDate(LocalDate.now().minusMonths(6))
+                    .totalPrice(1300.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("032931cf-57d3-4278-b0db-8762731a7aa2")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                    .status(BookingStatus.BOOKING_CANCELLED)
+                    .bookingDate(LocalDate.now().minusWeeks(4))
+                    .totalPrice(2000.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("7ce476dc-3a8e-44ac-9904-fb3bb3d12259")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                    .status(BookingStatus.PAYMENT_PENDING)
+                    .bookingDate(LocalDate.now())
+                    .totalPrice(1700.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("b8bf0325-471a-43b8-a46a-7ecdf33fed23")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                    .status(BookingStatus.BOOKING_CONFIRMED)
+                    .bookingDate(LocalDate.now().minusMonths(2))
+                    .totalPrice(1900.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b844")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("9d3f8b7e-a6c1-4f42-b6d8-7a9b4e2d5cf3")
+                    .status(BookingStatus.BOOKING_FINALIZED)
+                    .bookingDate(LocalDate.now().minusYears(1))
+                    .totalPrice(2200.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("b46bab5b-0358-4ed0-8136-f064e3ca6d08")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
+                    .status(BookingStatus.BOOKING_CANCELLED)
+                    .bookingDate(LocalDate.now().minusMonths(5))
+                    .totalPrice(1800.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("c63430a2-6535-4c2e-8036-6d952dbe1448")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
+                    .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
+                    .bookingDate(LocalDate.now().minusDays(3))
+                    .totalPrice(2100.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("d4b8979a-cd20-491d-884f-7ec52d2a2a81")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("9b5e2c1a-6f7d-4b9e-b8a7-d3f2b1c9a4e5")
+                    .status(BookingStatus.BOOKING_CONFIRMED)
+                    .bookingDate(LocalDate.now().minusWeeks(2))
+                    .totalPrice(1500.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("98183e89-c6cb-415a-8fb3-ddbc3d327fc7")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
+                    .status(BookingStatus.BOOKING_FINALIZED)
+                    .bookingDate(LocalDate.now().minusYears(1).minusMonths(2))
+                    .totalPrice(2000.0)
+                    .build(),
+
+        // user:  675f4b619a80612ce548e068
+                Booking.builder()
+                        .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b844")
+                        .userId("auth0|675f4b619a80612ce548e068")
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(2))
+                        .totalPrice(1600.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("b46bab5b-0358-4ed0-8136-f064e3ca6d08")
+                        .userId("auth0|675f4b619a80612ce548e068")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .status(BookingStatus.PAYMENT_PENDING)
+                        .bookingDate(LocalDate.now().minusMonths(1))
+                        .totalPrice(1300.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("c63430a2-6535-4c2e-8036-6d952dbe1448")
+                        .userId("auth0|675f4b619a80612ce548e068")
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
+                        .bookingDate(LocalDate.now().minusWeeks(2))
+                        .totalPrice(2000.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("d4b8979a-cd20-491d-884f-7ec52d2a2a81")
+                        .userId("auth0|675f4b619a80612ce548e068")
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .status(BookingStatus.BOOKING_FAILED)
+                        .bookingDate(LocalDate.now().minusDays(10))
+                        .totalPrice(1600.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("98183e89-c6cb-415a-8fb3-ddbc3d327fc7")
+                        .userId("auth0|675f4b619a80612ce548e068")
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .status(BookingStatus.PAYMENT_SUCCESS)
+                        .bookingDate(LocalDate.now())
+                        .totalPrice(1700.0)
+                        .build(),
+                // user: 675f4b7ae184fd643a8ed902
+
+                Booking.builder()
+                        .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b177")
+                        .userId("auth0|675f4b7ae184fd643a8ed902")
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .status(BookingStatus.PAYMENT_SUCCESS)
+                        .bookingDate(LocalDate.now().minusMonths(3))
+                        .totalPrice(1600.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("032931cf-57d3-4278-b0db-8762731a7aa2")
+                        .userId("auth0|675f4b7ae184fd643a8ed902")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(2))
+                        .totalPrice(1300.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("b8bf0325-471a-43b8-a46a-7ecdf33fed23")
+                        .userId("auth0|675f4b7ae184fd643a8ed902")
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .status(BookingStatus.PAYMENT_PENDING)
+                        .bookingDate(LocalDate.now().minusWeeks(5))
+                        .totalPrice(2000.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b844")
+                        .userId("auth0|675f4b7ae184fd643a8ed902")
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .status(BookingStatus.BOOKING_FAILED)
+                        .bookingDate(LocalDate.now().minusWeeks(2))
+                        .totalPrice(1600.0)
+                        .build(),
+
+                //user: 675f4b9d9a80612ce548e069
+                Booking.builder()
+                        .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda29")
+                        .userId("auth0|675f4b9d9a80612ce548e069")
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(4))
+                        .totalPrice(1600.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b177")
+                        .userId("auth0|675f4b9d9a80612ce548e069")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .status(BookingStatus.PAYMENT_PENDING)
+                        .bookingDate(LocalDate.now().minusMonths(3))
+                        .totalPrice(1300.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("032931cf-57d3-4278-b0db-8762731a7aa2")
+                        .userId("auth0|675f4b9d9a80612ce548e069")
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .status(BookingStatus.BOOKING_CANCELLED)
+                        .bookingDate(LocalDate.now().minusWeeks(6))
+                        .totalPrice(2000.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("206fa0ba-4803-4730-a7ab-70e6f3cf5826")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .status(BookingStatus.PAYMENT_SUCCESS)
+                        .bookingDate(LocalDate.now().minusMonths(3))
+                        .totalPrice(1600.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("c4c6369b-63c6-4e29-92d5-f5bb264aa98f")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(2))
+                        .totalPrice(1300.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("a30c2487-952a-437c-abad-610ec2d8bb85")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .status(BookingStatus.PAYMENT_PENDING)
+                        .bookingDate(LocalDate.now().minusWeeks(6))
+                        .totalPrice(2000.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("cfcbc4a8-20b2-486c-a95b-aa0cc872b841")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .status(BookingStatus.BOOKING_FAILED)
+                        .bookingDate(LocalDate.now().minusWeeks(3))
+                        .totalPrice(1600.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("11ecc760-10d0-4713-a9ee-0aed88f38f32")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .status(BookingStatus.BOOKING_FINALIZED)
+                        .bookingDate(LocalDate.now())
+                        .totalPrice(1700.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("c433128f-96b5-49b9-8a0c-b2db3602ffb6")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("9d3f8b7e-a6c1-4f42-b6d8-7a9b4e2d5cf3")
+                        .status(BookingStatus.REFUNDED)
+                        .bookingDate(LocalDate.now().plusDays(10))
+                        .totalPrice(2200.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("2fb6db54-8c75-49ed-9e87-f656c73101d5")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
+                        .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
+                        .bookingDate(LocalDate.now().plusWeeks(2))
+                        .totalPrice(1800.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("1b02a876-9714-48ff-ace3-3035222e256c")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
+                        .status(BookingStatus.BOOKING_EXPIRED)
+                        .bookingDate(LocalDate.now().plusMonths(1))
+                        .totalPrice(1900.0)
+                        .build(),
+                // user: 675f4bb4e184fd643a8ed903
+                Booking.builder()
+                        .bookingId("dc04ebc7-82c3-4b89-a33b-cfd3c16d2420")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("9b5e2c1a-6f7d-4b9e-b8a7-d3f2b1c9a4e5")
+                        .status(BookingStatus.BOOKING_CANCELLED)
+                        .bookingDate(LocalDate.now().plusMonths(2))
+                        .totalPrice(1500.0)
+                        .build(),
+
+                Booking.builder()
+                        .bookingId("e8f9b624-0fd8-4db7-8fdf-e28af7e652cb")
+                        .userId("auth0|675f4bb4e184fd643a8ed903")
+                        .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
+                        .status(BookingStatus.PAYMENT_ATTEMPT3_PENDING)
+                        .bookingDate(LocalDate.now().plusMonths(3))
+                        .totalPrice(2000.0)
+                        .build()
+        );
+
+
+        bookingRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleBookings))
+                .flatMap(bookingRepository::save)
+                .doOnNext(booking -> log.info("Preloaded booking: {}", booking))
+                .subscribe(
+                        success -> log.info("Bookings preloaded successfully."),
+                        error -> log.error("Error preloading bookings: {}", error.getMessage())
                 );
     }
 }

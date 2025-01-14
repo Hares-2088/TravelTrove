@@ -3,6 +3,7 @@ package com.traveltrove.betraveltrove.presentation.tourpackage;
 import com.traveltrove.betraveltrove.business.airport.AirportService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.business.tourpackage.PackageServiceImpl;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
@@ -25,7 +26,9 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static reactor.core.publisher.Mono.when;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.data.mongodb.port=0"})
 @ActiveProfiles("test")
@@ -58,6 +61,8 @@ class PackageControllerIntegrationTest {
             .priceSingle(2200.0)
             .priceDouble(2000.0)
             .priceTriple(1800.0)
+            .totalSeats(130)
+            .availableSeats(120)
             .build();
 
     private final Package package2 = Package.builder()
@@ -71,7 +76,11 @@ class PackageControllerIntegrationTest {
             .priceSingle(1800.0)
             .priceDouble(1600.0)
             .priceTriple(1400.0)
+            .totalSeats(130)
+            .availableSeats(120)
             .build();
+    @Autowired
+    private PackageServiceImpl packageServiceImpl;
 
     @BeforeAll
     void startServer() {
@@ -120,7 +129,7 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenGetAllPackages_withValidTourId_thenReturnPackages() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).get()
                 .uri("/api/v1/packages?tourId=" + package1.getTourId())
                 .exchange()
                 .expectStatus().isOk()
@@ -137,6 +146,8 @@ class PackageControllerIntegrationTest {
                         .priceSingle(2200.0)
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
+                        .totalSeats(130)
+                        .availableSeats(120)
                         .build());
     }
 
@@ -168,6 +179,8 @@ class PackageControllerIntegrationTest {
                                 .priceSingle(2200.0)
                                 .priceDouble(2000.0)
                                 .priceTriple(1800.0)
+                                .totalSeats(130)
+                                .availableSeats(120)
                                 .build(),
                         PackageResponseModel.builder()
                                 .packageId("2")
@@ -180,6 +193,8 @@ class PackageControllerIntegrationTest {
                                 .priceSingle(1800.0)
                                 .priceDouble(1600.0)
                                 .priceTriple(1400.0)
+                                .totalSeats(130)
+                                .availableSeats(120)
                                 .build()
                 );
     }
@@ -202,6 +217,8 @@ class PackageControllerIntegrationTest {
                         .priceSingle(2200.0)
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
+                        .totalSeats(130)
+                        .availableSeats(120)
                         .build());
     }
 
@@ -225,6 +242,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
@@ -246,6 +264,8 @@ class PackageControllerIntegrationTest {
                     assertEquals(2000.0, actualResponse.getPriceSingle());
                     assertEquals(1800.0, actualResponse.getPriceDouble());
                     assertEquals(1600.0, actualResponse.getPriceTriple());
+                    assertEquals(130, actualResponse.getTotalSeats());
+                    assertEquals(130, actualResponse.getAvailableSeats());
                 });
     }
 
@@ -262,6 +282,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
@@ -283,6 +304,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
@@ -304,6 +326,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
@@ -323,6 +346,8 @@ class PackageControllerIntegrationTest {
                         .priceSingle(2000.0)
                         .priceDouble(1800.0)
                         .priceTriple(1600.0)
+                        .totalSeats(130)
+                        .availableSeats(120)
                         .build());
     }
 
@@ -338,6 +363,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
@@ -359,6 +385,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
@@ -380,6 +407,7 @@ class PackageControllerIntegrationTest {
                 .priceSingle(2000.0)
                 .priceDouble(1800.0)
                 .priceTriple(1600.0)
+                .totalSeats(130)
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
@@ -407,6 +435,8 @@ class PackageControllerIntegrationTest {
                         .priceSingle(2200.0)
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
+                        .totalSeats(130)
+                        .availableSeats(120)
                         .build());
     }
 
@@ -416,5 +446,81 @@ class PackageControllerIntegrationTest {
                 .uri("/api/v1/packages/invalid")
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_thenAvailableSeatsDecreased() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=10")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PackageResponseModel.class)
+                .consumeWith(response -> {
+                    PackageResponseModel actualResponse = response.getResponseBody();
+                    assertNotNull(actualResponse);
+                    assertEquals(110, actualResponse.getAvailableSeats());
+                });
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_withInvalidPackageId_thenReturnNotFound() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/invalid/decreaseAvailableSeats?quantity=10")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_withInvalidQuantity_thenReturnBadRequest() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=-10")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenDecreaseAvailableSeats_withQuantityGreaterThanAvailableSeats_thenReturnBadRequest() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=200")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_thenAvailableSeatsIncreased() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=10")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PackageResponseModel.class)
+                .consumeWith(response -> {
+                    PackageResponseModel actualResponse = response.getResponseBody();
+                    assertNotNull(actualResponse);
+                    assertEquals(130, actualResponse.getAvailableSeats());
+                });
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_withInvalidPackageId_thenReturnNotFound() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/invalid/increaseAvailableSeats?quantity=10")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_withInvalidQuantity_thenReturnBadRequest() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=-10")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenIncreaseAvailableSeats_withQuantityGreaterThanTotalSeats_thenReturnBadRequest() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=200")
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 }

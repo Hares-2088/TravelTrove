@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useToursApi } from "../../tours/api/tours.api";
-import { TourRequestModel, TourResponseModel } from "../../tours/models/Tour";
+import { useToursApi } from "../../../tours/api/tours.api";
+import { TourRequestModel, TourResponseModel } from "../../../tours/models/Tour";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import TourEventsTab from "./TourEventsTab";
 import TourPackagesTab from "./TourPackagesTab";
-import "../../../shared/css/Scrollbar.css";
+import "../../../../shared/css/Scrollbar.css";
 import { useTranslation } from "react-i18next";
 
 

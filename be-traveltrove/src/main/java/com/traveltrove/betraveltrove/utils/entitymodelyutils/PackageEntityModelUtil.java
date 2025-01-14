@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.utils.entitymodels;
+package com.traveltrove.betraveltrove.utils.entitymodelyutils;
 
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
@@ -30,6 +30,7 @@ public class PackageEntityModelUtil {
                 .priceSingle(packageRequestModel.getPriceSingle())
                 .priceDouble(packageRequestModel.getPriceDouble())
                 .priceTriple(packageRequestModel.getPriceTriple())
+                .totalSeats(packageRequestModel.getTotalSeats())
                 .build();
 
     }

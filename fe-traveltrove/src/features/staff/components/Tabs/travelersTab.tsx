@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { useTravelersApi } from "../../travelers/api/traveler.api";
-import { useCitiesApi } from "../../cities/api/cities.api";
-import { useCountriesApi } from "../../countries/api/countries.api";
+import { useTravelersApi } from "../../../travelers/api/traveler.api";
+import { useCitiesApi } from "../../../cities/api/cities.api";
+import { useCountriesApi } from "../../../countries/api/countries.api";
 import {
     TravelerResponseModel,
     TravelerRequestModel,
-} from "../../travelers/model/traveler.model";
-import "../../../shared/css/Scrollbar.css";
+} from "../../../travelers/model/traveler.model";
+import "../../../../shared/css/Scrollbar.css";
 
 const TravelersTab: React.FC = () => {
     const { getAllTravelers, getTravelerById, addTraveler, updateTraveler, deleteTraveler } = useTravelersApi();

@@ -24,4 +24,11 @@ public class PackageRequestModel {
     private Double priceSingle;
     private Double priceDouble;
     private Double priceTriple;
+
+    private Integer totalSeats;
+
+    /*
+    private Integer availableSeats; //commented out because it will be managed by the system
+     */
+
 }

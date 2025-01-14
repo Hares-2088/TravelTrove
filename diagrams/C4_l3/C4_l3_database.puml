@@ -56,6 +56,8 @@ entity "Package" as Package {
     priceForOne: Decimal
     priceForTwo: Decimal
     priceForThree: Decimal
+    totalSeats: Integer
+    availableSeats: Integer
     airportId: String <<FK>>
     tourId: String <<FK>>
 }
