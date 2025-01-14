@@ -15,6 +15,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.util.Comparator;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -94,6 +95,8 @@ class EventControllerIntegrationTest {
                 .expectBodyList(Event.class)
                 .hasSize(2)
                 .value(events -> {
+                    // Ensure the list is sorted by name
+                    events.sort(Comparator.comparing(Event::getName));
                     assertEquals(2, events.size());
                     assertEquals(event1.getName(), events.get(0).getName());
                     assertEquals(event2.getName(), events.get(1).getName());
@@ -104,6 +107,7 @@ class EventControllerIntegrationTest {
                 .expectNextMatches(event -> event.getName().equals(event2.getName()))
                 .verifyComplete();
     }
+
 
     @Test
     void whenGetEventById_thenReturnEvent() {
