@@ -96,9 +96,6 @@ spring:
       password: testpassword
       authentication-database: admin
 
-server:
-  port: 9090
-
 logging:
   level:
     root: DEBUG
