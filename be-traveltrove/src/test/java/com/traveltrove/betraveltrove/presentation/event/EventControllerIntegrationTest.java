@@ -39,7 +39,7 @@ class EventControllerIntegrationTest {
 
     private final Event event1 = Event.builder()
             .id("1")
-            .eventId(UUID.randomUUID().toString())
+            .eventId("9d024dc8-3205-4d5b-96de-f70e8e819377")
             .name("Event 1")
             .countryId("1")
             .cityId("1")
@@ -49,7 +49,7 @@ class EventControllerIntegrationTest {
 
     private final Event event2 = Event.builder()
             .id("2")
-            .eventId(UUID.randomUUID().toString())
+            .eventId("7faf2bcf-a4f3-479e-8c1a-4e1db3b3d339")
             .name("Event 2")
             .countryId("2")
             .cityId("2")
@@ -84,29 +84,29 @@ class EventControllerIntegrationTest {
                 .verifyComplete();
     }
 
-//    @Test
-//    void whenGetAllEvents_thenReturnAllEvents() {
-//        webTestClient.get()
-//                .uri("/api/v1/events")
-//                .accept(MediaType.TEXT_EVENT_STREAM)
-//                .exchange()
-//                .expectStatus().isOk()
-//                .expectHeader().valueEquals("Content-Type", "text/event-stream;charset=UTF-8")
-//                .expectBodyList(Event.class)
-//                .hasSize(2)
-//                .value(events -> {
-//                    // Ensure the list is sorted by name
-//                    events.sort(Comparator.comparing(Event::getName));
-//                    assertEquals(2, events.size());
-//                    assertEquals(event1.getName(), events.get(0).getName());
-//                    assertEquals(event2.getName(), events.get(1).getName());
-//                });
-//
-//        StepVerifier.create(eventRepository.findAll())
-//                .expectNextMatches(event -> event.getName().equals(event1.getName()))
-//                .expectNextMatches(event -> event.getName().equals(event2.getName()))
-//                .verifyComplete();
-//    }
+    @Test
+    void whenGetAllEvents_thenReturnAllEvents() {
+        webTestClient.get()
+                .uri("/api/v1/events")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Content-Type", "text/event-stream;charset=UTF-8")
+                .expectBodyList(Event.class)
+                .hasSize(2)
+                .value(events -> {
+                    // Ensure the list is sorted by name
+                    events.sort(Comparator.comparing(Event::getName));
+                    assertEquals(2, events.size());
+                    assertEquals(event1.getName(), events.get(0).getName());
+                    assertEquals(event2.getName(), events.get(1).getName());
+                });
+
+        StepVerifier.create(eventRepository.findAll())
+                .expectNextMatches(event -> event.getName().equals(event1.getName()))
+                .expectNextMatches(event -> event.getName().equals(event2.getName()))
+                .verifyComplete();
+    }
 
     @Test
     void whenGetEventById_thenReturnEvent() {
@@ -157,7 +157,7 @@ class EventControllerIntegrationTest {
     void whenAddEvent_thenReturnCreatedEvent() {
         // Arrange
         Event newEvent = Event.builder()
-                .eventId(UUID.randomUUID().toString())
+                .eventId("86ae1e54-8612-4528-a2a2-7649c0b8ee78")
                 .name("Event 3")
                 .description("Description 3")
                 .cityId("3")
