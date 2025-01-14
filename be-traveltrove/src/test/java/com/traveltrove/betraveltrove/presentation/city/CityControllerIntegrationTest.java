@@ -99,30 +99,29 @@ public class CityControllerIntegrationTest {
                 .expectStatus().isNotFound();
     }
 
-//    @Test
-//    void whenGetAllCities_thenReturnAllCities() {
-//        webTestClient.get()
-//                .uri("/api/v1/cities")
-//                .accept(MediaType.TEXT_EVENT_STREAM)
-//                .exchange()
-//                .expectStatus().isOk()
-//                .expectHeader().valueEquals("Content-Type", "text/event-stream;charset=UTF-8")
-//                .expectBodyList(City.class)
-//                .hasSize(2)
-//                .value(cities -> {
-//                    // Sort cities by name before assertions
-//                    cities.sort(Comparator.comparing(City::getName));
-//                    assertEquals(2, cities.size());
-//                    assertEquals(city1.getName(), cities.get(0).getName());
-//                    assertEquals(city2.getName(), cities.get(1).getName());
-//                });
-//
-//        StepVerifier.create(cityRepository.findAll())
-//                .expectNextMatches(city -> city.getName().equals(city1.getName()))
-//                .expectNextMatches(city -> city.getName().equals(city2.getName()))
-//                .verifyComplete();
-//    }
+    @Test
+    void whenGetAllCities_thenReturnAllCities() {
+        webTestClient.get()
+                .uri("/api/v1/cities")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Content-Type", "text/event-stream;charset=UTF-8")
+                .expectBodyList(City.class)
+                .hasSize(2)
+                .value(cities -> {
+                    // Sort cities by name before assertions
+                    cities.sort(Comparator.comparing(City::getName));
+                    assertEquals(2, cities.size());
+                    assertEquals(city1.getName(), cities.get(0).getName());
+                    assertEquals(city2.getName(), cities.get(1).getName());
+                });
 
+        StepVerifier.create(cityRepository.findAll())
+                .expectNextMatches(city -> city.getName().equals(city1.getName()))
+                .expectNextMatches(city -> city.getName().equals(city2.getName()))
+                .verifyComplete();
+    }
 
     @Test
     void whenAddCity_thenReturnCreatedCity() {

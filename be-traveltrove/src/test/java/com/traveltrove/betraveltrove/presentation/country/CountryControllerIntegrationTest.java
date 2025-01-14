@@ -40,14 +40,14 @@ class CountryControllerIntegrationTest {
 
     private final Country country1 = Country.builder()
             .id("1")
-            .countryId(UUID.randomUUID().toString())
+            .countryId("1de3129f-51fa-4d09-838f-dccfde364733")
             .name("Country 1")
             .image("image1.jpg")
             .build();
 
     private final Country country2 = Country.builder()
             .id("2")
-            .countryId(UUID.randomUUID().toString())
+            .countryId("4773d41a-ffc1-41ae-be90-cd5f2c9f2d86")
             .name("Country 2")
             .image("image2.jpg")
             .build();
@@ -77,58 +77,57 @@ class CountryControllerIntegrationTest {
                 .verifyComplete();
     }
 
-//    @Test
-//    void whenGetAllCountries_thenReturnAllCountries() {
-//        webTestClient.get()
-//                .uri("/api/v1/countries")
-//                .accept(MediaType.TEXT_EVENT_STREAM)
-//                .exchange()
-//                .expectStatus().isOk()
-//                .expectHeader().valueEquals("Content-Type", "text/event-stream;charset=UTF-8")
-//                .expectBodyList(Country.class)
-//                .hasSize(2)
-//                .value(countries -> {
-//                    // Ensure the list is sorted by name
-//                    countries.sort(Comparator.comparing(Country::getName));
-//                    assertEquals(2, countries.size());
-//                    assertEquals(country1.getName(), countries.get(0).getName());
-//                    assertEquals(country2.getName(), countries.get(1).getName());
-//                });
-//
-//        StepVerifier.create(countryRepository.findAll())
-//                .expectNextMatches(country -> country.getName().equals(country1.getName()))
-//                .expectNextMatches(country -> country.getName().equals(country2.getName()))
-//                .verifyComplete();
-//    }
+    @Test
+    void whenGetAllCountries_thenReturnAllCountries() {
+        webTestClient.get()
+                .uri("/api/v1/countries")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Content-Type", "text/event-stream;charset=UTF-8")
+                .expectBodyList(Country.class)
+                .hasSize(2)
+                .value(countries -> {
+                    // Ensure the list is sorted by name
+                    countries.sort(Comparator.comparing(Country::getName));
+                    assertEquals(2, countries.size());
+                    assertEquals(country1.getName(), countries.get(0).getName());
+                    assertEquals(country2.getName(), countries.get(1).getName());
+                });
 
+        StepVerifier.create(countryRepository.findAll())
+                .expectNextMatches(country -> country.getName().equals(country1.getName()))
+                .expectNextMatches(country -> country.getName().equals(country2.getName()))
+                .verifyComplete();
+    }
 
-//    @Test
-//    void whenAddCountry_thenReturnCreatedCountry() {
-//        Country newCountry = Country.builder()
-//                .countryId(UUID.randomUUID().toString())
-//                .name("New Country")
-//                .image("new_image.jpg")
-//                .build();
-//
-//        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
-//                .uri("/api/v1/countries")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .bodyValue(newCountry)
-//                .exchange()
-//                .expectStatus().isCreated()
-//                .expectBody(Country.class)
-//                .value(savedCountry -> {
-//                    assertNotNull(savedCountry);
-//                    assertEquals(newCountry.getName(), savedCountry.getName());
-//                    assertEquals(newCountry.getImage(), savedCountry.getImage());
-//                });
-//
-//        StepVerifier.create(countryRepository.findAll())
-//                .expectNextMatches(country -> country.getName().equals(country1.getName()))
-//                .expectNextMatches(country -> country.getName().equals(country2.getName()))
-//                .expectNextMatches(country -> country.getName().equals("New Country"))
-//                .verifyComplete();
-//    }
+    @Test
+    void whenAddCountry_thenReturnCreatedCountry() {
+        Country newCountry = Country.builder()
+                .countryId("410b89e2-2542-42c8-a0a6-0265accda2ad")
+                .name("New Country")
+                .image("new_image.jpg")
+                .build();
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+                .uri("/api/v1/countries")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(newCountry)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(Country.class)
+                .value(savedCountry -> {
+                    assertNotNull(savedCountry);
+                    assertEquals(newCountry.getName(), savedCountry.getName());
+                    assertEquals(newCountry.getImage(), savedCountry.getImage());
+                });
+
+        StepVerifier.create(countryRepository.findAll())
+                .expectNextMatches(country -> country.getName().equals(country1.getName()))
+                .expectNextMatches(country -> country.getName().equals(country2.getName()))
+                .expectNextMatches(country -> country.getName().equals("New Country"))
+                .verifyComplete();
+    }
 
     @Test
     void whenUpdateCountry_thenReturnUpdatedCountry() {

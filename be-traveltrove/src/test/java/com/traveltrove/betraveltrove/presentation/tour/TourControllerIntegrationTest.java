@@ -109,29 +109,29 @@ class TourControllerIntegrationTest {
                 .verifyComplete();
     }
 
-//    @Test
-//    void whenGetTours_thenReturnAllTours() {
-//        webTestClient.get()
-//                .uri("/api/v1/tours")
-//                .accept(MediaType.TEXT_EVENT_STREAM)
-//                .exchange()
-//                .expectStatus().isOk()
-//                .expectHeader().contentType(MediaType.TEXT_EVENT_STREAM + ";charset=UTF-8")
-//                .expectBodyList(Tour.class)
-//                .value(tours -> {
-//                    assertNotNull(tours);
-//                    assertEquals(2, tours.size());
-//                    assertEquals(tour1.getTourId(), tours.get(0).getTourId());
-//                    assertEquals(tour1.getName(), tours.get(0).getName());
-//                    assertEquals(tour2.getTourId(), tours.get(1).getTourId());
-//                    assertEquals(tour2.getName(), tours.get(1).getName());
-//                });
-//
-//        StepVerifier
-//                .create(tourRepository.findAll())
-//                .expectNextCount(2)
-//                .verifyComplete();
-//    }
+    @Test
+    void whenGetTours_thenReturnAllTours() {
+        webTestClient.get()
+                .uri("/api/v1/tours")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.TEXT_EVENT_STREAM + ";charset=UTF-8")
+                .expectBodyList(Tour.class)
+                .value(tours -> {
+                    assertNotNull(tours);
+                    assertEquals(2, tours.size());
+                    assertEquals(tour1.getTourId(), tours.get(0).getTourId());
+                    assertEquals(tour1.getName(), tours.get(0).getName());
+                    assertEquals(tour2.getTourId(), tours.get(1).getTourId());
+                    assertEquals(tour2.getName(), tours.get(1).getName());
+                });
+
+        StepVerifier
+                .create(tourRepository.findAll())
+                .expectNextCount(2)
+                .verifyComplete();
+    }
 
     @Test
     void whenGetTours_whenNoToursExist_thenReturnEmptyList() {
