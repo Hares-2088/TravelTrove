@@ -72,8 +72,10 @@ class EventControllerIntegrationTest {
 
     @BeforeEach
     public void setupDB() {
-        Publisher<Event> setupDB = eventRepository.deleteAll()
-                .thenMany(Flux.just(event1, event2))
+        StepVerifier.create(eventRepository.deleteAll())
+                .verifyComplete();
+
+        Publisher<Event> setupDB = Flux.just(event1, event2)
                 .flatMap(eventRepository::save);
 
         StepVerifier.create(setupDB)
@@ -150,6 +152,7 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenAddEvent_thenReturnCreatedEvent() {
+        // Arrange
         Event newEvent = Event.builder()
                 .eventId(UUID.randomUUID().toString())
                 .name("Event 3")
@@ -159,6 +162,7 @@ class EventControllerIntegrationTest {
                 .image("image3.jpg")
                 .build();
 
+        // Act & Assert
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/events")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -175,10 +179,23 @@ class EventControllerIntegrationTest {
                     assertEquals(newEvent.getImage(), savedEvent.getImage());
                 });
 
+        // Verify repository contents
         StepVerifier.create(eventRepository.findAll())
-                .expectNextMatches(event -> event.getName().equals(event1.getName()))
-                .expectNextMatches(event -> event.getName().equals(event2.getName()))
-                .expectNextMatches(event -> event.getName().equals("Event 3"))
+                .expectNextMatches(event -> event.getName().equals(event1.getName())
+                        && event.getDescription().equals(event1.getDescription())
+                        && event.getCityId().equals(event1.getCityId())
+                        && event.getCountryId().equals(event1.getCountryId())
+                        && event.getImage().equals(event1.getImage()))
+                .expectNextMatches(event -> event.getName().equals(event2.getName())
+                        && event.getDescription().equals(event2.getDescription())
+                        && event.getCityId().equals(event2.getCityId())
+                        && event.getCountryId().equals(event2.getCountryId())
+                        && event.getImage().equals(event2.getImage()))
+                .expectNextMatches(event -> event.getName().equals("Event 3")
+                        && event.getDescription().equals("Description 3")
+                        && event.getCityId().equals("3")
+                        && event.getCountryId().equals("3")
+                        && event.getImage().equals("image3.jpg"))
                 .verifyComplete();
     }
 
