@@ -121,12 +121,14 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenAddCity_thenReturnCreatedCity() {
+        // Create a new city
         City newCity = City.builder()
                 .cityId("3")
                 .name("New City")
                 .countryId("3")
                 .build();
 
+        // Perform POST request to add the new city
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/cities")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -139,12 +141,14 @@ public class CityControllerIntegrationTest {
                     assertEquals(newCity.getCountryId(), savedCity.getCountryId());
                 });
 
+        // Validate repository contents
         StepVerifier.create(cityRepository.findAll())
-                .expectNextMatches(city -> city.getName().equals(city1.getName()))
-                .expectNextMatches(city -> city.getName().equals(city2.getName()))
-                .expectNextMatches(city -> city.getName().equals("New City"))
+                .expectNextMatches(city -> city.getName().equals("City 1") && city.getCountryId().equals("1"))
+                .expectNextMatches(city -> city.getName().equals("City 2") && city.getCountryId().equals("2"))
+                .expectNextMatches(city -> city.getName().equals("New City") && city.getCountryId().equals("3"))
                 .verifyComplete();
     }
+
 
     @Test
     void whenUpdateCity_thenReturnUpdatedCity() {
