@@ -28,6 +28,7 @@ jobs:
           cache: 'gradle'
 
       - name: Run Build
+        working-directory: be-traveltrove
         run: ./gradlew build
 
       - name: Create coverage-data directory and copy contents
