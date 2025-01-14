@@ -33,7 +33,10 @@ jobs:
 
       - name: Run Build
         working-directory: be-traveltrove
-        run: ./gradlew build
+        run: |
+          ./gradlew build \
+            -Dspring.profiles.active=ci
+
 
       - name: Create coverage-data directory and copy contents
         run: |
