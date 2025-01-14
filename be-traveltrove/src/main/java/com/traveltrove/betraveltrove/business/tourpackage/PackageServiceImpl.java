@@ -2,15 +2,13 @@ package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
-import com.traveltrove.betraveltrove.dataaccess.airport.Airport;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
-import com.traveltrove.betraveltrove.presentation.tour.TourEventResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
-import com.traveltrove.betraveltrove.utils.entitymodels.PackageEntityModelUtil;
+import com.traveltrove.betraveltrove.utils.entitymodelyutils.PackageEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -65,6 +63,7 @@ public class PackageServiceImpl implements PackageService {
                         .doOnNext(tuple -> validatePackageRequestModel(requestModel))
                         .flatMap(tuple -> {
                             Package pk = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());
+                            pk.setAvailableSeats(pk.getTotalSeats());
                             return packageRepository.save(pk)
                                     .map(PackageEntityModelUtil::toPackageResponseModel);
                         }));
@@ -79,9 +78,12 @@ public class PackageServiceImpl implements PackageService {
                             validatePackageRequestModel(requestModel);
                             return Mono.zip(getTour(requestModel.getTourId()), getAirport(requestModel.getAirportId()))
                                     .flatMap(tuple -> {
-                                        Package updatedPackage = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());
-                                        updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
+                                        Package updatedPackage = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
                                         updatedPackage.setPackageId(existingPackage.getPackageId()); // Retain the original packageId
+                                        updatedPackage.setAvailableSeats(existingPackage.getAvailableSeats()); // Retain the available seats
+                                        if (updatedPackage.getAvailableSeats() > existingPackage.getTotalSeats()) {
+                                            return Mono.error(new IllegalArgumentException("Available seats cannot exceed total seats"));
+                                        }
                                         return packageRepository.save(updatedPackage)
                                                 .map(PackageEntityModelUtil::toPackageResponseModel);
                                     });
@@ -98,6 +100,38 @@ public class PackageServiceImpl implements PackageService {
                 .flatMap(pk -> packageRepository.delete(pk)
                         // then return the package response model using the package entity model we just deleted
                         .thenReturn(PackageEntityModelUtil.toPackageResponseModel(pk)));
+    }
+
+    @Override
+    public Mono<PackageResponseModel> decreaseAvailableSeats(String packageId, Integer quantity) {
+        return packageRepository.findPackageByPackageId(packageId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
+                .flatMap(pk -> {
+                    if (pk.getAvailableSeats() < quantity) {
+                        return Mono.error(new IllegalArgumentException("Not enough available seats to decrease by " + quantity));
+                    } else if (quantity < 0) {
+                        return Mono.error(new IllegalArgumentException("Quantity of seats decreased cannot be less than 0"));
+                    }
+                    pk.setAvailableSeats(pk.getAvailableSeats() - quantity);
+                    return packageRepository.save(pk)
+                            .map(PackageEntityModelUtil::toPackageResponseModel);
+                });
+    }
+
+    @Override
+    public Mono<PackageResponseModel> increaseAvailableSeats(String packageId, Integer quantity) {
+        return packageRepository.findPackageByPackageId(packageId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
+                .flatMap(pk -> {
+                    if (pk.getAvailableSeats() + quantity > pk.getTotalSeats()) {
+                        return Mono.error(new IllegalArgumentException("Not enough total seats to increase by " + quantity));
+                    } else if (quantity < 0) {
+                        return Mono.error(new IllegalArgumentException("Quantity of seats increased cannot be less than 0"));
+                    }
+                    pk.setAvailableSeats(pk.getAvailableSeats() + quantity);
+                    return packageRepository.save(pk)
+                            .map(PackageEntityModelUtil::toPackageResponseModel);
+                });
     }
 
     // a method to get the tour using the tourService and the tourId and return a notfound exception if the tour is not found
@@ -142,6 +176,10 @@ public class PackageServiceImpl implements PackageService {
         // check that the packageRequestModel priceSingle is not null
         if (packageRequestModel.getPriceSingle() == null) {
             throw new IllegalArgumentException("Package price single is required");
+        }
+        // check that the packageRequestModel totalSeats is not null
+        if (packageRequestModel.getTotalSeats() == null) {
+            throw new IllegalArgumentException("Package total seats is required");
         }
     }
 }

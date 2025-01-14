@@ -16,4 +16,8 @@ public interface PackageService {
     Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel);
 
     Mono<PackageResponseModel> deletePackage(String packageId);
+
+    Mono<PackageResponseModel> decreaseAvailableSeats(String packageId, Integer quantity);
+
+    Mono<PackageResponseModel> increaseAvailableSeats(String packageId, Integer quantity);
 }

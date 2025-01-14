@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.dataaccess;
+package com.traveltrove.betraveltrove.dataaccess.booking;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,11 +17,14 @@ import java.time.LocalDate;
 public class Booking {
 
     @Id
-    private String id;
+    private String id; //private id
 
-    private String bookingId;
-    private String customerId;
-    private String tourId;
+    private String bookingId; //public id
+    private String userId;
+    private String packageId;
+
+    private Double totalPrice;
+    private BookingStatus status;
 
     private LocalDate bookingDate;
 }

@@ -9,12 +9,6 @@ public interface HotelService {
 
     Mono<HotelResponseModel> getHotelByHotelId(String hotelId);
 
-    /**
-     * Fetch all hotels or filter by cityId if provided.
-     *
-     * @param cityId optional city ID to filter hotels
-     * @return a Flux of HotelResponseModel matching the criteria
-     */
     Flux<HotelResponseModel> getHotels(String cityId);
 
     Mono<HotelResponseModel> createHotel(Mono<HotelRequestModel> hotelRequestModel);

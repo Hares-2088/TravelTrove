@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.utils.entitymodels;
+package com.traveltrove.betraveltrove.utils.entitymodelyutils;
 
 import com.traveltrove.betraveltrove.presentation.events.EventRequestModel;
 import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
@@ -7,7 +7,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.UUID;
 
-public class EventEntityModel {
+public class EventEntityModelUtil {
 
     // Method to convert an Event entity to an EventResponseModel
     public static EventResponseModel toEventResponseModel(Event event) {

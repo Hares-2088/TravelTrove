@@ -4,7 +4,7 @@ import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
-import com.traveltrove.betraveltrove.utils.entitymodels.UserEntityToModel;
+import com.traveltrove.betraveltrove.utils.entitymodelyutils.UserEntityToModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,6 +83,14 @@ public class UserServiceImpl implements UserService {
                 .map(UserEntityToModel::toUserResponseModel)
                 .doOnSuccess(user -> log.info("Final Synced User Response: {}", user))
                 .doOnError(error -> log.error("Error Syncing User with ID {}: {}", auth0UserId, error.getMessage()));
+    }
+
+    @Override
+    public Mono<UserResponseModel> getUser(String userId) {
+        return userRepository.findByUserId(userId)
+                .map(UserEntityToModel::toUserResponseModel)
+                .doOnSuccess(user -> log.info("Fetched User Details: {}", user))
+                .doOnError(error -> log.error("Error fetching user with ID: {}", userId, error));
     }
 
 }

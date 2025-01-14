@@ -1,5 +1,5 @@
 @startuml
-title Tour Package Management Sequence Diagram for Admin
+title Tour Package and Airport Management Sequence Diagram for Admin
 
 actor Admin as "<<Actor>>\nAdmin"
 
@@ -12,6 +12,7 @@ participant TourPackageRepository as "<<Repository>>\nTourPackageRepository"
 participant Database as "<<Database>>"
 participant TourPackageResponseModel as "<<Model>>\nTourPackageResponseModel"
 
+== Tour Package Management ==
 Admin -> ReactApplication : Access Tour Packages Page
 activate ReactApplication
 
@@ -19,18 +20,18 @@ ReactApplication -> TourPackagesPage : render()
 activate TourPackagesPage
 deactivate ReactApplication
 
-TourPackagesPage -> TourPackageController : GET /api/v1/tour-packages
+TourPackagesPage -> TourPackageController : GET /api/v1/tours/{tourId}/packages
 activate TourPackageController
 
-TourPackageController -> TourPackageService : getAllTourPackages()
+TourPackageController -> TourPackageService : getPackagesByTourId(tourId)
 activate TourPackageService
 
-TourPackageService -> TourPackageRepository : findAll()
+TourPackageService -> TourPackageRepository : findByTourId(tourId)
 activate TourPackageRepository
 
-TourPackageRepository -> Database : SELECT * FROM tour_packages
+TourPackageRepository -> Database : SELECT * FROM tour_packages WHERE tour_id = tourId
 activate Database
-Database --> TourPackageRepository : List of packages
+Database --> TourPackageRepository : List of related packages
 deactivate Database
 
 TourPackageRepository --> TourPackageService : List of package entities
@@ -44,10 +45,10 @@ deactivate TourPackageResponseModel
 TourPackageService --> TourPackageController : List of TourPackageResponseModels
 deactivate TourPackageService
 
-TourPackageController --> TourPackagesPage : Display packages list
+TourPackageController --> TourPackagesPage : Display packages list for selected tour
 deactivate TourPackageController
 
-TourPackagesPage --> Admin : List of packages displayed
+TourPackagesPage --> Admin : Related packages for the tour displayed
 
 opt Add New Tour Package
     Admin -> TourPackagesPage : Fill tour package form and submit
@@ -93,7 +94,7 @@ opt Update Tour Package
     TourPackageController -> TourPackageService : updateTourPackage(packageId, tourPackageRequestModel)
     activate TourPackageService
 
-    TourPackageService -> TourPackageRepository : Find package by ID
+    TourPackageService -> TourPackageRepository : findById(packageId)
     activate TourPackageRepository
     TourPackageRepository -> Database : SELECT * FROM tour_packages WHERE id = packageId
     activate Database
@@ -154,35 +155,123 @@ opt Delete Tour Package
     TourPackagesPage --> Admin : Tour package deleted successfully
 end
 
-opt Get Tour Package by ID
-    Admin -> TourPackagesPage : Click on tour package name
-    TourPackagesPage -> TourPackageController : GET /api/v1/tour-packages/{packageId}
+== Airport Management ==
+opt List Airports
+    Admin -> ReactApplication : Access Airports Page
+    ReactApplication -> TourPackagesPage : render()
+    TourPackagesPage -> TourPackageController : GET /api/v1/airports
     activate TourPackageController
 
-    TourPackageController -> TourPackageService : getTourPackageById(packageId)
+    TourPackageController -> TourPackageService : getAllAirports()
     activate TourPackageService
 
-    TourPackageService -> TourPackageRepository : findById(packageId)
+    TourPackageService -> TourPackageRepository : findAll()
     activate TourPackageRepository
-    TourPackageRepository -> Database : SELECT * FROM tour_packages WHERE id = packageId
+    TourPackageRepository -> Database : SELECT * FROM airports
     activate Database
-    Database --> TourPackageRepository : Package data
+    Database --> TourPackageRepository : List of airports
     deactivate Database
-    TourPackageRepository --> TourPackageService : Package entity
+
+    TourPackageRepository --> TourPackageService : List of airport entities
     deactivate TourPackageRepository
 
-    TourPackageService -> TourPackageResponseModel : Map entity to response model
-    activate TourPackageResponseModel
-    TourPackageResponseModel --> TourPackageService : Response ready
-    deactivate TourPackageResponseModel
-
-    TourPackageService --> TourPackageController : TourPackageResponseModel
+    TourPackageService --> TourPackageController : List of AirportResponseModels
     deactivate TourPackageService
 
-    TourPackageController --> TourPackagesPage : Display package details
+    TourPackageController --> TourPackagesPage : List of airports
     deactivate TourPackageController
 
-    TourPackagesPage --> Admin : Package details displayed
+    TourPackagesPage --> Admin : Airports displayed
+end
+
+opt Add New Airport
+    Admin -> TourPackagesPage : Fill airport form and submit
+    TourPackagesPage -> TourPackageController : POST /api/v1/airports
+    activate TourPackageController
+
+    TourPackageController -> TourPackageService : saveAirport(airportRequestModel)
+    activate TourPackageService
+
+    TourPackageService -> TourPackageRepository : save(airportEntity)
+    activate TourPackageRepository
+    TourPackageRepository -> Database : INSERT INTO airports
+    activate Database
+    Database --> TourPackageRepository : Success
+    deactivate Database
+    TourPackageRepository --> TourPackageService : Saved airport entity
+    deactivate TourPackageRepository
+
+    TourPackageService --> TourPackageController : AirportResponseModel
+    deactivate TourPackageService
+
+    TourPackageController --> TourPackagesPage : Success message
+    deactivate TourPackageController
+
+    TourPackagesPage --> Admin : Airport added successfully
+end
+
+opt Update Airport
+    Admin -> TourPackagesPage : Edit airport form and submit
+    TourPackagesPage -> TourPackageController : PUT /api/v1/airports/{airportId}
+    activate TourPackageController
+
+    TourPackageController -> TourPackageService : updateAirport(airportId, airportRequestModel)
+    activate TourPackageService
+
+    TourPackageService -> TourPackageRepository : findById(airportId)
+    activate TourPackageRepository
+    TourPackageRepository -> Database : SELECT * FROM airports WHERE id = airportId
+    activate Database
+    Database --> TourPackageRepository : Airport data
+    deactivate Database
+    TourPackageRepository --> TourPackageService : Airport entity
+    deactivate TourPackageRepository
+
+    TourPackageService -> TourPackageEntity : Update entity with request data
+    activate TourPackageEntity
+    TourPackageEntity --> TourPackageService : Updated entity
+    deactivate TourPackageEntity
+
+    TourPackageService -> TourPackageRepository : save(updatedAirportEntity)
+    activate TourPackageRepository
+    TourPackageRepository -> Database : UPDATE airports SET ...
+    Database --> TourPackageRepository : Success
+    deactivate Database
+    TourPackageRepository --> TourPackageService : Updated airport entity
+    deactivate TourPackageRepository
+
+    TourPackageService --> TourPackageController : AirportResponseModel
+    deactivate TourPackageService
+
+    TourPackageController --> TourPackagesPage : Success message
+    deactivate TourPackageController
+
+    TourPackagesPage --> Admin : Airport updated successfully
+end
+
+opt Delete Airport
+    Admin -> TourPackagesPage : Select airport to delete
+    TourPackagesPage -> TourPackageController : DELETE /api/v1/airports/{airportId}
+    activate TourPackageController
+
+    TourPackageController -> TourPackageService : deleteAirport(airportId)
+    activate TourPackageService
+
+    TourPackageService -> TourPackageRepository : deleteById(airportId)
+    activate TourPackageRepository
+    TourPackageRepository -> Database : DELETE FROM airports WHERE id = airportId
+    Database --> TourPackageRepository : Success
+    deactivate Database
+    TourPackageRepository --> TourPackageService : Deletion complete
+    deactivate TourPackageRepository
+
+    TourPackageService --> TourPackageController : Deletion confirmation
+    deactivate TourPackageService
+
+    TourPackageController --> TourPackagesPage : Success message
+    deactivate TourPackageController
+
+    TourPackagesPage --> Admin : Airport deleted successfully
 end
 
 @enduml
