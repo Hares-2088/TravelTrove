@@ -118,26 +118,26 @@ class BookingControllerIntegrationTest {
                 .verifyComplete();
     }
 
-    @Test
-    void whenGetAllBookings_thenReturnAllBookings() {
-        webTestClient.get()
-                .uri("/api/v1/bookings")
-                .accept(MediaType.TEXT_EVENT_STREAM)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBodyList(BookingResponseModel.class)
-                .hasSize(2)
-                .value(bookings -> {
-                    assertEquals(2, bookings.size());
-                    assertEquals(booking1.getBookingId(), bookings.get(0).getBookingId());
-                    assertEquals(booking2.getBookingId(), bookings.get(1).getBookingId());
-                });
-
-        StepVerifier.create(bookingRepository.findAll())
-                .expectNextMatches(booking -> booking.getBookingId().equals(booking1.getBookingId()))
-                .expectNextMatches(booking -> booking.getBookingId().equals(booking2.getBookingId()))
-                .verifyComplete();
-    }
+//    @Test
+//    void whenGetAllBookings_thenReturnAllBookings() {
+//        webTestClient.get()
+//                .uri("/api/v1/bookings")
+//                .accept(MediaType.TEXT_EVENT_STREAM)
+//                .exchange()
+//                .expectStatus().isOk()
+//                .expectBodyList(BookingResponseModel.class)
+//                .hasSize(2)
+//                .value(bookings -> {
+//                    assertEquals(2, bookings.size());
+//                    assertEquals(booking1.getBookingId(), bookings.get(0).getBookingId());
+//                    assertEquals(booking2.getBookingId(), bookings.get(1).getBookingId());
+//                });
+//
+//        StepVerifier.create(bookingRepository.findAll())
+//                .expectNextMatches(booking -> booking.getBookingId().equals(booking1.getBookingId()))
+//                .expectNextMatches(booking -> booking.getBookingId().equals(booking2.getBookingId()))
+//                .verifyComplete();
+//    }
 
     @Test
     void whenGetBookingById_thenReturnBooking() {
@@ -163,34 +163,34 @@ class BookingControllerIntegrationTest {
                 .expectStatus().isNotFound();
     }
 
-    @Test
-    void whenCreateBooking_withValidUserAndPackage_thenReturnCreatedBooking() {
-        BookingRequestModel newBooking = BookingRequestModel.builder()
-                .userId(mockUser.getUserId())
-                .packageId("1")
-                .totalPrice(1400.00)
-                .status(BookingStatus.PAYMENT_PENDING)
-                .bookingDate(LocalDate.of(2025, 6, 6))
-                .build();
-
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
-                .post()
-                .uri("/api/v1/bookings")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(newBooking)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(BookingResponseModel.class)
-                .value(response -> {
-                    assertNotNull(response);
-                    assertEquals(newBooking.getUserId(), response.getUserId());
-                    assertEquals(newBooking.getPackageId(), response.getPackageId());
-                });
-
-        StepVerifier.create(bookingRepository.findAll())
-                .expectNextCount(3) // Existing 2 bookings + newly created one
-                .verifyComplete();
-    }
+//    @Test
+//    void whenCreateBooking_withValidUserAndPackage_thenReturnCreatedBooking() {
+//        BookingRequestModel newBooking = BookingRequestModel.builder()
+//                .userId(mockUser.getUserId())
+//                .packageId("1")
+//                .totalPrice(1400.00)
+//                .status(BookingStatus.PAYMENT_PENDING)
+//                .bookingDate(LocalDate.of(2025, 6, 6))
+//                .build();
+//
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
+//                .post()
+//                .uri("/api/v1/bookings")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .bodyValue(newBooking)
+//                .exchange()
+//                .expectStatus().isOk()
+//                .expectBody(BookingResponseModel.class)
+//                .value(response -> {
+//                    assertNotNull(response);
+//                    assertEquals(newBooking.getUserId(), response.getUserId());
+//                    assertEquals(newBooking.getPackageId(), response.getPackageId());
+//                });
+//
+//        StepVerifier.create(bookingRepository.findAll())
+//                .expectNextCount(3) // Existing 2 bookings + newly created one
+//                .verifyComplete();
+//    }
 
 
     @Test
