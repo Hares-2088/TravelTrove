@@ -27,6 +27,10 @@ jobs:
           distribution: 'adopt'
           cache: 'gradle'
 
+      - name: Grant execute permissions to gradlew
+        working-directory: be-traveltrove
+        run: chmod +x gradlew
+
       - name: Run Build
         working-directory: be-traveltrove
         run: ./gradlew build
