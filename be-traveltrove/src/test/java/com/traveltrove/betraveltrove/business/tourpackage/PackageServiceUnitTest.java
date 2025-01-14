@@ -276,6 +276,19 @@ class PackageServiceUnitTest {
                 .priceTriple(1800.0)
                 .build();
 
+        Package package1 = Package.builder()
+                .packageId("1")
+                .name("Old Package Name")
+                .description("Old Description")
+                .startDate(LocalDate.of(2024, 1, 1))
+                .endDate(LocalDate.of(2024, 1, 10))
+                .airportId("old-airport-id")
+                .tourId("old-tour-id")
+                .priceSingle(1000.0)
+                .priceDouble(900.0)
+                .priceTriple(800.0)
+                .build();
+
         when(packageRepository.findPackageByPackageId(packageId))
                 .thenReturn(Mono.just(package1));
 
@@ -286,13 +299,13 @@ class PackageServiceUnitTest {
                 .thenReturn(Mono.just(AirportResponseModel.builder().airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634").build()));
 
         when(packageRepository.save(any(Package.class)))
-                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0))); // Mock the save
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         Mono<PackageResponseModel> result = packageService.updatePackage(packageId, Mono.just(packageRequestModel));
 
         StepVerifier.create(result)
                 .assertNext(packageResponseModel -> {
-                    assertEquals("1", packageResponseModel.getPackageId()); // Ensure the original packageId is retained
+                    assertEquals("1", packageResponseModel.getPackageId());
                     assertEquals("Sample Package", packageResponseModel.getName());
                     assertEquals("A sample package description", packageResponseModel.getDescription());
                     assertEquals(LocalDate.of(2024, 10, 5), packageResponseModel.getStartDate());
@@ -305,6 +318,7 @@ class PackageServiceUnitTest {
                 })
                 .verifyComplete();
     }
+
 
 
     @Test
