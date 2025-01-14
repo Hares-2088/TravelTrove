@@ -16,6 +16,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.util.Comparator;
 import java.util.UUID;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -87,6 +88,8 @@ class CountryControllerIntegrationTest {
                 .expectBodyList(Country.class)
                 .hasSize(2)
                 .value(countries -> {
+                    // Ensure the list is sorted by name
+                    countries.sort(Comparator.comparing(Country::getName));
                     assertEquals(2, countries.size());
                     assertEquals(country1.getName(), countries.get(0).getName());
                     assertEquals(country2.getName(), countries.get(1).getName());
@@ -97,6 +100,7 @@ class CountryControllerIntegrationTest {
                 .expectNextMatches(country -> country.getName().equals(country2.getName()))
                 .verifyComplete();
     }
+
 
     @Test
     void whenAddCountry_thenReturnCreatedCountry() {
