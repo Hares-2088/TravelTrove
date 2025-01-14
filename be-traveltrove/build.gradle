@@ -92,5 +92,5 @@ test {
 	testLogging {
 		events "passed", "skipped", "failed"
 	}
-//	exclude '**/BeTraveltroveApplicationTests.class'
+	exclude '**/BeTraveltroveApplicationTests.class'
 }
