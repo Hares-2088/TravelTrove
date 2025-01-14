@@ -45,3 +45,17 @@ jobs:
         with:
           name: gradle-coverage-data.zip
           path: .qodana/code-coverage
+
+      # Upload test reports for review
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: be-traveltrove/build/reports/tests/test/
+
+      # Debug spring application logs for troubleshooting
+      - name: Check Application Logs
+        if: failure()
+        run: |
+          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
