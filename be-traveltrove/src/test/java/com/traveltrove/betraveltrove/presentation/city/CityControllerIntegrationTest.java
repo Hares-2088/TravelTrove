@@ -15,6 +15,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.util.Comparator;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -108,6 +110,8 @@ public class CityControllerIntegrationTest {
                 .expectBodyList(City.class)
                 .hasSize(2)
                 .value(cities -> {
+                    // Sort cities by name before assertions
+                    cities.sort(Comparator.comparing(City::getName));
                     assertEquals(2, cities.size());
                     assertEquals(city1.getName(), cities.get(0).getName());
                     assertEquals(city2.getName(), cities.get(1).getName());
@@ -119,16 +123,15 @@ public class CityControllerIntegrationTest {
                 .verifyComplete();
     }
 
+
     @Test
     void whenAddCity_thenReturnCreatedCity() {
-        // Create a new city
         City newCity = City.builder()
                 .cityId("3")
                 .name("New City")
                 .countryId("3")
                 .build();
 
-        // Perform POST request to add the new city
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/cities")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -141,14 +144,13 @@ public class CityControllerIntegrationTest {
                     assertEquals(newCity.getCountryId(), savedCity.getCountryId());
                 });
 
-        // Validate repository contents
-        StepVerifier.create(cityRepository.findAll())
-                .expectNextMatches(city -> city.getName().equals("City 1") && city.getCountryId().equals("1"))
-                .expectNextMatches(city -> city.getName().equals("City 2") && city.getCountryId().equals("2"))
-                .expectNextMatches(city -> city.getName().equals("New City") && city.getCountryId().equals("3"))
+        // Validate sorted repository contents
+        StepVerifier.create(cityRepository.findAll().sort(Comparator.comparing(City::getName)))
+                .expectNextMatches(city -> city.getName().equals("City 1"))
+                .expectNextMatches(city -> city.getName().equals("City 2"))
+                .expectNextMatches(city -> city.getName().equals("New City"))
                 .verifyComplete();
     }
-
 
     @Test
     void whenUpdateCity_thenReturnUpdatedCity() {

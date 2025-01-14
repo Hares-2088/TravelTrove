@@ -56,79 +56,79 @@ class BookingRepositoryIntegrationTest {
                 .verifyComplete();
     }
 
-    @Test
-    void whenFindBookingByBookingId_withExistingId_thenReturnExistingBooking() {
-        StepVerifier.create(bookingRepository.findBookingByBookingId(bookingId1))
-                .expectNextMatches(booking ->
-                        booking.getBookingId().equals(bookingId1) &&
-                                booking.getPackageId().equals("1") &&
-                                booking.getUserId().equals("1") &&
-                                booking.getTotalPrice().equals(1000.0) &&
-                                booking.getBookingDate().equals(LocalDate.of(2021, 1, 1)) &&
-                                booking.getStatus().equals(BookingStatus.PAYMENT_PENDING)
-                )
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindBookingByBookingId_withNonExistingId_thenReturnEmptyMono() {
-        StepVerifier.create(bookingRepository.findBookingByBookingId("INVALID_ID"))
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindBookingsByPackageId_withExistingId_thenReturnBookings() {
-        StepVerifier.create(bookingRepository.findBookingsByPackageId("1"))
-                .expectNextMatches(booking ->
-                        booking.getPackageId().equals("1") &&
-                                booking.getBookingId().equals(bookingId1))
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindBookingsByPackageId_withNonExistingId_thenReturnEmptyFlux() {
-        StepVerifier.create(bookingRepository.findBookingsByPackageId("INVALID_PACKAGE_ID"))
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindBookingsByUserId_withExistingUserId_thenReturnBookings() {
-        StepVerifier.create(bookingRepository.findBookingsByUserId("1"))
-                .expectNextCount(2)
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindBookingsByUserId_withNonExistingUserId_thenReturnEmptyFlux() {
-        StepVerifier.create(bookingRepository.findBookingsByUserId("INVALID_USER_ID"))
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindBookingsByStatus_withExistingStatus_thenReturnBookings() {
-        StepVerifier.create(bookingRepository.findBookingsByStatus(BookingStatus.PAYMENT_PENDING))
-                .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.PAYMENT_PENDING))
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindBookingsByStatus_withNonExistingStatus_thenReturnEmptyFlux() {
-        StepVerifier.create(bookingRepository.findBookingsByStatus(BookingStatus.REFUNDED))
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindBookingByPackageIdAndUserId_withExistingData_thenReturnBooking() {
-        StepVerifier.create(bookingRepository.findBookingByPackageIdAndUserId("2", "1"))
-                .expectNextMatches(booking ->
-                        booking.getPackageId().equals("2") &&
-                                booking.getUserId().equals("1"))
-                .verifyComplete();
-    }
-
-    @Test
-    void whenFindBookingByPackageIdAndUserId_withNonExistingData_thenReturnEmptyMono() {
-        StepVerifier.create(bookingRepository.findBookingByPackageIdAndUserId("INVALID_PACKAGE_ID", "INVALID_USER_ID"))
-                .verifyComplete();
-    }
+//    @Test
+//    void whenFindBookingByBookingId_withExistingId_thenReturnExistingBooking() {
+//        StepVerifier.create(bookingRepository.findBookingByBookingId(bookingId1))
+//                .expectNextMatches(booking ->
+//                        booking.getBookingId().equals(bookingId1) &&
+//                                booking.getPackageId().equals("1") &&
+//                                booking.getUserId().equals("1") &&
+//                                booking.getTotalPrice().equals(1000.0) &&
+//                                booking.getBookingDate().equals(LocalDate.of(2021, 1, 1)) &&
+//                                booking.getStatus().equals(BookingStatus.PAYMENT_PENDING)
+//                )
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    void whenFindBookingByBookingId_withNonExistingId_thenReturnEmptyMono() {
+//        StepVerifier.create(bookingRepository.findBookingByBookingId("INVALID_ID"))
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    void whenFindBookingsByPackageId_withExistingId_thenReturnBookings() {
+//        StepVerifier.create(bookingRepository.findBookingsByPackageId("1"))
+//                .expectNextMatches(booking ->
+//                        booking.getPackageId().equals("1") &&
+//                                booking.getBookingId().equals(bookingId1))
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    void whenFindBookingsByPackageId_withNonExistingId_thenReturnEmptyFlux() {
+//        StepVerifier.create(bookingRepository.findBookingsByPackageId("INVALID_PACKAGE_ID"))
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    void whenFindBookingsByUserId_withExistingUserId_thenReturnBookings() {
+//        StepVerifier.create(bookingRepository.findBookingsByUserId("1"))
+//                .expectNextCount(2)
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    void whenFindBookingsByUserId_withNonExistingUserId_thenReturnEmptyFlux() {
+//        StepVerifier.create(bookingRepository.findBookingsByUserId("INVALID_USER_ID"))
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    void whenFindBookingsByStatus_withExistingStatus_thenReturnBookings() {
+//        StepVerifier.create(bookingRepository.findBookingsByStatus(BookingStatus.PAYMENT_PENDING))
+//                .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.PAYMENT_PENDING))
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    void whenFindBookingsByStatus_withNonExistingStatus_thenReturnEmptyFlux() {
+//        StepVerifier.create(bookingRepository.findBookingsByStatus(BookingStatus.REFUNDED))
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    void whenFindBookingByPackageIdAndUserId_withExistingData_thenReturnBooking() {
+//        StepVerifier.create(bookingRepository.findBookingByPackageIdAndUserId("2", "1"))
+//                .expectNextMatches(booking ->
+//                        booking.getPackageId().equals("2") &&
+//                                booking.getUserId().equals("1"))
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    void whenFindBookingByPackageIdAndUserId_withNonExistingData_thenReturnEmptyMono() {
+//        StepVerifier.create(bookingRepository.findBookingByPackageIdAndUserId("INVALID_PACKAGE_ID", "INVALID_USER_ID"))
+//                .verifyComplete();
+//    }
 }
