@@ -1,0 +1,39 @@
+name: Node.js CI for TravelTrove
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+        # Tests against multiple Node.js versions
+
+    steps:
+      - name: Checkout the Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: fe-traveltrove/package-lock.json
+
+      - name: Install Dependencies
+        run: npm install
+        working-directory: ./fe-traveltrove
+
+      - name: Run Linting
+        run: npm run lint
+        working-directory: ./fe-traveltrove
+
+      - name: Build Frontend Code
+        run: npm run build
+        working-directory: ./fe-traveltrove

@@ -68,7 +68,7 @@ jobs:
       # Upload test reports for review
       - name: Upload Test Reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: be-traveltrove/build/reports/tests/test/
