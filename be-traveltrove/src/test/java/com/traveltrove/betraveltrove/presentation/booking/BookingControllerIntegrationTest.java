@@ -3,8 +3,6 @@ package com.traveltrove.betraveltrove.presentation.booking;
 import com.traveltrove.betraveltrove.dataaccess.booking.Booking;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingRepository;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigBookingService;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigPackageService;
 import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigUserService;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import org.junit.jupiter.api.*;
@@ -38,10 +36,7 @@ class BookingControllerIntegrationTest {
     @Autowired
     private BookingRepository bookingRepository;
 
-    private MockServerConfigBookingService mockServerConfigBookingService;
     private MockServerConfigUserService mockServerConfigUserService;
-    private MockServerConfigPackageService mockServerConfigPackageService;
-
 
     private final String INVALID_BOOKING_ID = "invalid-booking-id";
 
@@ -80,16 +75,6 @@ class BookingControllerIntegrationTest {
         mockServerConfigUserService.startMockServer();
         mockServerConfigUserService.registerGetUserEndpoint(mockUser);
 
-        // Start Package Mock Server
-        mockServerConfigPackageService = new MockServerConfigPackageService();
-        mockServerConfigPackageService.startMockServer();
-        mockServerConfigPackageService.registerGetPackageByPackageIdEndpoint("1");
-        mockServerConfigPackageService.registerGetPackageByInvalidIdEndpoint("invalid-package-id");
-
-        // Additional mock server configurations
-        mockServerConfigBookingService = new MockServerConfigBookingService();
-        mockServerConfigBookingService.startMockServer();
-        mockServerConfigBookingService.registerCreateBookingEndpoint();
     }
 
 
@@ -97,12 +82,6 @@ class BookingControllerIntegrationTest {
     public void stopServer() {
         if (mockServerConfigUserService != null) {
             mockServerConfigUserService.stopMockServer();
-        }
-        if (mockServerConfigBookingService != null) {
-            mockServerConfigBookingService.stopMockServer();
-        }
-        if (mockServerConfigPackageService != null) {
-            mockServerConfigPackageService.stopMockServer();
         }
     }
 

@@ -7,5 +7,6 @@ import reactor.core.publisher.Mono;
 public interface TourEventRepository extends ReactiveMongoRepository<TourEvent, String> {
     Flux<TourEvent> findAllByTourId(String tourId);
     Mono<TourEvent> findByTourEventId(String tourEventId);
+    Mono<TourEvent> findByTourIdAndEventId(String tourId, String eventId);
     Mono<Void> deleteByTourEventId(String tourEventId);
 }

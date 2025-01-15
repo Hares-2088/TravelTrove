@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.business.tour;
 
+import com.traveltrove.betraveltrove.business.event.EventService;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.presentation.tour.TourEventRequestModel;
@@ -17,8 +18,13 @@ public class TourEventServiceImpl implements TourEventService {
 
     private final TourEventRepository tourEventRepository;
 
-    public TourEventServiceImpl(TourEventRepository tourEventRepository) {
+    private final TourService tourService;
+    private final EventService eventService;
+
+    public TourEventServiceImpl(TourEventRepository tourEventRepository, TourService tourService, EventService eventService) {
         this.tourEventRepository = tourEventRepository;
+        this.tourService = tourService;
+        this.eventService = eventService;
     }
 
     @Override
@@ -42,9 +48,21 @@ public class TourEventServiceImpl implements TourEventService {
 
     @Override
     public Mono<TourEventResponseModel> addTourEvent(TourEvent tourEvent) {
-        return tourEventRepository.save(tourEvent)
-                .doOnSuccess(savedEvent -> log.info("Added new tour event: {}", savedEvent))
-                .map(EntityModelUtil::toTourEventResponseModel);
+        return tourExistsReactive(tourEvent.getTourId())
+                .flatMap(tourExists -> {
+                    if (!tourExists) {
+                        return Mono.error(new NotFoundException("Tour not found with id: " + tourEvent.getTourId()));
+                    }
+                    return eventExistsReactive(tourEvent.getEventId())
+                            .flatMap(eventExists -> {
+                                if (!eventExists) {
+                                    return Mono.error(new NotFoundException("Event not found with id: " + tourEvent.getEventId()));
+                                }
+                                return tourEventRepository.save(tourEvent)
+                                        .doOnSuccess(savedTourEvent -> log.info("Saved tour event: {}", savedTourEvent))
+                                        .map(EntityModelUtil::toTourEventResponseModel);
+                            });
+                });
     }
 
     @Override
@@ -70,6 +88,17 @@ public class TourEventServiceImpl implements TourEventService {
                 .flatMap(event -> tourEventRepository.deleteByTourEventId(tourEventId)
                         .doOnSuccess(unused -> log.info("Deleted TourEvent with tourEventId: {}", tourEventId))
                 );
+    }
+
+    //two method. one to check if the tourId exists and the other to check if the eventId exists
+    private Mono<Boolean> tourExistsReactive(String tourId) {
+        return tourService.getTourByTourId(tourId)
+                .hasElement();
+    }
+
+    private Mono<Boolean> eventExistsReactive(String eventId) {
+        return eventService.getEventByEventId(eventId)
+                .hasElement();
     }
 
 }

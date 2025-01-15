@@ -2,7 +2,6 @@ package com.traveltrove.betraveltrove.presentation.city;
 
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.city.CityRepository;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigCityService;
 import org.junit.jupiter.api.*;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,6 @@ public class CityControllerIntegrationTest {
     @Autowired
     private CityRepository cityRepository;
 
-    private MockServerConfigCityService mockServerConfigCityService;
 
     private final String INVALID_CITY_ID = "invalid-city-id";
 
@@ -49,20 +47,6 @@ public class CityControllerIntegrationTest {
             .name("City 2")
             .countryId("2")
             .build();
-
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigCityService = new MockServerConfigCityService();
-        mockServerConfigCityService.startMockServer();
-        mockServerConfigCityService.registerGetCityByIdEndpoint(city1);
-        mockServerConfigCityService.registerGetCityByIdEndpoint(city2);
-        mockServerConfigCityService.registerGetCityByInvalidIdEndpoint(INVALID_CITY_ID);
-    }
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigCityService.stopMockServer();
-    }
 
     @BeforeEach
     public void setupDB() {

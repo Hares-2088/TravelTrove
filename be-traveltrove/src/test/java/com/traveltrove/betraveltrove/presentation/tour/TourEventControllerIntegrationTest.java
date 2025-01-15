@@ -1,10 +1,16 @@
 package com.traveltrove.betraveltrove.presentation.tour;
 
+import com.traveltrove.betraveltrove.business.event.EventService;
+import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.dataaccess.events.Event;
+import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigTourEventService;
+import com.traveltrove.betraveltrove.presentation.events.EventResponseModel;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -13,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -32,11 +39,15 @@ class TourEventControllerIntegrationTest {
     @Autowired
     private TourEventRepository tourEventRepository;
 
-    private MockServerConfigTourEventService mockServerConfigTourEventService;
+    @Mock
+    private TourService tourService;
+
+    @Mock
+    private EventService eventService;
 
     private final String INVALID_EVENT_ID = "invalid-event-id";
 
-    private final TourEvent event1 = TourEvent.builder()
+    private final TourEvent tourEvent1 = TourEvent.builder()
             .Id("1")
             .tourEventId(UUID.randomUUID().toString())
             .seq(1)
@@ -45,7 +56,7 @@ class TourEventControllerIntegrationTest {
             .eventId("event456")
             .build();
 
-    private final TourEvent event2 = TourEvent.builder()
+    private final TourEvent tourEvent2 = TourEvent.builder()
             .Id("2")
             .tourEventId(UUID.randomUUID().toString())
             .seq(2)
@@ -54,35 +65,40 @@ class TourEventControllerIntegrationTest {
             .eventId("event789")
             .build();
 
+    private final Tour tour1 = Tour.builder()
+            .tourId("tour123")
+            .name("Tour 123")
+            .description("Tour 123 Description")
+            .build();
 
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigTourEventService = new MockServerConfigTourEventService();
-        mockServerConfigTourEventService.startMockServer();
-        mockServerConfigTourEventService.registerGetAllTourEventsEndpoint(event1);
-        mockServerConfigTourEventService.registerGetAllTourEventsEndpoint(event2);
-        mockServerConfigTourEventService.registerGetTourEventByInvalidIdEndpoint(INVALID_EVENT_ID);
+    private final Event event1 = Event.builder()
+            .eventId("event101")
+            .name("Event 456")
+            .description("Event 456 Description")
+            .build();
+
+    @BeforeEach
+    void initMocks() {
+        MockitoAnnotations.openMocks(this);
+
+        Mockito.when(tourService.getTourByTourId("tour123"))
+                .thenReturn(Mono.just(new TourResponseModel("tour123", "Tour 123", "Tour 123 Description")));
+
+        Mockito.when(eventService.getEventByEventId("event101"))
+                .thenReturn(Mono.just(new EventResponseModel("event101", "Event 456", "Event 456 Description", "yes", "yes", "yes")));
+
     }
-
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigTourEventService.stopMockServer();
-    }
-
 
     @BeforeEach
     public void setupDB() {
         Publisher<TourEvent> setupDB = tourEventRepository.deleteAll()
-                .thenMany(Flux.just(event1, event2))
+                .thenMany(Flux.just(tourEvent1, tourEvent2))
                 .flatMap(tourEventRepository::save);
 
         StepVerifier.create(setupDB)
                 .expectNextCount(2)
                 .verifyComplete();
     }
-
-
 
     @Test
     void whenGetTourEventByInvalidId_thenReturnNotFound() {
@@ -92,23 +108,37 @@ class TourEventControllerIntegrationTest {
                 .expectStatus().isNotFound();
     }
 
-
-
-
     @Test
     void whenGetTourEventById_thenReturnTourEvent() {
         webTestClient.get()
-                .uri("/api/v1/tourevents/{tourEventId}", event1.getTourEventId())
+                .uri("/api/v1/tourevents/{tourEventId}", tourEvent1.getTourEventId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().valueEquals("Content-Type", "application/json")
                 .expectBody(TourEvent.class)
-                .value(event -> assertEquals(event1.getSeqDesc(), event.getSeqDesc()));
+                .value(event -> assertEquals(tourEvent1.getSeqDesc(), event.getSeqDesc()));
 
-        StepVerifier.create(tourEventRepository.findByTourEventId(event1.getTourEventId()))
-                .expectNextMatches(event -> event.getSeqDesc().equals(event1.getSeqDesc()))
+        StepVerifier.create(tourEventRepository.findByTourEventId(tourEvent1.getTourEventId()))
+                .expectNextMatches(event -> event.getSeqDesc().equals(tourEvent1.getSeqDesc()))
                 .verifyComplete();
+    }
+
+    @Test
+    void whenCreateInvalidTourIdInRequest_ReturnNotFound() {
+        TourEventRequestModel newEventRequest = TourEventRequestModel.builder()
+                .seq(3)
+                .seqDesc("Closing Ceremony")
+                .tourId("invalid-tour-id")
+                .eventId("event101")
+                .build();
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+                .uri("/api/v1/tourevents")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(newEventRequest)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @Test
@@ -133,7 +163,7 @@ class TourEventControllerIntegrationTest {
     @Test
     void whenUpdateTourEvent_thenReturnUpdated() {
         TourEvent updatedEvent = TourEvent.builder()
-                .tourEventId(event1.getTourEventId())
+                .tourEventId(tourEvent1.getTourEventId())
                 .seq(1)
                 .seqDesc("Updated Opening Ceremony")
                 .tourId("tour123")
@@ -141,7 +171,7 @@ class TourEventControllerIntegrationTest {
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
-                .uri("/api/v1/tourevents/{tourEventId}", event1.getTourEventId())
+                .uri("/api/v1/tourevents/{tourEventId}", tourEvent1.getTourEventId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedEvent)
                 .exchange()
@@ -150,7 +180,7 @@ class TourEventControllerIntegrationTest {
                 .expectBody(TourEvent.class)
                 .value(event -> assertEquals(updatedEvent.getSeqDesc(), event.getSeqDesc()));
 
-        StepVerifier.create(tourEventRepository.findByTourEventId(event1.getTourEventId()))
+        StepVerifier.create(tourEventRepository.findByTourEventId(tourEvent1.getTourEventId()))
                 .expectNextMatches(event -> event.getSeqDesc().equals(updatedEvent.getSeqDesc()))
                 .verifyComplete();
     }
@@ -158,11 +188,11 @@ class TourEventControllerIntegrationTest {
     @Test
     void whenDeleteTourEvent_thenReturnNoContent() {
         webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
-                .uri("/api/v1/tourevents/{tourEventId}", event1.getTourEventId())
+                .uri("/api/v1/tourevents/{tourEventId}", tourEvent1.getTourEventId())
                 .exchange()
                 .expectStatus().isNoContent();
 
-        StepVerifier.create(tourEventRepository.findByTourEventId(event1.getTourEventId()))
+        StepVerifier.create(tourEventRepository.findByTourEventId(tourEvent1.getTourEventId()))
                 .verifyComplete();
     }
 

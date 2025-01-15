@@ -4,7 +4,6 @@ import com.traveltrove.betraveltrove.business.country.CountryService;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigTravelerService;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
@@ -39,8 +38,6 @@ class TravelerControllerIntegrationTest {
     @Autowired
     private TravelerRepository travelerRepository;
 
-    private MockServerConfigTravelerService mockServerConfigTravelerService;
-
     @MockitoBean
     private CountryService countryService;
 
@@ -74,15 +71,6 @@ class TravelerControllerIntegrationTest {
             .countryId("2")
             .build();
 
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigTravelerService = new MockServerConfigTravelerService();
-        mockServerConfigTravelerService.startMockServer();
-        mockServerConfigTravelerService.registerGetTravelerByIdEndpoint(traveler1.getTravelerId(), traveler1);
-        mockServerConfigTravelerService.registerGetTravelerByIdEndpoint(traveler2.getTravelerId(), traveler2);
-        mockServerConfigTravelerService.registerGetTravelerByInvalidIdEndpoint(INVALID_TRAVELER_ID);
-    }
-
     @BeforeEach
     public void initMocks() {
         MockitoAnnotations.openMocks(this); // Initialize @Mock and @InjectMocks
@@ -93,11 +81,6 @@ class TravelerControllerIntegrationTest {
         Mockito.when(countryService.getCountryById("invalid-country-id"))
                 .thenReturn(Mono.error(new NotFoundException("Country id not found: invalid-country-id")));
 
-    }
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigTravelerService.stopMockServer();
     }
 
     @BeforeEach

@@ -2,7 +2,6 @@ package com.traveltrove.betraveltrove.presentation.event;
 
 import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigEventService;
 import org.junit.jupiter.api.*;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.util.Comparator;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -32,8 +30,6 @@ class EventControllerIntegrationTest {
 
     @Autowired
     private EventRepository eventRepository;
-
-    private MockServerConfigEventService mockServerConfigEventService;
 
     private final String INVALID_EVENT_ID = "invalid-event-id";
 
@@ -56,20 +52,6 @@ class EventControllerIntegrationTest {
             .description("Description 2")
             .image("image2.jpg")
             .build();
-
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigEventService = new MockServerConfigEventService();
-        mockServerConfigEventService.startMockServer();
-        mockServerConfigEventService.registerGetEventByIdEndpoint(event1.getEventId());
-        mockServerConfigEventService.registerGetEventByIdEndpoint(event2.getEventId());
-        mockServerConfigEventService.registerGetEventByInvalidIdEndpoint(INVALID_EVENT_ID);
-    }
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigEventService.stopMockServer();
-    }
 
     @BeforeEach
     public void setupDB() {
