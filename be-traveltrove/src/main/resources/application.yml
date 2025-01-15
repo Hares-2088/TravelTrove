@@ -47,17 +47,38 @@ de:
 spring:
   config:
     activate:
-      on-profile: prod
+      on-profile: docker
 
   data:
     mongodb:
       host: mongo
       port: 27017
-      uri: ${MONGO_DB_URI}
       database: traveltrovedb
       username: root
       password: password
       authentication-database: admin
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: ci
+
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      database: traveltrove-ci
+      username: root
+      password: password
+      authentication-database: admin
+
+auth0:
+  clientId: ${AUTH0_CLIENT_ID}
+  clientSecret: ${AUTH0_CLIENT_SECRET}
+  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
+  domain: dev-traveltrove.ca.auth0.com
 
 ---
 
