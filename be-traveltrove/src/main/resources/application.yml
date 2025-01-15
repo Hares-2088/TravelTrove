@@ -100,9 +100,3 @@ logging:
   level:
     root: DEBUG
     com.be-traveltrove: TRACE
-
-auth0:
-  clientId: test-client-id
-  clientSecret: test-client-secret
-  audience: https://test-traveltrove.ca.auth0.com/api/v2/
-  domain: test-traveltrove.ca.auth0.com

@@ -1,10 +1,7 @@
 package com.traveltrove.betraveltrove.presentation.tour;
 
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigTourService;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
-import com.traveltrove.betraveltrove.presentation.tour.TourRequestModel;
-import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import org.junit.jupiter.api.*;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
-
-import java.time.LocalDate;
-import java.util.Collections;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,8 +28,6 @@ class TourControllerIntegrationTest {
 
     @Autowired
     private TourRepository tourRepository;
-
-    private MockServerConfigTourService mockServerConfigTourService;
 
     private final String INVALID_TOUR_ID = "clearly-not-a-valid-tour-id"; //really? I would have never guessed -Ioannis
 
@@ -82,21 +74,6 @@ class TourControllerIntegrationTest {
             .description("Yet another sample test tour")
             .build();
 
-
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigTourService = new MockServerConfigTourService();
-        mockServerConfigTourService.startMockServer();
-        mockServerConfigTourService.registerGetTourByIdEndpoint(tour1);
-        mockServerConfigTourService.registerGetTourByIdEndpoint(tour2);
-        mockServerConfigTourService.registerGetTourByInvalidIdEndpoint(INVALID_TOUR_ID);
-    }
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigTourService.stopMockServer();
-    }
-
     @BeforeEach
     public void setupDB() {
         Publisher<Tour> setupDB = tourRepository.deleteAll()
@@ -109,29 +86,29 @@ class TourControllerIntegrationTest {
                 .verifyComplete();
     }
 
-//    @Test
-//    void whenGetTours_thenReturnAllTours() {
-//        webTestClient.get()
-//                .uri("/api/v1/tours")
-//                .accept(MediaType.TEXT_EVENT_STREAM)
-//                .exchange()
-//                .expectStatus().isOk()
-//                .expectHeader().contentType(MediaType.TEXT_EVENT_STREAM + ";charset=UTF-8")
-//                .expectBodyList(Tour.class)
-//                .value(tours -> {
-//                    assertNotNull(tours);
-//                    assertEquals(2, tours.size());
-//                    assertEquals(tour1.getTourId(), tours.get(0).getTourId());
-//                    assertEquals(tour1.getName(), tours.get(0).getName());
-//                    assertEquals(tour2.getTourId(), tours.get(1).getTourId());
-//                    assertEquals(tour2.getName(), tours.get(1).getName());
-//                });
-//
-//        StepVerifier
-//                .create(tourRepository.findAll())
-//                .expectNextCount(2)
-//                .verifyComplete();
-//    }
+    @Test
+    void whenGetTours_thenReturnAllTours() {
+        webTestClient.get()
+                .uri("/api/v1/tours")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.TEXT_EVENT_STREAM + ";charset=UTF-8")
+                .expectBodyList(Tour.class)
+                .value(tours -> {
+                    assertNotNull(tours);
+                    assertEquals(2, tours.size());
+                    assertEquals(tour1.getTourId(), tours.get(0).getTourId());
+                    assertEquals(tour1.getName(), tours.get(0).getName());
+                    assertEquals(tour2.getTourId(), tours.get(1).getTourId());
+                    assertEquals(tour2.getName(), tours.get(1).getName());
+                });
+
+        StepVerifier
+                .create(tourRepository.findAll())
+                .expectNextCount(2)
+                .verifyComplete();
+    }
 
     @Test
     void whenGetTours_whenNoToursExist_thenReturnEmptyList() {

@@ -2,15 +2,12 @@ package com.traveltrove.betraveltrove.presentation.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
-import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageServiceImpl;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigPackageService;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -41,8 +38,6 @@ class PackageControllerIntegrationTest {
 
     @Autowired
     PackageRepository packageRepository;
-
-    private MockServerConfigPackageService mockServerConfigPackageService;
 
     @MockitoBean
     private AirportService airportService;
@@ -82,18 +77,6 @@ class PackageControllerIntegrationTest {
     @Autowired
     private PackageServiceImpl packageServiceImpl;
 
-    @BeforeAll
-    void startServer() {
-        mockServerConfigPackageService = new MockServerConfigPackageService();
-        mockServerConfigPackageService.startMockServer();
-        mockServerConfigPackageService.registerGetAllPackagesByTourIdEndpoint(package1.getTourId());
-        mockServerConfigPackageService.registerGetAllPackagesEndpoint();
-        mockServerConfigPackageService.registerGetPackageByPackageIdEndpoint(package1.getPackageId());
-        mockServerConfigPackageService.registerCreatePackageEndpoint();
-        mockServerConfigPackageService.registerUpdatePackageEndpoint(package1.getPackageId());
-        mockServerConfigPackageService.registerDeletePackageEndpoint(package1.getPackageId());
-    }
-
     @BeforeEach
     public void initMocks() {
         MockitoAnnotations.openMocks(this);
@@ -112,11 +95,6 @@ class PackageControllerIntegrationTest {
                 .build()));
 
         Mockito.when(tourService.getTourByTourId("invalid")).thenReturn(Mono.error(new NotFoundException("Tour not found with ID: invalid")));
-    }
-
-    @AfterAll
-    void stopServer() {
-        mockServerConfigPackageService.stopMockServer();
     }
 
     @BeforeEach

@@ -2,7 +2,6 @@ package com.traveltrove.betraveltrove.presentation.country;
 
 import com.traveltrove.betraveltrove.dataaccess.country.Country;
 import com.traveltrove.betraveltrove.dataaccess.country.CountryRepository;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigCountryService;
 import org.junit.jupiter.api.*;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.util.Comparator;
-import java.util.UUID;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,8 +31,6 @@ class CountryControllerIntegrationTest {
 
     @Autowired
     private CountryRepository countryRepository;
-
-    private MockServerConfigCountryService mockServerConfigCountryService;
 
     private final String INVALID_COUNTRY_ID = "invalid-country-id";
 
@@ -52,20 +48,6 @@ class CountryControllerIntegrationTest {
             .image("image2.jpg")
             .build();
 
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigCountryService = new MockServerConfigCountryService();
-        mockServerConfigCountryService.startMockServer();
-        mockServerConfigCountryService.registerGetCountryByIdEndpoint(country1);
-        mockServerConfigCountryService.registerGetCountryByIdEndpoint(country2);
-        mockServerConfigCountryService.registerGetCountryByInvalidIdEndpoint(INVALID_COUNTRY_ID);
-    }
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigCountryService.stopMockServer();
-    }
-
     @BeforeEach
     public void setupDB() {
         Publisher<Country> setupDB = countryRepository.deleteAll()
@@ -77,29 +59,24 @@ class CountryControllerIntegrationTest {
                 .verifyComplete();
     }
 
-//    @Test
-//    void whenGetAllCountries_thenReturnAllCountries() {
-//        webTestClient.get()
-//                .uri("/api/v1/countries")
-//                .accept(MediaType.TEXT_EVENT_STREAM)
-//                .exchange()
-//                .expectStatus().isOk()
-//                .expectHeader().valueEquals("Content-Type", "text/event-stream;charset=UTF-8")
-//                .expectBodyList(Country.class)
-//                .hasSize(2)
-//                .value(countries -> {
-//                    // Ensure the list is sorted by name
-//                    countries.sort(Comparator.comparing(Country::getName));
-//                    assertEquals(2, countries.size());
-//                    assertEquals(country1.getName(), countries.get(0).getName());
-//                    assertEquals(country2.getName(), countries.get(1).getName());
-//                });
-//
-//        StepVerifier.create(countryRepository.findAll())
-//                .expectNextMatches(country -> country.getName().equals(country1.getName()))
-//                .expectNextMatches(country -> country.getName().equals(country2.getName()))
-//                .verifyComplete();
-//    }
+    @Test
+    void whenGetAllCountries_thenReturnAllCountries() {
+        webTestClient.get()
+                .uri("/api/v1/countries")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Content-Type", "text/event-stream;charset=UTF-8")
+                .expectBodyList(Country.class)
+                .hasSize(2)
+                .value(countries -> {
+                    // Ensure the list is sorted by name
+                    countries.sort(Comparator.comparing(Country::getName));
+                    assertEquals(2, countries.size());
+                    assertEquals(country1.getName(), countries.get(0).getName());
+                    assertEquals(country2.getName(), countries.get(1).getName());
+                });
+    }
 
     @Test
     void whenAddCountry_thenReturnCreatedCountry() {
