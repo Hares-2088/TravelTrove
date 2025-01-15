@@ -89,11 +89,11 @@ spring:
 
   data:
     mongodb:
-      host: localhost
+      host: mongo
       port: 27017
-      database: traveltrove-test
-      username: testuser
-      password: testpassword
+      database: traveltrovedb
+      username: root
+      password: password
       authentication-database: admin
 
 logging:
