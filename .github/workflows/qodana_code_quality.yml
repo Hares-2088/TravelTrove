@@ -32,10 +32,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run Build
-        working-directory: be-traveltrove
+        working-directory: be-traveltroved
         run: |
           ./gradlew build \
-            -Dspring.profiles.active=ci
+            -Dspring.profiles.active=test
 
 
       - name: Create coverage-data directory and copy contents
