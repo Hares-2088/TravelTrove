@@ -58,6 +58,9 @@ de:
 frontend:
   domain: ${FRONTEND_DOMAIN}
 
+app:
+  base-url: ${BASE_URL}
+
 ---
 
 spring:
