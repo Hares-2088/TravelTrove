@@ -1,3 +1,20 @@
+spring:
+  application:
+    name: be-traveltrove
+
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      uri: mongodb+srv://adembessam:pSCIsioeBMeh9DK2@traveltrove.ykqw2.mongodb.net/?retryWrites=true&w=majority&appName=TravelTrove
+      database: traveltrovedb
+      username: root
+      password: password
+      authentication-database: admin
+
+  profiles:
+    active: default # Set the default profile here
+
 server:
   port: 8080
 
@@ -9,32 +26,22 @@ logging:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
     com.traveltrove.betraveltrove.config.security: DEBUG
 
-spring:
-  data:
-    mongodb:
-      host: mongo
-      port: 27017
-      database: traveltrovedb
-      username: root
-      password: password
-      authentication-database: admin
-
-de:
-  flapdoodle:
-    mongodb:
-      embedded:
-        version: 5.0.5
+auth0:
+  domain: dev-traveltrove.ca.auth0.com
+  clientId: ${AUTH0_CLIENT_ID}
+  clientSecret: ${AUTH0_CLIENT_SECRET}
+  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
 
 okta:
   oauth2:
     issuer: https://dev-traveltrove.ca.auth0.com/
     audience: https://api.traveltrove.com
 
-auth0:
-  domain: dev-traveltrove.ca.auth0.com
-  clientId: ${AUTH0_CLIENT_ID}
-  clientSecret: ${AUTH0_CLIENT_SECRET}
-  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 5.0.5
 
 ---
 
@@ -51,3 +58,52 @@ spring:
       username: root
       password: password
       authentication-database: admin
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: ci
+
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      database: traveltrove-ci
+      username: root
+      password: password
+      authentication-database: admin
+
+auth0:
+  clientId: ${AUTH0_CLIENT_ID}
+  clientSecret: ${AUTH0_CLIENT_SECRET}
+  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
+  domain: dev-traveltrove.ca.auth0.com
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: traveltrove-test
+      username: testuser
+      password: testpassword
+      authentication-database: admin
+
+logging:
+  level:
+    root: DEBUG
+    com.be-traveltrove: TRACE
+
+auth0:
+  clientId: test-client-id
+  clientSecret: test-client-secret
+  audience: https://test-traveltrove.ca.auth0.com/api/v2/
+  domain: test-traveltrove.ca.auth0.com
