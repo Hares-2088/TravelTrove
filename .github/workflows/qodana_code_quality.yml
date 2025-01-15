@@ -32,7 +32,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run Build
-        working-directory: be-traveltroved
+        working-directory: be-traveltrove
         run: |
           ./gradlew build \
             -Dspring.profiles.active=test
