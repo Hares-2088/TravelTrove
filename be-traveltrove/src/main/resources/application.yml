@@ -49,6 +49,9 @@ auth0:
   clientSecret: ${AUTH0_CLIENT_SECRET}
   audience: https://dev-traveltrove.ca.auth0.com/api/v2/
 
+app:
+  base-url: ${BASE_URL}
+
 ---
 
 spring:

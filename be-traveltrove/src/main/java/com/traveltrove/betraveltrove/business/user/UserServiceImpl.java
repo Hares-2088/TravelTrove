@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.business.user;
 
+import com.traveltrove.betraveltrove.business.email.EmailService;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
@@ -8,6 +9,7 @@ import com.traveltrove.betraveltrove.utils.entitymodelyutils.UserEntityToModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +21,12 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final Auth0Service auth0Service;
+    private final EmailService emailService;
     private final UserRepository userRepository;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
+
 
     @Override
     public Mono<UserResponseModel> addUserFromAuth0(String auth0UserId) {
@@ -44,7 +51,22 @@ public class UserServiceImpl implements UserService {
                                                                                 .permissions(updatedAuth0User.getPermissions())
                                                                                 .travelerId(UUID.randomUUID().toString())
                                                                                 .build()
-                                                                ).doOnSuccess(user -> log.info("User successfully created in MongoDB: {}", user))
+                                                                )
+                                                                        .doOnSuccess(user -> {
+                                                                            log.info("User successfully created in MongoDB: {}", user);
+
+                                                                            String editProfileLink = String.format("%s/profile/edit", baseUrl);
+                                                                            emailService.sendEmail(
+                                                                                    user.getEmail(),
+                                                                                    "Welcome to Travel Trove!",
+                                                                                    String.format(
+                                                                                            "Hi %s,\n\nWelcome to Travel Trove! We're excited to have you on board. Please edit your profile here: %s\n\nBest regards,\nTravel Trove Team",
+                                                                                            user.getFirstName(),
+                                                                                            editProfileLink
+                                                                                    )
+                                                                            );
+
+                                                                        })
                                                         )
                                                 )
                                 )
