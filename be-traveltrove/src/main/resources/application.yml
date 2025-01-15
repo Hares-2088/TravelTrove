@@ -1,3 +1,19 @@
+spring:
+  application:
+    name: be-traveltrove
+
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      database: traveltrovedb
+      username: root
+      password: password
+      authentication-database: admin
+
+  profiles:
+    active: default # Set the default profile here
+
 server:
   port: 8080
 
@@ -9,15 +25,16 @@ logging:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
     com.traveltrove.betraveltrove.config.security: DEBUG
 
-spring:
-  data:
-    mongodb:
-      host: mongo
-      port: 27017
-      database: traveltrovedb
-      username: root
-      password: password
-      authentication-database: admin
+auth0:
+  domain: dev-traveltrove.ca.auth0.com
+  clientId: ${AUTH0_CLIENT_ID}
+  clientSecret: ${AUTH0_CLIENT_SECRET}
+  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
+
+okta:
+  oauth2:
+    issuer: https://dev-traveltrove.ca.auth0.com/
+    audience: https://api.traveltrove.com
 
 de:
   flapdoodle:
@@ -25,23 +42,29 @@ de:
       embedded:
         version: 5.0.5
 
-okta:
-  oauth2:
-    issuer: https://dev-traveltrove.ca.auth0.com/
-    audience: https://api.traveltrove.com
+---
 
-auth0:
-  domain: dev-traveltrove.ca.auth0.com
-  clientId: ${AUTH0_CLIENT_ID}
-  clientSecret: ${AUTH0_CLIENT_SECRET}
-  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      uri: ${MONGO_DB_URI}
+      database: traveltrovedb
+      username: root
+      password: password
+      authentication-database: admin
 
 ---
 
 spring:
   config:
     activate:
-      on-profile: docker
+      on-profile: test
 
   data:
     mongodb:
@@ -51,3 +74,8 @@ spring:
       username: root
       password: password
       authentication-database: admin
+
+logging:
+  level:
+    root: DEBUG
+    com.be-traveltrove: TRACE
