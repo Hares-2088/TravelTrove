@@ -13,6 +13,8 @@ import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
 import com.traveltrove.betraveltrove.dataaccess.hotel.Hotel;
 import com.traveltrove.betraveltrove.dataaccess.hotel.HotelRepository;
+import com.traveltrove.betraveltrove.dataaccess.review.Review;
+import com.traveltrove.betraveltrove.dataaccess.review.ReviewRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
@@ -2055,5 +2057,426 @@ public class DatabaseLoader {
                         error -> log.error("Error preloading bookings: {}", error.getMessage())
                 );
     }
+
+
+    private final ReviewRepository reviewRepository;
+
+    @PostConstruct
+    public void loadReviews() {
+        List<Review> sampleReviews = List.of(
+                // Admins
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4123")
+                        .reviewerName("Amelia Clark")
+                        .review("This was an amazing experience! I would definitely recommend it to anyone.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4121")
+                        .reviewerName("John Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4122")
+                        .reviewerName("Amelia Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4124")
+                        .reviewerName("John Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(3)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4125")
+                        .reviewerName("John Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4126")
+                        .reviewerName("Jason Clark")
+                        .review("Bad experience. Would not recommend.")
+                        .rating(1)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4127")
+                        .reviewerName("Mael Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4128")
+                        .reviewerName("Christine Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4129")
+                        .reviewerName("Emie Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4130")
+                        .reviewerName("Johna Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .reviewId("f6e91f6c-723e-43b9-812f-2f3d3bfb4120")
+                        .reviewerName("Amelia Second")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+
+
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("a6e91f6c-723e-43b9-812f-2f3d3bfb4123")
+                        .reviewerName("Amelia Clark")
+                        .review("This was an amazing experience! I would definitely recommend it to anyone.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("b6e91f6c-723e-43b9-812f-2f3d3bfb4121")
+                        .reviewerName("John Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("c6e91f6c-723e-43b9-812f-2f3d3bfb4122")
+                        .reviewerName("Amelia Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("d6e91f6c-723e-43b9-812f-2f3d3bfb4124")
+                        .reviewerName("John Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(3)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("e6e91f6c-723e-43b9-812f-2f3d3bfb4125")
+                        .reviewerName("John Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("g6e91f6c-723e-43b9-812f-2f3d3bfb4126")
+                        .reviewerName("Jason Clark")
+                        .review("Bad experience. Would not recommend.")
+                        .rating(1)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa43")
+                        .reviewerName("Mael Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("h6e91f6c-723e-43b9-812f-2f3d3bfb4128")
+                        .reviewerName("Christine Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("i6e91f6c-723e-43b9-812f-2f3d3bfb4129")
+                        .reviewerName("Emie Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("j6e91f6c-723e-43b9-812f-2f3d3bfb4130")
+                        .reviewerName("Johna Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewId("k6e91f6c-723e-43b9-812f-2f3d3bfb4120")
+                        .reviewerName("Amelia Second")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+
+
+
+
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("l6e91f6c-723e-43b9-812f-2f3d3bfb4123")
+                        .reviewerName("Amelia Clark")
+                        .review("This was an amazing experience! I would definitely recommend it to anyone.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("m6e91f6c-723e-43b9-812f-2f3d3bfb4121")
+                        .reviewerName("John Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("o6e91f6c-723e-43b9-812f-2f3d3bfb4122")
+                        .reviewerName("Amelia Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("p6e91f6c-723e-43b9-812f-2f3d3bfb4124")
+                        .reviewerName("John Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(3)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("q6e91f6c-723e-43b9-812f-2f3d3bfb4125")
+                        .reviewerName("John Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("r6e91f6c-723e-43b9-812f-2f3d3bfb4126")
+                        .reviewerName("Jason Clark")
+                        .review("Bad experience. Would not recommend.")
+                        .rating(1)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("se7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewerName("Mael Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("t6e91f6c-723e-43b9-812f-2f3d3bfb4128")
+                        .reviewerName("Christine Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("u6e91f6c-723e-43b9-812f-2f3d3bfb4129")
+                        .reviewerName("Emie Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("v6e91f6c-723e-43b9-812f-2f3d3bfb4130")
+                        .reviewerName("Johna Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .reviewId("w6e91f6c-723e-43b9-812f-2f3d3bfb4120")
+                        .reviewerName("Amelia Second")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+
+
+
+
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("x6e91f6c-723e-43b9-812f-2f3d3bfb4123")
+                        .reviewerName("Amelia Clark")
+                        .review("This was an amazing experience! I would definitely recommend it to anyone.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("y6e91f6c-723e-43b9-812f-2f3d3bfb4121")
+                        .reviewerName("John Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("z6e91f6c-723e-43b9-812f-2f3d3bfb4122")
+                        .reviewerName("Amelia Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("f1e91f6c-723e-43b9-812f-2f3d3bfb4124")
+                        .reviewerName("John Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(3)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("f2e91f6c-723e-43b9-812f-2f3d3bfb4125")
+                        .reviewerName("John Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("f3e91f6c-723e-43b9-812f-2f3d3bfb4126")
+                        .reviewerName("Jason Clark")
+                        .review("Bad experience. Would not recommend.")
+                        .rating(1)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("8e3a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewerName("Mael Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("f4e91f6c-723e-43b9-812f-2f3d3bfb4128")
+                        .reviewerName("Christine Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("f5e91f6c-723e-43b9-812f-2f3d3bfb4129")
+                        .reviewerName("Emie Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("f7e91f6c-723e-43b9-812f-2f3d3bfb4130")
+                        .reviewerName("Johna Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .reviewId("f8e91f6c-723e-43b9-812f-2f3d3bfb4120")
+                        .reviewerName("Amelia Second")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+
+
+
+
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f9e91f6c-723e-43b9-812f-2f3d3bfb4123")
+                        .reviewerName("Amelia Clark")
+                        .review("This was an amazing experience! I would definitely recommend it to anyone.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f6a91f6c-723e-43b9-812f-2f3d3bfb4121")
+                        .reviewerName("John Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f6b91f6c-723e-43b9-812f-2f3d3bfb4122")
+                        .reviewerName("Amelia Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f6c91f6c-723e-43b9-812f-2f3d3bfb4124")
+                        .reviewerName("John Johnson")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(3)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f6d91f6c-723e-43b9-812f-2f3d3bfb4125")
+                        .reviewerName("John Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f6f91f6c-723e-43b9-812f-2f3d3bfb4126")
+                        .reviewerName("Jason Clark")
+                        .review("Bad experience. Would not recommend.")
+                        .rating(1)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("8g7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .reviewerName("Mael Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f6h91f6c-723e-43b9-812f-2f3d3bfb4128")
+                        .reviewerName("Christine Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f6i91f6c-723e-43b9-812f-2f3d3bfb4129")
+                        .reviewerName("Emie Clark")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(4)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f6j91f6c-723e-43b9-812f-2f3d3bfb4130")
+                        .reviewerName("Johna Doe")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build(),
+                Review.builder()
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .reviewId("f6k91f6c-723e-43b9-812f-2f3d3bfb4120")
+                        .reviewerName("Amelia Second")
+                        .review("The tour was great, but the accommodations could have been better.")
+                        .rating(5)
+                        .build()
+
+                );
+
+        reviewRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleReviews))
+                .flatMap(reviewRepository::save)
+                .doOnNext(user -> log.info("Preloaded review: {}", user))
+                .subscribe(
+                        success -> log.info("Reviews preloaded successfully."),
+                        error -> log.error("Error preloading reviews: {}", error.getMessage())
+                );
+    }
+
+
 }
 

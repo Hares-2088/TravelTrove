@@ -10,6 +10,10 @@ import {
 } from "../../../packages/models/package.model";
 import { AirportResponseModel } from "../../../airports/models/airports.model"; // Import the airport model
 import { FaFilter } from "react-icons/fa"; // Import the filter icon
+import { Review } from "../../../tours/models/Review";
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
+import { useReviewsApi } from "../../../reviews/api/review.api";
+
 
 interface TourPackagesTabProps {
     tourId: string;
@@ -20,15 +24,25 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const navigate = useNavigate(); // Initialize useNavigate
     const { getAllPackages, addPackage, updatePackage, deletePackage, getPackageStatus } = usePackagesApi();
     const { getAllAirports } = useAirportsApi(); // Use the airports API hook
+    const { getReviewsByPackage, addReview, getAverageRating} = useReviewsApi(); // Use the reviews API hook
     const [packages, setPackages] = useState<PackageResponseModel[]>([]);
     const [airports, setAirports] = useState<AirportResponseModel[]>([]); // State for airports
     const [showModal, setShowModal] = useState(false);
-    const [modalType, setModalType] = useState<"create" | "update" | "delete" | "view">(
+    const [modalType, setModalType] = useState<"create" | "update" | "delete" | "view" | "review" | "viewReviews">(
         "create"
     );
+    const [showReviewList, setShowReviewList] = useState(false);
+
     const [selectedPackage, setSelectedPackage] =
         useState<PackageResponseModel | null>(null);
-    
+        const [reviews, setReviews] = useState<Review[]>([]);  // Assuming Review is the type for reviews
+        const [averageRating, setAverageRating] = useState<number>(0);
+        const [reviewForm, setReviewForm] = useState({
+            rating: 0,
+            comment: "",
+        });
+        const [reviewData, setReviewData] = useState<{reviewerName: string; description: string; rating: number }>({ reviewerName: "", description: "", rating: 0 });
+        const [reviewErrors, setReviewErrors] = useState<{ reviewerName: boolean; description?: boolean; rating?: boolean }>({ reviewerName: false, description: false, rating: false });
     const [formData, setFormData] = useState<PackageRequestModel>({
         airportId: "",
         tourId: tourId,
@@ -62,6 +76,53 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const [showFilters, setShowFilters] = useState(false); // State to toggle filter visibility
 
 
+    
+    
+
+    const getStars = (
+        rating: number,
+        handleClick?: (rating: number) => void
+    ) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            const isFullStar = i <= Math.floor(rating);
+            const isHalfStar = !isFullStar && rating > i - 1 && rating < i;
+
+            stars.push(
+                <span
+                    key={i}
+                    style={{
+                        cursor: handleClick ? "pointer" : "default",
+                        fontSize: "3rem",
+                        color: "#ffc107",
+                    }}
+                    onClick={
+                        handleClick
+                            ? () => handleClick(isHalfStar ? i - 0.5 : i)
+                            : undefined
+                    }
+                >
+                    {isFullStar ? (
+                        <FaStar />
+                    ) : isHalfStar ? (
+                        <FaStarHalfAlt />
+                    ) : (
+                        <FaRegStar />
+                    )}
+                </span>
+            );
+        }
+        return stars;
+    };
+
+    
+    useEffect(() => {
+        if (selectedPackage) {
+            fetchReviews(selectedPackage.packageId);
+        }
+    }, [selectedPackage]);
+    
+    
     useEffect(() => {
         fetchPackages();
         fetchAirports(); // Fetch airports when the component mounts
@@ -79,6 +140,17 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             console.error("Error fetching packages:", error);
         }
     };
+
+    const fetchReviews = async (packageId: string) => {
+        try {
+            const data = await getReviewsByPackage(packageId);
+            setReviews(data);
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+        }
+    };
+    
+
 
     const fetchAirports = async () => {
         try {
@@ -180,10 +252,81 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     };
       
 
+    const handleStarClick = (newRating: number) => {
+        setReviewData({ ...reviewData, rating: newRating });
+    };
+    
+    
+
+    
+    const handleAddReview = (pkgId: string) => {
+        setSelectedPackage(packages.find((pkg) => pkg.packageId === pkgId) || null);
+        setModalType("review");
+        setReviewForm({ rating: 0, comment: "" });
+        setShowModal(true);
+    };
+
+    const handleReviewSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+    
+        // Initialize errors
+        const errors: { reviewerName: boolean; description: boolean; rating: boolean } = {
+            reviewerName: !reviewData.reviewerName,
+            description: !reviewData.description,
+            rating: reviewData.rating < 1 || reviewData.rating > 5,
+        };
+    
+        // Check if there are any errors
+        if (errors.reviewerName || errors.description || errors.rating) {
+            setReviewErrors(errors);
+        } else {
+            // Update the reviews state with the new review
+            const newReview: Review = { 
+                reviewId: Date.now().toString(), 
+                packageId: selectedPackage?.packageId || "", 
+                reviewerName: reviewData.reviewerName, // Replace with actual reviewer name if available
+                review: reviewData.description, 
+                date: new Date().toISOString(), 
+                rating: reviewData.rating
+            };
+            const updatedReviews = [...reviews, newReview];
+            setReviews(updatedReviews);
+    
+            // Recalculate the average rating
+            const totalRating = updatedReviews.reduce((acc, review) => acc + review.rating, 0);
+            const newAverage = totalRating / updatedReviews.length;
+            setAverageRating(newAverage);
+    
+            // Clear the form fields after submission
+            setReviewData({ reviewerName: "", description: "", rating: 0 });
+            setReviewErrors({ reviewerName: false, description: false, rating: false });
+            setShowModal(false);
+        }
+    };
+    
+    
+    const handleViewAllReviews = (pkgId: string) => {
+        const selected = packages.find((pkg) => pkg.packageId === pkgId);
+        console.log("Selected package:", selected); // Debugging
+        setSelectedPackage(selected || null);
+        setShowReviewList(true);
+    };
+    
+    
+        
+
+    const calculateAverageRating = (pkgId: string) => {
+        const pkgReviews = reviews.filter(review => review.packageId === pkgId);
+        if (pkgReviews.length === 0) return "N/A";
+        const total = pkgReviews.reduce((sum, review) => sum + review.rating, 0);
+        return (total / pkgReviews.length).toFixed(1);
+    };
+
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
 
+            
             <Button
                     variant="primary"
                     onClick={() => {
@@ -219,6 +362,46 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     <FaFilter /> {t("Filters")}
                 </Button>
             </div>
+
+            <div>
+                {/* Modal for Viewing All Reviews */}
+                <Modal
+                    show={showReviewList}
+                    onHide={() => setShowReviewList(false)}
+                    size="lg"
+                    centered
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>{t("All Reviews")}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {reviews && reviews.length > 0 ? (
+                            <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+                                <ul style={{ padding: 0, listStyle: "none" }}>
+                                    {reviews
+                                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                                        .map((review, index) => (
+                                            <li key={index} style={{ marginBottom: "20px", borderBottom: "1px solid #ccc", paddingBottom: "10px" }}>
+                                                <strong>{review.reviewerName}</strong>
+                                                <p style={{ margin: "5px 0" }}>{review.review}</p>
+                                                <div>{getStars(review.rating)}</div>
+                                                <small>{new Date(review.date).toLocaleString()}</small>
+                                            </li>
+                                        ))}
+                                </ul>
+                            </div>
+                        ) : (
+                            <p>{t("No Reviews Available")}</p>
+                        )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setShowReviewList(false)}>
+                            {t("Close")}
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
+
 
             {showFilters && (
                 <div className="filter-bar">
@@ -277,6 +460,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                         <th>{t("End Date")}</th>
                         <th>{t("Price")}</th>
                         <th>{t("Available Seats")}</th>
+                        <th>{t("Avg. Rating")}</th>
                         <th>{t("Actions")}</th>
                     </tr>
                 </thead>
@@ -289,6 +473,12 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             <td>{new Date(pkg.endDate).toLocaleDateString()}</td>
                             <td>{pkg.priceSingle}</td>
                             <td>{pkg.availableSeats}</td>
+                            <td>{calculateAverageRating(pkg.packageId)}</td>
+                            <td>
+                                <Button variant="primary" onClick={() => handleAddReview(pkg.packageId)}>
+                                    {t("Add Review")}
+                                </Button>
+                            </td>
                             <td>
                                 <Button
                                     variant="outline-primary"
@@ -340,22 +530,32 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 >
                                     {t("View Bookings")}
                                 </Button>
+                                <Button variant="outline-secondary" 
+                                className="ms-2"
+                                onClick={() => handleViewAllReviews(pkg.packageId)}>
+                                    {t("View All Reviews")}
+                                </Button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </Table>
+        
 
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {modalType === "create"
                             ? t("Create Package")
+                            :modalType === "review"
+                            ? t("Add Review")
                             : modalType === "update"
                                 ? t("Edit Package")
                                 : modalType === "delete"
                                     ? t("Delete Package")
-                                    : t("View Package")}
+                                    : modalType === "view"
+                                    ? t("View Package")
+                                    : t("View Reviews")}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -374,7 +574,57 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             <p><strong>{("totalSeats")}:</strong> {selectedPackage?.totalSeats}</p>
                             <p><strong>{("packageStatus")}:</strong> {selectedPackage && getPackageStatus(selectedPackage)}</p>
                         </div>
-                    ) : (
+                    ) : modalType === "review" ? (
+                        <Form onSubmit={handleReviewSubmit}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>{t("Reviewer Name")}</Form.Label>
+                                <Form.Control
+                                    required
+                                    type="text"
+                                    value={reviewData.reviewerName}
+                                    onChange={(e) =>
+                                        setReviewData({ ...reviewData, reviewerName: e.target.value })
+                                    }
+                                    isInvalid={reviewErrors.reviewerName}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {t("Reviewer Name Required")}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>{t("Review Description")}</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    value={reviewData.description}
+                                    onChange={(e) =>
+                                        setReviewData({ ...reviewData, description: e.target.value })
+                                    }
+                                    rows={3}
+                                    isInvalid={reviewErrors.description}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {t("Review Description Required")}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                            <Form.Label>{t("Rating")}</Form.Label>
+                            <div>{getStars(reviewData.rating, handleStarClick)}</div> 
+                                <Form.Control.Feedback type="invalid">
+                                    {t("Rating Required")}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={() => setShowModal(false)}>
+                                    {t("Cancel")}
+                                </Button>
+                                <Button type="submit" variant="primary">
+                                    {t("Submit Review")}
+                                </Button>
+                            </Modal.Footer>
+                        </Form>
+                       ) : (
+
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
                                 <Form.Label>{t("packageName")}</Form.Label>
