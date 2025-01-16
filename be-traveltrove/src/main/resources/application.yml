@@ -79,3 +79,5 @@ logging:
   level:
     root: DEBUG
     com.be-traveltrove: TRACE
+    org.springframework: TRACE
+    org.hibernate: TRACE

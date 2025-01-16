@@ -55,6 +55,15 @@ jobs:
           echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}"
           echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}"
 
+      - name: Print Environment Variables
+        run: printenv
+
+      - name: Print Java Version
+        run: java -version
+
+      - name: Print Gradle Version
+        run: ./gradlew --version
+
       - name: Build and test backend
         working-directory: be-traveltrove
         run: |
@@ -74,3 +83,4 @@ jobs:
         if: failure()
         run: |
           cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
+
