@@ -61,7 +61,7 @@ class CountryControllerIntegrationTest {
 
     @Test
     void whenGetAllCountries_thenReturnAllCountries() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser()).get()
                 .uri("/api/v1/countries")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()

@@ -68,7 +68,7 @@ spring:
 
   data:
     mongodb:
-      host: mongo
+      host: localhost
       port: 27017
       database: traveltrovedb
       username: root
