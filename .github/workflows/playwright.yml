@@ -12,10 +12,15 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      # Frontend environment variables
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.REACT_APP_AUTH0_DOMAIN }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.REACT_APP_AUTH0_CLIENT_ID }}
       REACT_APP_AUTH0_CALLBACK_URL: ${{ secrets.REACT_APP_AUTH0_CALLBACK_URL }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
+
+      # Backend environment variables
+      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
 
     steps:
       - name: Checkout code
@@ -36,6 +41,14 @@ jobs:
           echo "REACT_APP_AUTH0_CALLBACK_URL=${REACT_APP_AUTH0_CALLBACK_URL}" >> fe-traveltrove/.env
           echo "REACT_APP_AUTH0_AUDIENCE=${REACT_APP_AUTH0_AUDIENCE}" >> fe-traveltrove/.env
           cat fe-traveltrove/.env # Debugging step to verify file exists
+        shell: bash
+
+      # 🔹 Create the .env file for backend
+      - name: Create .env file for backend
+        run: |
+          echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}" > be-traveltrove/.env
+          echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}" >> be-traveltrove/.env
+          cat be-traveltrove/.env # Debugging step to verify file exists
         shell: bash
 
       # 🔹 Only install backend dependencies if package.json exists
@@ -61,9 +74,9 @@ jobs:
       - name: Install Docker Compose
         run: sudo apt-get update && sudo apt-get install -y docker-compose
 
-      # 🔹 Debugging step to verify the .env file exists before running Docker Compose
-      - name: Verify .env file exists
-        run: ls -l fe-traveltrove/.env
+      # 🔹 Debugging step to verify the .env files exist before running Docker Compose
+      - name: Verify .env files exist
+        run: ls -l fe-traveltrove/.env && ls -l be-traveltrove/.env
 
       - name: Build and start Docker containers
         run: docker-compose -f docker-compose.yml up -d --build
