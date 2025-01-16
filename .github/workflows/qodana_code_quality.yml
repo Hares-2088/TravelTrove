@@ -41,15 +41,6 @@ jobs:
         working-directory: be-traveltrove
         run: chmod +x gradlew
 
-      - name: Wait for MongoDB to be ready
-        run: |
-          echo "Waiting for MongoDB to be ready..."
-          until docker inspect --format='{{.State.Health.Status}}' mongo | grep -q 'healthy'; do
-            echo "Waiting for MongoDB to be healthy..."
-            sleep 5
-          done
-        shell: bash
-
       - name: Run Build
         working-directory: be-traveltrove
         run: |
