@@ -1,85 +1,85 @@
-#spring:
-#  application:
-#    name: be-traveltrove
-#
-#  data:
-#    mongodb:
-#      host: mongo
-#      port: 27017
-#      database: traveltrovedb
-#      username: root
-#      password: password
-#      authentication-database: admin
-#
-#  profiles:
-#    active: default # Set the default profile here
-#
-#server:
-#  port: 8080
-#
-#logging:
-#  level:
-#    root: INFO
-#    com.be-traveltrove: DEBUG
-#    org.hibernate.SQL: DEBUG
-#    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
-#    com.traveltrove.betraveltrove.config.security: DEBUG
-#
-#auth0:
-#  domain: dev-traveltrove.ca.auth0.com
-#  clientId: ${AUTH0_CLIENT_ID}
-#  clientSecret: ${AUTH0_CLIENT_SECRET}
-#  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
-#
-#okta:
-#  oauth2:
-#    issuer: https://dev-traveltrove.ca.auth0.com/
-#    audience: https://api.traveltrove.com
-#
-#de:
-#  flapdoodle:
-#    mongodb:
-#      embedded:
-#        version: 5.0.5
-#
-#---
-#
-#spring:
-#  config:
-#    activate:
-#      on-profile: prod
-#
-#  data:
-#    mongodb:
-#      host: mongo
-#      port: 27017
-#      uri: ${MONGO_DB_URI}
-#      database: traveltrovedb
-#      username: root
-#      password: password
-#      authentication-database: admin
-#
-#---
-#
-#spring:
-#  config:
-#    activate:
-#      on-profile: test
-#
-#  data:
-#    mongodb:
-#      host: localhost
-#      port: 27017
-#      database: testdb
-#      username: root
-#      password: password
-#      authentication-database: admin
-#      auto-index-creation: true
-#
-#
-#logging:
-#  level:
-#    root: DEBUG
-#    com.be-traveltrove: TRACE
-#    org.springframework: TRACE
-#    org.hibernate: TRACE
+spring:
+  application:
+    name: be-traveltrove
+
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      database: traveltrovedb
+      username: root
+      password: password
+      authentication-database: admin
+
+  profiles:
+    active: default # Set the default profile here
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.be-traveltrove: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    com.traveltrove.betraveltrove.config.security: DEBUG
+
+auth0:
+  domain: dev-traveltrove.ca.auth0.com
+  clientId: ${AUTH0_CLIENT_ID}
+  clientSecret: ${AUTH0_CLIENT_SECRET}
+  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
+
+okta:
+  oauth2:
+    issuer: https://dev-traveltrove.ca.auth0.com/
+    audience: https://api.traveltrove.com
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 5.0.5
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      uri: ${MONGO_DB_URI}
+      database: traveltrovedb
+      username: root
+      password: password
+      authentication-database: admin
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: testdb
+      username: root
+      password: password
+      authentication-database: admin
+      auto-index-creation: true
+
+
+logging:
+  level:
+    root: DEBUG
+    com.be-traveltrove: TRACE
+    org.springframework: TRACE
+    org.hibernate: TRACE
