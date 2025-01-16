@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: TravelTrove/fe-traveltrove/package-lock.json
+          cache-dependency-path: fe-traveltrove/package-lock.json
 
       # Step 3: Install dependencies
       - name: Install dependencies
