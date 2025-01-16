@@ -25,6 +25,7 @@ tasks.named('test') {
 jacoco {
 	toolVersion = "0.8.11"
 }
+
 ext {
 	mapstructVersion = "1.5.3.Final"
 	lombokVersion = "1.18.26"
@@ -42,9 +43,9 @@ dependencies {
 	implementation 'org.apache.httpcomponents.client5:httpclient5'
 	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 	implementation 'com.okta.spring:okta-spring-boot-starter:3.0.5'
-	implementation('com.github.joselion:maybe:2.1.0')
-	implementation('io.github.cdimascio:dotenv-java:3.0.0')
-	implementation('me.paulschwarz:spring-dotenv:4.0.0')
+	implementation 'com.github.joselion:maybe:2.1.0'
+	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	compileOnly 'org.projectlombok:lombok'
@@ -55,9 +56,9 @@ dependencies {
 	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}", "org.projectlombok:lombok:${lombokVersion}", "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
 	testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 	testImplementation 'io.projectreactor:reactor-test'
-	testImplementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.12.3')
+	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.12.3'
 	testImplementation 'org.mock-server:mockserver-netty:5.14.0'
-	testImplementation('org.springframework.security:spring-security-test')
+	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
@@ -91,5 +92,4 @@ test {
 	testLogging {
 		events "passed", "skipped", "failed"
 	}
-	exclude '**/BeTraveltroveApplicationTests.class'
 }
