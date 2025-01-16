@@ -41,10 +41,11 @@ jobs:
         working-directory: be-traveltrove
         run: chmod +x gradlew
 
-      - name: Check MongoDB Connection
+      - name: Wait for MongoDB to be ready
         run: |
-          until docker exec mongo mongo --eval 'db.runCommand({ connectionStatus: 1 })'; do
-            echo "Waiting for MongoDB to be available..."
+          echo "Waiting for MongoDB to be ready..."
+          until docker inspect --format='{{.State.Health.Status}}' mongo | grep -q 'healthy'; do
+            echo "Waiting for MongoDB to be healthy..."
             sleep 5
           done
         shell: bash
