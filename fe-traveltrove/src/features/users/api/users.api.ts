@@ -4,6 +4,12 @@ import { UserResponseModel } from '../model/users.model';
 export const useUsersApi = () => {
     const axiosInstance = useAxiosInstance();
 
+    const getUser = async (userId: string): Promise<UserResponseModel> => {
+        const encodedUserId = encodeURIComponent(userId);
+        const response = await axiosInstance.get<UserResponseModel>(`/users/${encodedUserId}`);
+        return response.data;
+    }
+
     const loginUser = async (userId: string): Promise<UserResponseModel> => {
         const encodedUserId = encodeURIComponent(userId);
         const response = await axiosInstance.post<UserResponseModel>(`/users/${encodedUserId}/login`);
@@ -24,6 +30,7 @@ export const useUsersApi = () => {
     };
 
     return {
+        getUser,
         loginUser,
         syncUser,
         getUserById,
