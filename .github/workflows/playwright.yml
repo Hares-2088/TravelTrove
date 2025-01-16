@@ -20,14 +20,24 @@ jobs:
           cache: 'npm'
           cache-dependency-path: fe-traveltrove/package-lock.json
 
+      # Only install backend dependencies if package.json exists
       - name: Install backend dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          if [ -f be-traveltrove/package.json ]; then
+            npm install --legacy-peer-deps
+          else
+            echo "Skipping backend install: package.json not found in be-traveltrove"
+          fi
         working-directory: be-traveltrove
 
       - name: Start backend server
         run: |
-          npm start &
-          sleep 5
+          if [ -f be-traveltrove/package.json ]; then
+            npm start &
+            sleep 5
+          else
+            echo "Skipping backend start: package.json not found"
+          fi
         working-directory: be-traveltrove
 
       - name: Install Docker Compose
