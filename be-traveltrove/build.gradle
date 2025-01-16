@@ -60,6 +60,8 @@ dependencies {
 	testImplementation 'org.mock-server:mockserver-netty:5.14.0'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:4.x.x'
+
 }
 
 jacocoTestReport {
