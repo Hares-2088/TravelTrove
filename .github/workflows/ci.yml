@@ -67,6 +67,7 @@ jobs:
           ./gradlew clean build \
             -Dauth0.clientId=${AUTH0_CLIENT_ID} \
             -Dauth0.clientSecret=${AUTH0_CLIENT_SECRET} \
+            -Dfrontend.domain=${FRONTEND_DOMAIN} \
             -Dspring.profiles.active=test
 
       - name: Upload Test Reports
