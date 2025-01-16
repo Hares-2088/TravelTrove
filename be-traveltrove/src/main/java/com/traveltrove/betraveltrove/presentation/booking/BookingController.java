@@ -19,7 +19,6 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/bookings")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class BookingController {
 
