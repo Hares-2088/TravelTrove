@@ -3,9 +3,8 @@ export interface CityResponseModel {
   name: string;
   countryId: string;
 }
-  
+
 export interface CityRequestModel {
   name: string;
   countryId: string;
 }
-  

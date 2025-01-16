@@ -2,7 +2,7 @@ import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 import {
   TourEventRequestModel,
   TourEventResponseModel,
-} from "../model/tourevents.model";
+} from '../model/tourevents.model';
 
 // Utility function to parse event-stream data
 const parseEventStream = (data: string): TourEventResponseModel[] => {
@@ -37,7 +37,9 @@ export const useTourEventsApi = () => {
   };
 
   // Fetch Tour Events by Tour ID
-  const getTourEventsByTourId = async (tourId: string): Promise<TourEventResponseModel[]> => {
+  const getTourEventsByTourId = async (
+    tourId: string
+  ): Promise<TourEventResponseModel[]> => {
     const response = await axiosInstance.get(`/tourevents/tours/${tourId}`, {
       responseType: 'text',
       headers: { Accept: 'text/event-stream' },
@@ -46,7 +48,9 @@ export const useTourEventsApi = () => {
   };
 
   // Fetch a Tour Event by ID
-  const getTourEventById = async (tourEventId: string): Promise<TourEventResponseModel | null> => {
+  const getTourEventById = async (
+    tourEventId: string
+  ): Promise<TourEventResponseModel | null> => {
     try {
       const response = await axiosInstance.get(`/tourevents/${tourEventId}`);
       return response.data;
@@ -57,7 +61,9 @@ export const useTourEventsApi = () => {
   };
 
   // Add a New Tour Event
-  const addTourEvent = async (request: TourEventRequestModel): Promise<TourEventResponseModel> => {
+  const addTourEvent = async (
+    request: TourEventRequestModel
+  ): Promise<TourEventResponseModel> => {
     const response = await axiosInstance.post('/tourevents', request);
     return response.data;
   };
@@ -68,7 +74,10 @@ export const useTourEventsApi = () => {
     request: TourEventRequestModel
   ): Promise<TourEventResponseModel | null> => {
     try {
-      const response = await axiosInstance.put(`/tourevents/${tourEventId}`, request);
+      const response = await axiosInstance.put(
+        `/tourevents/${tourEventId}`,
+        request
+      );
       return response.data;
     } catch (error) {
       console.error(`Error updating tour event ${tourEventId}:`, error);

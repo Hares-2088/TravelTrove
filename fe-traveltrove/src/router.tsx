@@ -48,7 +48,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: AppRoutes.Bookings, 
+        path: AppRoutes.Bookings,
         element: (
           <ProtectedRoute>
             <Bookings />
@@ -100,8 +100,8 @@ const router = createBrowserRouter([
         element: <Navigate to={AppRoutes.Home} replace />,
       },
       {
-        path: "*",
-        element: <NotFoundPage />
+        path: '*',
+        element: <NotFoundPage />,
       },
     ],
   },

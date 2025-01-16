@@ -1,5 +1,5 @@
-import React from "react";
-import { Form, Button } from "react-bootstrap";
+import React from 'react';
+import { Form, Button } from 'react-bootstrap';
 
 type FilterOption = {
   label: string; //Label to display
@@ -19,12 +19,12 @@ const FilterBar: React.FC<{
       <Form.Select
         key={index}
         value={filter.value}
-        onChange={(e) => filter.onChange(e.target.value)}
+        onChange={e => filter.onChange(e.target.value)}
         onClick={filter.onClick}
         disabled={filter.disabled}
       >
         <option value="">{filter.label}</option>
-        {filter.options.map((option) => (
+        {filter.options.map(option => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>

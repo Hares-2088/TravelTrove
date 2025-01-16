@@ -1,4 +1,7 @@
-import { CountryRequestModel, CountryResponseModel } from '../models/country.model';
+import {
+  CountryRequestModel,
+  CountryResponseModel,
+} from '../models/country.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 // Country API Hook
@@ -33,14 +36,23 @@ export const useCountriesApi = () => {
   };
 
   // Fetch Country by ID
-  const getCountryById = async (countryId: string): Promise<CountryResponseModel> => {
-    const response = await axiosInstance.get<CountryResponseModel>(`/countries/${countryId}`);
+  const getCountryById = async (
+    countryId: string
+  ): Promise<CountryResponseModel> => {
+    const response = await axiosInstance.get<CountryResponseModel>(
+      `/countries/${countryId}`
+    );
     return response.data;
   };
 
   // Add a New Country
-  const addCountry = async (country: CountryRequestModel): Promise<CountryResponseModel> => {
-    const response = await axiosInstance.post<CountryResponseModel>('/countries', country);
+  const addCountry = async (
+    country: CountryRequestModel
+  ): Promise<CountryResponseModel> => {
+    const response = await axiosInstance.post<CountryResponseModel>(
+      '/countries',
+      country
+    );
     return response.data;
   };
 

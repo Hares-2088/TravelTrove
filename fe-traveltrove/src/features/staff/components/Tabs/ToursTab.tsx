@@ -1,23 +1,35 @@
-import { useEffect, useState } from "react";
-import { useToursApi } from "../../../tours/api/tours.api";
-import { TourRequestModel, TourResponseModel } from "../../../tours/models/Tour";
-import { Button, Table, Modal, Form } from "react-bootstrap";
-import TourEventsTab from "./TourEventsTab";
-import TourPackagesTab from "./TourPackagesTab";
-import "../../../../shared/css/Scrollbar.css";
-import { useTranslation } from "react-i18next";
-
+import { useEffect, useState } from 'react';
+import { useToursApi } from '../../../tours/api/tours.api';
+import {
+  TourRequestModel,
+  TourResponseModel,
+} from '../../../tours/models/Tour';
+import { Button, Table, Modal, Form } from 'react-bootstrap';
+import TourEventsTab from './TourEventsTab';
+import TourPackagesTab from './TourPackagesTab';
+import '../../../../shared/css/Scrollbar.css';
+import { useTranslation } from 'react-i18next';
 
 const ToursTab: React.FC = () => {
-  const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour } = useToursApi();
+  const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour } =
+    useToursApi();
 
   const { t } = useTranslation(); // For i18n translation
   const [tours, setTours] = useState<TourResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
-  const [selectedTour, setSelectedTour] = useState<TourResponseModel | null>(null);
-  const [formData, setFormData] = useState<TourRequestModel>({ name: "", description: "" });
-  const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(null);
+  const [modalType, setModalType] = useState<'create' | 'update' | 'delete'>(
+    'create'
+  );
+  const [selectedTour, setSelectedTour] = useState<TourResponseModel | null>(
+    null
+  );
+  const [formData, setFormData] = useState<TourRequestModel>({
+    name: '',
+    description: '',
+  });
+  const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(
+    null
+  );
   const [tourNameError, setTourNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
 
@@ -30,7 +42,7 @@ const ToursTab: React.FC = () => {
       const data = await getAllTours();
       setTours(data);
     } catch (error) {
-      console.error("Error fetching tours:", error);
+      console.error('Error fetching tours:', error);
     }
   };
 
@@ -39,13 +51,13 @@ const ToursTab: React.FC = () => {
       const tour = await getTourByTourId(tourId);
       setViewingTour(tour); // Show Tour Details View
     } catch (error) {
-      console.error("Error fetching Tour details:", error);
+      console.error('Error fetching Tour details:', error);
     }
   };
 
   const handleSave = async () => {
-    const isTourNameValid = formData.name.trim() !== "";
-    const isDescriptionValid = formData.description.trim() !== "";
+    const isTourNameValid = formData.name.trim() !== '';
+    const isDescriptionValid = formData.description.trim() !== '';
 
     setTourNameError(!isTourNameValid);
     setDescriptionError(!isDescriptionValid);
@@ -53,15 +65,15 @@ const ToursTab: React.FC = () => {
     if (!isTourNameValid || !isDescriptionValid) return;
 
     try {
-      if (modalType === "create") {
+      if (modalType === 'create') {
         await addTour(formData);
-      } else if (modalType === "update" && selectedTour) {
+      } else if (modalType === 'update' && selectedTour) {
         await updateTour(selectedTour.tourId, formData);
       }
       setShowModal(false);
       await fetchTours();
     } catch (error) {
-      console.error("Error saving tour:", error);
+      console.error('Error saving tour:', error);
     }
   };
 
@@ -73,7 +85,7 @@ const ToursTab: React.FC = () => {
         await fetchTours();
       }
     } catch (error) {
-      console.error("Error deleting tour:", error);
+      console.error('Error deleting tour:', error);
     }
   };
 
@@ -82,24 +94,24 @@ const ToursTab: React.FC = () => {
       {viewingTour ? (
         <div
           className="dashboard-scrollbar"
-          style={{ maxHeight: "700px", overflowY: "auto" }}
+          style={{ maxHeight: '700px', overflowY: 'auto' }}
         >
           <Button
             variant="link"
             className="text-primary mb-3"
             onClick={() => setViewingTour(null)}
             style={{
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
             }}
           >
             <span>&larr;</span> {t('backToListT')}
           </Button>
           <h3>{viewingTour.name}</h3>
           <p>
-            <strong>{t('tourDescription')}:</strong>{" "}
+            <strong>{t('tourDescription')}:</strong>{' '}
             {viewingTour.description || t('noDescriptionT')}
           </p>
           <TourEventsTab tourId={viewingTour.tourId} />
@@ -112,8 +124,8 @@ const ToursTab: React.FC = () => {
             <Button
               variant="primary"
               onClick={() => {
-                setModalType("create");
-                setFormData({ name: "", description: "" });
+                setModalType('create');
+                setFormData({ name: '', description: '' });
                 setShowModal(true);
               }}
             >
@@ -123,7 +135,7 @@ const ToursTab: React.FC = () => {
 
           <div
             className="dashboard-scrollbar"
-            style={{ maxHeight: "700px", overflowY: "auto" }}
+            style={{ maxHeight: '700px', overflowY: 'auto' }}
           >
             <Table bordered hover responsive className="rounded">
               <thead className="bg-light">
@@ -133,14 +145,14 @@ const ToursTab: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {tours.map((tour) => (
+                {tours.map(tour => (
                   <tr key={tour.tourId}>
                     <td
                       onClick={() => handleViewTour(tour.tourId)}
                       style={{
-                        cursor: "pointer",
-                        color: "#007bff",
-                        textDecoration: "underline",
+                        cursor: 'pointer',
+                        color: '#007bff',
+                        textDecoration: 'underline',
                       }}
                     >
                       {tour.name}
@@ -150,7 +162,7 @@ const ToursTab: React.FC = () => {
                         variant="outline-primary"
                         onClick={() => {
                           setSelectedTour(tour);
-                          setModalType("update");
+                          setModalType('update');
                           setFormData({
                             name: tour.name,
                             description: tour.description,
@@ -165,7 +177,7 @@ const ToursTab: React.FC = () => {
                         className="ms-2"
                         onClick={() => {
                           setSelectedTour(tour);
-                          setModalType("delete");
+                          setModalType('delete');
                           setShowModal(true);
                         }}
                       >
@@ -184,15 +196,15 @@ const ToursTab: React.FC = () => {
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalType === "create"
+            {modalType === 'create'
               ? t('createTour')
-              : modalType === "update"
-              ? t('editTour')
-              : t('deleteTour')}
+              : modalType === 'update'
+                ? t('editTour')
+                : t('deleteTour')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {modalType === "delete" ? (
+          {modalType === 'delete' ? (
             <p>{t('areYouSureDelete')}</p>
           ) : (
             <Form>
@@ -202,7 +214,7 @@ const ToursTab: React.FC = () => {
                   required
                   type="text"
                   value={formData.name}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFormData({ ...formData, name: e.target.value });
                     setTourNameError(false);
                   }}
@@ -215,14 +227,16 @@ const ToursTab: React.FC = () => {
                 <Form.Control
                   as="textarea"
                   value={formData.description}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFormData({ ...formData, description: e.target.value });
                     setDescriptionError(false);
                   }}
                   isInvalid={descriptionError}
                   rows={3}
                 />
-                <div className="invalid-feedback">{t('tourDescriptionRequired')}</div>
+                <div className="invalid-feedback">
+                  {t('tourDescriptionRequired')}
+                </div>
               </Form.Group>
             </Form>
           )}
@@ -232,10 +246,10 @@ const ToursTab: React.FC = () => {
             {t('cancelT')}
           </Button>
           <Button
-            variant={modalType === "delete" ? "danger" : "primary"}
-            onClick={modalType === "delete" ? handleDelete : handleSave}
+            variant={modalType === 'delete' ? 'danger' : 'primary'}
+            onClick={modalType === 'delete' ? handleDelete : handleSave}
           >
-            {modalType === "delete" ? t('confirmT') : t('saveT')}
+            {modalType === 'delete' ? t('confirmT') : t('saveT')}
           </Button>
         </Modal.Footer>
       </Modal>

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useToursApi } from "../api/tours.api";
-import { TourResponseModel } from "../models/Tour";
-import "./ToursList.css";
-import { AppRoutes } from "../../../shared/models/app.routes";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useToursApi } from '../api/tours.api';
+import { TourResponseModel } from '../models/Tour';
+import './ToursList.css';
+import { AppRoutes } from '../../../shared/models/app.routes';
 
 const ToursList: React.FC = () => {
   const { getAllTours } = useToursApi();
@@ -17,7 +17,7 @@ const ToursList: React.FC = () => {
         const data = await getAllTours();
         setTours(data || []);
       } catch {
-        setError("Failed to fetch tours.");
+        setError('Failed to fetch tours.');
       } finally {
         setLoading(false);
       }
@@ -33,7 +33,7 @@ const ToursList: React.FC = () => {
 
   return (
     <div className="tours-list">
-      {tours.map((tour) => (
+      {tours.map(tour => (
         <Link
           to={`${AppRoutes.ToursPage}/${tour.tourId}`}
           key={tour.tourId}

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useToursApi } from "../api/tours.api";
-import { TourResponseModel } from "../models/Tour";
-import "./TourDetails.css";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useToursApi } from '../api/tours.api';
+import { TourResponseModel } from '../models/Tour';
+import './TourDetails.css';
 
 const TourDetails: React.FC = () => {
   const { getTourByTourId } = useToursApi();
@@ -18,7 +18,7 @@ const TourDetails: React.FC = () => {
         const data = await getTourByTourId(tourId!);
         setTour(data);
       } catch {
-        setError("Failed to fetch tour details.");
+        setError('Failed to fetch tour details.');
       } finally {
         setLoading(false);
       }

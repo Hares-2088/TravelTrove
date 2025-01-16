@@ -17,5 +17,5 @@ export enum AppRoutes {
   Forbidden = '/forbidden',
   RequestTimeout = '/request-timeout',
   InternalServerError = '/internal-server-error',
-  ServiceUnavailable = '/service-unavailable'
+  ServiceUnavailable = '/service-unavailable',
 }

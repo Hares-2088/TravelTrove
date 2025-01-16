@@ -10,7 +10,7 @@ i18n
   .use(initReactI18next) // React integration
   .init({
     fallbackLng: 'en', // Default language if detection fails
-    lng: "en",
+    lng: 'en',
     debug: true, // Enable debug mode for development
     backend: {
       loadPath: '/locales/{{lng}}/translation.json', // Path to translation files
@@ -25,4 +25,3 @@ i18n
   });
 
 export default i18n;
-

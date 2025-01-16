@@ -1,32 +1,37 @@
-import React, { useState, useEffect } from "react";
-import { Button, Table, Modal, Form } from "react-bootstrap";
-import { useCitiesApi } from "../../../cities/api/cities.api";
-import { useCountriesApi } from "../../../countries/api/countries.api";
+import React, { useState, useEffect } from 'react';
+import { Button, Table, Modal, Form } from 'react-bootstrap';
+import { useCitiesApi } from '../../../cities/api/cities.api';
+import { useCountriesApi } from '../../../countries/api/countries.api';
 import { useTranslation } from 'react-i18next';
 import {
   CityResponseModel,
   CityRequestModel,
-} from "../../../cities/models/city.model";
-import { CountryResponseModel } from "../../../countries/models/country.model";
-import "../../../../shared/css/Scrollbar.css";
+} from '../../../cities/models/city.model';
+import { CountryResponseModel } from '../../../countries/models/country.model';
+import '../../../../shared/css/Scrollbar.css';
 
 const CitiesTab: React.FC = () => {
-  const { getAllCities, getCityById, addCity, updateCity, deleteCity } = useCitiesApi();
+  const { getAllCities, getCityById, addCity, updateCity, deleteCity } =
+    useCitiesApi();
   const { getAllCountries } = useCountriesApi();
 
   const { t } = useTranslation();
   const [cities, setCities] = useState<CityResponseModel[]>([]);
   const [countries, setCountries] = useState<CountryResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">(
-    "create"
+  const [modalType, setModalType] = useState<'create' | 'update' | 'delete'>(
+    'create'
   );
-  const [selectedCity, setSelectedCity] = useState<CityResponseModel | null>(null);
+  const [selectedCity, setSelectedCity] = useState<CityResponseModel | null>(
+    null
+  );
   const [formData, setFormData] = useState<CityRequestModel>({
-    name: "",
-    countryId: "",
+    name: '',
+    countryId: '',
   });
-  const [viewingCity, setViewingCity] = useState<CityResponseModel | null>(null);
+  const [viewingCity, setViewingCity] = useState<CityResponseModel | null>(
+    null
+  );
 
   const [nameError, setNameError] = useState(false);
   const [countryError, setCountryError] = useState(false);
@@ -41,7 +46,7 @@ const CitiesTab: React.FC = () => {
       const data = await getAllCountries();
       setCountries(data);
     } catch (error) {
-      console.error("Error fetching countries:", error);
+      console.error('Error fetching countries:', error);
     }
   };
 
@@ -50,7 +55,7 @@ const CitiesTab: React.FC = () => {
       const data = await getAllCities();
       setCities(data);
     } catch (error) {
-      console.error("Error fetching cities:", error);
+      console.error('Error fetching cities:', error);
     }
   };
 
@@ -59,32 +64,32 @@ const CitiesTab: React.FC = () => {
       const city = await getCityById(cityId);
       setViewingCity(city);
     } catch (error) {
-      console.error("Error fetching city details:", error);
+      console.error('Error fetching city details:', error);
     }
   };
 
   const getCountryName = (countryId: string) => {
-    const country = countries.find((country) => country.countryId === countryId);
+    const country = countries.find(country => country.countryId === countryId);
     return country ? country.name : t('unknownCountry');
   };
 
   const handleSave = async () => {
-    const isNameValid = formData.name.trim() !== "";
+    const isNameValid = formData.name.trim() !== '';
     const isCountryValid = !!formData.countryId.trim();
 
     setNameError(!isNameValid);
     setCountryError(!isCountryValid);
 
     try {
-      if (modalType === "create") {
+      if (modalType === 'create') {
         await addCity(formData);
-      } else if (modalType === "update" && selectedCity) {
+      } else if (modalType === 'update' && selectedCity) {
         await updateCity(selectedCity.cityId, formData);
       }
       setShowModal(false);
       await fetchCities();
     } catch (error) {
-      console.error("Error saving city:", error);
+      console.error('Error saving city:', error);
     }
   };
 
@@ -96,7 +101,7 @@ const CitiesTab: React.FC = () => {
         await fetchCities();
       }
     } catch (error) {
-      console.error("Error deleting city:", error);
+      console.error('Error deleting city:', error);
     }
   };
 
@@ -109,17 +114,18 @@ const CitiesTab: React.FC = () => {
             className="text-primary mb-3"
             onClick={() => setViewingCity(null)}
             style={{
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
             }}
           >
             <span>&larr;</span> {t('backToList')}
           </Button>
           <h3>{viewingCity.name}</h3>
           <p>
-            <strong>{t('country')}:</strong> {getCountryName(viewingCity.countryId)}
+            <strong>{t('country')}:</strong>{' '}
+            {getCountryName(viewingCity.countryId)}
           </p>
         </div>
       ) : (
@@ -130,8 +136,8 @@ const CitiesTab: React.FC = () => {
               variant="primary"
               onClick={() => {
                 fetchCountries();
-                setModalType("create");
-                setFormData({ name: "", countryId: "" });
+                setModalType('create');
+                setFormData({ name: '', countryId: '' });
                 setShowModal(true);
               }}
             >
@@ -140,14 +146,14 @@ const CitiesTab: React.FC = () => {
           </div>
           <div
             className="dashboard-scrollbar"
-            style={{ maxHeight: "700px", overflowY: "auto" }}
+            style={{ maxHeight: '700px', overflowY: 'auto' }}
           >
             <Table
               bordered
               hover
               responsive
               className="rounded"
-              style={{ borderRadius: "12px", overflow: "hidden" }}
+              style={{ borderRadius: '12px', overflow: 'hidden' }}
             >
               <thead className="bg-light">
                 <tr>
@@ -156,14 +162,14 @@ const CitiesTab: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {cities.map((city) => (
+                {cities.map(city => (
                   <tr key={city.cityId}>
                     <td
                       onClick={() => handleViewCity(city.cityId)}
                       style={{
-                        cursor: "pointer",
-                        color: "#007bff",
-                        textDecoration: "underline",
+                        cursor: 'pointer',
+                        color: '#007bff',
+                        textDecoration: 'underline',
                       }}
                     >
                       {city.name}
@@ -174,7 +180,7 @@ const CitiesTab: React.FC = () => {
                         onClick={() => {
                           fetchCountries();
                           setSelectedCity(city);
-                          setModalType("update");
+                          setModalType('update');
                           setFormData({
                             name: city.name,
                             countryId: city.countryId,
@@ -189,7 +195,7 @@ const CitiesTab: React.FC = () => {
                         className="ms-2"
                         onClick={() => {
                           setSelectedCity(city);
-                          setModalType("delete");
+                          setModalType('delete');
                           setShowModal(true);
                         }}
                       >
@@ -207,15 +213,15 @@ const CitiesTab: React.FC = () => {
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalType === "create"
+            {modalType === 'create'
               ? t('createCity')
-              : modalType === "update"
-              ? t('editCity')
-              : t('deleteCity')}
+              : modalType === 'update'
+                ? t('editCity')
+                : t('deleteCity')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {modalType === "delete" ? (
+          {modalType === 'delete' ? (
             <p>{t('deleteConfirmation')}</p>
           ) : (
             <Form>
@@ -225,7 +231,7 @@ const CitiesTab: React.FC = () => {
                   required
                   type="text"
                   value={formData.name}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFormData({ ...formData, name: e.target.value });
                     setNameError(false);
                   }}
@@ -237,14 +243,14 @@ const CitiesTab: React.FC = () => {
                 <Form.Label>{t('country')}</Form.Label>
                 <Form.Select
                   value={formData.countryId}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFormData({ ...formData, countryId: e.target.value });
                     setCountryError(false);
                   }}
                   isInvalid={countryError}
                 >
                   <option value="">{t('selectCountry')}</option>
-                  {countries.map((country) => (
+                  {countries.map(country => (
                     <option key={country.countryId} value={country.countryId}>
                       {country.name}
                     </option>
@@ -260,10 +266,10 @@ const CitiesTab: React.FC = () => {
             {t('cancel')}
           </Button>
           <Button
-            variant={modalType === "delete" ? "danger" : "primary"}
-            onClick={modalType === "delete" ? handleDelete : handleSave}
+            variant={modalType === 'delete' ? 'danger' : 'primary'}
+            onClick={modalType === 'delete' ? handleDelete : handleSave}
           >
-            {modalType === "delete" ? t('confirm') : t('save')}
+            {modalType === 'delete' ? t('confirm') : t('save')}
           </Button>
         </Modal.Footer>
       </Modal>

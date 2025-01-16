@@ -16,14 +16,13 @@ export interface Tour {
   events?: Event[];
 }
 
-export interface TourResponseModel{
+export interface TourResponseModel {
   tourId: string;
   name: string;
   description: string;
-  
 }
 
-export interface TourRequestModel{
+export interface TourRequestModel {
   name: string;
   description: string;
 }

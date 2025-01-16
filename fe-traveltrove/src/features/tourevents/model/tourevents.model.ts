@@ -1,6 +1,6 @@
 export interface TourEventResponseModel {
   tourEventId: string;
-  seq: number
+  seq: number;
   seqDesc: string;
   tourId: string;
   eventId: string;
@@ -8,7 +8,7 @@ export interface TourEventResponseModel {
 }
 
 export interface TourEventRequestModel {
-  seq: number
+  seq: number;
   seqDesc: string;
   tourId: string;
   eventId: string;

@@ -2,7 +2,7 @@ import React from 'react';
 import i18next from 'i18next';
 
 const LanguageSwitcher = () => {
-  const handleLanguageChange = (lang) => {
+  const handleLanguageChange = lang => {
     i18next.changeLanguage(lang);
   };
 

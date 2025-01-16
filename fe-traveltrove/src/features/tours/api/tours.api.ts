@@ -1,19 +1,19 @@
-import { TourRequestModel, TourResponseModel } from "../models/Tour";
-import { useAxiosInstance } from "../../../shared/axios/useAxiosInstance";
+import { TourRequestModel, TourResponseModel } from '../models/Tour';
+import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 // Utility function to parse event-stream data
 const parseEventStream = (data: string): TourResponseModel[] => {
-  const lines = data.split("\n");
+  const lines = data.split('\n');
   const tours: TourResponseModel[] = [];
 
   for (const line of lines) {
     const trimmedLine = line.trim();
-    if (trimmedLine.startsWith("data:")) {
+    if (trimmedLine.startsWith('data:')) {
       try {
         const tour = JSON.parse(trimmedLine.substring(5).trim());
         tours.push(tour);
       } catch (error) {
-        console.error("Error parsing line:", trimmedLine, error);
+        console.error('Error parsing line:', trimmedLine, error);
       }
     }
   }
@@ -27,24 +27,33 @@ export const useToursApi = () => {
 
   // Fetch All Tours
   const getAllTours = async (): Promise<TourResponseModel[]> => {
-    const response = await axiosInstance.get("/tours", {
-      responseType: "text",
+    const response = await axiosInstance.get('/tours', {
+      responseType: 'text',
       headers: {
-        Accept: "text/event-stream",
+        Accept: 'text/event-stream',
       },
     });
     return parseEventStream(response.data);
   };
 
   // Fetch Tour by ID
-  const getTourByTourId = async (tourId: string): Promise<TourResponseModel> => {
-    const response = await axiosInstance.get<TourResponseModel>(`/tours/${tourId}`);
+  const getTourByTourId = async (
+    tourId: string
+  ): Promise<TourResponseModel> => {
+    const response = await axiosInstance.get<TourResponseModel>(
+      `/tours/${tourId}`
+    );
     return response.data;
   };
 
   // Add a New Tour
-  const addTour = async (tour: TourRequestModel): Promise<TourResponseModel> => {
-    const response = await axiosInstance.post<TourResponseModel>("/tours", tour);
+  const addTour = async (
+    tour: TourRequestModel
+  ): Promise<TourResponseModel> => {
+    const response = await axiosInstance.post<TourResponseModel>(
+      '/tours',
+      tour
+    );
     return response.data;
   };
 
@@ -53,7 +62,10 @@ export const useToursApi = () => {
     tourId: string,
     tour: TourRequestModel
   ): Promise<TourResponseModel> => {
-    const response = await axiosInstance.put<TourResponseModel>(`/tours/${tourId}`, tour);
+    const response = await axiosInstance.put<TourResponseModel>(
+      `/tours/${tourId}`,
+      tour
+    );
     return response.data;
   };
 

@@ -1,4 +1,4 @@
-import { HotelRequestModel, HotelResponseModel } from "../models/hotel.model";
+import { HotelRequestModel, HotelResponseModel } from '../models/hotel.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 export const useHotelsApi = () => {
@@ -28,18 +28,24 @@ export const useHotelsApi = () => {
     }
 
     return hotels;
-  }
-
+  };
 
   const getHotelById = async (hotelId: string): Promise<HotelResponseModel> => {
-    const response = await axiosInstance.get<HotelResponseModel>(`/hotels/${hotelId}`);
+    const response = await axiosInstance.get<HotelResponseModel>(
+      `/hotels/${hotelId}`
+    );
     return response.data;
-  }
+  };
 
-  const addHotel = async (hotel: HotelRequestModel): Promise<HotelResponseModel> => {
-    const response = await axiosInstance.post<HotelResponseModel>("/hotels", hotel);
+  const addHotel = async (
+    hotel: HotelRequestModel
+  ): Promise<HotelResponseModel> => {
+    const response = await axiosInstance.post<HotelResponseModel>(
+      '/hotels',
+      hotel
+    );
     return response.data;
-  }
+  };
 
   const updateHotel = async (
     hotelId: string,
@@ -50,17 +56,17 @@ export const useHotelsApi = () => {
       hotel
     );
     return response.data;
-  }
+  };
 
   const deleteHotel = async (hotelId: string): Promise<void> => {
     await axiosInstance.delete(`/hotels/${hotelId}`);
-  }
+  };
 
-    return {
-      getAllHotels,
-      getHotelById,
-      addHotel,
-      updateHotel,
-      deleteHotel,
-    };
+  return {
+    getAllHotels,
+    getHotelById,
+    addHotel,
+    updateHotel,
+    deleteHotel,
+  };
 };

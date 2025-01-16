@@ -50,7 +50,10 @@ export const useAxiosInstance = (): AxiosInstance => {
 const handleAxiosError = (error: unknown): void => {
   if (axios.isAxiosError(error)) {
     const statusCode = error.response?.status ?? 0;
-    console.error(`Axios error [${statusCode}]:`, error.response?.data ?? error.message);
+    console.error(
+      `Axios error [${statusCode}]:`,
+      error.response?.data ?? error.message
+    );
     axiosErrorResponseHandler(error, statusCode);
   } else {
     console.error('An unexpected error occurred:', error);

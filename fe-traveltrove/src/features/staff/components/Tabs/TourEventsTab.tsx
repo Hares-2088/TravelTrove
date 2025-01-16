@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Button, Table, Modal, Form } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import { Button, Table, Modal, Form } from 'react-bootstrap';
 import { useTourEventsApi } from '../../../tourevents/api/tourevent.api';
-import { useEventsApi } from "../../../events/api/events.api";
-import { useHotelsApi } from "../../../hotels/api/hotels.api";
+import { useEventsApi } from '../../../events/api/events.api';
+import { useHotelsApi } from '../../../hotels/api/hotels.api';
 import { useTranslation } from 'react-i18next';
 import {
   TourEventRequestModel,
   TourEventResponseModel,
 } from '../../../tourevents/model/tourevents.model';
-import "../../../../shared/css/Scrollbar.css";
+import '../../../../shared/css/Scrollbar.css';
 
 interface EventResponseModel {
   eventId: string;
@@ -43,22 +43,24 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
   const [loading, setLoading] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
-  const [selectedEvent, setSelectedEvent] = useState<TourEventResponseModel | null>(null);
+  const [modalType, setModalType] = useState<'create' | 'update' | 'delete'>(
+    'create'
+  );
+  const [selectedEvent, setSelectedEvent] =
+    useState<TourEventResponseModel | null>(null);
 
   const [formData, setFormData] = useState<TourEventRequestModel>({
     tourId: tourId,
     seq: 0,
-    seqDesc: "",
-    eventId: "",
-    hotelId: "",
+    seqDesc: '',
+    eventId: '',
+    hotelId: '',
   });
 
   const [seqError, setSeqError] = useState(false);
   const [seqDescError, setSeqDescError] = useState(false);
   const [eventIdError, setEventIdError] = useState(false);
   const [hotelIdError, setHotelIdError] = useState(false);
-
 
   useEffect(() => {
     fetchTourEvents();
@@ -72,7 +74,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
       const events = await getTourEventsByTourId(tourId);
       setTourEvents(events);
     } catch (error) {
-      console.error("Error fetching tour events:", error);
+      console.error('Error fetching tour events:', error);
     } finally {
       setLoading(false);
     }
@@ -83,7 +85,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
       const allEvents = await getAllEvents();
       setEvents(allEvents);
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error('Error fetching events:', error);
     }
   };
 
@@ -92,38 +94,38 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
       const allHotels = await getAllHotels();
       setHotels(allHotels);
     } catch (error) {
-      console.error("Error fetching hotels:", error);
+      console.error('Error fetching hotels:', error);
     }
   };
 
   const handleSave = async () => {
     const isSeqValid = formData.seq > 0;
-    const isSeqDescValid = formData.seqDesc.trim() !== "";
-    const isEventIdValid = formData.eventId.trim() !== "";
-    const isHotelIdValid = formData.hotelId.trim() !== ""; // Validate hotelId
-  
+    const isSeqDescValid = formData.seqDesc.trim() !== '';
+    const isEventIdValid = formData.eventId.trim() !== '';
+    const isHotelIdValid = formData.hotelId.trim() !== ''; // Validate hotelId
+
     setSeqError(!isSeqValid);
     setSeqDescError(!isSeqDescValid);
     setEventIdError(!isEventIdValid);
     setHotelIdError(!isHotelIdValid); // Set error state for hotelId
-  
-    if (!isSeqValid || !isSeqDescValid || !isEventIdValid || !isHotelIdValid) return;
-  
+
+    if (!isSeqValid || !isSeqDescValid || !isEventIdValid || !isHotelIdValid)
+      return;
+
     try {
-      if (modalType === "create") {
+      if (modalType === 'create') {
         const highestSeq = Math.max(...tourEvents.map(event => event.seq), 0); // Get highest seq number
         setFormData({ ...formData, seq: highestSeq + 1 }); // Set next seq value
         await addTourEvent(formData); // Save new event with hotelId
-      } else if (modalType === "update" && selectedEvent) {
+      } else if (modalType === 'update' && selectedEvent) {
         await updateTourEvent(selectedEvent.tourEventId, formData); // Update existing event
       }
       setShowModal(false);
       await fetchTourEvents(); // Refresh the list after saving
     } catch (error) {
-      console.error("Error saving tour event:", error);
+      console.error('Error saving tour event:', error);
     }
   };
-  
 
   const handleDelete = async () => {
     try {
@@ -133,58 +135,60 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
         await fetchTourEvents();
       }
     } catch (error) {
-      console.error("Error deleting tour event:", error);
+      console.error('Error deleting tour event:', error);
     }
   };
 
   const getEventNameById = (eventId: string) => {
-    const event = events.find((e) => e.eventId === eventId);
-    return event ? event.name : "Unknown Event";
+    const event = events.find(e => e.eventId === eventId);
+    return event ? event.name : 'Unknown Event';
   };
 
-
   const getHotelNameById = (hotelId: string) => {
-    const hotel = hotels.find((h) => h.hotelId === hotelId);
-    return hotel ? hotel.name : "Unknown Hotel";
+    const hotel = hotels.find(h => h.hotelId === hotelId);
+    return hotel ? hotel.name : 'Unknown Hotel';
   };
 
   return (
     <div className="tour-events-tab">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>{t("header")}</h3>
+        <h3>{t('header')}</h3>
         <Button
           variant="primary"
           onClick={() => {
-            setModalType("create");
+            setModalType('create');
             setFormData({
               tourId,
               seq: Math.max(...tourEvents.map(event => event.seq), 0) + 1,
-              seqDesc: "",
-              eventId: "",
-              hotelId: "",
+              seqDesc: '',
+              eventId: '',
+              hotelId: '',
             });
             setShowModal(true);
           }}
         >
-          {t("createButton")}
+          {t('createButton')}
         </Button>
       </div>
 
-      <div className="dashboard-scrollbar" style={{ maxHeight: "550px", overflowY: "auto" }}>
+      <div
+        className="dashboard-scrollbar"
+        style={{ maxHeight: '550px', overflowY: 'auto' }}
+      >
         <Table bordered hover responsive>
           <thead className="bg-light">
             <tr>
-              <th>{t("seqLabel")}</th>
-              <th>{t("descLabel")}</th>
-              <th>{t("eventLabel")}</th>
-              <th>{t("Hotel")}</th>
-              <th>{t("actions")}</th>
+              <th>{t('seqLabel')}</th>
+              <th>{t('descLabel')}</th>
+              <th>{t('eventLabel')}</th>
+              <th>{t('Hotel')}</th>
+              <th>{t('actions')}</th>
             </tr>
           </thead>
           <tbody>
             {tourEvents
               .sort((a, b) => a.seq - b.seq) // Sort by `seq` in ascending order
-              .map((event) => (
+              .map(event => (
                 <tr key={event.tourEventId}>
                   <td>{event.seq}</td>
                   <td>{event.seqDesc}</td>
@@ -195,7 +199,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                       variant="outline-primary"
                       onClick={() => {
                         setSelectedEvent(event);
-                        setModalType("update");
+                        setModalType('update');
                         setFormData({
                           tourId,
                           seq: event.seq,
@@ -206,7 +210,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                         setShowModal(true);
                       }}
                     >
-                      {t("editButton")}
+                      {t('editButton')}
                     </Button>
 
                     <Button
@@ -214,11 +218,11 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                       className="ms-2"
                       onClick={() => {
                         setSelectedEvent(event);
-                        setModalType("delete");
+                        setModalType('delete');
                         setShowModal(true);
                       }}
                     >
-                      {t("deleteButton")}
+                      {t('deleteButton')}
                     </Button>
                   </td>
                 </tr>
@@ -230,102 +234,99 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalType === "create"
-              ? t("createTitle")
-              : modalType === "update"
-                ? t("editTitle")
-                : t("deleteTitle")}
+            {modalType === 'create'
+              ? t('createTitle')
+              : modalType === 'update'
+                ? t('editTitle')
+                : t('deleteTitle')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {modalType === "delete" ? (
-            <p>{t("deleteConfirmationTE")}</p>
+          {modalType === 'delete' ? (
+            <p>{t('deleteConfirmationTE')}</p>
           ) : (
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>{t("seqLabel")}</Form.Label>
+                <Form.Label>{t('seqLabel')}</Form.Label>
                 <Form.Control
                   type="number"
                   min="1"
                   value={formData.seq}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFormData({ ...formData, seq: Number(e.target.value) });
                     setSeqError(false);
                   }}
                   isInvalid={seqError}
                 />
-                <div className="invalid-feedback">{t("invalidSeq")}</div>
+                <div className="invalid-feedback">{t('invalidSeq')}</div>
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>{t("descLabel")}</Form.Label>
+                <Form.Label>{t('descLabel')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={formData.seqDesc}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFormData({ ...formData, seqDesc: e.target.value });
                     setSeqDescError(false);
                   }}
                   isInvalid={seqDescError}
                 />
-                <div className="invalid-feedback">{t("invalidDesc")}</div>
+                <div className="invalid-feedback">{t('invalidDesc')}</div>
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>{t("eventLabel")}</Form.Label>
+                <Form.Label>{t('eventLabel')}</Form.Label>
                 <Form.Select
                   value={formData.eventId}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFormData({ ...formData, eventId: e.target.value });
                     setEventIdError(false);
                   }}
                   isInvalid={eventIdError}
                 >
-                  <option value="">{t("selectEvent")}</option>
-                  {events.map((event) => (
+                  <option value="">{t('selectEvent')}</option>
+                  {events.map(event => (
                     <option key={event.eventId} value={event.eventId}>
                       {event.name}
                     </option>
                   ))}
                 </Form.Select>
-                <div className="invalid-feedback">{t("invalidEvent")}</div>
+                <div className="invalid-feedback">{t('invalidEvent')}</div>
               </Form.Group>
 
-
               <Form.Group className="mb-3">
-                <Form.Label>{t("Hotel")}</Form.Label>
+                <Form.Label>{t('Hotel')}</Form.Label>
                 <Form.Select
                   value={formData.hotelId}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFormData({ ...formData, hotelId: e.target.value });
                     setHotelIdError(false);
                   }}
                   isInvalid={hotelIdError}
                   disabled={loading}
                 >
-                  <option value="">{t("selectHotel")}</option>
-                  {hotels.map((hotel) => (
+                  <option value="">{t('selectHotel')}</option>
+                  {hotels.map(hotel => (
                     <option key={hotel.hotelId} value={hotel.hotelId}>
                       {hotel.name}
                     </option>
                   ))}
                 </Form.Select>
-                <div className="invalid-feedback">{t("invalidHotel")}</div>
+                <div className="invalid-feedback">{t('invalidHotel')}</div>
               </Form.Group>
-
-
             </Form>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
-            {t("cancelTE")}
+            {t('cancelTE')}
           </Button>
           <Button
-            variant={modalType === "delete" ? "danger" : "primary"}
-            onClick={modalType === "delete" ? handleDelete : handleSave}
+            variant={modalType === 'delete' ? 'danger' : 'primary'}
+            onClick={modalType === 'delete' ? handleDelete : handleSave}
           >
-            {modalType === "delete" ? t("confirmButton") : t("saveTE")}
+            {modalType === 'delete' ? t('confirmButton') : t('saveTE')}
           </Button>
         </Modal.Footer>
       </Modal>

@@ -5,7 +5,7 @@
   height: calc(100vh - 60px);
   background-color: #fff5f0;
   color: #000;
-  font-family: "Arial", sans-serif;
+  font-family: 'Arial', sans-serif;
   text-align: center;
 }
 
@@ -57,7 +57,10 @@
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  transition: background-color 0.3s ease, border 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    border 0.3s ease,
+    transform 0.2s ease;
   position: absolute;
   bottom: 1.5rem;
 }
@@ -70,7 +73,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   }
   50% {

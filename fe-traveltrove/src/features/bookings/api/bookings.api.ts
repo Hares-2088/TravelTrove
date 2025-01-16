@@ -1,5 +1,9 @@
-import { BookingRequestModel, BookingResponseModel, BookingStatus } from "../models/bookings.model";
-import { useAxiosInstance } from "../../../shared/axios/useAxiosInstance";
+import {
+  BookingRequestModel,
+  BookingResponseModel,
+  BookingStatus,
+} from '../models/bookings.model';
+import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 export const useBookingsApi = () => {
   const axiosInstance = useAxiosInstance();
@@ -11,7 +15,7 @@ export const useBookingsApi = () => {
     status?: BookingStatus;
   }): Promise<BookingResponseModel[]> => {
     const bookings: BookingResponseModel[] = [];
-  
+
     const response = await axiosInstance.get('/bookings', {
       params: filters,
       responseType: 'text',
@@ -19,7 +23,7 @@ export const useBookingsApi = () => {
         Accept: 'text/event-stream',
       },
     });
-  
+
     // Parse Server-Sent Events (SSE)
     const lines = response.data.split('\n');
     for (const line of lines) {
@@ -33,7 +37,7 @@ export const useBookingsApi = () => {
         }
       }
     }
-  
+
     return bookings;
   };
 
@@ -41,9 +45,12 @@ export const useBookingsApi = () => {
   const getBookingById = async (
     bookingId: string
   ): Promise<BookingResponseModel> => {
-    const response = await axiosInstance.get<BookingResponseModel>(`/bookings/search`, {
-      params: { bookingId },
-    });
+    const response = await axiosInstance.get<BookingResponseModel>(
+      `/bookings/search`,
+      {
+        params: { bookingId },
+      }
+    );
     return response.data;
   };
 
@@ -52,9 +59,12 @@ export const useBookingsApi = () => {
     packageId: string,
     userId: string
   ): Promise<BookingResponseModel> => {
-    const response = await axiosInstance.get<BookingResponseModel>(`/bookings/search`, {
-      params: { packageId, userId },
-    });
+    const response = await axiosInstance.get<BookingResponseModel>(
+      `/bookings/search`,
+      {
+        params: { packageId, userId },
+      }
+    );
     return response.data;
   };
 
@@ -62,7 +72,10 @@ export const useBookingsApi = () => {
   const createBooking = async (
     booking: BookingRequestModel
   ): Promise<BookingResponseModel> => {
-    const response = await axiosInstance.post<BookingResponseModel>("/bookings", booking);
+    const response = await axiosInstance.post<BookingResponseModel>(
+      '/bookings',
+      booking
+    );
     return response.data;
   };
 
@@ -77,7 +90,6 @@ export const useBookingsApi = () => {
     );
     return response.data;
   };
-  
 
   // Delete a booking
   const deleteBooking = async (bookingId: string): Promise<void> => {

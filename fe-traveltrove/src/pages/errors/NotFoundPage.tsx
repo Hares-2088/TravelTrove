@@ -1,7 +1,7 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppRoutes } from '../../shared/models/app.routes';
-import "./ErrorPage.css";
+import './ErrorPage.css';
 
 const NotFoundPage: React.FC = () => {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
-import { CityRequestModel, CityResponseModel } from "../models/city.model";
-import { useAxiosInstance } from "../../../shared/axios/useAxiosInstance";
+import { CityRequestModel, CityResponseModel } from '../models/city.model';
+import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 export const useCitiesApi = () => {
   const axiosInstance = useAxiosInstance(); // Use Axios Hook
@@ -8,23 +8,23 @@ export const useCitiesApi = () => {
   const getAllCities = async (): Promise<CityResponseModel[]> => {
     const cities: CityResponseModel[] = [];
 
-    const response = await axiosInstance.get("/cities", {
-      responseType: "text",
+    const response = await axiosInstance.get('/cities', {
+      responseType: 'text',
       headers: {
-        Accept: "text/event-stream",
+        Accept: 'text/event-stream',
       },
     });
 
     // Parse Server-Sent Events (SSE) Data
-    const lines = response.data.split("\n");
+    const lines = response.data.split('\n');
     for (const line of lines) {
       const trimmedLine = line.trim();
-      if (trimmedLine.startsWith("data:")) {
+      if (trimmedLine.startsWith('data:')) {
         try {
           const city = JSON.parse(trimmedLine.substring(5).trim());
           cities.push(city);
         } catch (error) {
-          console.error("Error parsing line:", trimmedLine, error);
+          console.error('Error parsing line:', trimmedLine, error);
         }
       }
     }
@@ -45,7 +45,7 @@ export const useCitiesApi = () => {
     city: CityRequestModel
   ): Promise<CityResponseModel> => {
     const response = await axiosInstance.post<CityResponseModel>(
-      "/cities",
+      '/cities',
       city
     );
     return response.data;
