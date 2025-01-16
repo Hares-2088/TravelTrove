@@ -29,7 +29,8 @@ jobs:
       # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-        working-directory: ./TravelTrove/fe-traveltrove
+        working-directory: fe-traveltrove
+
 
 
       # Step 4: Lint in batches to avoid memory issues
