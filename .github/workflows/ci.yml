@@ -18,6 +18,17 @@ jobs:
       AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
       FRONTEND_DOMAIN: ${{ secrets.FRONTEND_DOMAIN }}
 
+    services:
+      mongo:
+        image: mongo:5.0.5
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongo --eval 'db.runCommand({ connectionStatus: 1 })'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -40,6 +51,23 @@ jobs:
         working-directory: be-traveltrove
         run: chmod +x gradlew
 
+      - name: Wait for MongoDB
+        run: |
+          for i in {1..10}; do
+            if mongo --host localhost --port 27017 --eval "db.runCommand({ connectionStatus: 1 })" > /dev/null 2>&1; then
+              echo "MongoDB is ready!"
+              break
+            fi
+            echo "Waiting for MongoDB..."
+            sleep 5
+          done
+
+      - name: Debug Environment Variables
+        run: |
+          echo "AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}"
+          echo "AUTH0_CLIENT_SECRET: [MASKED]"
+          echo "FRONTEND_DOMAIN: ${FRONTEND_DOMAIN}"
+
       - name: Build and test backend
         working-directory: be-traveltrove
         run: |
@@ -47,7 +75,8 @@ jobs:
             -Dauth0.clientId=${AUTH0_CLIENT_ID} \
             -Dauth0.clientSecret=${AUTH0_CLIENT_SECRET} \
             -Dfrontend.domain=${FRONTEND_DOMAIN} \
-            -Dspring.profiles.active=test
+            -Dspring.profiles.active=test \
+            --stacktrace --info
 
       - name: Upload Test Reports
         if: always()
@@ -56,7 +85,14 @@ jobs:
           name: test-reports
           path: be-traveltrove/build/reports/tests/test/
 
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: junit-test-results
+          path: be-traveltrove/build/test-results/test/
+
       - name: Check Application Logs
         if: failure()
         run: |
-          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
+          cat be-traveltrove/build/reports/tests/test/index.html || echo "Test report not found"
+          cat be-traveltrove/build/libs/*.log || echo "Application logs not found"
