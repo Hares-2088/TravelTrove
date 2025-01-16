@@ -1,6 +1,18 @@
 spring:
   data:
     mongodb:
+      # Connection URI for MongoDB. Uncomment the uri if using an external MongoDB.
+      # uri: mongodb://localhost:27017/testdb
       database: testdb
       host: localhost
       port: 27017
+
+  mongodb:
+    embedded:
+      enabled: true # Enable embedded MongoDB for tests
+
+logging:
+  level:
+    root: INFO
+    org.springframework.data.mongodb: DEBUG # Debug level for MongoDB-related operations
+
