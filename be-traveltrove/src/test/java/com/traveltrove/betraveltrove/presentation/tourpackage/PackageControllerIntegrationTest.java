@@ -32,7 +32,6 @@ import static reactor.core.publisher.Mono.when;
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS) // Add this annotation
 class PackageControllerIntegrationTest {
 
     @Autowired

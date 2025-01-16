@@ -42,6 +42,9 @@ de:
       embedded:
         version: 5.0.5
 
+frontend:
+  domain: ${FRONTEND_DOMAIN}
+
 ---
 
 spring:
