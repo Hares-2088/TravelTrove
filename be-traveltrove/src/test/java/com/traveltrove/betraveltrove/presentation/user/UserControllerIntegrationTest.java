@@ -2,7 +2,6 @@ package com.traveltrove.betraveltrove.presentation.user;
 
 import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigUserService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -29,7 +28,6 @@ class UserControllerIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    private MockServerConfigUserService mockServerConfigUserService;
 
     private final String INVALID_USER_ID = "invalid-user-id";
 
@@ -46,17 +44,6 @@ class UserControllerIntegrationTest {
             .permissions(List.of("write:trips"))
             .build();
 
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigUserService = new MockServerConfigUserService();
-        mockServerConfigUserService.startMockServer();
-
-        mockServerConfigUserService.registerHandleUserLoginEndpoint(existingUser);
-        mockServerConfigUserService.registerSyncUserEndpoint(updatedUser);
-        mockServerConfigUserService.registerInvalidUserLoginEndpoint(INVALID_USER_ID);
-        mockServerConfigUserService.registerInvalidUserSyncEndpoint(INVALID_USER_ID);
-    }
-
     @BeforeEach
     public void setupRepository() {
         StepVerifier.create(userRepository.deleteAll()).verifyComplete();
@@ -71,11 +58,6 @@ class UserControllerIntegrationTest {
         StepVerifier.create(userRepository.save(existingUserEntity))
                 .expectNextMatches(user -> user.getEmail().equals(existingUser.getEmail()))
                 .verifyComplete();
-    }
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigUserService.stopMockServer();
     }
 
     @Test

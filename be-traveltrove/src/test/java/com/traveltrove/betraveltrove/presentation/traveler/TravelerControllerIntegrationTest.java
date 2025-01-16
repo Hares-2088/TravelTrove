@@ -94,7 +94,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenGetAllTravelers_thenReturnAllTravelers() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/travelers")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -122,7 +123,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenGetTravelerById_thenReturnTraveler() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/travelers/" + traveler1.getTravelerId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -138,7 +140,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenGetTravelerByInvalidId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/travelers/" + INVALID_TRAVELER_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -161,7 +164,8 @@ class TravelerControllerIntegrationTest {
                 .build();
 
         // Create the traveler via WebTestClient
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/travelers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newTraveler)
@@ -195,7 +199,8 @@ class TravelerControllerIntegrationTest {
                 .countryId("1")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/travelers/{travelerId}", traveler1.getTravelerId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedTraveler)
@@ -211,7 +216,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenDeleteTraveler_thenTravelerIsDeleted() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/travelers/{travelerId}", traveler1.getTravelerId())
                 .exchange()
                 .expectStatus().isOk();
@@ -222,7 +228,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenDeleteTraveler_withInvalidId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/travelers/{travelerId}", INVALID_TRAVELER_ID)
                 .exchange()
                 .expectStatus().isNotFound();

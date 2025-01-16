@@ -68,7 +68,8 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenGetAllEvents_thenReturnAllEvents() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/events")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -92,7 +93,8 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenGetEventById_thenReturnEvent() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/events/" + event1.getEventId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -108,7 +110,8 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenGetEventByInvalidId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/events/" + INVALID_EVENT_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -117,7 +120,8 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenGetEventsByCityId_thenReturnEvents() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/events?cityId=" + event1.getCityId())
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -148,7 +152,8 @@ class EventControllerIntegrationTest {
                 .build();
 
         // Act & Assert
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/events")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newEvent)
@@ -194,7 +199,8 @@ class EventControllerIntegrationTest {
                 .image("updated_image.jpg")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/events/{eventId}", event1.getEventId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedEvent)
@@ -220,7 +226,8 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenDeleteEvent_thenEventIsDeleted() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/events/{eventId}", event1.getEventId())
                 .exchange()
                 .expectStatus().isOk();
@@ -231,7 +238,8 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenDeleteEvent_withInvalidId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/events/{eventId}", INVALID_EVENT_ID)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -239,7 +247,8 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenGetEventsByCountryId_thenReturnEvents() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/events?countryId=" + event1.getCountryId())
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -259,7 +268,8 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenGetEventsByCountryId_withInvalidId_thenReturnEmpty() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/events?countryId=invalid-country-id")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -273,7 +283,8 @@ class EventControllerIntegrationTest {
 
     @Test
     void whenGetEventsByCityId_withInvalidId_thenReturnEmpty() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/events?cityId=invalid-city-id")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()

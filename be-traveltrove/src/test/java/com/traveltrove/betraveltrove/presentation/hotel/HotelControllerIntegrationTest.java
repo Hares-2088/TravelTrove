@@ -78,7 +78,8 @@ public class HotelControllerIntegrationTest {
 
     @Test
     void whenGetAllHotels_thenReturnsAllHotels() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/hotels")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -99,7 +100,8 @@ public class HotelControllerIntegrationTest {
 
     @Test
     void whenGetHotelByHotelId_thenReturnsHotel() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/hotels/" + hotel1.getHotelId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -120,7 +122,8 @@ public class HotelControllerIntegrationTest {
 
     @Test
     void whenGetHotelByInvalidHotelId_thenReturnsNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/hotels/" + INVALID_HOTEL_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -129,7 +132,8 @@ public class HotelControllerIntegrationTest {
 
     @Test
     void whenGetHotelsByCityId_thenReturnsHotels() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri(uriBuilder -> uriBuilder.path("/api/v1/hotels")
                         .queryParam("cityId", hotel1.getCityId())
                         .build())
@@ -151,7 +155,8 @@ public class HotelControllerIntegrationTest {
 
     @Test
     void whenGetHotelsByInvalidCityId_thenReturnsEmpty() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri(uriBuilder -> uriBuilder.path("/api/v1/hotels")
                         .queryParam("cityId", "invalid-city-id")
                         .build())
@@ -175,7 +180,8 @@ public class HotelControllerIntegrationTest {
                 .cityId("3")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/hotels")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newHotel)
@@ -206,7 +212,8 @@ public class HotelControllerIntegrationTest {
                 .cityId(hotel1.getCityId())
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/hotels/" + hotel1.getHotelId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedHotel)
@@ -236,7 +243,8 @@ public class HotelControllerIntegrationTest {
                 .cityId(hotel1.getCityId())
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/hotels/" + INVALID_HOTEL_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedHotel)
@@ -250,7 +258,8 @@ public class HotelControllerIntegrationTest {
 
     @Test
     void whenDeleteHotel_thenReturnsNoContent() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/hotels/" + hotel1.getHotelId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -262,7 +271,8 @@ public class HotelControllerIntegrationTest {
 
     @Test
     void whenDeleteHotelWithInvalidHotelId_thenReturnsNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/hotels/" + INVALID_HOTEL_ID)
                 .exchange()
                 .expectStatus().isNotFound();

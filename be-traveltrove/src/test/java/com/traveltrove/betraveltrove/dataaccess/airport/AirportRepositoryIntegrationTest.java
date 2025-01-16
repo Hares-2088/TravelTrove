@@ -3,14 +3,18 @@ package com.traveltrove.betraveltrove.dataaccess.airport;
 import org.junit.jupiter.api.*;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
 
-@DataMongoTest
 @ActiveProfiles("test")
+@SpringBootTest
 public class AirportRepositoryIntegrationTest {
 
     @Autowired

@@ -102,7 +102,8 @@ class TourEventControllerIntegrationTest {
 
     @Test
     void whenGetTourEventByInvalidId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/tour-events/{tourEventId}", INVALID_EVENT_ID)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -110,7 +111,8 @@ class TourEventControllerIntegrationTest {
 
     @Test
     void whenGetTourEventById_thenReturnTourEvent() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/tourevents/{tourEventId}", tourEvent1.getTourEventId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -133,7 +135,8 @@ class TourEventControllerIntegrationTest {
                 .eventId("event101")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/tourevents")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newEventRequest)
@@ -151,7 +154,8 @@ class TourEventControllerIntegrationTest {
                 .eventId("event456")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/tourevents/{tourEventId}", INVALID_EVENT_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedEvent)
@@ -170,7 +174,8 @@ class TourEventControllerIntegrationTest {
                 .eventId("event456")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/tourevents/{tourEventId}", tourEvent1.getTourEventId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedEvent)
@@ -187,7 +192,8 @@ class TourEventControllerIntegrationTest {
 
     @Test
     void whenDeleteTourEvent_thenReturnNoContent() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/tourevents/{tourEventId}", tourEvent1.getTourEventId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -198,7 +204,8 @@ class TourEventControllerIntegrationTest {
 
     @Test
     void whenDeleteInvalidTourEvent_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/tourevents/{tourEventId}", INVALID_EVENT_ID)
                 .exchange()
                 .expectStatus().isNotFound();

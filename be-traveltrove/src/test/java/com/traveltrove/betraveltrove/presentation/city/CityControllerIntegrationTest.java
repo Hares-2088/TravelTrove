@@ -61,7 +61,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenGetCityById_thenReturnCity() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/cities/{cityId}", city1.getCityId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -76,7 +77,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenGetCityByInvalidId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/cities/{cityId}", INVALID_CITY_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -85,7 +87,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenGetAllCities_thenReturnAllCities() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/cities")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -115,7 +118,8 @@ public class CityControllerIntegrationTest {
                 .countryId("3")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/cities")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newCity)
@@ -142,7 +146,8 @@ public class CityControllerIntegrationTest {
                 .countryId("3")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/cities/{cityId}", city1.getCityId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCity)
@@ -161,7 +166,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenDeleteCity_thenReturnNoContent() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/cities/{cityId}", city1.getCityId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -177,7 +183,8 @@ public class CityControllerIntegrationTest {
                 .countryId("3")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/cities/{cityId}", INVALID_CITY_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCity)
@@ -187,7 +194,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenDeleteCity_withInvalidId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/cities/{cityId}", INVALID_CITY_ID)
                 .exchange()
                 .expectStatus().isNotFound();

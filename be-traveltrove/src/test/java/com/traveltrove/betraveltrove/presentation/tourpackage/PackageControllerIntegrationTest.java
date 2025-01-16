@@ -107,7 +107,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenGetAllPackages_withValidTourId_thenReturnPackages() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).get()
                 .uri("/api/v1/packages?tourId=" + package1.getTourId())
                 .exchange()
                 .expectStatus().isOk()
@@ -131,7 +132,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenGetAllPackages_withInvalidTourId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/packages?tourId=invalid")
                 .exchange()
                 .expectStatus().isNotFound();
@@ -139,7 +141,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenGetAllPackages_thenReturnPackages() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/packages")
                 .exchange()
                 .expectStatus().isOk()
@@ -179,7 +182,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenGetPackageByPackageId_withValidPackageId_thenReturnPackage() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/packages/1")
                 .exchange()
                 .expectStatus().isOk()
@@ -202,7 +206,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenGetPackageByPackageId_withInvalidPackageId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/packages/invalid")
                 .exchange()
                 .expectStatus().isNotFound();
@@ -223,7 +228,8 @@ class PackageControllerIntegrationTest {
                 .totalSeats(130)
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/packages")
                 .body(Mono.just(packageRequestModel), PackageRequestModel.class)
                 .exchange()
@@ -263,7 +269,8 @@ class PackageControllerIntegrationTest {
                 .totalSeats(130)
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/packages")
                 .body(Mono.just(packageRequestModel), PackageRequestModel.class)
                 .exchange()
@@ -285,7 +292,8 @@ class PackageControllerIntegrationTest {
                 .totalSeats(130)
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/packages")
                 .body(Mono.just(packageRequestModel), PackageRequestModel.class)
                 .exchange()
@@ -307,7 +315,8 @@ class PackageControllerIntegrationTest {
                 .totalSeats(130)
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/packages/1")
                 .body(Mono.just(packageRequestModel), PackageRequestModel.class)
                 .exchange()
@@ -344,7 +353,8 @@ class PackageControllerIntegrationTest {
                 .totalSeats(130)
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/packages/1")
                 .body(Mono.just(packageRequestModel), PackageRequestModel.class)
                 .exchange()
@@ -366,7 +376,8 @@ class PackageControllerIntegrationTest {
                 .totalSeats(130)
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/packages/1")
                 .body(Mono.just(packageRequestModel), PackageRequestModel.class)
                 .exchange()
@@ -388,7 +399,8 @@ class PackageControllerIntegrationTest {
                 .totalSeats(130)
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/packages/invalid")
                 .body(Mono.just(packageRequestModel), PackageRequestModel.class)
                 .exchange()
@@ -397,7 +409,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenDeletePackage_withValidPackageId_thenReturnDeletedPackage() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/packages/1")
                 .exchange()
                 .expectStatus().isOk()
@@ -420,7 +433,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenDeletePackage_withInvalidPackageId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/packages/invalid")
                 .exchange()
                 .expectStatus().isNotFound();
@@ -428,7 +442,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenDecreaseAvailableSeats_thenAvailableSeatsDecreased() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
                 .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=10")
                 .exchange()
                 .expectStatus().isOk()
@@ -442,7 +457,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenDecreaseAvailableSeats_withInvalidPackageId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
                 .uri("/api/v1/packages/invalid/decreaseAvailableSeats?quantity=10")
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -450,7 +466,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenDecreaseAvailableSeats_withInvalidQuantity_thenReturnBadRequest() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
                 .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=-10")
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -458,7 +475,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenDecreaseAvailableSeats_withQuantityGreaterThanAvailableSeats_thenReturnBadRequest() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
                 .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=200")
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -466,7 +484,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenIncreaseAvailableSeats_thenAvailableSeatsIncreased() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
                 .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=10")
                 .exchange()
                 .expectStatus().isOk()
@@ -480,7 +499,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenIncreaseAvailableSeats_withInvalidPackageId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
                 .uri("/api/v1/packages/invalid/increaseAvailableSeats?quantity=10")
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -488,7 +508,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenIncreaseAvailableSeats_withInvalidQuantity_thenReturnBadRequest() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
                 .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=-10")
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -496,7 +517,8 @@ class PackageControllerIntegrationTest {
 
     @Test
     void whenIncreaseAvailableSeats_withQuantityGreaterThanTotalSeats_thenReturnBadRequest() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
                 .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=200")
                 .exchange()
                 .expectStatus().isBadRequest();

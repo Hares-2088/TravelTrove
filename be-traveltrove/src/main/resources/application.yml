@@ -70,7 +70,7 @@ spring:
     mongodb:
       host: localhost
       port: 27017
-      database: traveltrovedb
+      database: testdb
       username: root
       password: password
       authentication-database: admin

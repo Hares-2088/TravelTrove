@@ -93,7 +93,8 @@ public class AirportControllerIntegrationTest {
 
     @Test
     public void whenGetAllAirports_thenReturnAllAirports() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/airports")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -114,7 +115,8 @@ public class AirportControllerIntegrationTest {
 
     @Test
     public void whenGetAirportById_thenReturnAirport() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/airports/" + airport1.getAirportId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -130,7 +132,8 @@ public class AirportControllerIntegrationTest {
 
     @Test
     public void whenGetAirportByInvalidId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/airports/" + INVALID_AIRPORT_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -144,7 +147,8 @@ public class AirportControllerIntegrationTest {
                 .cityId(city1.getCityId())
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/airports")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newAirport)
@@ -169,7 +173,8 @@ public class AirportControllerIntegrationTest {
                 .cityId("Invalid City")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/airports")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newAirport)
@@ -185,7 +190,8 @@ public class AirportControllerIntegrationTest {
                 .cityId(city2.getCityId())
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/airports/" + airport1.getAirportId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedAirport)
@@ -201,7 +207,8 @@ public class AirportControllerIntegrationTest {
     @Test
     public void whenDeleteAirport_thenAirportIsDeleted() {
         // Perform delete operation
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/airports/" + airport1.getAirportId())
                 .exchange()
                 .expectStatus().isNoContent();
