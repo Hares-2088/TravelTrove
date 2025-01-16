@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.presentation.events;
 
 import com.traveltrove.betraveltrove.business.event.EventService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +12,10 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/events")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class EventController {
 
     private final EventService eventService;
-
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
-    }
 
     // Get all events or filter by cityId or countryId
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)

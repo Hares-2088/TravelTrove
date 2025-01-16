@@ -29,7 +29,7 @@ public class SecurityConfig {
     @Value("${frontend.domain}")
     private String frontendDomain;
 
-    @Value("${auth0.domain}")
+    @Value("${okta.oauth2.issuer}")
     private String auth0Domain;
 
     @Bean

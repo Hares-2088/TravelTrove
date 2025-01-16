@@ -16,15 +16,10 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/tours")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
-
+@RequiredArgsConstructor
 public class TourController {
 
     private final TourService tourService;
-
-    public TourController(TourService tourService) {
-        this.tourService = tourService;
-    }
 
     //get all tours
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)

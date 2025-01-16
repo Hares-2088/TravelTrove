@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.presentation.hotel;
 
 import com.traveltrove.betraveltrove.business.hotel.HotelService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +12,10 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/hotels")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class HotelController {
 
     private final HotelService hotelService;
-
-    public HotelController(HotelService hotelService) {
-        this.hotelService = hotelService;
-    }
 
     // Get all hotels or filter by cityId or countryId
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)

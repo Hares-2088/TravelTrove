@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.presentation.tourpackage;
 
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +12,10 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/packages")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class PackageController {
 
     private final PackageService packageService;
-
-    public PackageController(PackageService packageService) {
-        this.packageService = packageService;
-    }
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<PackageResponseModel> getPackages(
