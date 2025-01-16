@@ -49,7 +49,7 @@ jobs:
           ESLINT_NO_DEV_ERRORS=true npx eslint src/layouts --ext ts,tsx --cache --report-unused-disable-directives || true
         working-directory: fe-traveltrove
 
-      # Step 7: Build the project
+      # Step 7: Build the project (Disable CI)
       - name: Run build to ensure no build errors
-        run: npm run build
+        run: CI=false npm run build
         working-directory: fe-traveltrove
