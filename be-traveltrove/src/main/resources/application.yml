@@ -42,6 +42,9 @@ de:
       embedded:
         version: 5.0.5
 
+frontend:
+  domain: ${FRONTEND_DOMAIN}
+
 ---
 
 spring:
@@ -61,25 +64,44 @@ spring:
 
 ---
 
-spring:
-  config:
-    activate:
-      on-profile: test
-
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: testdb
-      username: root
-      password: password
-      authentication-database: admin
-      auto-index-creation: true
-
-
-logging:
-  level:
-    root: DEBUG
-    com.be-traveltrove: TRACE
-    org.springframework: TRACE
-    org.hibernate: TRACE
+#spring:
+#  config:
+#    activate:
+#      on-profile: test
+#
+#  data:
+#    mongodb:
+#      host: localhost
+#      port: 27017
+#      database: testdb
+#      username: root
+#      password: password
+#      authentication-database: admin
+#      auto-index-creation: true
+#
+#de:
+#  flapdoodle:
+#    mongodb:
+#      embedded:
+#        version: 5.0.5
+#
+#frontend:
+#  domain: ${FRONTEND_DOMAIN}
+#
+#auth0:
+#  domain: dev-traveltrove.ca.auth0.com
+#  clientId: ${AUTH0_CLIENT_ID}
+#  clientSecret: ${AUTH0_CLIENT_SECRET}
+#  audience: https://dev-traveltrove.ca.auth0.com/api/v2/
+#
+#okta:
+#  oauth2:
+#    issuer: https://dev-traveltrove.ca.auth0.com/
+#    audience: https://api.traveltrove.com
+#
+#logging:
+#  level:
+#    root: DEBUG
+#    com.be-traveltrove: TRACE
+#    org.springframework: TRACE
+#    org.hibernate: TRACE

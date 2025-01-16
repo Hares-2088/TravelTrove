@@ -60,6 +60,7 @@ dependencies {
 	testImplementation 'org.mock-server:mockserver-netty:5.14.0'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 }
 
 jacocoTestReport {

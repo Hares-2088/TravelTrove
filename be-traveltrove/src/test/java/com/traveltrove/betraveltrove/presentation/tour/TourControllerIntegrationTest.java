@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS) // Add this annotation
 class TourControllerIntegrationTest {
 
     @Autowired

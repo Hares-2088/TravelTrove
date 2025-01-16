@@ -17,7 +17,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/tourevents")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class TourEventController {
 
