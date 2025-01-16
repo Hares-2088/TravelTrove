@@ -1,14 +1,16 @@
-name: Playwright Tests
+name: CI for TravelTrove
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - main
 
 jobs:
-  test:
-    timeout-minutes: 60
+  backend-tests:
+    name: Backend Tests
     runs-on: ubuntu-latest
 
     env:
@@ -18,71 +20,50 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v3
         with:
-          node-version: lts/*
-          cache: 'npm'
-          cache-dependency-path: fe-traveltrove/package-lock.json
+          java-version: '17'
+          distribution: 'temurin'
 
-      # Create the .env file for the frontend
-      - name: Create .env file for frontend
-        run: |
-          echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}" > fe-traveltrove/.env
-          echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}" >> fe-traveltrove/.env
-          echo "FRONTEND_DOMAIN=${FRONTEND_DOMAIN}" >> fe-traveltrove/.env
-        shell: bash
-
-      # Install backend dependencies
-      - name: Install backend dependencies
-        run: npm install --legacy-peer-deps
-        working-directory: be-traveltrove
-
-      # Start backend server
-      - name: Start backend server
-        run: |
-          npm start &
-          sleep 5
-        working-directory: be-traveltrove
-
-      # Install Docker Compose
-      - name: Install Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose
-
-      # Build and start Docker containers
-      - name: Build and start Docker containers
-        run: docker-compose -f docker-compose.yml up -d --build
-
-      # Install frontend dependencies
-      - name: Install frontend dependencies
-        run: npm install --legacy-peer-deps
-        working-directory: fe-traveltrove
-
-      # Install Playwright Browsers
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-        working-directory: fe-traveltrove
-
-      # Run Playwright tests
-      - name: Run Playwright tests
-        run: npx playwright test
-        working-directory: fe-traveltrove
-
-      # Upload Playwright test report
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
         with:
-          name: playwright-report
-          path: fe-traveltrove/playwright-report/
-          retention-days: 30
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-      # Stop Docker containers
-      - name: Stop Docker containers
-        run: docker-compose -f docker-compose.yml down
+      - name: Grant execute permissions to gradlew
+        working-directory: be-traveltrove
+        run: chmod +x gradlew
 
-      # Stop backend server
-      - name: Stop backend server
+      # Debug environment variables at the workflow level
+      - name: Debug Environment Variables
         run: |
-          pkill -f npm || true
+          echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}"
+          echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}"
+          echo "FRONTEND_DOMAIN=${FRONTEND_DOMAIN}"
+
+      # Run backend tests with embedded MongoDB
+      - name: Build and test backend with embedded MongoDB
+        working-directory: be-traveltrove
+        run: |
+          ./gradlew clean build \
+            -Dspring.profiles.active=test
+
+      # Upload test reports for review
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: be-traveltrove/build/reports/tests/test/
+
+      # Debug Spring application logs for troubleshooting
+      - name: Check Application Logs
+        if: failure()
+        run: |
+          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
