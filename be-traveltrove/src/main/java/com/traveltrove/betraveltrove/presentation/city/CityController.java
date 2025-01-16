@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 @RestController
 @RequestMapping("/api/v1/cities")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class CityController {
 
