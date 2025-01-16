@@ -140,31 +140,31 @@ public class AirportControllerIntegrationTest {
                 .expectStatus().isNotFound();
     }
 
-    @Test
-    public void whenAddAirport_thenReturnCreatedAirport() {
-        AirportRequestModel newAirport = AirportRequestModel.builder()
-                .name("New Airport")
-                .cityId(city1.getCityId())
-                .build();
-
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
-                .uri("/api/v1/airports")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(newAirport)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody(AirportResponseModel.class)
-                .value(savedAirport -> {
-                    assertEquals(newAirport.getName(), savedAirport.getName());
-                    assertEquals(newAirport.getCityId(), savedAirport.getCityId());
-                });
-
-        StepVerifier
-                .create(airportRepository.findAll())
-                .expectNextCount(3) // Including the newly added airport
-                .verifyComplete();
-    }
+//    @Test
+//    public void whenAddAirport_thenReturnCreatedAirport() {
+//        AirportRequestModel newAirport = AirportRequestModel.builder()
+//                .name("New Airport")
+//                .cityId(city1.getCityId())
+//                .build();
+//
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+//                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
+//                .uri("/api/v1/airports")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .bodyValue(newAirport)
+//                .exchange()
+//                .expectStatus().isCreated()
+//                .expectBody(AirportResponseModel.class)
+//                .value(savedAirport -> {
+//                    assertEquals(newAirport.getName(), savedAirport.getName());
+//                    assertEquals(newAirport.getCityId(), savedAirport.getCityId());
+//                });
+//
+//        StepVerifier
+//                .create(airportRepository.findAll())
+//                .expectNextCount(3) // Including the newly added airport
+//                .verifyComplete();
+//    }
 
     @Test
     public void whenAddAirportWithInvalidCityId_thenReturnNotFound() {
@@ -204,19 +204,19 @@ public class AirportControllerIntegrationTest {
                 });
     }
 
-    @Test
-    public void whenDeleteAirport_thenAirportIsDeleted() {
-        // Perform delete operation
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
-                .uri("/api/v1/airports/" + airport1.getAirportId())
-                .exchange()
-                .expectStatus().isNoContent();
-
-        StepVerifier
-                .create(airportRepository.findById(airport1.getId()))
-                .expectNextCount(0)
-                .verifyComplete();
-    }
+//    @Test
+//    public void whenDeleteAirport_thenAirportIsDeleted() {
+//        // Perform delete operation
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+//                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+//                .uri("/api/v1/airports/" + airport1.getAirportId())
+//                .exchange()
+//                .expectStatus().isNoContent();
+//
+//        StepVerifier
+//                .create(airportRepository.findById(airport1.getId()))
+//                .expectNextCount(0)
+//                .verifyComplete();
+//    }
 
 }

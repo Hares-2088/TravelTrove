@@ -13,8 +13,8 @@ import reactor.test.StepVerifier;
 
 import java.util.UUID;
 
+@DataMongoTest
 @ActiveProfiles("test")
-@SpringBootTest
 public class AirportRepositoryIntegrationTest {
 
     @Autowired

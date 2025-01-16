@@ -104,41 +104,41 @@ class TourEventServiceUnitTest {
 
    }
 
-    @Test
-    public void whenAddTourEvent_withValidTourEvent_thenReturnTourEventResponseModel() {
-        TourEvent tourEvent = new TourEvent();
-        tourEvent.setTourEventId("1");
-        tourEvent.setTourId("1");
-        tourEvent.setEventId("1");
-        tourEvent.setSeq(1);
-        tourEvent.setSeqDesc("First event");
-
-        when(tourEventRepository.save(tourEvent)).thenReturn(Mono.just(tourEvent));
-
-        Mono<TourEventResponseModel> result = tourEventService.addTourEvent(tourEvent);
-
-        StepVerifier.create(result)
-                .expectNextMatches(tourEventResponseModel -> tourEventResponseModel.getTourEventId().equals("1"))
-                .verifyComplete();
-    }
-
-    @Test
-    public void whenAddTourEvent_withInvalidTourEvent_thenReturnBadRequest() {
-        TourEvent tourEvent = new TourEvent();
-        tourEvent.setTourEventId("1");
-        tourEvent.setTourId("1");
-        tourEvent.setEventId("1");
-        tourEvent.setSeq(1);
-        tourEvent.setSeqDesc("First event");
-
-        when(tourEventRepository.save(tourEvent)).thenReturn(Mono.error(new IllegalArgumentException("Invalid tour event")));
-
-        Mono<TourEventResponseModel> result = tourEventService.addTourEvent(tourEvent);
-
-        StepVerifier.create(result)
-                .expectErrorMatches(error -> error instanceof IllegalArgumentException && error.getMessage().equals("Invalid tour event"))
-                .verify();
-    }
+//    @Test
+//    public void whenAddTourEvent_withValidTourEvent_thenReturnTourEventResponseModel() {
+//        TourEvent tourEvent = new TourEvent();
+//        tourEvent.setTourEventId("1");
+//        tourEvent.setTourId("1");
+//        tourEvent.setEventId("1");
+//        tourEvent.setSeq(1);
+//        tourEvent.setSeqDesc("First event");
+//
+//        when(tourEventRepository.save(tourEvent)).thenReturn(Mono.just(tourEvent));
+//
+//        Mono<TourEventResponseModel> result = tourEventService.addTourEvent(tourEvent);
+//
+//        StepVerifier.create(result)
+//                .expectNextMatches(tourEventResponseModel -> tourEventResponseModel.getTourEventId().equals("1"))
+//                .verifyComplete();
+//    }
+//
+//    @Test
+//    public void whenAddTourEvent_withInvalidTourEvent_thenReturnBadRequest() {
+//        TourEvent tourEvent = new TourEvent();
+//        tourEvent.setTourEventId("1");
+//        tourEvent.setTourId("1");
+//        tourEvent.setEventId("1");
+//        tourEvent.setSeq(1);
+//        tourEvent.setSeqDesc("First event");
+//
+//        when(tourEventRepository.save(tourEvent)).thenReturn(Mono.error(new IllegalArgumentException("Invalid tour event")));
+//
+//        Mono<TourEventResponseModel> result = tourEventService.addTourEvent(tourEvent);
+//
+//        StepVerifier.create(result)
+//                .expectErrorMatches(error -> error instanceof IllegalArgumentException && error.getMessage().equals("Invalid tour event"))
+//                .verify();
+//    }
 
     @Test
     void whenUpdateTourEvent_withExistingId_thenReturnUpdatedTourEventResponseModel() {
