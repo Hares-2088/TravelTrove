@@ -68,12 +68,18 @@ spring:
 
   data:
     mongodb:
-      host: mongo
+      host: localhost
       port: 27017
       database: traveltrovedb
       username: root
       password: password
       authentication-database: admin
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 5.0.5
 
 logging:
   level:
