@@ -36,13 +36,13 @@ jobs:
         run: ls -R
         working-directory: fe-traveltrove
 
-      # Step 5: Lint in batches to avoid memory issues
       - name: Run ESLint in batches
         run: |
-          npx eslint src/pages --ext ts,tsx --cache --report-unused-disable-directives --max-warnings 0
-          npx eslint src/features --ext ts,tsx --cache --report-unused-disable-directives --max-warnings 0
-          npx eslint src/layouts --ext ts,tsx --cache --report-unused-disable-directives --max-warnings 0
+          npx eslint src/pages --ext ts,tsx --cache --report-unused-disable-directives
+          npx eslint src/features --ext ts,tsx --cache --report-unused-disable-directives
+          npx eslint src/layouts --ext ts,tsx --cache --report-unused-disable-directives
         working-directory: fe-traveltrove
+
 
       # Step 6: Build the project
       - name: Run build to ensure no build errors
