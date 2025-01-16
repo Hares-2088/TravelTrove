@@ -9,7 +9,7 @@ spring:
 
   mongodb:
     embedded:
-      enabled: true # Enable embedded MongoDB for tests
+      enabled: false # Enable embedded MongoDB for tests
 
 logging:
   level:
