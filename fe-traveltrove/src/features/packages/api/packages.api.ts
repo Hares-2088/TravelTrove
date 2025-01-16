@@ -4,8 +4,32 @@ import {
 } from '../models/package.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
+// Define the return type interface
+interface PackagesApi {
+  getAllPackages: (filters?: {
+    tourId?: string;
+  }) => Promise<PackageResponseModel[]>;
+  getPackageById: (packageId: string) => Promise<PackageResponseModel>;
+  addPackage: (pkg: PackageRequestModel) => Promise<PackageResponseModel>;
+  updatePackage: (
+    packageId: string,
+    pkg: PackageRequestModel
+  ) => Promise<PackageResponseModel>;
+  deletePackage: (packageId: string) => Promise<PackageResponseModel>;
+  decreaseAvailableSeats: (
+    packageId: string,
+    quantity: number
+  ) => Promise<PackageResponseModel>;
+  increaseAvailableSeats: (
+    packageId: string,
+    quantity: number
+  ) => Promise<PackageResponseModel>;
+  getPackageStatus: (pkg: PackageResponseModel) => string;
+}
+
 // Package API Hook
-export const usePackagesApi = () => {
+export const usePackagesApi = (): PackagesApi => {
+  // Explicit return type
   const axiosInstance = useAxiosInstance(); // Use Axios Hook
 
   // Fetch All Packages (SSE Stream)

@@ -5,10 +5,37 @@ import {
 } from '../models/bookings.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
-export const useBookingsApi = () => {
+// Define the return type interface
+interface BookingsApi {
+  getAllBookings: (filters?: {
+    userId?: string;
+    packageId?: string;
+    status?: BookingStatus;
+  }) => Promise<BookingResponseModel[]>;
+
+  getBookingById: (bookingId: string) => Promise<BookingResponseModel>;
+
+  getBookingByPackageAndUser: (
+    packageId: string,
+    userId: string
+  ) => Promise<BookingResponseModel>;
+
+  createBooking: (
+    booking: BookingRequestModel
+  ) => Promise<BookingResponseModel>;
+
+  updateBookingStatus: (
+    bookingId: string,
+    status: BookingStatus
+  ) => Promise<BookingResponseModel>;
+
+  deleteBooking: (bookingId: string) => Promise<void>;
+}
+
+export const useBookingsApi = (): BookingsApi => {
+  // Explicit return type
   const axiosInstance = useAxiosInstance();
 
-  // Fetch all bookings (with optional filters)
   const getAllBookings = async (filters?: {
     userId?: string;
     packageId?: string;
@@ -41,7 +68,6 @@ export const useBookingsApi = () => {
     return bookings;
   };
 
-  // Fetch a booking by ID
   const getBookingById = async (
     bookingId: string
   ): Promise<BookingResponseModel> => {
@@ -54,7 +80,6 @@ export const useBookingsApi = () => {
     return response.data;
   };
 
-  // Fetch a booking by packageId and userId
   const getBookingByPackageAndUser = async (
     packageId: string,
     userId: string
@@ -68,7 +93,6 @@ export const useBookingsApi = () => {
     return response.data;
   };
 
-  // Create a new booking
   const createBooking = async (
     booking: BookingRequestModel
   ): Promise<BookingResponseModel> => {
@@ -79,19 +103,17 @@ export const useBookingsApi = () => {
     return response.data;
   };
 
-  // Generalized method to update booking status
   const updateBookingStatus = async (
     bookingId: string,
     status: BookingStatus
   ): Promise<BookingResponseModel> => {
     const response = await axiosInstance.patch<BookingResponseModel>(
       `/bookings/${bookingId}`,
-      { status } // Matches the backend's BookingStatusUpdateRequest structure
+      { status }
     );
     return response.data;
   };
 
-  // Delete a booking
   const deleteBooking = async (bookingId: string): Promise<void> => {
     await axiosInstance.delete(`/bookings/${bookingId}`);
   };

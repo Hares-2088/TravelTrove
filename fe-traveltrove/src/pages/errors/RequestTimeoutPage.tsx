@@ -6,7 +6,7 @@ import './ErrorPage.css';
 const RequestTimeoutPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleBackToHome = () => {
+  const handleBackToHome = (): void => {
     navigate(AppRoutes.Home);
   };
 

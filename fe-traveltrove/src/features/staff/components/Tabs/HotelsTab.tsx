@@ -35,12 +35,7 @@ const HotelsTab: React.FC = () => {
   const [urlError, setUrlError] = useState(false);
   const [cityError, setCityError] = useState(false);
 
-  useEffect(() => {
-    fetchHotels();
-    fetchCities();
-  }, []);
-
-  const fetchCities = async () => {
+  const fetchCities = async (): Promise<void> => {
     try {
       const data = await getAllCities();
       setCities(data);
@@ -49,7 +44,7 @@ const HotelsTab: React.FC = () => {
     }
   };
 
-  const fetchHotels = async () => {
+  const fetchHotels = async (): Promise<void> => {
     try {
       const data = await getAllHotels();
       setHotels(data);
@@ -58,7 +53,12 @@ const HotelsTab: React.FC = () => {
     }
   };
 
-  const handleViewHotel = async (hotelId: string) => {
+  useEffect(() => {
+    fetchHotels();
+    fetchCities();
+  }, []);
+
+  const handleViewHotel = async (hotelId: string): Promise<void> => {
     try {
       const hotel = await getHotelById(hotelId);
       setViewingHotel(hotel);
@@ -67,12 +67,12 @@ const HotelsTab: React.FC = () => {
     }
   };
 
-  const getCityName = (cityId: string) => {
+  const getCityName = (cityId: string): string => {
     const city = cities.find(city => city.cityId === cityId);
     return city ? city.name : 'Unknown City';
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     const isNameValid = formData.name.trim() !== '';
     const isUrlValid = formData.url.trim() !== '';
     const isCityValid = !!formData.cityId.trim();
@@ -94,7 +94,7 @@ const HotelsTab: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       if (selectedHotel) {
         await deleteHotel(selectedHotel.hotelId);

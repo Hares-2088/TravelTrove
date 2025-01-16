@@ -6,7 +6,7 @@ import './ErrorPage.css';
 const ForbiddenPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleBackToHome = () => {
+  const handleBackToHome = (): void => {
     navigate(AppRoutes.Home);
   };
 
@@ -16,7 +16,7 @@ const ForbiddenPage: React.FC = () => {
         <h1 className="error-code">403</h1>
         <h2 className="error-message">Access Denied</h2>
         <p className="error-description">
-          You don't have permission to access this page or resource. <br />
+          You don&apos;t have permission to access this page or resource. <br />
           Please contact support if you believe this is a mistake.
         </p>
         <button className="back-button" onClick={handleBackToHome}>

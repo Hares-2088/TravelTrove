@@ -33,11 +33,7 @@ const ToursTab: React.FC = () => {
   const [tourNameError, setTourNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
 
-  useEffect(() => {
-    fetchTours();
-  }, []);
-
-  const fetchTours = async () => {
+  const fetchTours = async (): Promise<void> => {
     try {
       const data = await getAllTours();
       setTours(data);
@@ -46,7 +42,11 @@ const ToursTab: React.FC = () => {
     }
   };
 
-  const handleViewTour = async (tourId: string) => {
+  useEffect(() => {
+    fetchTours();
+  }, [fetchTours]);
+
+  const handleViewTour = async (tourId: string): Promise<void> => {
     try {
       const tour = await getTourByTourId(tourId);
       setViewingTour(tour); // Show Tour Details View
@@ -55,7 +55,7 @@ const ToursTab: React.FC = () => {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     const isTourNameValid = formData.name.trim() !== '';
     const isDescriptionValid = formData.description.trim() !== '';
 
@@ -77,7 +77,7 @@ const ToursTab: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       if (selectedTour) {
         await deleteTour(selectedTour.tourId);

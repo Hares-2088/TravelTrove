@@ -9,28 +9,27 @@ import {
 } from 'react-bootstrap';
 import { AppRoutes } from '../shared/models/app.routes';
 import { useTranslation } from 'react-i18next';
-import i18n from '../i18n';
 import { useAuth0 } from '@auth0/auth0-react';
 import './NavBar.css';
 
 const NavBar: React.FC = () => {
   const { t, i18n } = useTranslation();
 
-  const handleLanguageChange = (lng: string) => {
+  const handleLanguageChange = (lng: string): void => {
     i18n.changeLanguage(lng);
-    console.log('Language switched to:', lng);
+    // console.log('Language switched to:', lng);
   };
 
-  console.log('Current Language:', i18n.language);
+  // console.log('Current Language:', i18n.language);
 
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
     useAuth0();
 
-  const handleLogin = async () => {
+  const handleLogin = async (): Promise<void> => {
     await loginWithRedirect();
   };
 
-  const handleRegister = async () => {
+  const handleRegister = async (): Promise<void> => {
     await loginWithRedirect({
       authorizationParams: {
         screen_hint: 'signup',
@@ -38,7 +37,7 @@ const NavBar: React.FC = () => {
     });
   };
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
 

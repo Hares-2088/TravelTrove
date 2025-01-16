@@ -4,7 +4,19 @@ import {
   AirportResponseModel,
 } from '../models/airports.model';
 
-export const useAirportsApi = () => {
+// Define the return type explicitly
+interface AirportsApi {
+  getAllAirports: () => Promise<AirportResponseModel[]>;
+  getAirportById: (airportId: string) => Promise<AirportResponseModel>;
+  addAirport: (airport: AirportRequestModel) => Promise<AirportResponseModel>;
+  updateAirport: (
+    airport: AirportRequestModel,
+    airportId: string
+  ) => Promise<AirportResponseModel>;
+  deleteAirport: (airportId: string) => Promise<void>;
+}
+
+export const useAirportsApi = (): AirportsApi => {
   const axiosInstance = useAxiosInstance();
 
   const getAllAirports = async (): Promise<AirportResponseModel[]> => {

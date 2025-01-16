@@ -1,7 +1,10 @@
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 import { UserResponseModel } from '../model/users.model';
 
-export const useUsersApi = () => {
+export const useUsersApi = (): {
+  loginUser: (userId: string) => Promise<UserResponseModel>;
+  syncUser: (userId: string) => Promise<UserResponseModel>;
+} => {
   const axiosInstance = useAxiosInstance();
 
   const loginUser = async (userId: string): Promise<UserResponseModel> => {

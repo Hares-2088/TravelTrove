@@ -35,11 +35,7 @@ const CountriesTab: React.FC = () => {
   const [countryNameError, setCountryNameError] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  useEffect(() => {
-    fetchCountries();
-  }, []);
-
-  const fetchCountries = async () => {
+  const fetchCountries = async (): Promise<void> => {
     try {
       const data = await getAllCountries();
       setCountries(data);
@@ -48,7 +44,11 @@ const CountriesTab: React.FC = () => {
     }
   };
 
-  const handleViewCountry = async (countryId: string) => {
+  useEffect(() => {
+    fetchCountries();
+  }, [fetchCountries]);
+
+  const handleViewCountry = async (countryId: string): Promise<void> => {
     try {
       const country = await getCountryById(countryId);
       setViewingCountry(country);
@@ -57,7 +57,7 @@ const CountriesTab: React.FC = () => {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     const isCountryNameValid = formData.name.trim() !== '';
     const isImageValid = !!formData.image.trim();
     setCountryNameError(!isCountryNameValid);
@@ -76,7 +76,7 @@ const CountriesTab: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       if (selectedCountry) {
         await deleteCountry(selectedCountry.countryId);

@@ -1,7 +1,21 @@
 import { HotelRequestModel, HotelResponseModel } from '../models/hotel.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
-export const useHotelsApi = () => {
+// Define the return type interface
+interface HotelsApi {
+  getAllHotels: () => Promise<HotelResponseModel[]>;
+  getHotelById: (hotelId: string) => Promise<HotelResponseModel>;
+  addHotel: (hotel: HotelRequestModel) => Promise<HotelResponseModel>;
+  updateHotel: (
+    hotelId: string,
+    hotel: HotelRequestModel
+  ) => Promise<HotelResponseModel>;
+  deleteHotel: (hotelId: string) => Promise<void>;
+}
+
+// Hotel API Hook
+export const useHotelsApi = (): HotelsApi => {
+  // Explicit return type
   const axiosInstance = useAxiosInstance(); // Use Axios Hook
 
   const getAllHotels = async (): Promise<HotelResponseModel[]> => {

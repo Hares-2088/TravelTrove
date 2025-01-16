@@ -4,8 +4,20 @@ import {
 } from '../models/country.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
-// Country API Hook
-export const useCountriesApi = () => {
+// Define the return type interface
+interface CountriesApi {
+  getAllCountries: () => Promise<CountryResponseModel[]>;
+  getCountryById: (countryId: string) => Promise<CountryResponseModel>;
+  addCountry: (country: CountryRequestModel) => Promise<CountryResponseModel>;
+  updateCountry: (
+    countryId: string,
+    country: CountryRequestModel
+  ) => Promise<CountryResponseModel>;
+  deleteCountry: (countryId: string) => Promise<void>;
+}
+
+// Explicit return type added
+export const useCountriesApi = (): CountriesApi => {
   const axiosInstance = useAxiosInstance(); // Use Axios Hook
 
   // Fetch All Countries (SSE Stream)

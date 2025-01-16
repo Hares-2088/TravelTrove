@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Table, Modal, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next'; // Import i18n hook
 import { useEventsApi } from '../../../events/api/events.api';
@@ -10,7 +10,7 @@ import {
 } from '../../../events/model/events.model';
 import '../../../../shared/css/Scrollbar.css'; // Corrected import path
 import FilterBar from '../../../../shared/components/FilterBar';
-import { count } from 'console';
+// Removed unused import 'count'
 
 const EventsTab: React.FC = () => {
   const { t } = useTranslation(); // Access i18n functions
@@ -47,16 +47,16 @@ const EventsTab: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedCity, setSelectedCity] = useState<string>('');
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async (): Promise<void> => {
     try {
       const fetchedEvents = await getAllEvents();
       setEvents(fetchedEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
     }
-  };
+  }, [getAllEvents]);
 
-  const fetchCities = async () => {
+  const fetchCities = useCallback(async (): Promise<void> => {
     try {
       const fetchedCities = await getAllCities();
       setCities(
@@ -69,9 +69,9 @@ const EventsTab: React.FC = () => {
     } catch (error) {
       console.error('Error fetching cities:', error);
     }
-  };
+  }, [getAllCities]);
 
-  const fetchCountries = async () => {
+  const fetchCountries = useCallback(async (): Promise<void> => {
     try {
       const fetchedCountries = await getAllCountries();
       setCountries(
@@ -83,14 +83,15 @@ const EventsTab: React.FC = () => {
     } catch (error) {
       console.error('Error fetching countries:', error);
     }
-  };
+  }, [getAllCountries]);
 
   useEffect(() => {
     fetchEvents();
     fetchCities();
     fetchCountries();
-  }, []);
-  const handleViewEvent = async (eventId: string) => {
+  }, [fetchEvents, fetchCities, fetchCountries]);
+
+  const handleViewEvent = async (eventId: string): Promise<void> => {
     try {
       const event = await getEventById(eventId);
       setViewingEvent(event);
@@ -99,7 +100,7 @@ const EventsTab: React.FC = () => {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     try {
       if (!formData.name.trim()) {
         alert(t('nameRequiredE')); // Using i18n for validation message
@@ -124,7 +125,7 @@ const EventsTab: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       if (selectedEvent) {
         await deleteEvent(selectedEvent.eventId);
@@ -145,6 +146,7 @@ const EventsTab: React.FC = () => {
     const matchesCity = selectedCity ? event.cityId === selectedCity : true;
     return matchesCountry && matchesCity;
   });
+
   return (
     <div>
       {viewingEvent ? (
@@ -289,7 +291,7 @@ const EventsTab: React.FC = () => {
                 ) : (
                   <tr>
                     <td colSpan={2} className="text-center">
-                      "No Events Found"
+                      &quot;No Events Found&quot;
                     </td>
                   </tr>
                 )}

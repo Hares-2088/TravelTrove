@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, Table, Modal, Form } from 'react-bootstrap';
 import {
   AirportRequestModel,
@@ -36,12 +36,7 @@ const AirportsTab: React.FC = () => {
   const [nameError, setNameError] = useState(false);
   const [cityError, setCityError] = useState(false);
 
-  useEffect(() => {
-    fetchAirports();
-    fetchCities();
-  }, []);
-
-  const fetchCities = async () => {
+  const fetchCities = async (): Promise<void> => {
     try {
       const data = await getAllCities();
       setCities(data);
@@ -50,7 +45,7 @@ const AirportsTab: React.FC = () => {
     }
   };
 
-  const fetchAirports = async () => {
+  const fetchAirports = async (): Promise<void> => {
     try {
       const data = await getAllAirports();
       setAirports(data);
@@ -59,7 +54,7 @@ const AirportsTab: React.FC = () => {
     }
   };
 
-  const handleViewAirport = async (airportId: string) => {
+  const handleViewAirport = async (airportId: string): Promise<void> => {
     try {
       const airport = await getAirportById(airportId);
       setViewingAirport(airport);
@@ -68,12 +63,12 @@ const AirportsTab: React.FC = () => {
     }
   };
 
-  const getCityName = (cityId: string) => {
+  const getCityName = (cityId: string): string => {
     const city = cities.find(city => city.cityId === cityId);
     return city ? city.name : 'Unknown City';
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     const isNameValid = formData.name.trim() !== '';
     const isCityValid = !!formData.cityId.trim();
 
@@ -95,7 +90,7 @@ const AirportsTab: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       if (selectedAirport) {
         await deleteAirport(selectedAirport.airportId);

@@ -62,13 +62,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
   const [eventIdError, setEventIdError] = useState(false);
   const [hotelIdError, setHotelIdError] = useState(false);
 
-  useEffect(() => {
-    fetchTourEvents();
-    fetchAllEvents();
-    fetchAllHotels();
-  }, [tourId]);
-
-  const fetchTourEvents = async () => {
+  const fetchTourEvents = async (): Promise<void> => {
     setLoading(true);
     try {
       const events = await getTourEventsByTourId(tourId);
@@ -80,7 +74,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     }
   };
 
-  const fetchAllEvents = async () => {
+  const fetchAllEvents = async (): Promise<void> => {
     try {
       const allEvents = await getAllEvents();
       setEvents(allEvents);
@@ -89,7 +83,13 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     }
   };
 
-  const fetchAllHotels = async () => {
+  useEffect(() => {
+    fetchTourEvents();
+    fetchAllEvents();
+    fetchAllHotels();
+  }, [tourId]);
+
+  const fetchAllHotels = async (): Promise<void> => {
     try {
       const allHotels = await getAllHotels();
       setHotels(allHotels);
@@ -98,7 +98,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     const isSeqValid = formData.seq > 0;
     const isSeqDescValid = formData.seqDesc.trim() !== '';
     const isEventIdValid = formData.eventId.trim() !== '';
@@ -127,7 +127,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       if (selectedEvent) {
         await deleteTourEvent(selectedEvent.tourEventId);
@@ -139,12 +139,12 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     }
   };
 
-  const getEventNameById = (eventId: string) => {
+  const getEventNameById = (eventId: string): string => {
     const event = events.find(e => e.eventId === eventId);
     return event ? event.name : 'Unknown Event';
   };
 
-  const getHotelNameById = (hotelId: string) => {
+  const getHotelNameById = (hotelId: string): string => {
     const hotel = hotels.find(h => h.hotelId === hotelId);
     return hotel ? hotel.name : 'Unknown Hotel';
   };

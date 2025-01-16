@@ -13,7 +13,7 @@ const TourDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTour = async () => {
+    const fetchTour = async (): Promise<void> => {
       try {
         const data = await getTourByTourId(tourId!);
         setTour(data);

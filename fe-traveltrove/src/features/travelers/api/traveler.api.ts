@@ -4,10 +4,26 @@ import {
 } from '../model/traveler.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
-export const useTravelersApi = () => {
-  const axiosInstance = useAxiosInstance(); // Use Axios Hook
+// Define the return type interface
+interface TravelersApi {
+  getAllTravelers: (filters?: {
+    firstName?: string;
+  }) => Promise<TravelerResponseModel[]>;
+  getTravelerById: (travelerId: string) => Promise<TravelerResponseModel>;
+  addTraveler: (
+    traveler: TravelerRequestModel
+  ) => Promise<TravelerResponseModel>;
+  updateTraveler: (
+    travelerId: string,
+    traveler: TravelerRequestModel
+  ) => Promise<TravelerResponseModel>;
+  deleteTraveler: (travelerId: string) => Promise<TravelerResponseModel>;
+}
 
-  // Fetch All Travelers (SSE Stream)
+export const useTravelersApi = (): TravelersApi => {
+  // Explicit return type
+  const axiosInstance = useAxiosInstance();
+
   const getAllTravelers = async (filters?: {
     firstName?: string;
   }): Promise<TravelerResponseModel[]> => {
@@ -38,7 +54,6 @@ export const useTravelersApi = () => {
     return travelers;
   };
 
-  // Fetch Traveler by ID
   const getTravelerById = async (
     travelerId: string
   ): Promise<TravelerResponseModel> => {
@@ -48,7 +63,6 @@ export const useTravelersApi = () => {
     return response.data;
   };
 
-  // Add a New Traveler
   const addTraveler = async (
     traveler: TravelerRequestModel
   ): Promise<TravelerResponseModel> => {
@@ -59,7 +73,6 @@ export const useTravelersApi = () => {
     return response.data;
   };
 
-  // Update an Existing Traveler
   const updateTraveler = async (
     travelerId: string,
     traveler: TravelerRequestModel
@@ -71,7 +84,6 @@ export const useTravelersApi = () => {
     return response.data;
   };
 
-  // Delete a Traveler by ID
   const deleteTraveler = async (
     travelerId: string
   ): Promise<TravelerResponseModel> => {

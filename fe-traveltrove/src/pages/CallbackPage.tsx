@@ -10,7 +10,7 @@ const CallbackPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const saveAndSyncUser = async () => {
+    const saveAndSyncUser = async (): Promise<void> => {
       if (isAuthenticated && user?.sub) {
         try {
           await loginUser(user.sub);

@@ -12,7 +12,7 @@ const ToursList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTours = async () => {
+    const fetchTours = async (): Promise<void> => {
       try {
         const data = await getAllTours();
         setTours(data || []);

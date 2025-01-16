@@ -1,7 +1,20 @@
 import { CityRequestModel, CityResponseModel } from '../models/city.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
-export const useCitiesApi = () => {
+// Define the return type interface
+interface CitiesApi {
+  getAllCities: () => Promise<CityResponseModel[]>;
+  getCityById: (cityId: string) => Promise<CityResponseModel>;
+  addCity: (city: CityRequestModel) => Promise<CityResponseModel>;
+  updateCity: (
+    cityId: string,
+    city: CityRequestModel
+  ) => Promise<CityResponseModel>;
+  deleteCity: (cityId: string) => Promise<void>;
+}
+
+// Explicit return type added
+export const useCitiesApi = (): CitiesApi => {
   const axiosInstance = useAxiosInstance(); // Use Axios Hook
 
   // Fetch All Cities (SSE Stream)

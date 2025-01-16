@@ -1,4 +1,4 @@
-name: Node.js CI for TravelTrove
+name: Node.js CI
 
 on:
   push:
@@ -13,27 +13,34 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        # Tests against multiple Node.js versions
 
     steps:
-      - name: Checkout the Code
-        uses: actions/checkout@v4
+      # Step 1: Check out the code
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js ${{ matrix.node-version }}
+      # Step 2: Set up Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: fe-traveltrove/package-lock.json
+          cache-dependency-path: TravelTrove/fe-traveltrove/package-lock.json
 
-      - name: Install Dependencies
-        run: npm install
-        working-directory: ./fe-traveltrove
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: ./TravelTrove/fe-traveltrove
 
-      - name: Run Linting
-        run: npm run lint
-        working-directory: ./fe-traveltrove
 
-      - name: Build Frontend Code
+      # Step 4: Lint in batches to avoid memory issues
+      - name: Run ESLint in batches
+        run: |
+          npx eslint src/components --ext ts,tsx --cache --report-unused-disable-directives --max-warnings 0
+          npx eslint src/pages --ext ts,tsx --cache --report-unused-disable-directives --max-warnings 0
+          npx eslint src/features --ext ts,tsx --cache --report-unused-disable-directives --max-warnings 0
+        working-directory: ./TravelTrove/fe-traveltrove
+
+      # Step 5: Build the project
+      - name: Run build to ensure no build errors
         run: npm run build
-        working-directory: ./fe-traveltrove
+        working-directory: ./TravelTrove/fe-traveltrove

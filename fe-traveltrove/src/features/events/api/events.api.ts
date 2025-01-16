@@ -1,10 +1,25 @@
 import { EventRequestModel, EventResponseModel } from '../model/events.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
-export const useEventsApi = () => {
+// Define the return type interface
+interface EventsApi {
+  getAllEvents: (filters?: {
+    cityId?: string;
+    countryId?: string;
+  }) => Promise<EventResponseModel[]>;
+  getEventById: (eventId: string) => Promise<EventResponseModel>;
+  addEvent: (event: EventRequestModel) => Promise<EventResponseModel>;
+  updateEvent: (
+    eventId: string,
+    event: EventRequestModel
+  ) => Promise<EventResponseModel>;
+  deleteEvent: (eventId: string) => Promise<EventResponseModel>;
+}
+
+// Explicit return type added
+export const useEventsApi = (): EventsApi => {
   const axiosInstance = useAxiosInstance(); // Use Axios Hook
 
-  // Fetch All Events (SSE Stream)
   const getAllEvents = async (filters?: {
     cityId?: string;
     countryId?: string;
@@ -36,7 +51,6 @@ export const useEventsApi = () => {
     return events;
   };
 
-  // Fetch Event by ID
   const getEventById = async (eventId: string): Promise<EventResponseModel> => {
     const response = await axiosInstance.get<EventResponseModel>(
       `/events/${eventId}`
@@ -44,7 +58,6 @@ export const useEventsApi = () => {
     return response.data;
   };
 
-  // Add a New Event
   const addEvent = async (
     event: EventRequestModel
   ): Promise<EventResponseModel> => {
@@ -55,7 +68,6 @@ export const useEventsApi = () => {
     return response.data;
   };
 
-  // Update an Existing Event
   const updateEvent = async (
     eventId: string,
     event: EventRequestModel
@@ -67,7 +79,6 @@ export const useEventsApi = () => {
     return response.data;
   };
 
-  // Delete an Event by ID
   const deleteEvent = async (eventId: string): Promise<EventResponseModel> => {
     const response = await axiosInstance.delete<EventResponseModel>(
       `/events/${eventId}`

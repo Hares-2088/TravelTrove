@@ -6,7 +6,7 @@ import './ErrorPage.css';
 const ServiceUnavailablePage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleBackToHome = () => {
+  const handleBackToHome = (): void => {
     navigate(AppRoutes.Home);
   };
 

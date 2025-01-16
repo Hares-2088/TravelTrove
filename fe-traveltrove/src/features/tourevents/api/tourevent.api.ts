@@ -4,6 +4,23 @@ import {
   TourEventResponseModel,
 } from '../model/tourevents.model';
 
+// Define the return type interface
+interface TourEventsApi {
+  getAllTourEvents: () => Promise<TourEventResponseModel[]>;
+  getTourEventsByTourId: (tourId: string) => Promise<TourEventResponseModel[]>;
+  getTourEventById: (
+    tourEventId: string
+  ) => Promise<TourEventResponseModel | null>;
+  addTourEvent: (
+    request: TourEventRequestModel
+  ) => Promise<TourEventResponseModel>;
+  updateTourEvent: (
+    tourEventId: string,
+    request: TourEventRequestModel
+  ) => Promise<TourEventResponseModel | null>;
+  deleteTourEvent: (tourEventId: string) => Promise<void>;
+}
+
 // Utility function to parse event-stream data
 const parseEventStream = (data: string): TourEventResponseModel[] => {
   const lines = data.split('\n');
@@ -24,7 +41,8 @@ const parseEventStream = (data: string): TourEventResponseModel[] => {
 };
 
 // Custom Hook for Tour Events API
-export const useTourEventsApi = () => {
+export const useTourEventsApi = (): TourEventsApi => {
+  // Explicit return type
   const axiosInstance = useAxiosInstance(); // Use Axios Hook
 
   // Fetch All Tour Events
@@ -52,7 +70,9 @@ export const useTourEventsApi = () => {
     tourEventId: string
   ): Promise<TourEventResponseModel | null> => {
     try {
-      const response = await axiosInstance.get(`/tourevents/${tourEventId}`);
+      const response = await axiosInstance.get<TourEventResponseModel>(
+        `/tourevents/${tourEventId}`
+      );
       return response.data;
     } catch (error) {
       console.error(`Error fetching tour event ${tourEventId}:`, error);
@@ -64,7 +84,10 @@ export const useTourEventsApi = () => {
   const addTourEvent = async (
     request: TourEventRequestModel
   ): Promise<TourEventResponseModel> => {
-    const response = await axiosInstance.post('/tourevents', request);
+    const response = await axiosInstance.post<TourEventResponseModel>(
+      '/tourevents',
+      request
+    );
     return response.data;
   };
 
@@ -74,7 +97,7 @@ export const useTourEventsApi = () => {
     request: TourEventRequestModel
   ): Promise<TourEventResponseModel | null> => {
     try {
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.put<TourEventResponseModel>(
         `/tourevents/${tourEventId}`,
         request
       );

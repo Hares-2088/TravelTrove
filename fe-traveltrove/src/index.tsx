@@ -1,6 +1,6 @@
 import { Auth0Provider } from '@auth0/auth0-react';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -14,13 +14,11 @@ elfsightScript.src = 'https://static.elfsight.com/platform/platform.js';
 elfsightScript.async = true;
 document.body.appendChild(elfsightScript);
 
-const onRedirectCallback = () => {
+const onRedirectCallback = (): void => {
   window.location.replace(AppRoutes.Callback);
 };
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
   <React.StrictMode>

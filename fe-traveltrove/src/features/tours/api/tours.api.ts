@@ -1,6 +1,18 @@
 import { TourRequestModel, TourResponseModel } from '../models/Tour';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
+// Define the return type interface
+interface ToursApi {
+  getAllTours: () => Promise<TourResponseModel[]>;
+  getTourByTourId: (tourId: string) => Promise<TourResponseModel>;
+  addTour: (tour: TourRequestModel) => Promise<TourResponseModel>;
+  updateTour: (
+    tourId: string,
+    tour: TourRequestModel
+  ) => Promise<TourResponseModel>;
+  deleteTour: (tourId: string) => Promise<void>;
+}
+
 // Utility function to parse event-stream data
 const parseEventStream = (data: string): TourResponseModel[] => {
   const lines = data.split('\n');
@@ -22,7 +34,8 @@ const parseEventStream = (data: string): TourResponseModel[] => {
 };
 
 // Custom Hook for Tours API
-export const useToursApi = () => {
+export const useToursApi = (): ToursApi => {
+  // Explicit return type
   const axiosInstance = useAxiosInstance(); // Use Axios Hook
 
   // Fetch All Tours

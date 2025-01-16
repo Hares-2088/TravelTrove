@@ -26,15 +26,16 @@
     "serve": "^14.2.4",
     "web-vitals": "^4.2.4"
   },
+  "type": "module",
   "scripts": {
-    "dev": "vite --port 3000 --host --mode dev",
-    "build": "tsc && vite build",
-    "build:development": "tsc && vite build --mode dev",
-    "build:production": "tsc && vite build --mode production",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "server": "node server.js",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
-    "preview": "vite preview",
-    "format": "prettier --write ."
+    "dev": "concurrently \"npm run server\" \"npm run start\""
   },
   "eslintConfig": {
     "extends": [
@@ -55,25 +56,22 @@
     ]
   },
   "devDependencies": {
-    "@originjs/vite-plugin-federation": "1.3.5",
-    "@playwright/test": "^1.48.2",
-    "@types/node": "20.12.12",
-    "@types/react": "^18.3.11",
-    "@types/react-bootstrap": "^0.32.37",
-    "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "7.1.0",
-    "@typescript-eslint/parser": "7.1.0",
-    "@vitejs/plugin-react-swc": "3.7.0",
+    "@playwright/test": "^1.49.1",
+    "@types/css-modules": "^1.0.5",
+    "@types/jwt-decode": "^2.2.1",
+    "@types/node": "^22.10.1",
+    "concurrently": "^9.1.0",
+    "esbuild": "^0.24.2",
     "eslint": "^8.57.1",
-    "eslint-config-prettier": "9.1.0",
+    "eslint-config-prettier": "^10.0.1",
     "eslint-import-resolver-typescript": "3.6.1",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-jsx-a11y": "6.8.0",
     "eslint-plugin-prettier": "5.2.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "4.6.2",
-    "prettier": "3.2.5",
-    "typescript": "5.3.3",
-    "vite": "^5.4.8"
+    "nodemon": "^3.1.7",
+    "prettier": "^3.4.2",
+    "typescript": "^4.9.5"
   }
 }

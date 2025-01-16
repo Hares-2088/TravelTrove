@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Button, Table, Modal, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
@@ -71,81 +71,25 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [showFilters, setShowFilters] = useState(false); // State to toggle filter visibility
 
-  useEffect(() => {
-    fetchPackages();
-    fetchAirports(); // Fetch airports when the component mounts
-  }, [tourId]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [filterName, filterStatus, filterDate, sortField, sortOrder, packages]);
-
-  const fetchPackages = async () => {
+  const fetchPackages = useCallback(async (): Promise<void> => {
     try {
       const data = await getAllPackages({ tourId });
       setPackages(data);
     } catch (error) {
       console.error('Error fetching packages:', error);
     }
-  };
+  }, [getAllPackages, tourId]);
 
-  const fetchAirports = async () => {
+  const fetchAirports = useCallback(async (): Promise<void> => {
     try {
       const data = await getAllAirports();
       setAirports(data);
     } catch (error) {
       console.error('Error fetching airports:', error);
     }
-  };
+  }, [getAllAirports]);
 
-  const handleSave = async () => {
-    const errors = {
-      name: !formData.name,
-      description: !formData.description,
-      startDate: !formData.startDate,
-      endDate: !formData.endDate,
-      priceSingle: formData.priceSingle === null,
-      airportId: !formData.airportId,
-      dateOrder: new Date(formData.startDate) >= new Date(formData.endDate),
-      totalSeats: formData.totalSeats === null,
-    };
-    setFormErrors(errors);
-
-    if (Object.values(errors).some(error => error)) {
-      return;
-    }
-
-    try {
-      if (modalType === 'create') {
-        await addPackage(formData);
-      } else if (modalType === 'update' && selectedPackage) {
-        await updatePackage(selectedPackage.packageId, formData);
-      }
-      setShowModal(false);
-      await fetchPackages();
-    } catch (error) {
-      console.error('Error saving package:', error);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      if (selectedPackage) {
-        await deletePackage(selectedPackage.packageId);
-        setShowModal(false);
-        await fetchPackages();
-      }
-    } catch (error) {
-      console.error('Error deleting package:', error);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSave();
-  };
-
-  const applyFilters = () => {
+  const applyFilters = useCallback((): void => {
     let filtered = packages;
 
     // Filter by name
@@ -183,9 +127,73 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     }
 
     setFilteredPackages(filtered);
+  }, [filterName, filterStatus, filterDate, sortField, sortOrder, packages]);
+
+  useEffect(() => {
+    fetchPackages();
+    fetchAirports();
+  }, [tourId, fetchPackages, fetchAirports]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [
+    filterName,
+    filterStatus,
+    filterDate,
+    sortField,
+    sortOrder,
+    packages,
+    applyFilters,
+  ]);
+
+  const handleSave = async (): Promise<void> => {
+    const errors = {
+      name: !formData.name,
+      description: !formData.description,
+      startDate: !formData.startDate,
+      endDate: !formData.endDate,
+      priceSingle: formData.priceSingle === null,
+      airportId: !formData.airportId,
+      dateOrder: new Date(formData.startDate) >= new Date(formData.endDate),
+      totalSeats: formData.totalSeats === null,
+    };
+    setFormErrors(errors);
+
+    if (Object.values(errors).some(error => error)) {
+      return;
+    }
+
+    try {
+      if (modalType === 'create') {
+        await addPackage(formData);
+      } else if (modalType === 'update' && selectedPackage) {
+        await updatePackage(selectedPackage.packageId, formData);
+      }
+      setShowModal(false);
+      await fetchPackages();
+    } catch (error) {
+      console.error('Error saving package:', error);
+    }
   };
 
-  const handleResetFilters = () => {
+  const handleDelete = async (): Promise<void> => {
+    try {
+      if (selectedPackage) {
+        await deletePackage(selectedPackage.packageId);
+        setShowModal(false);
+        await fetchPackages();
+      }
+    } catch (error) {
+      console.error('Error deleting package:', error);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent): void => {
+    e.preventDefault();
+    handleSave();
+  };
+
+  const handleResetFilters = (): void => {
     setFilterName('');
     setFilterStatus('');
     setFilterDate(null);
@@ -264,7 +272,9 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
           <Form.Control
             as="select"
             value={sortField || ''}
-            onChange={e => setSortField(e.target.value as any)}
+            onChange={e =>
+              setSortField(e.target.value as 'price' | 'date' | 'popularity')
+            }
           >
             <option value="">{t('Sort by')}</option>
             <option value="price">{t('Price')}</option>

@@ -6,7 +6,7 @@ import './ErrorPage.css';
 const InternalServerErrorPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleBackToHome = () => {
+  const handleBackToHome = (): void => {
     navigate(AppRoutes.Home);
   };
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button, Table, Modal, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useTravelersApi } from '../../../travelers/api/traveler.api';
-import { useCitiesApi } from '../../../cities/api/cities.api';
 import { useCountriesApi } from '../../../countries/api/countries.api';
 import {
   TravelerResponseModel,
@@ -18,12 +17,10 @@ const TravelersTab: React.FC = () => {
     updateTraveler,
     deleteTraveler,
   } = useTravelersApi();
-  const { getAllCities } = useCitiesApi();
   const { getAllCountries } = useCountriesApi();
 
   const { t } = useTranslation();
   const [travelers, setTravelers] = useState<TravelerResponseModel[]>([]);
-  const [cities, setCities] = useState<{ id: string; name: string }[]>([]);
   const [countries, setCountries] = useState<{ id: string; name: string }[]>(
     []
   );
@@ -49,11 +46,10 @@ const TravelersTab: React.FC = () => {
 
   useEffect(() => {
     fetchTravelers();
-    fetchCities();
     fetchCountries();
   }, []);
 
-  const fetchTravelers = async () => {
+  const fetchTravelers = async (): Promise<void> => {
     try {
       const data = await getAllTravelers();
       setTravelers(data);
@@ -62,16 +58,7 @@ const TravelersTab: React.FC = () => {
     }
   };
 
-  const fetchCities = async () => {
-    try {
-      const data = await getAllCities();
-      setCities(data.map(city => ({ id: city.cityId, name: city.name })));
-    } catch (error) {
-      console.error('Error fetching cities:', error);
-    }
-  };
-
-  const fetchCountries = async () => {
+  const fetchCountries = async (): Promise<void> => {
     try {
       const data = await getAllCountries();
       setCountries(
@@ -82,7 +69,7 @@ const TravelersTab: React.FC = () => {
     }
   };
 
-  const handleViewTraveler = async (travelerId: string) => {
+  const handleViewTraveler = async (travelerId: string): Promise<void> => {
     try {
       const traveler = await getTravelerById(travelerId);
       setViewingTraveler(traveler);
@@ -91,7 +78,7 @@ const TravelersTab: React.FC = () => {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     try {
       if (!formData.firstName.trim()) {
         alert(t('firstNameRequired'));
@@ -134,7 +121,7 @@ const TravelersTab: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       if (selectedTraveler) {
         await deleteTraveler(selectedTraveler.travelerId);
@@ -374,6 +361,29 @@ const TravelersTab: React.FC = () => {
                 />
                 <Form.Control.Feedback type="invalid">
                   {t('emailRequired')}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>{t('country')}</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={formData.countryId}
+                  onChange={e =>
+                    setFormData({ ...formData, countryId: e.target.value })
+                  }
+                  isInvalid={!formData.countryId.trim()}
+                >
+                  {' '}
+                  {/* This closing bracket was missing */}
+                  <option value="">{t('selectCountry')}</option>
+                  {countries.map(country => (
+                    <option key={country.id} value={country.id}>
+                      {country.name}
+                    </option>
+                  ))}
+                </Form.Control>
+                <Form.Control.Feedback type="invalid">
+                  {t('countryRequired')}
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group className="mb-3">

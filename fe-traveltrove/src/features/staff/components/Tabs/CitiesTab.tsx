@@ -36,12 +36,16 @@ const CitiesTab: React.FC = () => {
   const [nameError, setNameError] = useState(false);
   const [countryError, setCountryError] = useState(false);
 
-  useEffect(() => {
-    fetchCities();
-    fetchCountries();
-  }, []);
+  const fetchCities: () => Promise<void> = async (): Promise<void> => {
+    try {
+      const data: CityResponseModel[] = await getAllCities();
+      setCities(data);
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+    }
+  };
 
-  const fetchCountries = async () => {
+  const fetchCountries = async (): Promise<void> => {
     try {
       const data = await getAllCountries();
       setCountries(data);
@@ -50,16 +54,12 @@ const CitiesTab: React.FC = () => {
     }
   };
 
-  const fetchCities = async () => {
-    try {
-      const data = await getAllCities();
-      setCities(data);
-    } catch (error) {
-      console.error('Error fetching cities:', error);
-    }
-  };
+  useEffect(() => {
+    fetchCities();
+    fetchCountries();
+  }, [fetchCities, fetchCountries]);
 
-  const handleViewCity = async (cityId: string) => {
+  const handleViewCity = async (cityId: string): Promise<void> => {
     try {
       const city = await getCityById(cityId);
       setViewingCity(city);
@@ -68,12 +68,12 @@ const CitiesTab: React.FC = () => {
     }
   };
 
-  const getCountryName = (countryId: string) => {
+  const getCountryName = (countryId: string): string => {
     const country = countries.find(country => country.countryId === countryId);
     return country ? country.name : t('unknownCountry');
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     const isNameValid = formData.name.trim() !== '';
     const isCountryValid = !!formData.countryId.trim();
 
@@ -93,7 +93,7 @@ const CitiesTab: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       if (selectedCity) {
         await deleteCity(selectedCity.cityId);

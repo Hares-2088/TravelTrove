@@ -39,11 +39,7 @@ const Bookings: React.FC = () => {
     bookingDate: false,
   });
 
-  useEffect(() => {
-    fetchBookings();
-  }, [packageId]);
-
-  const fetchBookings = async () => {
+  const fetchBookings = async (): Promise<void> => {
     try {
       const data = await getAllBookings({ packageId: packageId || undefined });
       setBookings(data);
@@ -52,7 +48,11 @@ const Bookings: React.FC = () => {
     }
   };
 
-  const handleSave = async () => {
+  useEffect(() => {
+    fetchBookings();
+  }, [packageId, fetchBookings]);
+
+  const handleSave = async (): Promise<void> => {
     const errors = {
       userId: !formData.userId,
       totalPrice: formData.totalPrice === null,
@@ -78,7 +78,7 @@ const Bookings: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       if (selectedBooking) {
         await deleteBooking(selectedBooking.bookingId);
@@ -90,7 +90,7 @@ const Bookings: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     handleSave();
   };

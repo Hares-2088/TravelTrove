@@ -22,9 +22,8 @@
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
     "noEmit": true,
-    "allowImportingTsExtensions": true,
     "incremental": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "build", "dist"]
+  "include": ["src", "tests/**/*.ts", "playwright.config.ts"],
+  "exclude": ["node_modules", "dist", "build"]
 }
