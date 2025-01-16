@@ -1,4 +1,4 @@
-name: CI for Backend TravelTrove
+name: CI for TravelTrove
 
 on:
   push:
@@ -27,8 +27,7 @@ jobs:
           --health-cmd="mongo --eval 'db.runCommand({ connectionStatus: 1 })'"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=5
-
+          --health-retries=3
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -46,7 +45,17 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - name: Grant execute permissions to gradlew
+        working-directory: be-traveltrove
+        run: chmod +x gradlew
 
+      # Debug environment variables at the workflow level
+      - name: Debug Environment Variables
+        run: |
+          echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}"
+          echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}"
+          echo "FRONTEND_DOMAIN=${FRONTEND_DOMAIN}"
+      # Run backend tests
       - name: Build and test backend
         working-directory: be-traveltrove
         run: |
@@ -54,12 +63,17 @@ jobs:
             -Dauth0.clientId=${AUTH0_CLIENT_ID} \
             -Dauth0.clientSecret=${AUTH0_CLIENT_SECRET} \
             -Dfrontend.domain=${FRONTEND_DOMAIN} \
-            -Dspring.profiles.active=test \
-            --stacktrace --info
-
+            -Dspring.profiles.active=test
+      # Upload test reports for review
       - name: Upload Test Reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: test-reports
           path: be-traveltrove/build/reports/tests/test/
+
+      # Debug spring application logs for troubleshooting
+      - name: Check Application Logs
+        if: failure()
+        run: |
+          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
