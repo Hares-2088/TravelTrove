@@ -11,16 +11,34 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+    env:
+      REACT_APP_AUTH0_DOMAIN: ${{ secrets.REACT_APP_AUTH0_DOMAIN }}
+      REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.REACT_APP_AUTH0_CLIENT_ID }}
+      REACT_APP_AUTH0_CALLBACK_URL: ${{ secrets.REACT_APP_AUTH0_CALLBACK_URL }}
+      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
 
-      - uses: actions/setup-node@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: 'npm'
           cache-dependency-path: fe-traveltrove/package-lock.json
 
-      # Only install backend dependencies if package.json exists
+      # 🔹 Create the .env file for frontend
+      - name: Create .env file for frontend
+        run: |
+          echo "REACT_APP_AUTH0_DOMAIN=${REACT_APP_AUTH0_DOMAIN}" > fe-traveltrove/.env
+          echo "REACT_APP_AUTH0_CLIENT_ID=${REACT_APP_AUTH0_CLIENT_ID}" >> fe-traveltrove/.env
+          echo "REACT_APP_AUTH0_CALLBACK_URL=${REACT_APP_AUTH0_CALLBACK_URL}" >> fe-traveltrove/.env
+          echo "REACT_APP_AUTH0_AUDIENCE=${REACT_APP_AUTH0_AUDIENCE}" >> fe-traveltrove/.env
+          cat fe-traveltrove/.env # Debugging step to verify file exists
+        shell: bash
+
+      # 🔹 Only install backend dependencies if package.json exists
       - name: Install backend dependencies
         run: |
           if [ -f be-traveltrove/package.json ]; then
@@ -42,6 +60,10 @@ jobs:
 
       - name: Install Docker Compose
         run: sudo apt-get update && sudo apt-get install -y docker-compose
+
+      # 🔹 Debugging step to verify the .env file exists before running Docker Compose
+      - name: Verify .env file exists
+        run: ls -l fe-traveltrove/.env
 
       - name: Build and start Docker containers
         run: docker-compose -f docker-compose.yml up -d --build
