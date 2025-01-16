@@ -1,16 +1,14 @@
-name: CI for TravelTrove
+name: Playwright Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main, master ]
   pull_request:
-    branches:
-      - main
+    branches: [ main, master ]
 
 jobs:
-  backend-tests:
-    name: Backend Tests
+  test:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
 
     env:
@@ -18,62 +16,73 @@ jobs:
       AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
       FRONTEND_DOMAIN: ${{ secrets.FRONTEND_DOMAIN }}
 
-    services:
-      mongo:
-        image: mongo:5.0.5
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd="mongo --eval 'db.runCommand({ connectionStatus: 1 })'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          node-version: lts/*
+          cache: 'npm'
+          cache-dependency-path: fe-traveltrove/package-lock.json
 
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Grant execute permissions to gradlew
+      # Create the .env file for the frontend
+      - name: Create .env file for frontend
+        run: |
+          echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}" > fe-traveltrove/.env
+          echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}" >> fe-traveltrove/.env
+          echo "FRONTEND_DOMAIN=${FRONTEND_DOMAIN}" >> fe-traveltrove/.env
+        shell: bash
+
+      # Install backend dependencies
+      - name: Install backend dependencies
+        run: npm install --legacy-peer-deps
         working-directory: be-traveltrove
-        run: chmod +x gradlew
 
-      # Debug environment variables at the workflow level
-      - name: Debug Environment Variables
+      # Start backend server
+      - name: Start backend server
         run: |
-          echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}"
-          echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}"
-          echo "FRONTEND_DOMAIN=${FRONTEND_DOMAIN}"
-      # Run backend tests
-      - name: Build and test backend
+          npm start &
+          sleep 5
         working-directory: be-traveltrove
-        run: |
-          ./gradlew clean build \
-            -Dauth0.clientId=${AUTH0_CLIENT_ID} \
-            -Dauth0.clientSecret=${AUTH0_CLIENT_SECRET} \
-            -Dfrontend.domain=${FRONTEND_DOMAIN} \
-            -Dspring.profiles.active=test
-      # Upload test reports for review
-      - name: Upload Test Reports
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-reports
-          path: be-traveltrove/build/reports/tests/test/
 
-      # Debug spring application logs for troubleshooting
-      - name: Check Application Logs
-        if: failure()
+      # Install Docker Compose
+      - name: Install Docker Compose
+        run: sudo apt-get update && sudo apt-get install -y docker-compose
+
+      # Build and start Docker containers
+      - name: Build and start Docker containers
+        run: docker-compose -f docker-compose.yml up -d --build
+
+      # Install frontend dependencies
+      - name: Install frontend dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: fe-traveltrove
+
+      # Install Playwright Browsers
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: fe-traveltrove
+
+      # Run Playwright tests
+      - name: Run Playwright tests
+        run: npx playwright test
+        working-directory: fe-traveltrove
+
+      # Upload Playwright test report
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: fe-traveltrove/playwright-report/
+          retention-days: 30
+
+      # Stop Docker containers
+      - name: Stop Docker containers
+        run: docker-compose -f docker-compose.yml down
+
+      # Stop backend server
+      - name: Stop backend server
         run: |
-          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
+          pkill -f npm || true
