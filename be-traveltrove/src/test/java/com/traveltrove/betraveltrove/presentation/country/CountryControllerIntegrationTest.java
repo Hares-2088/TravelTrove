@@ -15,7 +15,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import java.util.Comparator;
+import java.util.UUID;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,17 +36,18 @@ class CountryControllerIntegrationTest {
 
     private final Country country1 = Country.builder()
             .id("1")
-            .countryId("1de3129f-51fa-4d09-838f-dccfde364733")
+            .countryId(UUID.randomUUID().toString())
             .name("Country 1")
             .image("image1.jpg")
             .build();
 
     private final Country country2 = Country.builder()
             .id("2")
-            .countryId("4773d41a-ffc1-41ae-be90-cd5f2c9f2d86")
+            .countryId(UUID.randomUUID().toString())
             .name("Country 2")
             .image("image2.jpg")
             .build();
+
 
     @BeforeEach
     public void setupDB() {
@@ -61,7 +62,8 @@ class CountryControllerIntegrationTest {
 
     @Test
     void whenGetAllCountries_thenReturnAllCountries() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser()).get()
+        webTestClient
+                .mutateWith(SecurityMockServerConfigurers.mockUser()).get()
                 .uri("/api/v1/countries")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -70,23 +72,28 @@ class CountryControllerIntegrationTest {
                 .expectBodyList(Country.class)
                 .hasSize(2)
                 .value(countries -> {
-                    // Ensure the list is sorted by name
-                    countries.sort(Comparator.comparing(Country::getName));
                     assertEquals(2, countries.size());
                     assertEquals(country1.getName(), countries.get(0).getName());
                     assertEquals(country2.getName(), countries.get(1).getName());
                 });
+
+        StepVerifier.create(countryRepository.findAll())
+                .expectNextMatches(country -> country.getName().equals(country1.getName()))
+                .expectNextMatches(country -> country.getName().equals(country2.getName()))
+                .verifyComplete();
     }
 
     @Test
     void whenAddCountry_thenReturnCreatedCountry() {
         Country newCountry = Country.builder()
-                .countryId("410b89e2-2542-42c8-a0a6-0265accda2ad")
+                .countryId(UUID.randomUUID().toString())
                 .name("New Country")
                 .image("new_image.jpg")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient
+                .mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/countries")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newCountry)
@@ -113,7 +120,9 @@ class CountryControllerIntegrationTest {
                 .image("updated_image.jpg")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient
+                .mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/countries/{countryId}", country1.getCountryId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCountry)
@@ -129,7 +138,9 @@ class CountryControllerIntegrationTest {
 
     @Test
     void whenDeleteCountry_thenReturnNoContent() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient
+                .mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/countries/{countryId}", country1.getCountryId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -146,7 +157,9 @@ class CountryControllerIntegrationTest {
                 .image("updated_image.jpg")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient
+                .mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/countries/{countryId}", INVALID_COUNTRY_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCountry)
@@ -158,7 +171,8 @@ class CountryControllerIntegrationTest {
 
     @Test
     void whenDeleteCountry_withInvalidId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/countries/{countryId}", INVALID_COUNTRY_ID)
                 .exchange()
                 .expectStatus().isNotFound()
