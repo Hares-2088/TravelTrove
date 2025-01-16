@@ -31,17 +31,20 @@ jobs:
         run: npm install --legacy-peer-deps
         working-directory: fe-traveltrove
 
+      # Step 4: Verify directory structure before ESLint
+      - name: Debug repository structure
+        run: ls -R
+        working-directory: fe-traveltrove
 
-
-      # Step 4: Lint in batches to avoid memory issues
+      # Step 5: Lint in batches to avoid memory issues
       - name: Run ESLint in batches
         run: |
           npx eslint src/components --ext ts,tsx --cache --report-unused-disable-directives --max-warnings 0
           npx eslint src/pages --ext ts,tsx --cache --report-unused-disable-directives --max-warnings 0
           npx eslint src/features --ext ts,tsx --cache --report-unused-disable-directives --max-warnings 0
-        working-directory: ./TravelTrove/fe-traveltrove
+        working-directory: fe-traveltrove
 
-      # Step 5: Build the project
+      # Step 6: Build the project
       - name: Run build to ensure no build errors
         run: npm run build
-        working-directory: ./TravelTrove/fe-traveltrove
+        working-directory: fe-traveltrove
