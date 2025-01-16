@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.dataaccess;
+package com.traveltrove.betraveltrove.dataaccess.review;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +22,8 @@ public class Review {
     private String id;
 
     private String reviewId;
-    private String tourId;
+    private String packageId;
+    private String userId;
     private String reviewerName;
     private Integer rating;
     private String review;

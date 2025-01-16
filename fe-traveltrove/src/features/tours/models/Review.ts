@@ -1,6 +1,6 @@
 export interface Review {
   reviewId: string;
-  tourId: string;
+  packageId: string;
   reviewerName: string;
   rating: number;
   review: string;
