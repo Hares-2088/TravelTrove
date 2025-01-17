@@ -1,10 +1,7 @@
 package com.traveltrove.betraveltrove.presentation.tour;
 
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigTourService;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
-import com.traveltrove.betraveltrove.presentation.tour.TourRequestModel;
-import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import org.junit.jupiter.api.*;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +9,11 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
-
-import java.time.LocalDate;
-import java.util.Collections;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,8 +29,6 @@ class TourControllerIntegrationTest {
 
     @Autowired
     private TourRepository tourRepository;
-
-    private MockServerConfigTourService mockServerConfigTourService;
 
     private final String INVALID_TOUR_ID = "clearly-not-a-valid-tour-id"; //really? I would have never guessed -Ioannis
 
@@ -82,21 +75,6 @@ class TourControllerIntegrationTest {
             .description("Yet another sample test tour")
             .build();
 
-
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigTourService = new MockServerConfigTourService();
-        mockServerConfigTourService.startMockServer();
-        mockServerConfigTourService.registerGetTourByIdEndpoint(tour1);
-        mockServerConfigTourService.registerGetTourByIdEndpoint(tour2);
-        mockServerConfigTourService.registerGetTourByInvalidIdEndpoint(INVALID_TOUR_ID);
-    }
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigTourService.stopMockServer();
-    }
-
     @BeforeEach
     public void setupDB() {
         Publisher<Tour> setupDB = tourRepository.deleteAll()
@@ -111,7 +89,8 @@ class TourControllerIntegrationTest {
 
     @Test
     void whenGetTours_thenReturnAllTours() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/tours")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -136,7 +115,8 @@ class TourControllerIntegrationTest {
     @Test
     void whenGetTours_whenNoToursExist_thenReturnEmptyList() {
         tourRepository.deleteAll().block();
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/tours")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -156,7 +136,8 @@ class TourControllerIntegrationTest {
 
     @Test
     void whenGetTourByTourId_withExistingId_thenReturnTourResponseModel() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/tours/{tourId}", tour1.getTourId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -177,7 +158,8 @@ class TourControllerIntegrationTest {
 
     @Test
     void whenGetTourByTourId_withInvalidId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/tours/{tourId}", INVALID_TOUR_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -195,7 +177,8 @@ class TourControllerIntegrationTest {
     void whenAddTour_withValidTourRequestModel_thenReturnCreatedTourResponseModel() {
 
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/tours")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(tourRequestModel)
@@ -216,7 +199,8 @@ class TourControllerIntegrationTest {
     @Test
     void whenUpdateTour_withValidTourRequestModel_thenReturnUpdatedTourResponseModel() {
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/tours/{tourId}", tour1.getTourId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(tourRequestModel)
@@ -241,7 +225,8 @@ class TourControllerIntegrationTest {
     void whenUpdateTour_withInvalidTourId_thenReturnNotFound() {
 
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/tours/{tourId}", INVALID_TOUR_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(tourRequestModel)
@@ -258,7 +243,8 @@ class TourControllerIntegrationTest {
 
     @Test
     void whenDeleteTourByTourId_withValidTourId_thenReturnNoContent() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/tours/{tourId}", tour1.getTourId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -271,7 +257,8 @@ class TourControllerIntegrationTest {
 
     @Test
     void whenDeleteTourByTourId_withInvalidTourId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/tours/{tourId}", INVALID_TOUR_ID)
                 .exchange()
                 .expectStatus().isNotFound();

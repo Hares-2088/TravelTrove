@@ -18,8 +18,9 @@ class BookingRepositoryIntegrationTest {
     @Autowired
     private BookingRepository bookingRepository;
 
-    private final String bookingId1 = UUID.randomUUID().toString();
-    private final String bookingId2 = UUID.randomUUID().toString();
+    private final String bookingId1 = "2e05c896-b5ac-4d05-960a-01a3ee933ece";
+    private final String bookingId2 = "efbe77a9-bdf3-4158-a2f3-6a8be558619f";
+    private final String bookingId3 = "50edca0a-1c62-4023-bd11-73b742decbb5";
 
     @BeforeEach
     void setup() {
@@ -41,12 +42,25 @@ class BookingRepositoryIntegrationTest {
                 .status(BookingStatus.BOOKING_CONFIRMED)
                 .build();
 
+        Booking booking3 = Booking.builder()
+                .bookingId(bookingId3)
+                .packageId("1")
+                .userId("2")
+                .totalPrice(3000.0)
+                .bookingDate(LocalDate.of(2023, 3, 3))
+                .status(BookingStatus.PAYMENT_PENDING)
+                .build();
+
         StepVerifier.create(bookingRepository.save(booking1))
                 .expectNextMatches(savedBooking -> savedBooking.getBookingId().equals(bookingId1))
                 .verifyComplete();
 
         StepVerifier.create(bookingRepository.save(booking2))
                 .expectNextMatches(savedBooking -> savedBooking.getBookingId().equals(bookingId2))
+                .verifyComplete();
+
+        StepVerifier.create(bookingRepository.save(booking3))
+                .expectNextMatches(savedBooking -> savedBooking.getBookingId().equals(bookingId3))
                 .verifyComplete();
     }
 
@@ -57,7 +71,7 @@ class BookingRepositoryIntegrationTest {
     }
 
     @Test
-    void whenFindBookingByBookingId_withExistingId_thenReturnExistingBooking() {
+    void whenFindBookingByBookingId_withExistingBookingId_thenReturnExistingBooking() {
         StepVerifier.create(bookingRepository.findBookingByBookingId(bookingId1))
                 .expectNextMatches(booking ->
                         booking.getBookingId().equals(bookingId1) &&
@@ -82,6 +96,9 @@ class BookingRepositoryIntegrationTest {
                 .expectNextMatches(booking ->
                         booking.getPackageId().equals("1") &&
                                 booking.getBookingId().equals(bookingId1))
+                .expectNextMatches(booking ->
+                        booking.getPackageId().equals("1") &&
+                                booking.getBookingId().equals(bookingId3))
                 .verifyComplete();
     }
 
@@ -107,6 +124,7 @@ class BookingRepositoryIntegrationTest {
     @Test
     void whenFindBookingsByStatus_withExistingStatus_thenReturnBookings() {
         StepVerifier.create(bookingRepository.findBookingsByStatus(BookingStatus.PAYMENT_PENDING))
+                .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.PAYMENT_PENDING))
                 .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.PAYMENT_PENDING))
                 .verifyComplete();
     }
