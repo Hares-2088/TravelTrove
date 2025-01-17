@@ -5,6 +5,7 @@ import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
+import com.traveltrove.betraveltrove.presentation.user.UserUpdateRequest;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.UserEntityToModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -110,6 +111,34 @@ public class UserServiceImpl implements UserService {
                 .map(UserEntityToModel::toUserResponseModel)
                 .doOnSuccess(user -> log.info("Fetched User Details: {}", user))
                 .doOnError(error -> log.error("Error fetching user with ID: {}", userId, error));
+    }
+
+    @Override
+    public Mono<UserResponseModel> updateUserProfile(String userId, UserUpdateRequest updateRequest) {
+        // Find existing user
+        return userRepository.findByUserId(userId)
+                .switchIfEmpty(Mono.error(new NotFoundException("User not found with ID: " + userId)))
+                // Update only the fields we allow the user to change
+                .flatMap(existingUser -> {
+                    if (updateRequest.getEmail() != null) {
+                        existingUser.setEmail(updateRequest.getEmail());
+                    }
+                    if (updateRequest.getFirstName() != null) {
+                        existingUser.setFirstName(updateRequest.getFirstName());
+                    }
+                    if (updateRequest.getLastName() != null) {
+                        existingUser.setLastName(updateRequest.getLastName());
+                    }
+                    if (updateRequest.getTravelerIds() != null) {
+                        existingUser.setTravelerIds(updateRequest.getTravelerIds());
+                    }
+
+                    // Save & convert to response
+                    return userRepository.save(existingUser);
+                })
+                .map(UserEntityToModel::toUserResponseModel)
+                .doOnSuccess(user -> log.info("Successfully updated user profile for userId={}", userId))
+                .doOnError(err -> log.error("Error while updating user profile for userId={}: {}", userId, err.getMessage()));
     }
 
 }
