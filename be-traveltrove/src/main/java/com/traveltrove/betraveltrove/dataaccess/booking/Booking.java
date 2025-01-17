@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Document(collection = "booking")
 @Data
@@ -27,4 +28,6 @@ public class Booking {
     private BookingStatus status;
 
     private LocalDate bookingDate;
+
+    private List<String> travelerIds;
 }
