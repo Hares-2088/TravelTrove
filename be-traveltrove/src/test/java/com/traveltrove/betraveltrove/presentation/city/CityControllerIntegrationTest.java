@@ -2,7 +2,6 @@ package com.traveltrove.betraveltrove.presentation.city;
 
 import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.city.CityRepository;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigCityService;
 import org.junit.jupiter.api.*;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +9,13 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
+
+import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -30,7 +32,6 @@ public class CityControllerIntegrationTest {
     @Autowired
     private CityRepository cityRepository;
 
-    private MockServerConfigCityService mockServerConfigCityService;
 
     private final String INVALID_CITY_ID = "invalid-city-id";
 
@@ -48,20 +49,6 @@ public class CityControllerIntegrationTest {
             .countryId("2")
             .build();
 
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigCityService = new MockServerConfigCityService();
-        mockServerConfigCityService.startMockServer();
-        mockServerConfigCityService.registerGetCityByIdEndpoint(city1);
-        mockServerConfigCityService.registerGetCityByIdEndpoint(city2);
-        mockServerConfigCityService.registerGetCityByInvalidIdEndpoint(INVALID_CITY_ID);
-    }
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigCityService.stopMockServer();
-    }
-
     @BeforeEach
     public void setupDB() {
         Publisher<City> cities = cityRepository.deleteAll()
@@ -75,7 +62,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenGetCityById_thenReturnCity() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/cities/{cityId}", city1.getCityId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -90,7 +78,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenGetCityByInvalidId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/cities/{cityId}", INVALID_CITY_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -99,7 +88,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenGetAllCities_thenReturnAllCities() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/cities")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -108,6 +98,8 @@ public class CityControllerIntegrationTest {
                 .expectBodyList(City.class)
                 .hasSize(2)
                 .value(cities -> {
+                    // Sort cities by name before assertions
+                    cities.sort(Comparator.comparing(City::getName));
                     assertEquals(2, cities.size());
                     assertEquals(city1.getName(), cities.get(0).getName());
                     assertEquals(city2.getName(), cities.get(1).getName());
@@ -127,7 +119,8 @@ public class CityControllerIntegrationTest {
                 .countryId("3")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/cities")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newCity)
@@ -139,9 +132,10 @@ public class CityControllerIntegrationTest {
                     assertEquals(newCity.getCountryId(), savedCity.getCountryId());
                 });
 
-        StepVerifier.create(cityRepository.findAll())
-                .expectNextMatches(city -> city.getName().equals(city1.getName()))
-                .expectNextMatches(city -> city.getName().equals(city2.getName()))
+        // Validate sorted repository contents
+        StepVerifier.create(cityRepository.findAll().sort(Comparator.comparing(City::getName)))
+                .expectNextMatches(city -> city.getName().equals("City 1"))
+                .expectNextMatches(city -> city.getName().equals("City 2"))
                 .expectNextMatches(city -> city.getName().equals("New City"))
                 .verifyComplete();
     }
@@ -153,7 +147,8 @@ public class CityControllerIntegrationTest {
                 .countryId("3")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/cities/{cityId}", city1.getCityId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCity)
@@ -172,7 +167,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenDeleteCity_thenReturnNoContent() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/cities/{cityId}", city1.getCityId())
                 .exchange()
                 .expectStatus().isNoContent();
@@ -188,7 +184,8 @@ public class CityControllerIntegrationTest {
                 .countryId("3")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/cities/{cityId}", INVALID_CITY_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedCity)
@@ -198,7 +195,8 @@ public class CityControllerIntegrationTest {
 
     @Test
     void whenDeleteCity_withInvalidId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/cities/{cityId}", INVALID_CITY_ID)
                 .exchange()
                 .expectStatus().isNotFound();

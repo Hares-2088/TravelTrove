@@ -39,19 +39,19 @@ public class BookingServiceUnitTest {
     private BookingRepository bookingRepository;
 
     @Mock
-    private Auth0Service auth0Service;
-
-    @Mock
     private UserService userService;
 
     @Mock
     private PackageService packageService;
 
+    private final String bookingId1 = "a0fca78b-54e6-4428-8ec3-8a42ac0dfd4e";
+    private final String bookingId2 = "b1fdf006-b0c1-49fe-98ed-21f816ad524e";
+
+    private final String packageId1 = "2484e7bf-51ee-445f-86de-cb5c1a349954";
+    private final String packageId2 = "8c4a4b10-aed4-4fa1-8268-2c372df4b072";
+
     @Test
     public void whenGetAllBookings_thenReturnAllBookings() {
-        String bookingId1 = UUID.randomUUID().toString();
-        String bookingId2 = UUID.randomUUID().toString();
-
         Booking booking1 = new Booking("1", bookingId1, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4));
         Booking booking2 = new Booking("2", bookingId2, "user2", "pack2", 1300.00, BookingStatus.PAYMENT_PENDING, LocalDate.of(2025, 5, 5));
 
@@ -64,26 +64,94 @@ public class BookingServiceUnitTest {
     }
 
     @Test
-    public void whenGetBooking_withExistingId_thenReturnBooking() {
-        String bookingId = UUID.randomUUID().toString();
-        Booking booking = new Booking("1", bookingId, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4));
+    public void whenGetBookings_withExistingPackageId_thenReturnBookings() {
+        // Given
+        String existingPackageId = packageId1; // or any test packageId
 
-        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(booking));
+        // Create some test bookings that share the same packageId
+        Booking booking1 = new Booking(
+                "1",
+                bookingId1,
+                "user1",
+                existingPackageId,
+                1200.00,
+                BookingStatus.BOOKING_CONFIRMED,
+                LocalDate.of(2025, 4, 4)
+        );
 
-        StepVerifier.create(bookingService.getBooking(bookingId))
-                .expectNextMatches(response -> response.getBookingId().equals(bookingId))
+        Booking booking2 = new Booking(
+                "2",
+                bookingId2,
+                "user2",
+                existingPackageId,
+                1300.00,
+                BookingStatus.PAYMENT_PENDING,
+                LocalDate.of(2025, 5, 5)
+        );
+
+        // Mock PackageService to return a non-empty Mono (valid package), simulating that the package exists
+        when(packageService.getPackageByPackageId(existingPackageId))
+                .thenReturn(Mono.just(
+                        PackageResponseModel.builder()
+                                .packageId(existingPackageId)
+                                .build()
+                ));
+
+        // Mock BookingRepository to return two bookings for the existingPackageId
+        when(bookingRepository.findBookingsByPackageId(existingPackageId))
+                .thenReturn(Flux.just(booking1, booking2));
+
+        // When
+        StepVerifier.create(bookingService.getBookingsByPackageId(existingPackageId))
+
+                // Then
+                .expectNextMatches(response ->
+                        response.getBookingId().equals("a0fca78b-54e6-4428-8ec3-8a42ac0dfd4e")
+                                && response.getPackageId().equals(existingPackageId)
+                                && response.getStatus().equals(BookingStatus.BOOKING_CONFIRMED)
+                )
+                .expectNextMatches(response ->
+                        response.getBookingId().equals("b1fdf006-b0c1-49fe-98ed-21f816ad524e")
+                                && response.getPackageId().equals(existingPackageId)
+                                && response.getStatus().equals(BookingStatus.PAYMENT_PENDING)
+                )
                 .verifyComplete();
     }
 
     @Test
-    public void whenGetBooking_withNonExistingId_thenReturnNotFound() {
-        String bookingId = UUID.randomUUID().toString();
+    public void whenGetBookings_withNonExistingPackageId_thenReturnEmpty() {
+        // Given
+        String nonExistingPackageId = "YEAH_NOPE";
 
-        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.empty());
+        // Mock PackageService to return an empty Mono (invalid package), simulating that the package does not exist
+        when(packageService.getPackageByPackageId(nonExistingPackageId))
+                .thenReturn(Mono.empty());
 
-        StepVerifier.create(bookingService.getBooking(bookingId))
+        // When
+        StepVerifier.create(bookingService.getBookingsByPackageId(nonExistingPackageId))
                 .expectErrorMatches(error -> error instanceof NotFoundException &&
-                        error.getMessage().equals("Booking not found with ID: " + bookingId))
+                        error.getMessage().equals("Package not found with ID: " + nonExistingPackageId))
+                .verify();
+    }
+
+    @Test
+    public void whenGetBooking_withExistingBookingId_thenReturnBooking() {
+        Booking booking = new Booking("1", bookingId1, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4));
+
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.just(booking));
+
+        StepVerifier.create(bookingService.getBooking(bookingId1))
+                .expectNextMatches(response -> response.getBookingId().equals(bookingId1))
+                .verifyComplete();
+    }
+
+    @Test
+    public void whenGetBooking_withNonExistingBookingId_thenReturnNotFound() {
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.empty());
+
+        StepVerifier.create(bookingService.getBooking(bookingId1))
+                .expectErrorMatches(error -> error instanceof NotFoundException &&
+                        error.getMessage().equals("Booking not found with ID: " + bookingId1))
                 .verify();
     }
 
@@ -100,7 +168,7 @@ public class BookingServiceUnitTest {
                 .bookingDate(LocalDate.of(2025, 4, 4))
                 .build();
 
-        Booking booking = new Booking("1", UUID.randomUUID().toString(), userId, packageId, 1200.00, BookingStatus.PAYMENT_PENDING, LocalDate.of(2025, 4, 4));
+        Booking booking = new Booking("1", "fcd8ae00-4251-4b38-bafe-a48e131cb5d4", userId, packageId, 1200.00, BookingStatus.PAYMENT_PENDING, LocalDate.of(2025, 4, 4));
 
         // Mock userService
         when(userService.syncUserWithAuth0(userId))
@@ -134,12 +202,11 @@ public class BookingServiceUnitTest {
 
     @Test
     public void whenUpdateBookingStatus_withExistingId_thenReturnUpdatedBooking() {
-        String bookingId = UUID.randomUUID().toString();
-        Booking booking = new Booking("1", bookingId, "user1", "pack1", 1200.00, BookingStatus.PAYMENT_PENDING, LocalDate.of(2025, 4, 4));
-        Booking updatedBooking = new Booking("1", bookingId, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4));
+        Booking booking = new Booking("1", bookingId1, "user1", "pack1", 1200.00, BookingStatus.PAYMENT_PENDING, LocalDate.of(2025, 4, 4));
+        Booking updatedBooking = new Booking("1", bookingId1, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4));
 
         // Mock repository calls
-        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(booking));
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.just(booking));
         when(bookingRepository.save(booking)).thenReturn(Mono.just(updatedBooking));
 
         // Create a BookingStatusUpdateRequest
@@ -147,58 +214,53 @@ public class BookingServiceUnitTest {
         request.setStatus(BookingStatus.BOOKING_CONFIRMED);
 
         // Execute the test
-        StepVerifier.create(bookingService.updateBookingStatus(bookingId, request.getStatus()))
+        StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
                 .expectNextMatches(response -> response.getStatus() == BookingStatus.BOOKING_CONFIRMED)
                 .verifyComplete();
     }
 
     @Test
     public void whenUpdateBookingStatus_withNonExistingId_thenReturnNotFound() {
-        String bookingId = UUID.randomUUID().toString();
-
         // Mock repository to return Mono.empty()
-        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.empty());
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.empty());
 
         BookingStatusUpdateRequest request = new BookingStatusUpdateRequest();
         request.setStatus(BookingStatus.BOOKING_CONFIRMED);
 
         // Execute the test
-        StepVerifier.create(bookingService.updateBookingStatus(bookingId, request.getStatus()))
+        StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
                 .expectErrorMatches(error -> error instanceof NotFoundException &&
-                        error.getMessage().equals("Booking not found with ID: " + bookingId))
+                        error.getMessage().equals("Booking not found with ID: " + bookingId1))
                 .verify();
     }
 
     @Test
     public void whenUpdateBookingStatus_withSameStatus_thenReturnSameStatusException() {
-        String bookingId = UUID.randomUUID().toString();
-        Booking booking = new Booking("1", bookingId, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4));
+        Booking booking = new Booking("1", bookingId1, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4));
 
         // Mock repository to return a booking with the same status
-        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(booking));
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.just(booking));
 
         BookingStatusUpdateRequest request = new BookingStatusUpdateRequest();
         request.setStatus(BookingStatus.BOOKING_CONFIRMED);
 
         // Execute the test
-        StepVerifier.create(bookingService.updateBookingStatus(bookingId, request.getStatus()))
+        StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
                 .expectErrorMatches(error -> error instanceof SameStatusException &&
                         error.getMessage().equals("Booking is already in the status: " + BookingStatus.BOOKING_CONFIRMED))
                 .verify();
     }
 
-
     @Test
     public void whenDeleteBooking_withExistingId_thenCompleteSuccessfully() {
-        String bookingId = UUID.randomUUID().toString();
-        Booking booking = new Booking("1", bookingId, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4));
+        Booking booking = new Booking("1", bookingId1, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4));
 
-        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(booking));
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.just(booking));
         when(bookingRepository.delete(booking)).thenReturn(Mono.empty());
 
-        StepVerifier.create(bookingService.deleteBooking(bookingId))
+        StepVerifier.create(bookingService.deleteBooking(bookingId1))
                 .expectNextMatches(response ->
-                        response.getBookingId().equals(bookingId) &&
+                        response.getBookingId().equals(bookingId1) &&
                                 response.getUserId().equals("user1") &&
                                 response.getPackageId().equals("pack1") &&
                                 response.getTotalPrice() == 1200.00 &&
@@ -208,18 +270,14 @@ public class BookingServiceUnitTest {
                 .verifyComplete();
     }
 
-
     @Test
     public void whenDeleteBooking_withNonExistingId_thenReturnNotFound() {
-        String bookingId = UUID.randomUUID().toString();
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.empty());
 
-        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.empty());
-
-        StepVerifier.create(bookingService.deleteBooking(bookingId))
+        StepVerifier.create(bookingService.deleteBooking(bookingId1))
                 .expectErrorMatches(error -> error instanceof NotFoundException &&
-                        error.getMessage().equals("Booking not found with ID: " + bookingId))
+                        error.getMessage().equals("Booking not found with ID: " + bookingId1))
                 .verify();
     }
-
 
 }
