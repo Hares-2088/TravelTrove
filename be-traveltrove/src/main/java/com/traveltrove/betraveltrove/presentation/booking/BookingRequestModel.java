@@ -1,12 +1,14 @@
 package com.traveltrove.betraveltrove.presentation.booking;
 
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -21,4 +23,6 @@ public class BookingRequestModel {
     private BookingStatus status;
 
     private LocalDate bookingDate;
+
+    private List<TravelerRequestModel> travelers;
 }

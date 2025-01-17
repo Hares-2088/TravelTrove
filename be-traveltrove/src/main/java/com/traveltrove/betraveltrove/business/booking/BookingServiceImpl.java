@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.business.booking;
 
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingRepository;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
@@ -26,11 +27,13 @@ public class BookingServiceImpl implements BookingService {
 
     private final PackageService packageService;
     private final UserService userService;
+    private final TravelerService travelerService;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, PackageService packageService, UserService userService) {
+    public BookingServiceImpl(BookingRepository bookingRepository, PackageService packageService, UserService userService, TravelerService travelerService) {
         this.bookingRepository = bookingRepository;
         this.packageService = packageService;
         this.userService = userService;
+        this.travelerService = travelerService;
     }
 
     @Override
@@ -95,6 +98,12 @@ public class BookingServiceImpl implements BookingService {
                                         .flatMap(exists -> {
                                             if (exists) {
                                                 return Mono.error(new InvalidStatusException("User already has a booking for this package"));
+                                            }
+                                            if (booking.getTravelerIds() != null && !booking.getTravelerIds().isEmpty()) {
+                                                // get the user to access the list of traveler IDs
+                                                userService.syncUserWithAuth0(booking.getUserId())
+
+                                                if ()
                                             }
                                             return bookingRepository.save(booking);
                                         })
