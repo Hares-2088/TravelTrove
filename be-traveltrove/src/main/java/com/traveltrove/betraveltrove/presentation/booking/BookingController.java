@@ -2,7 +2,10 @@ package com.traveltrove.betraveltrove.presentation.booking;
 
 import com.traveltrove.betraveltrove.business.booking.BookingService;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
-import com.traveltrove.betraveltrove.utils.exceptions.*;
+import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
+import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusException;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +19,6 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/bookings")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class BookingController {
 
@@ -56,9 +58,23 @@ public class BookingController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<BookingResponseModel>> createBooking(@RequestBody BookingRequestModel bookingRequestModel) {
         return bookingService.createBooking(bookingRequestModel)
+                // Transform the BookingResponseModel into a ResponseEntity
                 .map(bookingResponseModel -> ResponseEntity
                         .status(HttpStatus.CREATED)
-                        .body(bookingResponseModel));
+                        .body(bookingResponseModel))
+                // Handle specific errors and transform them to the appropriate ResponseEntity
+                .onErrorResume(NotFoundException.class, e -> {
+                    log.error("User or Package Not Found: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+                })
+                .onErrorResume(InvalidStatusException.class, e -> {
+                    log.error("Invalid Booking Status: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).body(null));
+                })
+                .onErrorResume(Exception.class, e -> {
+                    log.error("Unhandled Error: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
+                });
     }
 
 
@@ -68,7 +84,18 @@ public class BookingController {
             @RequestBody BookingStatusUpdateRequest statusUpdateRequest) {
         return bookingService.updateBookingStatus(bookingId, statusUpdateRequest.getStatus())
                 .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .onErrorResume(NotFoundException.class, e -> {
+                    log.error("Booking not found: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                })
+                .onErrorResume(SameStatusException.class, e -> {
+                    log.error("Invalid status transition: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+                })
+                .onErrorResume(Exception.class, e -> {
+                    log.error("Unexpected error: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
     @DeleteMapping("/{bookingId}")
