@@ -4,7 +4,6 @@ import com.traveltrove.betraveltrove.business.country.CountryService;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigTravelerService;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
@@ -14,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -38,8 +38,6 @@ class TravelerControllerIntegrationTest {
 
     @Autowired
     private TravelerRepository travelerRepository;
-
-    private MockServerConfigTravelerService mockServerConfigTravelerService;
 
     @MockitoBean
     private CountryService countryService;
@@ -74,15 +72,6 @@ class TravelerControllerIntegrationTest {
             .countryId("2")
             .build();
 
-    @BeforeAll
-    public void startServer() {
-        mockServerConfigTravelerService = new MockServerConfigTravelerService();
-        mockServerConfigTravelerService.startMockServer();
-        mockServerConfigTravelerService.registerGetTravelerByIdEndpoint(traveler1.getTravelerId(), traveler1);
-        mockServerConfigTravelerService.registerGetTravelerByIdEndpoint(traveler2.getTravelerId(), traveler2);
-        mockServerConfigTravelerService.registerGetTravelerByInvalidIdEndpoint(INVALID_TRAVELER_ID);
-    }
-
     @BeforeEach
     public void initMocks() {
         MockitoAnnotations.openMocks(this); // Initialize @Mock and @InjectMocks
@@ -93,11 +82,6 @@ class TravelerControllerIntegrationTest {
         Mockito.when(countryService.getCountryById("invalid-country-id"))
                 .thenReturn(Mono.error(new NotFoundException("Country id not found: invalid-country-id")));
 
-    }
-
-    @AfterAll
-    public void stopServer() {
-        mockServerConfigTravelerService.stopMockServer();
     }
 
     @BeforeEach
@@ -111,7 +95,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenGetAllTravelers_thenReturnAllTravelers() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/travelers")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
@@ -139,7 +124,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenGetTravelerById_thenReturnTraveler() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/travelers/" + traveler1.getTravelerId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -155,7 +141,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenGetTravelerByInvalidId_thenReturnNotFound() {
-        webTestClient.get()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .get()
                 .uri("/api/v1/travelers/" + INVALID_TRAVELER_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -178,7 +165,8 @@ class TravelerControllerIntegrationTest {
                 .build();
 
         // Create the traveler via WebTestClient
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).post()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
                 .uri("/api/v1/travelers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newTraveler)
@@ -212,7 +200,8 @@ class TravelerControllerIntegrationTest {
                 .countryId("1")
                 .build();
 
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).put()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
                 .uri("/api/v1/travelers/{travelerId}", traveler1.getTravelerId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedTraveler)
@@ -228,7 +217,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenDeleteTraveler_thenTravelerIsDeleted() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/travelers/{travelerId}", traveler1.getTravelerId())
                 .exchange()
                 .expectStatus().isOk();
@@ -239,7 +229,8 @@ class TravelerControllerIntegrationTest {
 
     @Test
     void whenDeleteTraveler_withInvalidId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf()).delete()
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).delete()
                 .uri("/api/v1/travelers/{travelerId}", INVALID_TRAVELER_ID)
                 .exchange()
                 .expectStatus().isNotFound();
