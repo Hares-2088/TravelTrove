@@ -26,5 +26,7 @@ public class User {
     private List<String> roles;
     private List<String> permissions;
     private String travelerId;
+
+    private List<String> travelerIds;
 }
 

@@ -59,7 +59,11 @@ public class BookingController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<BookingResponseModel>> createBooking(@RequestBody BookingRequestModel bookingRequestModel) {
         return bookingService.createBooking(bookingRequestModel)
-                .map(ResponseEntity::ok)
+                // Transform the BookingResponseModel into a ResponseEntity
+                .map(bookingResponseModel -> ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body(bookingResponseModel))
+                // Handle specific errors and transform them to the appropriate ResponseEntity
                 .onErrorResume(NotFoundException.class, e -> {
                     log.error("User or Package Not Found: {}", e.getMessage());
                     return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
@@ -73,6 +77,7 @@ public class BookingController {
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
                 });
     }
+
 
     @PatchMapping("/{bookingId}")
     public Mono<ResponseEntity<BookingResponseModel>> updateBookingStatus(
