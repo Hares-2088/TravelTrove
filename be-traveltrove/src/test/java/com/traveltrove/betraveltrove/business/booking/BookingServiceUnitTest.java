@@ -210,8 +210,9 @@ public class BookingServiceUnitTest {
         when(bookingRepository.save(booking)).thenReturn(Mono.just(updatedBooking));
 
         // Create a BookingStatusUpdateRequest
-        BookingStatusUpdateRequest request = new BookingStatusUpdateRequest();
-        request.setStatus(BookingStatus.BOOKING_CONFIRMED);
+        BookingStatusUpdateRequest request = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.BOOKING_CONFIRMED)
+                .build();
 
         // Execute the test
         StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
@@ -224,8 +225,9 @@ public class BookingServiceUnitTest {
         // Mock repository to return Mono.empty()
         when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.empty());
 
-        BookingStatusUpdateRequest request = new BookingStatusUpdateRequest();
-        request.setStatus(BookingStatus.BOOKING_CONFIRMED);
+        BookingStatusUpdateRequest request = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.BOOKING_CONFIRMED)
+                .build();
 
         // Execute the test
         StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
@@ -241,8 +243,9 @@ public class BookingServiceUnitTest {
         // Mock repository to return a booking with the same status
         when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.just(booking));
 
-        BookingStatusUpdateRequest request = new BookingStatusUpdateRequest();
-        request.setStatus(BookingStatus.BOOKING_CONFIRMED);
+        BookingStatusUpdateRequest request = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.BOOKING_CONFIRMED)
+                .build();
 
         // Execute the test
         StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
