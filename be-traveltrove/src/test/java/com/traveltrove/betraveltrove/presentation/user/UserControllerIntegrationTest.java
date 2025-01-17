@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -59,6 +58,26 @@ class UserControllerIntegrationTest {
         StepVerifier.create(userRepository.save(existingUserEntity))
                 .expectNextMatches(user -> user.getEmail().equals(existingUser.getEmail()))
                 .verifyComplete();
+    }
+
+    @Test
+    void whenHandleGetUser_withValidUserId_thenReturnUserDetails() {
+        webTestClient.get()
+                .uri("/api/v1/users/{userId}", existingUser.getUserId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(UserResponseModel.class)
+                .value(user -> StepVerifier.create(Mono.just(user))
+                        .expectNextMatches(u -> u.getEmail().equals(existingUser.getEmail()))
+                        .verifyComplete());
+    }
+
+    @Test
+    void whenHandleGetUser_withInvalidUserId_thenReturnNotFound() {
+        webTestClient.get()
+                .uri("/api/v1/users/{userId}", INVALID_USER_ID)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @Test

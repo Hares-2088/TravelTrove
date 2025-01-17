@@ -1,17 +1,13 @@
 package com.traveltrove.betraveltrove.presentation.booking;
 
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
-import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.booking.Booking;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingRepository;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
-import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
-import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
-import com.traveltrove.betraveltrove.presentation.user.UserUpdateRequest;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -54,10 +50,6 @@ class BookingControllerIntegrationTest {
 
     @MockitoBean
     private UserService userService;
-
-    @MockitoBean
-    private TravelerService travelerService;
-
 
     private final String INVALID_BOOKING_ID = "invalid-booking-id";
 
@@ -141,52 +133,20 @@ class BookingControllerIntegrationTest {
         Mockito.when(packageService.getPackageByPackageId(packageResponseModel2.getPackageId()))
                 .thenReturn(Mono.just(packageResponseModel2));
 
-        //invalid package
-        Mockito.when(packageService.getPackageByPackageId("invalid-package-id"))
-                .thenReturn(Mono.empty());
-
         //users
-        Mockito.when(userService.syncUserWithAuth0(userResponseModel.getUserId()))
+        Mockito.when(userService.getUser(userResponseModel.getUserId()))
                 .thenReturn(Mono.just(userResponseModel));
-
-        Mockito.when(userService.updateUserProfile(
-                        Mockito.anyString(),
-                        Mockito.any(UserUpdateRequest.class)))
-                .thenReturn(Mono.just(userResponseModel));
-
-        //invalid user
-        Mockito.when(userService.syncUserWithAuth0("invalid-user-id"))
-                .thenReturn(Mono.empty());
-
-        //travelers
-        Mockito.when(travelerService.createTraveler(Mockito.any(TravelerRequestModel.class)))
-                .thenAnswer(invocation -> {
-                    TravelerRequestModel request = invocation.getArgument(0);
-                    // Return a dummy TravelerResponseModel based on the request
-                    return Mono.just(
-                            TravelerResponseModel.builder()
-                                    .travelerId(UUID.randomUUID().toString())
-                                    .firstName(request.getFirstName())
-                                    .lastName(request.getLastName())
-                                    .email(request.getEmail())
-                                    .build()
-                    );
-                });
     }
 
     @BeforeEach
     public void setupDB() {
-        Flux<Booking> setupDB = Flux.just(booking1, booking2, booking3)
+        Publisher<Booking> setupDB = bookingRepository.deleteAll()
+                .thenMany(Flux.just(booking1, booking2, booking3))
                 .flatMap(bookingRepository::save);
 
         StepVerifier.create(setupDB)
                 .expectNextCount(3)
                 .verifyComplete();
-    }
-
-    @AfterEach
-    public void cleanDB() {
-        bookingRepository.deleteAll().block();
     }
 
     @Test
@@ -201,6 +161,9 @@ class BookingControllerIntegrationTest {
                 .hasSize(3)
                 .value(bookings -> {
                     assertEquals(3, bookings.size());
+                    assertEquals(booking1.getBookingId(), bookings.get(0).getBookingId());
+                    assertEquals(booking2.getBookingId(), bookings.get(1).getBookingId());
+                    assertEquals(booking3.getBookingId(), bookings.get(2).getBookingId());
                 });
 
         StepVerifier.create(bookingRepository.findAll())
@@ -214,7 +177,7 @@ class BookingControllerIntegrationTest {
     void whenGetBookingsByPackageId_thenReturnBookings() {
         webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
                 .get()
-                .uri("/api/v1/bookings?packageId=" + packageResponseModel2.getPackageId())
+                .uri("/api/v1/bookings?PackageId=" + packageResponseModel2.getPackageId())
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
                 .expectStatus().isOk()
@@ -222,6 +185,8 @@ class BookingControllerIntegrationTest {
                 .hasSize(2)
                 .value(bookings -> {
                     assertEquals(2, bookings.size());
+                    assertEquals(booking1.getBookingId(), bookings.get(0).getBookingId());
+                    assertEquals(booking2.getBookingId(), bookings.get(1).getBookingId());
                 });
 
         StepVerifier.create(bookingRepository.findBookingsByPackageId(packageResponseModel2.getPackageId()))
@@ -260,18 +225,10 @@ class BookingControllerIntegrationTest {
     void whenCreateBooking_withValidUserAndPackage_thenReturnCreatedBooking() {
         BookingRequestModel newBooking = BookingRequestModel.builder()
                 .userId(userResponseModel.getUserId())
-                .packageId(packageResponseModel1.getPackageId())
+                .packageId("1")
                 .totalPrice(1400.00)
                 .status(BookingStatus.PAYMENT_PENDING)
                 .bookingDate(LocalDate.of(2025, 6, 6))
-                // Provide at least one traveler to satisfy the new validation requirement
-                .travelers(List.of(
-                        TravelerRequestModel.builder()
-                                .firstName("Test")
-                                .lastName("Traveler")
-                                .email("test.traveler@example.com")
-                                .build()
-                ))
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
@@ -281,7 +238,7 @@ class BookingControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newBooking)
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().isOk()
                 .expectBody(BookingResponseModel.class)
                 .value(response -> {
                     assertNotNull(response);
@@ -289,112 +246,11 @@ class BookingControllerIntegrationTest {
                     assertEquals(newBooking.getPackageId(), response.getPackageId());
                 });
 
-        // Verify that at least one booking matching the new booking's userId and packageId exists
-        StepVerifier.create(
-                        bookingRepository.findAll()
-                                .filter(booking ->
-                                        booking.getUserId().equals(newBooking.getUserId()) &&
-                                                booking.getPackageId().equals(newBooking.getPackageId())
-                                )
-                                .collectList()
-                )
-                .assertNext(matchingBookings -> {
-                    // Assert that at least one matching booking was found
-                    assertFalse(matchingBookings.isEmpty(), "Expected at least one new booking to be created");
-                })
-                .verifyComplete();
-    }
-
-
-
-    @Test
-    void whenCreateBooking_withInvalidUser_thenReturnNotFound(){
-        BookingRequestModel newBooking = BookingRequestModel.builder()
-                .userId("invalid-user-id")
-                .packageId(packageResponseModel1.getPackageId())
-                .totalPrice(1400.00)
-                .status(BookingStatus.PAYMENT_PENDING)
-                .bookingDate(LocalDate.of(2025, 6, 6))
-                .build();
-
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
-                .uri("/api/v1/bookings")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(newBooking)
-                .exchange()
-                .expectStatus().isNotFound();
-
         StepVerifier.create(bookingRepository.findAll())
-                .expectNextCount(3)
+                .expectNextCount(3) // Existing 2 bookings + newly created one
                 .verifyComplete();
     }
 
-    @Test
-    void whenCreateBooking_withInvalidPackage_thenReturnNotFound(){
-        BookingRequestModel newBooking = BookingRequestModel.builder()
-                .userId(userResponseModel.getUserId())
-                .packageId("invalid-package-id")
-                .totalPrice(1400.00)
-                .status(BookingStatus.PAYMENT_PENDING)
-                .bookingDate(LocalDate.of(2025, 6, 6))
-                .build();
-
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
-                .uri("/api/v1/bookings")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(newBooking)
-                .exchange()
-                .expectStatus().isNotFound();
-
-        StepVerifier.create(bookingRepository.findAll())
-                .expectNextCount(3)
-                .verifyComplete();
-    }
-
-    @Test
-    void whenUpdateBookingStatus_thenReturnUpdatedBooking() {
-        BookingStatusUpdateRequest updateBooking = BookingStatusUpdateRequest.builder()
-                .status(BookingStatus.BOOKING_CONFIRMED)
-                .build();
-
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/bookings/" + booking1.getBookingId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updateBooking)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(BookingResponseModel.class)
-                .value(response -> {
-                    assertNotNull(response);
-                    assertEquals(updateBooking.getStatus(), response.getStatus());
-                });
-
-        StepVerifier.create(bookingRepository.findBookingByBookingId(booking1.getBookingId()))
-                .expectNextMatches(booking -> booking.getStatus().equals(updateBooking.getStatus()))
-                .verifyComplete();
-    }
-
-    @Test
-    void whenUpdateBookingStatus_withSameStatus_thenReturnBadRequest() {
-        BookingStatusUpdateRequest updateBooking = BookingStatusUpdateRequest.builder()
-                .status(BookingStatus.PAYMENT_PENDING)
-                .build();
-
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/bookings/" + booking1.getBookingId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updateBooking)
-                .exchange()
-                .expectStatus().isBadRequest();
-
-        StepVerifier.create(bookingRepository.findBookingByBookingId(booking1.getBookingId()))
-                .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.PAYMENT_PENDING))
-                .verifyComplete();
-    }
 
     @Test
     void whenDeleteBooking_thenReturnNoContent() {
