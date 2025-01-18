@@ -119,7 +119,23 @@
     "invalidSeq": "Sequence must be greater than 0.",
     "invalidDesc": "Description is required.",
     "invalidEvent": "Event is required.",
-    "deleteConfirmationTE": "Are you sure you want to delete this tour event?"
+    "deleteConfirmationTE": "Are you sure you want to delete this tour event?",
+
+    "notificationsTitle": "Notifications",
+    "backToListN": "Back to Notifications List",
+    "to": "To",
+    "message": "Message",
+    "sentAt": "Sent At",
+    "deleteN": "Delete",
+    "deleteNotification": "Delete Notification",
+    "areYouSureN": "Are you sure you want to delete this notification?",
+    "cancelN": "Cancel",
+    "confirmN": "Confirm",
+    "subject": "Subject",
+    "createNotification": "Create Notification",
+    "toRequired": "To is required.",
+    "subjectRequired": "Subject is required.",
+    "messageRequired": "Message is required."
         
 }
     

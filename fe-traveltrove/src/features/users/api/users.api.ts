@@ -17,8 +17,15 @@ export const useUsersApi = () => {
         return response.data;
     };
 
+    const getUserById = async (userId: string): Promise<UserResponseModel> => {
+        const encodedUserId = encodeURIComponent(userId);
+        const response = await axiosInstance.get<UserResponseModel>(`/users/${encodedUserId}`);
+        return response.data;
+    };
+
     return {
         loginUser,
         syncUser,
+        getUserById,
     };
 };

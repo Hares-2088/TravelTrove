@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import ProfileCreateForm from "../../features/users/components/ProfileCreateForm";
 
-const ProfileEditPage: FC = (): JSX.Element => {
+const ProfileCreatePage: FC = (): JSX.Element => {
     return (
         <div>
             <ProfileCreateForm />
@@ -9,4 +9,4 @@ const ProfileEditPage: FC = (): JSX.Element => {
     );
 };
 
-export default ProfileEditPage;
+export default ProfileCreatePage;

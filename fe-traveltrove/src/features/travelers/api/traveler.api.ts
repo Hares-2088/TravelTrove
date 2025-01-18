@@ -1,4 +1,4 @@
-import { TravelerRequestModel, TravelerResponseModel } from '../model/traveler.model';
+import {TravelerRequestModel, TravelerResponseModel, TravelerWithIdRequestModel} from '../model/traveler.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 export const useTravelersApi = () => {
@@ -45,6 +45,11 @@ export const useTravelersApi = () => {
         return response.data;
     };
 
+    const addTravelerUser = async (traveler: TravelerWithIdRequestModel): Promise<TravelerResponseModel> => {
+        const response = await axiosInstance.post<TravelerResponseModel>('/travelers/create-traveler-user', traveler);
+        return response.data;
+    };
+
     // Update an Existing Traveler
     const updateTraveler = async (
         travelerId: string,
@@ -64,6 +69,7 @@ export const useTravelersApi = () => {
         getAllTravelers,
         getTravelerById,
         addTraveler,
+        addTravelerUser,
         updateTraveler,
         deleteTraveler,
     };

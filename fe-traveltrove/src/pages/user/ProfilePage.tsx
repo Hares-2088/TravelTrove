@@ -1,10 +1,10 @@
 import { FC } from 'react';
 
-const Profile: FC = (): JSX.Element => {
+const ProfilePage: FC = (): JSX.Element => {
   return (
     <div>
     </div>
   );
 };
 
-export default Profile;
+export default ProfilePage;

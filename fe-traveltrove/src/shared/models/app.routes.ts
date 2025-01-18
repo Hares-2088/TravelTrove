@@ -8,7 +8,8 @@ export enum AppRoutes {
   CountryDetailsPage = '/countries/:countryId',
   CityDetailsPage = '/cities/:cityId',
   Register = '/register',
-  Profile = '/profile',
+  ProfilePage = '/profile',
+  ProfileCreatePage = '/profile/create',
   Bookings = '/bookings',
   Callback = '/callback',
 
