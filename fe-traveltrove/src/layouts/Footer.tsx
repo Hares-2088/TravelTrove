@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="footer bg-light shadow-sm">
       <Container className="d-flex justify-content-between align-items-center py-3">
-        <div>© 2024 Dar El Salam Travel. All rights reserved.</div>
+        <div>© 2025 Dar El Salam Travel. All rights reserved.</div>
         <div className="social-icons">
           <a href="#" target="_blank" rel="noopener noreferrer">
             <img src="/assets/icons/twitter.png" alt="Twitter" />

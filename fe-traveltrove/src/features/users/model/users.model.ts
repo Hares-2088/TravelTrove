@@ -12,4 +12,5 @@ export interface UserResponseModel {
   lastName: string;
   roles: string[];
   permissions: string[];
+  travelerId: string;
 }
