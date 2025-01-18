@@ -21,6 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuple3;
+import reactor.util.function.Tuple4;
 import reactor.util.function.Tuples;
 
 import java.util.*;
@@ -95,122 +98,40 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Mono<BookingResponseModel> createBooking(BookingRequestModel bookingRequestModel) {
-
         return Mono.just(bookingRequestModel)
+                // Convert request model to entity
                 .map(BookingEntityModelUtil::toBookingEntity)
-                .flatMap(booking ->
-                        // Validate user/package
-                        userExistsReactive(booking.getUserId())
-                                .then(packageExistsReactive(booking.getPackageId()))
 
-                                // Check if booking exists
-                                .then(bookingRepository.findBookingByPackageIdAndUserId(
-                                        booking.getPackageId(), booking.getUserId()
-                                ).hasElement())
-                                .flatMap(exists -> {
-                                    if (exists) {
-                                        return Mono.error(new InvalidStatusException(
-                                                "User already has a booking for this package"));
-                                    }
-                                    return Mono.just(booking);
-                                })
-                )
+                // 1) Validate user/package and check if booking already exists
+                .flatMap(this::validateUserAndPackage)
 
-                // Fetch user from Auth0
-                .flatMap(booking -> userService.syncUserWithAuth0(booking.getUserId())
-                        .switchIfEmpty(Mono.error(
-                                new NotFoundException("User not found: " + booking.getUserId()))
-                        )
-                        .map(activeUser -> Tuples.of(booking, activeUser))
-                )
+                // 2) Fetch the user from Auth0 (ensuring user exists)
+                .flatMap(this::fetchUserFromAuth0)
 
-                // Gather existing traveler details
-                .flatMap(tuple -> {
-                    Booking booking = tuple.getT1();
-                    UserResponseModel activeUser = tuple.getT2();
+                // 3) Gather existing traveler details
+                .flatMap(tuple -> gatherExistingTravelerDetails(tuple.getT1(), tuple.getT2()))
 
-                    List<String> existingTravelerIds = new ArrayList<>();
-                    if (activeUser.getTravelerIds() != null) {
-                        existingTravelerIds.addAll(activeUser.getTravelerIds());
-                    }
-                    if (activeUser.getTravelerId() != null) {
-                        existingTravelerIds.add(activeUser.getTravelerId());
-                    }
+                // 4) Compare travelers in the request with existing travelers & create new ones if needed
+                .flatMap(tuple -> compareTravelersAndCreateNew(
+                        tuple.getT1(),
+                        tuple.getT2(),
+                        tuple.getT3(),
+                        bookingRequestModel
+                ))
 
-                    return Flux.fromIterable(existingTravelerIds)
-                            .flatMap(travelerId -> travelerService.getTravelerByTravelerId(travelerId))
-                            .collectList()
-                            .map(existingTravelers -> Tuples.of(booking, activeUser, existingTravelers));
-                })
+                // 5) Update the user’s traveler IDs to include any newly created travelers
+                .flatMap(tuple -> updateUserTravelerIds(
+                        tuple.getT1(),
+                        tuple.getT2(),
+                        tuple.getT3(),
+                        tuple.getT4()
+                ))
 
-                // Compare travelers & create new ones
-                .flatMap(tuple -> {
-                    Booking booking = tuple.getT1();
-                    UserResponseModel activeUser = tuple.getT2();
-                    List<TravelerResponseModel> existingTravelers = tuple.getT3();
-
-                    return Flux.fromIterable(bookingRequestModel.getTravelers())
-                            .flatMap(requestedTraveler -> {
-                                // does it match an existing traveler?
-                                TravelerResponseModel match = existingTravelers.stream()
-                                        .filter(et -> et.getFirstName().equalsIgnoreCase(requestedTraveler.getFirstName()) &&
-                                                et.getLastName().equalsIgnoreCase(requestedTraveler.getLastName()))
-                                        .findFirst()
-                                        .orElse(null);
-
-                                if (match != null) {
-                                    booking.getTravelerIds().add(match.getTravelerId());
-                                    // Return existing ID
-                                    return Mono.just(match.getTravelerId());
-                                } else {
-                                    // create a new traveler
-                                    TravelerRequestModel newTraveler = TravelerRequestModel.builder()
-                                            .firstName(requestedTraveler.getFirstName())
-                                            .lastName(requestedTraveler.getLastName())
-                                            .addressLine1(requestedTraveler.getAddressLine1())
-                                            .email(requestedTraveler.getEmail())
-                                            .build();
-                                    return travelerService.createTraveler(newTraveler)
-                                            .map(created -> {
-                                                booking.getTravelerIds().add(created.getTravelerId());
-                                                return created.getTravelerId();
-                                            });
-                                }
-                            })
-                            .collectList() // gather all traveler IDs
-                            .map(newlyLinkedIds -> Tuples.of(booking, activeUser, existingTravelers, newlyLinkedIds));
-                })
-
-                // Update the user’s travelerIds set
-                .flatMap(tuple -> {
-                    Booking booking = tuple.getT1();
-                    UserResponseModel activeUser = tuple.getT2();
-                    List<TravelerResponseModel> existingTravelers = tuple.getT3();
-                    List<String> newlyLinkedIds = tuple.getT4();
-
-                    // create a list of already existing traveler IDs and the newly linked ones
-                    Set<String> allTravelerIds = new HashSet<>();
-                    if (activeUser.getTravelerIds() != null) {
-                        allTravelerIds.addAll(activeUser.getTravelerIds());
-                    }
-                    if (activeUser.getTravelerId() != null) {
-                        allTravelerIds.add(activeUser.getTravelerId());
-                    }
-                    allTravelerIds.addAll(newlyLinkedIds);
-
-                    UserUpdateRequest updateRequest = UserUpdateRequest.builder()
-                            .travelerIds(new ArrayList<>(allTravelerIds))
-                            .build();
-
-                    // update user
-                    return userService.updateUserProfile(activeUser.getUserId(), updateRequest)
-                            .thenReturn(booking); // pass booking forward
-                })
-
-                // Save the Booking in Mongo
-                .flatMap(booking -> bookingRepository.save(booking))
+                // 6) Save the booking in Mongo and convert to response
+                .flatMap(bookingRepository::save)
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
+
 
     @Override
     public Mono<BookingResponseModel> updateBookingStatus(String bookingId, BookingStatus newStatus) {
@@ -257,5 +178,109 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return true;
+    }
+
+    private Mono<Booking> validateUserAndPackage(Booking booking) {
+        return userExistsReactive(booking.getUserId())
+                .then(packageExistsReactive(booking.getPackageId()))
+                .then(bookingRepository.findBookingByPackageIdAndUserId(
+                        booking.getPackageId(),
+                        booking.getUserId()
+                ).hasElement())
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new InvalidStatusException(
+                                "User already has a booking for this package"
+                        ));
+                    }
+                    return Mono.just(booking);
+                });
+    }
+
+    private Mono<Tuple2<Booking, UserResponseModel>> fetchUserFromAuth0(Booking booking) {
+        return userService.syncUserWithAuth0(booking.getUserId())
+                .switchIfEmpty(Mono.error(
+                        new NotFoundException("User not found: " + booking.getUserId())
+                ))
+                .map(activeUser -> Tuples.of(booking, activeUser));
+    }
+
+    private Mono<Tuple3<Booking, UserResponseModel, List<TravelerResponseModel>>>
+    gatherExistingTravelerDetails(Booking booking, UserResponseModel activeUser) {
+
+        List<String> existingTravelerIds = new ArrayList<>();
+        if (activeUser.getTravelerIds() != null) {
+            existingTravelerIds.addAll(activeUser.getTravelerIds());
+        }
+        if (activeUser.getTravelerId() != null) {
+            existingTravelerIds.add(activeUser.getTravelerId());
+        }
+
+        return Flux.fromIterable(existingTravelerIds)
+                .flatMap(travelerService::getTravelerByTravelerId)
+                .collectList()
+                .map(existingTravelers -> Tuples.of(booking, activeUser, existingTravelers));
+    }
+
+    private Mono<Tuple4<Booking, UserResponseModel, List<TravelerResponseModel>, List<String>>>
+    compareTravelersAndCreateNew(Booking booking,
+                                 UserResponseModel activeUser,
+                                 List<TravelerResponseModel> existingTravelers,
+                                 BookingRequestModel bookingRequestModel) {
+
+        return Flux.fromIterable(bookingRequestModel.getTravelers())
+                .flatMap(requestedTraveler -> {
+                    // Find a match in existing travelers
+                    TravelerResponseModel match = existingTravelers.stream()
+                            .filter(et -> et.getFirstName().equalsIgnoreCase(requestedTraveler.getFirstName()) &&
+                                    et.getLastName().equalsIgnoreCase(requestedTraveler.getLastName()))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (match != null) {
+                        // Already exists
+                        booking.getTravelerIds().add(match.getTravelerId());
+                        return Mono.just(match.getTravelerId());
+                    } else {
+                        // Create a new traveler
+                        TravelerRequestModel newTraveler = TravelerRequestModel.builder()
+                                .firstName(requestedTraveler.getFirstName())
+                                .lastName(requestedTraveler.getLastName())
+                                .addressLine1(requestedTraveler.getAddressLine1())
+                                .email(requestedTraveler.getEmail())
+                                .build();
+
+                        return travelerService.createTraveler(newTraveler)
+                                .map(created -> {
+                                    booking.getTravelerIds().add(created.getTravelerId());
+                                    return created.getTravelerId();
+                                });
+                    }
+                })
+                .collectList()
+                .map(newlyLinkedIds -> Tuples.of(booking, activeUser, existingTravelers, newlyLinkedIds));
+    }
+
+    private Mono<Booking> updateUserTravelerIds(Booking booking,
+                                                UserResponseModel activeUser,
+                                                List<TravelerResponseModel> existingTravelers,
+                                                List<String> newlyLinkedIds) {
+
+        Set<String> allTravelerIds = new HashSet<>();
+        if (activeUser.getTravelerIds() != null) {
+            allTravelerIds.addAll(activeUser.getTravelerIds());
+        }
+        if (activeUser.getTravelerId() != null) {
+            allTravelerIds.add(activeUser.getTravelerId());
+        }
+        // Add new traveler IDs
+        allTravelerIds.addAll(newlyLinkedIds);
+
+        UserUpdateRequest updateRequest = UserUpdateRequest.builder()
+                .travelerIds(new ArrayList<>(allTravelerIds))
+                .build();
+
+        return userService.updateUserProfile(activeUser.getUserId(), updateRequest)
+                .thenReturn(booking);
     }
 }
