@@ -5,6 +5,7 @@ import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -82,6 +83,23 @@ public class Auth0WebClient implements Auth0Service {
                 .doOnError(error -> log.error("Failed to retrieve user by ID {}", auth0UserId, error));
     }
 
+    @Override
+    public Mono<Void> assignCustomerRoleToUser(String auth0UserId, String roleName) {
+        log.info("Assigning Role '{}' to User ID: {}", roleName, auth0UserId);
+
+        return getAccessToken()
+                .flatMap(token -> webClient.post()
+                        .uri("https://" + domain + "/api/v2/users/" + auth0UserId + "/roles")
+                        .headers(headers -> headers.setBearerAuth(token))
+                        .bodyValue(new AssignRolesRequestModel(roleName))
+                        .retrieve()
+                        .toBodilessEntity()
+                        .doOnSuccess(response -> log.info("Role '{}' assigned successfully to User ID: {}", roleName, auth0UserId))
+                        .doOnError(error -> log.error("Failed to assign role '{}' to User ID: {}", roleName, auth0UserId, error))
+                        .then()
+                );
+    }
+
     private Mono<Auth0UserResponseModel> fetchUser(String auth0UserId, String token) {
         return webClient.get()
                 .uri("https://" + domain + "/api/v2/users/" + auth0UserId)
@@ -135,20 +153,34 @@ public class Auth0WebClient implements Auth0Service {
     }
 
 
+
     @Override
-    public Mono<Void> assignRoleToUser(String auth0UserId, String roleName) {
-        log.info("Assigning Role '{}' to User ID: {}", roleName, auth0UserId);
+    public Mono<Void> updateUserRole(String auth0UserId, List<String> roleId) {
+        log.info("Updating roles for Auth0 User ID: {} with Roles: {}", auth0UserId, roleId);
+
+        // Request payload for assigning roles
+        AssignRolesRequestModel assignRolesRequest = new AssignRolesRequestModel(roleId);
 
         return getAccessToken()
-                .flatMap(token -> webClient.post()
-                        .uri("https://" + domain + "/api/v2/users/" + auth0UserId + "/roles")
-                        .headers(headers -> headers.setBearerAuth(token))
-                        .bodyValue(new AssignRolesRequestModel(roleName))
-                        .retrieve()
-                        .toBodilessEntity()
-                        .doOnSuccess(response -> log.info("Role '{}' assigned successfully to User ID: {}", roleName, auth0UserId))
-                        .doOnError(error -> log.error("Failed to assign role '{}' to User ID: {}", roleName, auth0UserId, error))
-                        .then()
-                );
+                .flatMap(token -> {
+                    log.info("Access Token: {}", token);
+                    log.info("Request Payload: {}", assignRolesRequest);
+                    return webClient.post()
+                            .uri("https://" + domain + "/api/v2/users/" + auth0UserId + "/roles")
+                            .headers(headers -> headers.setBearerAuth(token))
+                            .bodyValue(assignRolesRequest)
+                            .retrieve()
+                            .onStatus(HttpStatusCode::isError, response ->
+                                    response.bodyToMono(String.class) // Read error body as a string
+                                            .doOnNext(errorBody -> {
+                                                log.error("Error from Auth0 API: Status={}, Body={}", response.statusCode(), errorBody);
+                                            })
+                                            .flatMap(errorBody -> Mono.error(new RuntimeException("Auth0 API Error: " + errorBody))) // Propagate error
+                            )
+                            .toBodilessEntity()
+                            .doOnSuccess(response -> log.info("Roles successfully updated for User ID: {}", auth0UserId))
+                            .doOnError(error -> log.error("Failed to update roles for User ID {}: {}", auth0UserId, error.getMessage()))
+                            .then();
+                });
     }
 }

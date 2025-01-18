@@ -4,6 +4,8 @@ import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
+
+import com.traveltrove.betraveltrove.presentation.user.UserRequestModel;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.UserEntityToModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -35,7 +38,7 @@ public class UserServiceImpl implements UserService {
                 .flatMap(auth0User ->
                         userRepository.findByUserId(auth0UserId)
                                 .switchIfEmpty(
-                                        auth0Service.assignRoleToUser(auth0UserId, "rol_bGEYlXT5XYsHGhcQ")
+                                        auth0Service.assignCustomerRoleToUser(auth0UserId, "rol_bGEYlXT5XYsHGhcQ")
                                                 .doOnSuccess(unused -> log.info("Successfully assigned 'Customer' role to User ID: {}", auth0UserId))
                                                 .doOnError(error -> log.error("Failed to assign 'Customer' role to User ID: {}", auth0UserId, error))
                                                 .then(auth0Service.getUserById(auth0UserId)
@@ -121,6 +124,55 @@ public class UserServiceImpl implements UserService {
                 .doOnError(error -> log.error("Error fetching users: {}", error));
     }
 
+    @Override
+    public Mono<UserResponseModel> updateUser(String auth0UserId, UserRequestModel userRequestModel) {
+        log.info("Starting update process for user with Auth0 ID: {}", auth0UserId);
 
+        return userRepository.findByUserId(auth0UserId)
+                .flatMap(existingUser -> {
+                    // Update local user details
+                    existingUser.setEmail(userRequestModel.getEmail());
+                    existingUser.setFirstName(userRequestModel.getFirstName());
+                    existingUser.setLastName(userRequestModel.getLastName());
+                    existingUser.setPermissions(userRequestModel.getPermissions());
+                    existingUser.setRoles(userRequestModel.getRoles());
+
+                    return userRepository.save(existingUser)
+                            .map(UserEntityToModel::toUserResponseModel)
+                            .doOnSuccess(user -> log.info("Successfully updated user details: {}", user))
+                            .doOnError(error -> log.error("Failed to update user details: {}", error));
+
+                })
+                .switchIfEmpty(Mono.error(new NotFoundException("User not found with Auth0 ID: " + auth0UserId)));
+    }
+
+    @Override
+    public Mono<UserResponseModel> createNewUser(UserResponseModel userResponseModel) {
+        return null;
+    }
+
+    @Override
+    public Mono<Void> updateUserRole(String userId, List<String> roleId) {
+        log.info("Updating role for user: {}", userId);
+
+
+        log.info("Assigning roles: {} to user: {}", roleId, userId);
+        // Update the roles locally in the database
+        Mono<User> localUpdate = userRepository.findByUserId(userId)
+                .flatMap(user -> {
+                    user.setRoles(roleId); // Update roles locally
+                    return userRepository.save(user);
+                })
+                .doOnSuccess(updatedUser -> log.info("User roles updated locally: {}", updatedUser))
+                .doOnError(error -> log.error("Failed to update user roles locally: {}", error.getMessage()));
+
+        // Update the roles in Auth0
+        Mono<Void> auth0Update = auth0Service.updateUserRole(userId, roleId);
+
+        // Combine both updates
+        return localUpdate.then(auth0Update)
+                .doOnSuccess(unused -> log.info("Roles updated successfully for user: {}", userId))
+                .doOnError(error -> log.error("Failed to update roles for user: {}", error.getMessage()));
+    }
 }
 
