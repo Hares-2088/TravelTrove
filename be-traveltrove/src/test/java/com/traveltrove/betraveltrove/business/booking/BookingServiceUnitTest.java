@@ -269,9 +269,7 @@ public class BookingServiceUnitTest {
         when(bookingRepository.save(any(Booking.class)))
                 .thenReturn(Mono.just(savedBooking));
 
-        // -------------------------------------------------------
         // 4) VERIFY
-        // -------------------------------------------------------
         StepVerifier.create(bookingService.createBooking(requestModel))
                 .assertNext(response -> {
                     assertNotNull(response);
