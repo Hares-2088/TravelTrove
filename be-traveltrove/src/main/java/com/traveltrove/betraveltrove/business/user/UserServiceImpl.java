@@ -1,6 +1,6 @@
 package com.traveltrove.betraveltrove.business.user;
 
-import com.traveltrove.betraveltrove.business.email.NotificationService;
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;

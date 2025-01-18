@@ -1,4 +1,4 @@
-package com.traveltrove.betraveltrove.presentation.email;
+package com.traveltrove.betraveltrove.presentation.notification;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

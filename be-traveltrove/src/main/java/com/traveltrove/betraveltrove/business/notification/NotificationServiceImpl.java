@@ -1,12 +1,14 @@
-package com.traveltrove.betraveltrove.business.email;
+package com.traveltrove.betraveltrove.business.notification;
 
 import com.traveltrove.betraveltrove.dataaccess.notification.Notification;
 import com.traveltrove.betraveltrove.dataaccess.notification.NotificationRepository;
+import com.traveltrove.betraveltrove.presentation.notification.NotificationResponseModel;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.BufferedReader;
@@ -64,6 +66,38 @@ public class NotificationServiceImpl implements NotificationService {
 
             return new Notification(notificationId, to, subject, messageContent);
         }).flatMap(notificationRepository::save).then();
+    }
+
+    @Override
+    public Flux<NotificationResponseModel> getAllNotifications() {
+        return notificationRepository.findAll()
+                .map(notification -> NotificationResponseModel.builder()
+                        .notificationId(notification.getNotificationId())
+                        .to(notification.getTo())
+                        .subject(notification.getSubject())
+                        .messageContent(notification.getMessageContent())
+                        .sentAt(notification.getSentAt())
+                        .build());
+    }
+
+    @Override
+    public Mono<NotificationResponseModel> getNotificationByNotificationId(String notificationId) {
+        return notificationRepository.findByNotificationId(notificationId)
+                .map(notification -> NotificationResponseModel.builder()
+                        .notificationId(notification.getNotificationId())
+                        .to(notification.getTo())
+                        .subject(notification.getSubject())
+                        .messageContent(notification.getMessageContent())
+                        .sentAt(notification.getSentAt())
+                        .build())
+                .switchIfEmpty(Mono.error(new RuntimeException("Notification not found with ID: " + notificationId)));
+    }
+
+    @Override
+    public Mono<Void> deleteNotificationByNotificationId(String notificationId) {
+        return notificationRepository.findByNotificationId(notificationId)
+                .switchIfEmpty(Mono.error(new RuntimeException("Notification not found with ID: " + notificationId)))
+                .flatMap(notificationRepository::delete);
     }
 
     private String loadHtmlTemplate(String templateName, String... templateArgs) {
