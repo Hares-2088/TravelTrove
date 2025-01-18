@@ -1,6 +1,6 @@
 package com.traveltrove.betraveltrove.business.user;
 
-import com.traveltrove.betraveltrove.business.email.EmailService;
+import com.traveltrove.betraveltrove.business.email.NotificationService;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
@@ -21,12 +21,11 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final Auth0Service auth0Service;
-    private final EmailService emailService;
+    private final NotificationService notificationService;
     private final UserRepository userRepository;
 
-    @Value("${app.base-url}")
+    @Value("${frontend.domain}")
     private String baseUrl;
-
 
     @Override
     public Mono<UserResponseModel> addUserFromAuth0(String auth0UserId) {
@@ -55,17 +54,15 @@ public class UserServiceImpl implements UserService {
                                                                         .doOnSuccess(user -> {
                                                                             log.info("User successfully created in MongoDB: {}", user);
 
+                                                                            String templateName = "welcome-email.html";
                                                                             String editProfileLink = String.format("%s/profile/edit", baseUrl);
-                                                                            emailService.sendEmail(
+                                                                            notificationService.sendEmail(
                                                                                     user.getEmail(),
                                                                                     "Welcome to Travel Trove!",
-                                                                                    String.format(
-                                                                                            "Hi %s,\n\nWelcome to Travel Trove! We're excited to have you on board. Please edit your profile here: %s\n\nBest regards,\nTravel Trove Team",
-                                                                                            user.getFirstName(),
-                                                                                            editProfileLink
-                                                                                    )
+                                                                                    templateName,
+                                                                                    user.getFirstName(),
+                                                                                    editProfileLink
                                                                             );
-
                                                                         })
                                                         )
                                                 )

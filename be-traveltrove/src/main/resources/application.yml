@@ -11,6 +11,18 @@ spring:
       password: password
       authentication-database: admin
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   profiles:
     active: default # Set the default profile here
 
@@ -36,19 +48,6 @@ okta:
     issuer: https://dev-traveltrove.ca.auth0.com/
     audience: https://api.traveltrove.com
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${SPRING_MAIL_USERNAME}
-    password: ${SPRING_MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
-
 de:
   flapdoodle:
     mongodb:
@@ -57,9 +56,6 @@ de:
 
 frontend:
   domain: ${FRONTEND_DOMAIN}
-
-app:
-  base-url: ${BASE_URL}
 
 ---
 
