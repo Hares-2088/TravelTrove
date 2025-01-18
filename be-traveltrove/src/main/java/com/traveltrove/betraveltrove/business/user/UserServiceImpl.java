@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
                                                                             log.info("User successfully created in MongoDB: {}", user);
 
                                                                             String templateName = "welcome-email.html";
-                                                                            String editProfileLink = String.format("%s/profile/edit", baseUrl);
+                                                                            String editProfileLink = String.format("%s/profile/create", baseUrl);
                                                                             notificationService.sendEmail(
                                                                                     user.getEmail(),
                                                                                     "Welcome to Travel Trove!",

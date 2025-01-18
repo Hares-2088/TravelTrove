@@ -5,6 +5,8 @@ import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerWithIdRequestModel;
+import com.traveltrove.betraveltrove.utils.EntityModelUtil;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.TravelerEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.InvalidInputException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
@@ -51,6 +53,12 @@ public class TravelerServiceImpl implements TravelerService {
     public Mono<TravelerResponseModel> createTraveler(TravelerRequestModel travelerRequestModel) {
         return validateTravelerRequest(travelerRequestModel)
                 .flatMap(validatedTraveler -> travelerRepository.save(validatedTraveler))
+                .map(TravelerEntityModelUtil::toTravelerResponseModel);
+    }
+
+    @Override
+    public Mono<TravelerResponseModel> createTravelerUser(TravelerWithIdRequestModel travelerWithIdRequestModel) {
+        return travelerRepository.save(TravelerEntityModelUtil.toTravelerUserEntity(travelerWithIdRequestModel))
                 .map(TravelerEntityModelUtil::toTravelerResponseModel);
     }
 

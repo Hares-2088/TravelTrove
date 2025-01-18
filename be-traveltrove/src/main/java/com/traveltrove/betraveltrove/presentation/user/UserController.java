@@ -15,6 +15,15 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/{userId}")
+    public Mono<ResponseEntity<UserResponseModel>> getUserById(@PathVariable String userId) {
+        return userService.getUser(userId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build())
+                .doOnSuccess(response -> log.info("Fetched user details for ID: {}", userId))
+                .doOnError(error -> log.error("Error fetching user details for ID: {}", userId, error));
+    }
+
     @PostMapping("/{userId}/login")
     public Mono<ResponseEntity<UserResponseModel>> handleUserLogin(@PathVariable String userId) {
         return userService.addUserFromAuth0(userId)
