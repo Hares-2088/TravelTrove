@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.business.user;
 
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
@@ -8,6 +9,7 @@ import com.traveltrove.betraveltrove.utils.entitymodelyutils.UserEntityToModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +21,11 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final Auth0Service auth0Service;
+    private final NotificationService notificationService;
     private final UserRepository userRepository;
+
+    @Value("${frontend.domain}")
+    private String baseUrl;
 
     @Override
     public Mono<UserResponseModel> addUserFromAuth0(String auth0UserId) {
@@ -44,7 +50,20 @@ public class UserServiceImpl implements UserService {
                                                                                 .permissions(updatedAuth0User.getPermissions())
                                                                                 .travelerId(UUID.randomUUID().toString())
                                                                                 .build()
-                                                                ).doOnSuccess(user -> log.info("User successfully created in MongoDB: {}", user))
+                                                                )
+                                                                        .doOnSuccess(user -> {
+                                                                            log.info("User successfully created in MongoDB: {}", user);
+
+                                                                            String templateName = "welcome-email.html";
+                                                                            String editProfileLink = String.format("%s/profile/create", baseUrl);
+                                                                            notificationService.sendEmail(
+                                                                                    user.getEmail(),
+                                                                                    "Welcome to Travel Trove!",
+                                                                                    templateName,
+                                                                                    user.getFirstName(),
+                                                                                    editProfileLink
+                                                                            );
+                                                                        })
                                                         )
                                                 )
                                 )

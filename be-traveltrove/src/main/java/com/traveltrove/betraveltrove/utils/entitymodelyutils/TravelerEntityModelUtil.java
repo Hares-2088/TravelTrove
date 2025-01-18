@@ -3,6 +3,7 @@ package com.traveltrove.betraveltrove.utils.entitymodelyutils;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerWithIdRequestModel;
 import org.springframework.beans.BeanUtils;
 
 import java.util.UUID;
@@ -20,6 +21,21 @@ public class TravelerEntityModelUtil {
     public static Traveler toTravelerEntity(TravelerRequestModel travelerRequestModel) {
         return Traveler.builder()
                 .travelerId(generateUUIDString()) // Generate a unique travelerId
+                .seq(travelerRequestModel.getSeq())
+                .firstName(travelerRequestModel.getFirstName())
+                .lastName(travelerRequestModel.getLastName())
+                .addressLine1(travelerRequestModel.getAddressLine1())
+                .addressLine2(travelerRequestModel.getAddressLine2())
+                .city(travelerRequestModel.getCity())
+                .state(travelerRequestModel.getState())
+                .email(travelerRequestModel.getEmail())
+                .countryId(travelerRequestModel.getCountryId())
+                .build();
+    }
+
+    public static Traveler toTravelerUserEntity(TravelerWithIdRequestModel travelerRequestModel) {
+        return Traveler.builder()
+                .travelerId(travelerRequestModel.getTravelerId())
                 .seq(travelerRequestModel.getSeq())
                 .firstName(travelerRequestModel.getFirstName())
                 .lastName(travelerRequestModel.getLastName())

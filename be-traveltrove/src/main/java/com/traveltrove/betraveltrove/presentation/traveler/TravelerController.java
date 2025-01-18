@@ -42,6 +42,17 @@ public class TravelerController {
                 .switchIfEmpty(Mono.just(ResponseEntity.badRequest().build()));
     }
 
+    @PostMapping(value = "/create-traveler-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<TravelerResponseModel>> createTravelerUser(@RequestBody TravelerWithIdRequestModel travelerWithIdRequestModel) {
+        log.info("Creating traveler user: {}", travelerWithIdRequestModel);
+        return travelerService.createTravelerUser(travelerWithIdRequestModel)
+                .map(response -> ResponseEntity.status(201).body(response))
+                .onErrorResume(e -> {
+                    log.error("Error creating traveler user", e);
+                    return Mono.just(ResponseEntity.badRequest().build());
+                });
+    }
+
     //update traveler
     @PutMapping(value = "/{travelerId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<TravelerResponseModel>> updateTraveler(@PathVariable String travelerId,

@@ -6,8 +6,9 @@ import CitiesTab from "./Tabs/CitiesTab";
 import ToursTab from "./Tabs/ToursTab";
 import HotelsTab from "./Tabs/HotelsTab";
 import AirportsTab from "./Tabs/AirportsTab";
-import TravelersTab from "./Tabs/travelersTab"; // Import the new TravelersTab component
+import TravelersTab from "./Tabs/TravelersTab";
 import { useTranslation } from "react-i18next";
+import NotificationsTab from "./Tabs/NotificationsTab.tsx";
 
 
 const Dashboard: React.FC = () => {
@@ -152,6 +153,21 @@ const Dashboard: React.FC = () => {
                       Travelers
                     </Nav.Link>
                   </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
+                        eventKey="notifications"
+                        onClick={() => setActiveTab("notifications")}
+                        className={`text-white px-3 py-2 ${
+                            activeTab === "notifications" ? "bg-secondary" : ""
+                        }`}
+                        style={{
+                          fontWeight: activeTab === "notifications" ? "bold" : "normal",
+                          borderRadius: "10px",
+                        }}
+                    >
+                      Notifications
+                    </Nav.Link>
+                  </Nav.Item>
                 </Nav>
               </Col>
 
@@ -186,6 +202,9 @@ const Dashboard: React.FC = () => {
                   </Tab.Pane>
                   <Tab.Pane eventKey="travelers" style={{ height: "100%" }}>
                     <TravelersTab />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="notifications" style={{ height: "100%" }}>
+                    <NotificationsTab />
                   </Tab.Pane>
                 </Tab.Content>
               </Col>

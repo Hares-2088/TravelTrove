@@ -13,6 +13,8 @@ import com.traveltrove.betraveltrove.dataaccess.events.Event;
 import com.traveltrove.betraveltrove.dataaccess.events.EventRepository;
 import com.traveltrove.betraveltrove.dataaccess.hotel.Hotel;
 import com.traveltrove.betraveltrove.dataaccess.hotel.HotelRepository;
+import com.traveltrove.betraveltrove.dataaccess.notification.Notification;
+import com.traveltrove.betraveltrove.dataaccess.notification.NotificationRepository;
 import com.traveltrove.betraveltrove.dataaccess.review.Review;
 import com.traveltrove.betraveltrove.dataaccess.review.ReviewRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
@@ -33,6 +35,7 @@ import reactor.core.publisher.Flux;
 import jakarta.annotation.PostConstruct;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -2477,6 +2480,92 @@ public class DatabaseLoader {
                 );
     }
 
+    private final NotificationRepository notificationRepository;
+
+    @PostConstruct
+    public void loadNotifications() {
+        List<Notification> sampleNotifications = List.of(
+                Notification.builder()
+                        .notificationId("2b1c1f70-1a5f-4e88-9945-2b6a0e476002")
+                        .to("amelia.clark@traveltrove.com")
+                        .subject("Welcome to Travel Trove!")
+                        .messageContent("Thank you for joining Travel Trove!")
+                        .sentAt(LocalDateTime.of(2025, 1, 1, 9, 0))
+                        .build(),
+                Notification.builder()
+                        .notificationId("3a24f7b1-98e4-49d3-b6ff-7c19fae24d9c")
+                        .to("liam.jones@traveltrove.com")
+                        .subject("Booking Confirmation")
+                        .messageContent("Your booking has been confirmed.")
+                        .sentAt(LocalDateTime.of(2025, 1, 2, 10, 30))
+                        .build(),
+                Notification.builder()
+                        .notificationId("4c88a8d2-913a-4f92-b8fa-6ad3dbec29b1")
+                        .to("oliver.smith@traveltrove.com")
+                        .subject("Tour Update")
+                        .messageContent("One of your tours has been updated.")
+                        .sentAt(LocalDateTime.of(2025, 1, 3, 14, 15))
+                        .build(),
+                Notification.builder()
+                        .notificationId("9b1204c3-cb85-4dfb-9b4e-cfdfb223b2b6")
+                        .to("emma.brown@traveltrove.com")
+                        .subject("Feedback Request")
+                        .messageContent("We would love to hear about your experience.")
+                        .sentAt(LocalDateTime.of(2025, 1, 4, 16, 45))
+                        .build(),
+                Notification.builder()
+                        .notificationId("1d8d441d-18f1-4395-81c1-0f56b3c17fa4")
+                        .to("william.taylor@traveltrove.com")
+                        .subject("Spots Running Out!")
+                        .messageContent("Hurry! Limited spots left for your desired tour.")
+                        .sentAt(LocalDateTime.of(2025, 1, 5, 12, 0))
+                        .build(),
+                Notification.builder()
+                        .notificationId("f1a26a34-5c12-4d71-86b7-28f5c87c5af5")
+                        .to("sophia.johnson@example.com")
+                        .subject("Special Offer")
+                        .messageContent("Enjoy exclusive discounts on your next booking.")
+                        .sentAt(LocalDateTime.of(2025, 1, 6, 18, 30))
+                        .build(),
+                Notification.builder()
+                        .notificationId("81f62e87-3c5e-4729-bbc2-264d1af8ad23")
+                        .to("james.williams@example.com")
+                        .subject("Booking Reminder")
+                        .messageContent("Your tour is coming up soon! Get ready!")
+                        .sentAt(LocalDateTime.of(2025, 1, 7, 8, 15))
+                        .build(),
+                Notification.builder()
+                        .notificationId("4bc1c0fa-3b5b-4f7d-8f6c-e3d2c5af36ed")
+                        .to("ava.davis@example.com")
+                        .subject("Payment Confirmation")
+                        .messageContent("Your payment has been successfully processed.")
+                        .sentAt(LocalDateTime.of(2025, 1, 8, 11, 0))
+                        .build(),
+                Notification.builder()
+                        .notificationId("96c1d5f2-c7ea-4f9e-b10b-4b3afc16b76a")
+                        .to("mason.miller@example.com")
+                        .subject("New Destinations Added")
+                        .messageContent("Check out the latest additions to our tours.")
+                        .sentAt(LocalDateTime.of(2025, 1, 9, 15, 45))
+                        .build(),
+                Notification.builder()
+                        .notificationId("f7e1d3c7-b1e2-481f-91a8-5f6d2ab4c5a7")
+                        .to("mia.moore@example.com")
+                        .subject("Welcome Back!")
+                        .messageContent("We missed you! Explore new travel opportunities.")
+                        .sentAt(LocalDateTime.of(2025, 1, 10, 9, 0))
+                        .build()
+        );
+
+        notificationRepository.deleteAll()
+                .thenMany(Flux.fromIterable(sampleNotifications))
+                .flatMap(notificationRepository::save)
+                .doOnNext(notification -> log.info("Preloaded notification: {}", notification))
+                .subscribe(
+                        success -> log.info("Notifications preloaded successfully."),
+                        error -> log.error("Error preloading notifications: {}", error.getMessage())
+                );
+    }
 
 }
 
