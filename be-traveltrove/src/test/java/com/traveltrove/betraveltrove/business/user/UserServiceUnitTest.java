@@ -129,4 +129,43 @@ public class UserServiceUnitTest {
                         error.getMessage().contains("User Not Found in Database"))
                 .verify();
     }
+
+    @Test
+    public void whenGetUser_withValidUserId_thenReturnUserResponseModel() {
+        String userId = "89f75581-5112-4f2c-a85e-ecc2773d9802";
+
+        User existingUser = User.builder()
+                .userId(userId)
+                .email("user@example.com")
+                .firstName("Max")
+                .lastName("Power")
+                .roles(List.of("Admin"))
+                .permissions(List.of("read:users"))
+                .travelerId(UUID.randomUUID().toString())
+                .build();
+
+        UserResponseModel expectedResponse = UserResponseModel.builder()
+                .userId(userId)
+                .email("user@example.com")
+                .firstName("Max")
+                .lastName("Power")
+                .roles(List.of("Admin"))
+                .permissions(List.of("read:users"))
+                .build();
+
+        when(userRepository.findByUserId(userId)).thenReturn(Mono.just(existingUser));
+
+        StepVerifier.create(userService.getUser(userId))
+                .expectNextMatches(response ->
+                        response.getUserId().equals(expectedResponse.getUserId()) &&
+                                response.getEmail().equals(expectedResponse.getEmail()) &&
+                                response.getFirstName().equals(expectedResponse.getFirstName()) &&
+                                response.getLastName().equals(expectedResponse.getLastName()) &&
+                                response.getRoles().equals(expectedResponse.getRoles()) &&
+                                response.getPermissions().equals(expectedResponse.getPermissions()))
+                .verifyComplete();
+
+        verify(userRepository, times(1)).findByUserId(userId);
+    }
+
 }
