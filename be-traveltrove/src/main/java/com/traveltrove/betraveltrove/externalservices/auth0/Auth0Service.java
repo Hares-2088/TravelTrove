@@ -12,4 +12,6 @@ public interface Auth0Service {
 
     Mono<Void> updateUserRole(String auth0UserId, List<String> roleId);
 
+    Mono<Void> removeUserRoles(String auth0UserId, String roleId);
+
 }

@@ -5,6 +5,7 @@ import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -175,12 +176,31 @@ public class Auth0WebClient implements Auth0Service {
                                             .doOnNext(errorBody -> {
                                                 log.error("Error from Auth0 API: Status={}, Body={}", response.statusCode(), errorBody);
                                             })
-                                            .flatMap(errorBody -> Mono.error(new RuntimeException("Auth0 API Error: " + errorBody))) // Propagate error
+                                            .flatMap(errorBody -> Mono.error(new RuntimeException("Auth0 API Error: " + errorBody)))
                             )
                             .toBodilessEntity()
                             .doOnSuccess(response -> log.info("Roles successfully updated for User ID: {}", auth0UserId))
                             .doOnError(error -> log.error("Failed to update roles for User ID {}: {}", auth0UserId, error.getMessage()))
                             .then();
                 });
+    }
+
+    @Override
+    public Mono<Void> removeUserRoles(String auth0UserId, String roleId) {
+        log.info("Removing roles {} from user {}", roleId, auth0UserId);
+
+        AssignRolesRequestModel assignRolesRequest = new AssignRolesRequestModel(roleId);
+
+
+        return getAccessToken()
+                .flatMap(token -> webClient.method(HttpMethod.DELETE) // Explicitly use DELETE method
+                        .uri("https://" + domain + "/api/v2/users/" + auth0UserId + "/roles")
+                        .headers(headers -> headers.setBearerAuth(token)) // Add Authorization header
+                        .bodyValue(assignRolesRequest) // Pass roles in the body
+                        .retrieve()
+                        .toBodilessEntity() // Expect no response body
+                        .doOnSuccess(response -> log.info("Successfully removed roles for user: {}", auth0UserId))
+                        .doOnError(error -> log.error("Failed to remove roles for user {}: {}", auth0UserId, error))
+                        .then());
     }
 }

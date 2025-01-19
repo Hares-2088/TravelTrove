@@ -153,26 +153,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Void> updateUserRole(String userId, List<String> roleId) {
-        log.info("Updating role for user: {}", userId);
+//        log.info("Assigning roles: {} to user: {}", roleId, userId);
+//        // Update the roles locally in the database
+//        Mono<User> localUpdate = userRepository.findByUserId(userId)
+//                .flatMap(user -> {
+//                    user.setRoles(roleId); // Update roles locally
+//                    return userRepository.save(user);
+//                })
+//                .doOnSuccess(updatedUser -> log.info("User roles updated locally: {}", updatedUser))
+//                .doOnError(error -> log.error("Failed to update user roles locally: {}", error.getMessage()));
 
-
-        log.info("Assigning roles: {} to user: {}", roleId, userId);
-        // Update the roles locally in the database
-        Mono<User> localUpdate = userRepository.findByUserId(userId)
-                .flatMap(user -> {
-                    user.setRoles(roleId); // Update roles locally
-                    return userRepository.save(user);
-                })
-                .doOnSuccess(updatedUser -> log.info("User roles updated locally: {}", updatedUser))
-                .doOnError(error -> log.error("Failed to update user roles locally: {}", error.getMessage()));
-
+        // Remove Previous Roles
+        Mono<Void> removeRoles = auth0Service.removeUserRoles(userId, roleId.get(0));
         // Update the roles in Auth0
         Mono<Void> auth0Update = auth0Service.updateUserRole(userId, roleId);
 
-        // Combine both updates
-        return localUpdate.then(auth0Update)
+        return removeRoles.then(auth0Update)
                 .doOnSuccess(unused -> log.info("Roles updated successfully for user: {}", userId))
                 .doOnError(error -> log.error("Failed to update roles for user: {}", error.getMessage()));
     }
+
+    @Override
+    public Mono<Void> deleteUser(String userId) {
+        return null;
+    }
+
+
 }
 

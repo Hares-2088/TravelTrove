@@ -56,6 +56,7 @@ public class UserController {
         log.info("Request body: {}", roleUpdateRequest.getRoles()); // Log the roles field
 
         return userService.updateUserRole(userId, roleUpdateRequest.getRoles())
+                .then(userService.syncUserWithAuth0(userId))// sync user from auth0 locally
                 .thenReturn(ResponseEntity.ok("Roles updated successfully"))
                 .onErrorResume(error -> {
                     log.error("Failed to update roles for user {}: {}", userId, error.getMessage());
