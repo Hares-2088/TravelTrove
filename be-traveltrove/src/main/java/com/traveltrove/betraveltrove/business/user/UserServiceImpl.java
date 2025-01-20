@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -111,6 +112,15 @@ public class UserServiceImpl implements UserService {
                 .doOnSuccess(user -> log.info("Fetched User Details: {}", user))
                 .doOnError(error -> log.error("Error fetching user with ID: {}", userId, error));
     }
+
+    @Override
+    public Flux<UserResponseModel> getAllUsers() {
+        return userRepository.findAll()
+                .map(UserEntityToModel::toUserResponseModel)
+                .doOnNext(user -> log.info("Fetched User Details: {}", user))
+                .doOnError(error -> log.error("Error fetching users: {}", error));
+    }
+
 
 }
 

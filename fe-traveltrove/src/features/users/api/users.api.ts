@@ -2,6 +2,28 @@ import axios from 'axios';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 import { UserResponseModel } from '../model/users.model';
 
+
+
+// Utility function to parse event-stream data
+const parseEventStream = (data: string): UserResponseModel[] => {
+  const lines = data.split("\n");
+  const tours: UserResponseModel[] = [];
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    if (trimmedLine.startsWith("data:")) {
+      try {
+        const tour = JSON.parse(trimmedLine.substring(5).trim());
+        tours.push(tour);
+      } catch (error) {
+        console.error("Error parsing line:", trimmedLine, error);
+      }
+    }
+  }
+
+  return tours;
+};
+
 export const useUsersApi = () => {
     const axiosInstance = useAxiosInstance();
 
@@ -24,29 +46,48 @@ export const useUsersApi = () => {
     };
     
 
-    const loginUser = async (userId: string): Promise<UserResponseModel> => {
-        const encodedUserId = encodeURIComponent(userId);
-        const response = await axiosInstance.post<UserResponseModel>(`/users/${encodedUserId}/login`);
-        return response.data;
-    };
+  const loginUser = async (userId: string): Promise<UserResponseModel> => {
+    const encodedUserId = encodeURIComponent(userId);
+    const response = await axiosInstance.post<UserResponseModel>(
+      `/users/${encodedUserId}/login`
+    );
+    return response.data;
+  };
 
-    // Kinda wonky, this can be improved by using Token Claims to sync instead of fetching from Auth0 each time
-    const syncUser = async (userId: string): Promise<UserResponseModel> => {
-        const encodedUserId = encodeURIComponent(userId);
-        const response = await axiosInstance.put<UserResponseModel>(`/users/${encodedUserId}/sync`);
-        return response.data;
-    };
 
-    const getUserById = async (userId: string): Promise<UserResponseModel> => {
-        const encodedUserId = encodeURIComponent(userId);
-        const response = await axiosInstance.get<UserResponseModel>(`/users/${encodedUserId}`);
-        return response.data;
-    };
 
+  
+  // Kinda wonky, this can be improved by using Token Claims to sync instead of fetching from Auth0 each time
+  const syncUser = async (userId: string): Promise<UserResponseModel> => {
+    const encodedUserId = encodeURIComponent(userId);
+    const response = await axiosInstance.put<UserResponseModel>(
+      `/users/${encodedUserId}/sync`
+    );
+    return response.data;
+  };
+
+  //get all users
+  const getAllUsers = async (): Promise<UserResponseModel[]> => {
+    const response = await axiosInstance.get("/users", {
+      responseType: "text",
+      headers: {
+        Accept: "text/event-stream",
+      },
+    });
+    return parseEventStream(response.data)
+    
+  };
+
+  const getUserById = async (userId: string): Promise<UserResponseModel> => {
+    const encodedUserId = encodeURIComponent(userId);
+    const response = await axiosInstance.get<UserResponseModel>(`/users/${encodedUserId}`);
+    return response.data;
+};
     return {
         getUser,
         loginUser,
         syncUser,
         getUserById,
+        getAllUsers
     };
 };

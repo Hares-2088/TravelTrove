@@ -11,6 +11,7 @@ export enum AppRoutes {
   ProfilePage = '/profile',
   ProfileCreatePage = '/profile/create',
   Bookings = '/bookings',
+  UserManagement = '/usermanagement',
   Callback = '/callback',
 
   // Error Routes
