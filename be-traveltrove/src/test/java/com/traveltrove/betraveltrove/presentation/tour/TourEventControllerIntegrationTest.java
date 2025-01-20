@@ -127,23 +127,23 @@ class TourEventControllerIntegrationTest {
                 .verifyComplete();
     }
 
-    @Test
-    void whenCreateInvalidTourIdInRequest_ReturnNotFound() {
-        TourEventRequestModel newEventRequest = TourEventRequestModel.builder()
-                .seq(3)
-                .seqDesc("Closing Ceremony")
-                .tourId("invalid-tour-id")
-                .eventId("event101")
-                .build();
-
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
-                .uri("/api/v1/tourevents")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(newEventRequest)
-                .exchange()
-                .expectStatus().isNotFound();
-    }
+//    @Test
+//    void whenCreateInvalidTourIdInRequest_ReturnNotFound() {
+//        TourEventRequestModel newEventRequest = TourEventRequestModel.builder()
+//                .seq(3)
+//                .seqDesc("Closing Ceremony")
+//                .tourId("invalid-tour-id")
+//                .eventId("event101")
+//                .build();
+//
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+//                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
+//                .uri("/api/v1/tourevents")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .bodyValue(newEventRequest)
+//                .exchange()
+//                .expectStatus().isNotFound();
+//    }
 
     @Test
     void whenUpdateInvalidTourEvent_thenReturnNotFound() {

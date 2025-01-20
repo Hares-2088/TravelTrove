@@ -187,7 +187,6 @@ class TravelerServiceIntegrationTest {
                 .countryId("1")
                 .build();
 
-        when(countryService.getCountryById("1")).thenReturn(Mono.just(new CountryResponseModel("1", "USA", "USA.png")));
         when(travelerRepository.save(any(Traveler.class))).thenReturn(Mono.just(traveler));
 
         StepVerifier.create(travelerService.createTraveler(travelerRequestModel))
@@ -240,8 +239,6 @@ class TravelerServiceIntegrationTest {
                 .build();
 
         when(travelerRepository.findTravelerByTravelerId("1")).thenReturn(Mono.just(traveler));
-        when(countryService.getCountryById("1")).thenReturn(Mono.just(new CountryResponseModel("1", "USA", "USA.png")));
-
         when(travelerRepository.save(any(Traveler.class))).thenReturn(Mono.just(traveler));
 
         StepVerifier.create(travelerService.updateTraveler("1", travelerRequestModel))

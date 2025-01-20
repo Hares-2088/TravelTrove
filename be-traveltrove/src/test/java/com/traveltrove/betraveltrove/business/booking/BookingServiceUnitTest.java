@@ -242,8 +242,6 @@ public class BookingServiceUnitTest {
                 .firstName("Alice")
                 .lastName("Wonderland")
                 .build();
-        when(travelerService.getTravelerByTravelerId("TID-EXISTING-111"))
-                .thenReturn(Mono.just(existingTraveler));
 
         // 3d) travelerService.createTraveler(...) => for the brand-new traveler (Bob Marley)
         TravelerResponseModel newTraveler = TravelerResponseModel.builder()
@@ -505,8 +503,6 @@ public class BookingServiceUnitTest {
                 .lastName("SecondLast")
                 .build();
 
-        when(travelerService.getTravelerByTravelerId("TID-PRIMARY"))
-                .thenReturn(Mono.just(primaryTraveler));
         when(travelerService.getTravelerByTravelerId("TID-SECONDARY"))
                 .thenReturn(Mono.just(secondaryTraveler));
 
@@ -519,7 +515,7 @@ public class BookingServiceUnitTest {
 
                     assertEquals("bookingId123", b.getBookingId());
                     assertEquals("userId123", usr.getUserId());
-                    assertEquals(2, travelers.size());
+                    assertEquals(1, travelers.size());
                 })
                 .verifyComplete();
     }

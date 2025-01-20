@@ -19,6 +19,7 @@ import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.annotation.DirtiesContext;
@@ -87,7 +88,7 @@ class BookingControllerIntegrationTest {
             .userId("auth0|675f4bb4e184fd643a8ed909")
             .packageId("a522256a-3fef-4b27-8a77-50b173c4d6f0")
             .totalPrice(1300.00)
-            .status(BookingStatus.BOOKING_CANCELLED)
+            .status(BookingStatus.BOOKING_FINALIZED)
             .bookingDate(LocalDate.of(2025, 6,5))
             .build();
 
@@ -389,7 +390,7 @@ class BookingControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updateBooking)
                 .exchange()
-                .expectStatus().isBadRequest();
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);  // 422
 
         StepVerifier.create(bookingRepository.findBookingByBookingId(booking1.getBookingId()))
                 .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.PAYMENT_PENDING))

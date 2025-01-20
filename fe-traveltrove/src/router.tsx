@@ -36,7 +36,11 @@ const router = createBrowserRouter([
       },
       {
         path: AppRoutes.TourDetailsPage,
-        element: <TourDetailsPage />,
+        element: (
+          <ProtectedRoute>
+            <TourDetailsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: AppRoutes.Dashboard,
@@ -48,15 +52,27 @@ const router = createBrowserRouter([
       },
       {
         path: AppRoutes.Bookings,
-        element: <Bookings />,
+        element: (
+          <ProtectedRoute>
+            <Bookings />
+          </ProtectedRoute>
+        ),
       },
       {
         path: AppRoutes.PackageDetailsPage,
-        element: <PackageDetailsPage />,
+        element: (
+          <ProtectedRoute>
+            <PackageDetailsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: AppRoutes.BookingFormPage,
-        element: <BookingFormPage />,
+        element: (
+          <ProtectedRoute>
+            <BookingFormPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: AppRoutes.ProfileCreatePage,
