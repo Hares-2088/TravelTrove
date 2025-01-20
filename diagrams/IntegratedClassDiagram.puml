@@ -384,6 +384,7 @@ package "packagesubdomain" {
             + decreaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
             + increaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
         }
+
          class ReviewService {
                   +addReview(reviewsRequestModel: ReviewsRequestModel): void
                   +getReviewsByPackage(packageId: String): List<ReviewsResponseModel>
