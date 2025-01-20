@@ -135,8 +135,8 @@ rectangle "TravelTrove" as BoundedContextTravelTrove #line.dashed {
             packageId: String <<FK>>
             bookingId: String <<FK>>
             rating: Integer
-            comment: String
-            reviewDate: DateTime
+            review: String
+            date: DateTime
         }
 
         VALUE_OBJECT(ReviewId) #Bisque {

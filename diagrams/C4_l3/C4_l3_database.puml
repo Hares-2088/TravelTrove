@@ -92,8 +92,8 @@ entity "Review" as Review {
     packageId: String <<FK>>
     bookingId: String <<FK>>
     rating: Integer
-    comment: String
-    reviewDate: DateTime
+    review: String
+    date: DateTime
 }
 
 entity "Hotel" as Hotel {

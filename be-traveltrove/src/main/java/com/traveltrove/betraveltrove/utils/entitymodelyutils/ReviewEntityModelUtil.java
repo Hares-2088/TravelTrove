@@ -6,6 +6,7 @@ import com.traveltrove.betraveltrove.presentation.review.ReviewResponseModel;
 import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 public class ReviewEntityModelUtil {
@@ -29,6 +30,6 @@ public class ReviewEntityModelUtil {
     }
 
     private static String generateUUIDString() {
-        return generateUUIDString();
+        return UUID.randomUUID().toString();
     }
 }

@@ -3,6 +3,7 @@ package com.traveltrove.betraveltrove.presentation.review;
 
 import com.traveltrove.betraveltrove.business.review.ReviewService;
 import com.traveltrove.betraveltrove.dataaccess.review.Review;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/reviews")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;

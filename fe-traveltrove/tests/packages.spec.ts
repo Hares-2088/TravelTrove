@@ -149,3 +149,32 @@ test("package status change testing", async ({ page }) => {
     await page.getByRole('button', { name: 'Save' }).click();
     await page.close();
 });
+
+
+
+test("get the reviews for a package", async ({ page }) => {
+    
+   await page.goto('http://localhost:3000/dashboard');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await page.getByLabel('Email address').click();
+    await page.getByLabel('Email address').fill('admin@traveltrove.com');
+    await page.getByLabel('Password').click();
+    await page.getByLabel('Password').fill('Admin@123');
+    await page.getByLabel('Password').click();
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await page.getByRole('link', { name: 'Dashboard' }).click();
+    await page.getByRole('cell', { name: 'Canadian Rockies Expedition' }).click();
+    await page.getByRole('button', { name: 'Add Review' }).click();
+    await page.getByRole('dialog').getByRole('img').nth(4).click();
+    await page.locator('textarea').click();
+    await page.locator('input[type="text"]').click();
+    await page.locator('input[type="text"]').fill('Mariya');
+    await page.locator('textarea').click();
+    await page.locator('textarea').fill('Good site');
+    await page.getByRole('button', { name: 'Submit Review' }).click();
+    await page.getByRole('button', { name: 'View All Reviews' }).click();
+    await expect(page.getByRole('cell', { name: 'Mariya' })).toBeVisible();
+    await page.getByText('Close').click();
+    await page.getByRole('cell', { name: '5.0' }).click();
+    await page.close();
+});
