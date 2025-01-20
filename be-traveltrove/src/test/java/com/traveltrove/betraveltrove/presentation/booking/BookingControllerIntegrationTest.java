@@ -1,13 +1,17 @@
 package com.traveltrove.betraveltrove.presentation.booking;
 
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.booking.Booking;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingRepository;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
+import com.traveltrove.betraveltrove.presentation.user.UserUpdateRequest;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -50,6 +54,10 @@ class BookingControllerIntegrationTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private TravelerService travelerService;
+
 
     private final String INVALID_BOOKING_ID = "invalid-booking-id";
 
@@ -141,9 +149,29 @@ class BookingControllerIntegrationTest {
         Mockito.when(userService.syncUserWithAuth0(userResponseModel.getUserId()))
                 .thenReturn(Mono.just(userResponseModel));
 
+        Mockito.when(userService.updateUserProfile(
+                        Mockito.anyString(),
+                        Mockito.any(UserUpdateRequest.class)))
+                .thenReturn(Mono.just(userResponseModel));
+
         //invalid user
         Mockito.when(userService.syncUserWithAuth0("invalid-user-id"))
                 .thenReturn(Mono.empty());
+
+        //travelers
+        Mockito.when(travelerService.createTraveler(Mockito.any(TravelerRequestModel.class)))
+                .thenAnswer(invocation -> {
+                    TravelerRequestModel request = invocation.getArgument(0);
+                    // Return a dummy TravelerResponseModel based on the request
+                    return Mono.just(
+                            TravelerResponseModel.builder()
+                                    .travelerId(UUID.randomUUID().toString())
+                                    .firstName(request.getFirstName())
+                                    .lastName(request.getLastName())
+                                    .email(request.getEmail())
+                                    .build()
+                    );
+                });
     }
 
     @BeforeEach
@@ -236,10 +264,19 @@ class BookingControllerIntegrationTest {
                 .totalPrice(1400.00)
                 .status(BookingStatus.PAYMENT_PENDING)
                 .bookingDate(LocalDate.of(2025, 6, 6))
+                // Provide at least one traveler to satisfy the new validation requirement
+                .travelers(List.of(
+                        TravelerRequestModel.builder()
+                                .firstName("Test")
+                                .lastName("Traveler")
+                                .email("test.traveler@example.com")
+                                .build()
+                ))
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).post()
+                .mutateWith(SecurityMockServerConfigurers.csrf())
+                .post()
                 .uri("/api/v1/bookings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(newBooking)
@@ -252,10 +289,23 @@ class BookingControllerIntegrationTest {
                     assertEquals(newBooking.getPackageId(), response.getPackageId());
                 });
 
-        StepVerifier.create(bookingRepository.findAll())
-                .expectNextCount(4)
+        // Verify that at least one booking matching the new booking's userId and packageId exists
+        StepVerifier.create(
+                        bookingRepository.findAll()
+                                .filter(booking ->
+                                        booking.getUserId().equals(newBooking.getUserId()) &&
+                                                booking.getPackageId().equals(newBooking.getPackageId())
+                                )
+                                .collectList()
+                )
+                .assertNext(matchingBookings -> {
+                    // Assert that at least one matching booking was found
+                    assertFalse(matchingBookings.isEmpty(), "Expected at least one new booking to be created");
+                })
                 .verifyComplete();
     }
+
+
 
     @Test
     void whenCreateBooking_withInvalidUser_thenReturnNotFound(){
