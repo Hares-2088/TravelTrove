@@ -1,0 +1,26 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!include DEVICONS/react.puml
+
+AddElementTag("page", $shape = RectangleShape(), $bgColor="lightSkyBlue", $fontColor="white")
+AddElementTag("feature", $shape = RectangleShape(), $bgColor="lightSteelBlue", $fontColor="white")
+
+LAYOUT_LEFT_RIGHT()
+
+title Notification Components - Dar El Salam Travel
+
+Container_Boundary(spa, "Web Application (React)") {
+
+    Component(CustomNotificationPage, "Custom Notification Page", "React Component", "Allows employees to send notifications", $tags = "page", $sprite="react")
+    Component(CustomEmailNotificationFeature, "Custom Email Notification Feature", "React Module", "Sends customized notifications to customers", $tags = "feature", $sprite="react")
+    Component(PackagePage, "Package Page", "React Component", "Allows employees to access a specific package", $tags = "page", $sprite="react")
+}
+
+' Relationships
+Rel(CustomNotificationPage, CustomEmailNotificationFeature, "Sends customized notifications to customers")
+Rel(PackagePage, CustomNotificationPage, "Edit a Package")
+Rel(Customer, PackagePage, "Select a Package")
+
+@enduml

@@ -9,6 +9,7 @@ participant TourPackageController as "<<Controller>>\nTourPackageController"
 participant TourPackageService as "<<Service>>\nTourPackageService"
 participant TourPackageEntity as "<<Entity>>\nTourPackageEntity"
 participant TourPackageRepository as "<<Repository>>\nTourPackageRepository"
+participant NotificationService as "<<Service>>\nNotificationService"
 participant Database as "<<Database>>"
 participant TourPackageResponseModel as "<<Model>>\nTourPackageResponseModel"
 
@@ -71,11 +72,6 @@ opt Add New Tour Package
     TourPackageRepository --> TourPackageService : Saved package entity
     deactivate TourPackageRepository
 
-    TourPackageService -> TourPackageResponseModel : Map saved entity to response model
-    activate TourPackageResponseModel
-    TourPackageResponseModel --> TourPackageService : Response ready
-    deactivate TourPackageResponseModel
-
     TourPackageService --> TourPackageController : TourPackageResponseModel
     deactivate TourPackageService
 
@@ -119,6 +115,11 @@ opt Update Tour Package
     activate TourPackageResponseModel
     TourPackageResponseModel --> TourPackageService : Response ready
     deactivate TourPackageResponseModel
+
+    TourPackageService --> NotificationService : Notify all customers with booking for this package
+    activate NotificationService
+    NotificationService --> TourPackageService : Notification sent
+    deactivate NotificationService
 
     TourPackageService --> TourPackageController : TourPackageResponseModel
     deactivate TourPackageService

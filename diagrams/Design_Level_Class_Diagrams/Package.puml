@@ -9,8 +9,10 @@ package "packagesubdomain" {
             + addPackage(package: PackageRequestModel) : Mono<PackageResponseModel>
             + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
             + deletePackage(packageId: String) : Mono<Void>
-            + decreaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
-            + increaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
+            + decreaseAvailableSeats(packageId: String, quantity: Integer) : Mono<PackageResponseModel>
+            + increaseAvailableSeats(packageId: String, quantity: Integer) : Mono<PackageResponseModel>
+            + sendLimitedSpotsNotification(packageId: String) : Mono<Void>
+            + sendPackageUpdateNotification(packageId: String) : Mono<Void>
         }
 
         class PackageServiceImpl {
@@ -20,8 +22,10 @@ package "packagesubdomain" {
             + addPackage(package: PackageRequestModel) : Mono<PackageResponseModel>
             + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
             + deletePackage(packageId: String) : Mono<Void>
-            + decreaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
-            + increaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
+            + decreaseAvailableSeats(packageId: String, quantity: Integer) : Mono<PackageResponseModel>
+            + increaseAvailableSeats(packageId: String, quantity: Integer) : Mono<PackageResponseModel>
+            + sendLimitedSpotsNotification(packageId: String) : Mono<Void>
+            + sendPackageUpdateNotification(packageId: String) : Mono<Void>
         }
     }
 
@@ -85,8 +89,10 @@ package "packagesubdomain" {
             + addPackage(packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
             + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<ResponseEntity<PackageResponseModel>>
             + deletePackage(packageId: String) : Mono<Void>
-            + decreaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
-            + increaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
+            + decreaseAvailableSeats(packageId: String, quantity: Integer) : Mono<PackageResponseModel>
+            + increaseAvailableSeats(packageId: String, quantity: Integer) : Mono<PackageResponseModel>
+            + sendLimitedSpotsNotification(packageId: String) : Mono<Void>
+            + sendPackageUpdateNotification(packageId: String) : Mono<Void>
         }
     }
 
