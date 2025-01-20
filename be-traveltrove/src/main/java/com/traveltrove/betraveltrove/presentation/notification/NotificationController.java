@@ -3,6 +3,7 @@ package com.traveltrove.betraveltrove.presentation.notification;
 import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,23 +39,15 @@ public class NotificationController {
         return notificationService.getNotificationByNotificationId(notificationId)
                 .doOnSuccess(notification -> log.info("Successfully fetched notification with ID: {}", notificationId))
                 .map(ResponseEntity::ok)
-                .onErrorResume(ex -> {
-                    log.error("Notification not found with ID: {}. Error: {}", notificationId, ex.getMessage());
-                    return Mono.just(ResponseEntity.status(404).body(null));
-                });
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(value = "/{notificationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('delete:notification')")
-    public Mono<ResponseEntity<String>> deleteNotificationByNotificationId(@PathVariable String notificationId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> deleteNotificationByNotificationId(@PathVariable String notificationId) {
         log.info("Received request to delete notification with ID: {}", notificationId);
-        return notificationService.deleteNotificationByNotificationId(notificationId)
-                .doOnSuccess(unused -> log.info("Successfully deleted notification with ID: {}", notificationId))
-                .then(Mono.just(ResponseEntity.ok("Notification deleted successfully.")))
-                .onErrorResume(ex -> {
-                    log.error("Failed to delete notification with ID: {}. Error: {}", notificationId, ex.getMessage());
-                    return Mono.just(ResponseEntity.status(404).body("Failed to delete notification: " + ex.getMessage()));
-                });
+        return notificationService.deleteNotificationByNotificationId(notificationId);
     }
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)

@@ -34,8 +34,12 @@ class UserControllerIntegrationTest {
 
     private final UserResponseModel existingUser = UserResponseModel.builder()
             .userId("auth0|675e3886e184fd643a8ed5aa")
+            .firstName("Hello")
+            .lastName("Goodbye")
             .email("admin@traveltrove.com")
             .roles(List.of("Admin"))
+            .permissions(List.of("read:notification"))
+            .travelerId("d572a38b-7dec-4064-8c29-839633ea238e")
             .build();
 
     private final UserResponseModel updatedUser = UserResponseModel.builder()
@@ -54,6 +58,9 @@ class UserControllerIntegrationTest {
                 .email(existingUser.getEmail())
                 .firstName(existingUser.getFirstName())
                 .lastName(existingUser.getLastName())
+                .roles(existingUser.getRoles())
+                .permissions(existingUser.getPermissions())
+                .travelerId(existingUser.getTravelerId())
                 .build();
 
         StepVerifier.create(userRepository.save(existingUserEntity))
@@ -126,5 +133,40 @@ class UserControllerIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    void whenGetUserById_withValidUserId_thenReturnUserDetails() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
+                .mutateWith(SecurityMockServerConfigurers.mockUser("TestUser"))
+                .get()
+                .uri("/api/v1/users/{userId}", existingUser.getUserId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(UserResponseModel.class)
+                .value(user -> StepVerifier.create(Mono.just(user))
+                        .expectNextMatches(u ->
+                                u.getUserId().equals(existingUser.getUserId()) &&
+                                        u.getEmail().equals(existingUser.getEmail()) &&
+                                        u.getRoles().equals(existingUser.getRoles()) &&
+                                        u.getFirstName().equals(existingUser.getFirstName()) &&
+                                        u.getLastName().equals(existingUser.getLastName()) &&
+                                        u.getTravelerId().equals(existingUser.getTravelerId()) &&
+                                        u.getPermissions().equals(existingUser.getPermissions())
+                        )
+                        .verifyComplete());
+    }
+
+    @Test
+    void whenGetUserById_withInvalidUserId_thenReturnNotFound() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
+                .mutateWith(SecurityMockServerConfigurers.mockUser("TestUser"))
+                .get()
+                .uri("/api/v1/users/{userId}", INVALID_USER_ID)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .isEmpty();
+    }
+
 
 }
