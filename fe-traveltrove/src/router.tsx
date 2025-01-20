@@ -35,7 +35,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.TourDetailsPage,
         element: (
-          <ProtectedRoute requiredRoles={['Employee', 'Admin']}>
+          <ProtectedRoute>
             <TourDetailsPage />
           </ProtectedRoute>
         ),
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.Dashboard,
         element: (
-          <ProtectedRoute requiredRoles={['Employee', 'Admin']}>
+          <ProtectedRoute>
             <DashboardPage />
           </ProtectedRoute>
         ),
@@ -51,7 +51,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.Bookings, 
         element: (
-          <ProtectedRoute requiredRoles={['Employee', 'Admin']}>
+          <ProtectedRoute>
             <Bookings />
           </ProtectedRoute>
         ),
