@@ -14,6 +14,7 @@ import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserUpdateRequest;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.BookingEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusException;
+import com.traveltrove.betraveltrove.utils.exceptions.NoTravelerException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
 import lombok.extern.slf4j.Slf4j;
@@ -108,6 +109,12 @@ public class BookingServiceImpl implements BookingService {
                 // 2) Fetch the user from Auth0 (ensuring user exists)
                 .flatMap(this::fetchUserFromAuth0)
 
+                // 3) Ensure at least one traveler is present
+                .flatMap(tuple ->
+                        ensureAtLeastOneTravelerPresent(bookingRequestModel, tuple.getT2())
+                                .thenReturn(tuple)
+                )
+
                 // 3) Gather existing traveler details
                 .flatMap(tuple -> gatherExistingTravelerDetails(tuple.getT1(), tuple.getT2()))
 
@@ -156,13 +163,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     // methods for validation -> userExists, packageExists, isValidStatus
-    private Mono<Void> userExistsReactive(String userId) {
+    Mono<Void> userExistsReactive(String userId) {
         return userService.syncUserWithAuth0(userId)
                 .hasElement()
                 .flatMap(exists -> exists ? Mono.empty() : Mono.error(new NotFoundException("User not found with ID: " + userId)));
     }
 
-    private Mono<Void> packageExistsReactive(String packageId) {
+    Mono<Void> packageExistsReactive(String packageId) {
         return packageService.getPackageByPackageId(packageId)
                 .hasElement()
                 .flatMap(exists -> exists ? Mono.empty() : Mono.error(new NotFoundException("Package not found with ID: " + packageId)));
@@ -180,7 +187,7 @@ public class BookingServiceImpl implements BookingService {
         return true;
     }
 
-    private Mono<Booking> validateUserAndPackage(Booking booking) {
+    Mono<Booking> validateUserAndPackage(Booking booking) {
         return userExistsReactive(booking.getUserId())
                 .then(packageExistsReactive(booking.getPackageId()))
                 .then(bookingRepository.findBookingByPackageIdAndUserId(
@@ -197,7 +204,7 @@ public class BookingServiceImpl implements BookingService {
                 });
     }
 
-    private Mono<Tuple2<Booking, UserResponseModel>> fetchUserFromAuth0(Booking booking) {
+    Mono<Tuple2<Booking, UserResponseModel>> fetchUserFromAuth0(Booking booking) {
         return userService.syncUserWithAuth0(booking.getUserId())
                 .switchIfEmpty(Mono.error(
                         new NotFoundException("User not found: " + booking.getUserId())
@@ -205,15 +212,12 @@ public class BookingServiceImpl implements BookingService {
                 .map(activeUser -> Tuples.of(booking, activeUser));
     }
 
-    private Mono<Tuple3<Booking, UserResponseModel, List<TravelerResponseModel>>>
+    Mono<Tuple3<Booking, UserResponseModel, List<TravelerResponseModel>>>
     gatherExistingTravelerDetails(Booking booking, UserResponseModel activeUser) {
 
         List<String> existingTravelerIds = new ArrayList<>();
         if (activeUser.getTravelerIds() != null) {
             existingTravelerIds.addAll(activeUser.getTravelerIds());
-        }
-        if (activeUser.getTravelerId() != null) {
-            existingTravelerIds.add(activeUser.getTravelerId());
         }
 
         return Flux.fromIterable(existingTravelerIds)
@@ -222,7 +226,7 @@ public class BookingServiceImpl implements BookingService {
                 .map(existingTravelers -> Tuples.of(booking, activeUser, existingTravelers));
     }
 
-    private Mono<Tuple4<Booking, UserResponseModel, List<TravelerResponseModel>, List<String>>>
+    Mono<Tuple4<Booking, UserResponseModel, List<TravelerResponseModel>, List<String>>>
     compareTravelersAndCreateNew(Booking booking,
                                  UserResponseModel activeUser,
                                  List<TravelerResponseModel> existingTravelers,
@@ -261,10 +265,10 @@ public class BookingServiceImpl implements BookingService {
                 .map(newlyLinkedIds -> Tuples.of(booking, activeUser, existingTravelers, newlyLinkedIds));
     }
 
-    private Mono<Booking> updateUserTravelerIds(Booking booking,
-                                                UserResponseModel activeUser,
-                                                List<TravelerResponseModel> existingTravelers,
-                                                List<String> newlyLinkedIds) {
+    Mono<Booking> updateUserTravelerIds(Booking booking,
+                                        UserResponseModel activeUser,
+                                        List<TravelerResponseModel> existingTravelers,
+                                        List<String> newlyLinkedIds) {
 
         Set<String> allTravelerIds = new HashSet<>();
         if (activeUser.getTravelerIds() != null) {
@@ -282,5 +286,20 @@ public class BookingServiceImpl implements BookingService {
 
         return userService.updateUserProfile(activeUser.getUserId(), updateRequest)
                 .thenReturn(booking);
+    }
+
+    private Mono<Void> ensureAtLeastOneTravelerPresent(BookingRequestModel bookingRequestModel, UserResponseModel activeUser) {
+        // Extract travelers from request
+        List<TravelerRequestModel> requestedTravelers = bookingRequestModel.getTravelers();
+
+        // Check if the request provides any travelers
+        boolean requestProvidesTraveler = requestedTravelers != null && !requestedTravelers.isEmpty();
+
+        // If neither condition is true, throw an exception
+        if (!requestProvidesTraveler) {
+            return Mono.error(new NoTravelerException("At least one traveler must be provided or linked to the user's account."));
+        }
+
+        return Mono.empty();
     }
 }
