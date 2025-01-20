@@ -1,19 +1,21 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { AppRoutes } from './shared/models/app.routes';
-import { ProtectedRoute } from './shared/components/ProtectedRoute';
-import DashboardPage from './pages/staff/DashboardPage';
-import ToursPage from './pages/tours/ToursPage';
-import TourDetailsPage from './pages/tours/TourDetailsPage';
-import HomePage from './pages/home/HomePage';
-import Layout from './layouts/Layout';
-import CallbackPage from './pages/CallbackPage';
-import UnauthorizedPage from './pages/errors/UnauthorizedPage';
-import NotFoundPage from './pages/errors/NotFoundPage';
-import ServiceUnavailablePage from './pages/errors/ServiceNotAvailablePage';
-import InternalServerErrorPage from './pages/errors/InternalServerErrorPage';
-import RequestTimeoutPage from './pages/errors/RequestTimeoutPage';
-import ForbiddenPage from './pages/errors/ForbiddenPage';
-import Bookings from './features/staff/components/Pages/Bookings'; // Import the Bookings component
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { AppRoutes } from "./shared/models/app.routes";
+import { ProtectedRoute } from "./shared/components/ProtectedRoute";
+import DashboardPage from "./pages/staff/DashboardPage";
+import ToursPage from "./pages/tours/ToursPage";
+import TourDetailsPage from "./pages/tours/TourDetailsPage";
+import HomePage from "./pages/home/HomePage";
+import Layout from "./layouts/Layout";
+import CallbackPage from "./pages/CallbackPage";
+import UnauthorizedPage from "./pages/errors/UnauthorizedPage";
+import NotFoundPage from "./pages/errors/NotFoundPage";
+import ServiceUnavailablePage from "./pages/errors/ServiceNotAvailablePage";
+import InternalServerErrorPage from "./pages/errors/InternalServerErrorPage";
+import RequestTimeoutPage from "./pages/errors/RequestTimeoutPage";
+import ForbiddenPage from "./pages/errors/ForbiddenPage";
+import Bookings from "./features/staff/components/Pages/Bookings";
+import PackageDetailsPage from "./pages/packages/PackageDetailsPage";
+import BookingFormPage from "./pages/booking/BookingFormPage";
 
 const router = createBrowserRouter([
   {
@@ -48,10 +50,26 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: AppRoutes.Bookings, 
+        path: AppRoutes.Bookings,
         element: (
           <ProtectedRoute>
             <Bookings />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.PackageDetailsPage,
+        element: (
+          <ProtectedRoute>
+            <PackageDetailsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.BookingFormPage,
+        element: (
+          <ProtectedRoute>
+            <BookingFormPage />
           </ProtectedRoute>
         ),
       },
@@ -101,7 +119,7 @@ const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <NotFoundPage />
+        element: <NotFoundPage />,
       },
     ],
   },

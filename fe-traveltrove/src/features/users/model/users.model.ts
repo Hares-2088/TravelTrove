@@ -1,8 +1,10 @@
 export interface UserRequestModel {
   email: string;
-  password: string;
+  password: string; 
   firstName: string;
   lastName: string;
+  permissions?: string[];
+  travelerIds?: string[]; // Matches backend's travelerIds
 }
 
 export interface UserResponseModel {
@@ -12,4 +14,5 @@ export interface UserResponseModel {
   lastName: string;
   roles: string[];
   permissions: string[];
+  travelerIds?: string[];
 }
