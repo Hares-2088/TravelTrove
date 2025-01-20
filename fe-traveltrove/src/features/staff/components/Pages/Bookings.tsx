@@ -67,9 +67,7 @@ const Bookings: React.FC = () => {
     }
 
     try {
-      if (modalType === "create") {
-        await createBooking(formData);
-      } else if (modalType === "update" && selectedBooking) {
+      if (modalType === "update" && selectedBooking) {
         await updateBookingStatus(selectedBooking.bookingId, formData.status);
       }
       setShowModal(false);
@@ -113,29 +111,6 @@ const Bookings: React.FC = () => {
         <Card.Body className="p-4">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h3>{t("Bookings")}</h3>
-            <Button
-              variant="primary"
-              onClick={() => {
-                setModalType("create");
-                setFormData({
-                  userId: "",
-                  packageId: packageId || "",
-                  totalPrice: 0,
-                  status: BookingStatus.PAYMENT_PENDING,
-                  bookingDate: new Date().toISOString().split("T")[0],
-                  travelers: [],
-                });
-                setFormErrors({
-                  userId: false,
-                  totalPrice: false,
-                  status: false,
-                  bookingDate: false,
-                });
-                setShowModal(true);
-              }}
-            >
-              {t("Create Booking")}
-            </Button>
           </div>
 
           <Card className="rounded shadow-sm border-0">
@@ -208,9 +183,7 @@ const Bookings: React.FC = () => {
           >
             <Modal.Header closeButton>
               <Modal.Title>
-                {modalType === "create"
-                  ? t("Create Booking")
-                  : modalType === "update"
+                {modalType === "update"
                   ? t("Edit Booking")
                   : modalType === "delete"
                   ? t("Delete Booking")
