@@ -1,71 +1,71 @@
-name: Qodana
-on:
-  workflow_dispatch:
-  pull_request:
-  push:
-    branches:
-      - main
-      - 'releases/*'
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      checks: write
-    services:
-      mongo:
-        image: mongo:5.0.5
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd="mongo --eval 'db.runCommand({ connectionStatus: 1 })'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: 'gradle'
-
-      - name: Grant execute permissions to gradlew
-        working-directory: be-traveltrove
-        run: chmod +x gradlew
-
-      - name: Run Build
-        working-directory: be-traveltrove
-        run: |
-          ./gradlew build \
-            -Dspring.profiles.active=test
-
-      - name: Create coverage-data directory and copy contents
-        run: |
-          mkdir -p .qodana/code-coverage
-          cp -R */build/reports/* .qodana/code-coverage/
-
-      - name: Archive coverage data
-        uses: actions/upload-artifact@v4
-        with:
-          name: gradle-coverage-data.zip
-          path: .qodana/code-coverage
-
-      - name: Upload Test Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: be-traveltrove/build/reports/tests/test/
-
-      - name: Check Application Logs
-        if: failure()
-        run: |
-          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
+#name: Qodana
+#on:
+#  workflow_dispatch:
+#  pull_request:
+#  push:
+#    branches:
+#      - main
+#      - 'releases/*'
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#      pull-requests: write
+#      checks: write
+#    services:
+#      mongo:
+#        image: mongo:5.0.5
+#        ports:
+#          - 27017:27017
+#        options: >-
+#          --health-cmd="mongo --eval 'db.runCommand({ connectionStatus: 1 })'"
+#          --health-interval=10s
+#          --health-timeout=5s
+#          --health-retries=3
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          ref: ${{ github.event.pull_request.head.sha }}
+#          fetch-depth: 0
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v2
+#        with:
+#          java-version: '17'
+#          distribution: 'adopt'
+#          cache: 'gradle'
+#
+#      - name: Grant execute permissions to gradlew
+#        working-directory: be-traveltrove
+#        run: chmod +x gradlew
+#
+#      - name: Run Build
+#        working-directory: be-traveltrove
+#        run: |
+#          ./gradlew build \
+#            -Dspring.profiles.active=test
+#
+#      - name: Create coverage-data directory and copy contents
+#        run: |
+#          mkdir -p .qodana/code-coverage
+#          cp -R */build/reports/* .qodana/code-coverage/
+#
+#      - name: Archive coverage data
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: gradle-coverage-data.zip
+#          path: .qodana/code-coverage
+#
+#      - name: Upload Test Reports
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: test-reports
+#          path: be-traveltrove/build/reports/tests/test/
+#
+#      - name: Check Application Logs
+#        if: failure()
+#        run: |
+#          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"

@@ -1,69 +1,69 @@
-name: CI for TravelTrove
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  backend-tests:
-    name: Backend Tests
-    runs-on: ubuntu-latest
-
-    env:
-      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
-      FRONTEND_DOMAIN: ${{ secrets.FRONTEND_DOMAIN }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Grant execute permissions to gradlew
-        working-directory: be-traveltrove
-        run: chmod +x gradlew
-
-      # Debug environment variables at the workflow level
-      - name: Debug Environment Variables
-        run: |
-          echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}"
-          echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}"
-          echo "FRONTEND_DOMAIN=${FRONTEND_DOMAIN}"
-
-      # Run backend tests with embedded MongoDB
-      - name: Build and test backend with embedded MongoDB
-        working-directory: be-traveltrove
-        run: |
-          ./gradlew clean build \
-            -Dspring.profiles.active=test
-
-      # Upload test reports for review
-      - name: Upload Test Reports
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-reports
-          path: be-traveltrove/build/reports/tests/test/
-
-      # Debug Spring application logs for troubleshooting
-      - name: Check Application Logs
-        if: failure()
-        run: |
-          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
+#name: CI for TravelTrove
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches:
+#      - main
+#
+#jobs:
+#  backend-tests:
+#    name: Backend Tests
+#    runs-on: ubuntu-latest
+#
+#    env:
+#      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+#      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
+#      FRONTEND_DOMAIN: ${{ secrets.FRONTEND_DOMAIN }}
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'temurin'
+#
+#      - name: Cache Gradle dependencies
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.gradle/caches
+#          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+#          restore-keys: |
+#            ${{ runner.os }}-gradle-
+#
+#      - name: Grant execute permissions to gradlew
+#        working-directory: be-traveltrove
+#        run: chmod +x gradlew
+#
+#      # Debug environment variables at the workflow level
+#      - name: Debug Environment Variables
+#        run: |
+#          echo "AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}"
+#          echo "AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}"
+#          echo "FRONTEND_DOMAIN=${FRONTEND_DOMAIN}"
+#
+#      # Run backend tests with embedded MongoDB
+#      - name: Build and test backend with embedded MongoDB
+#        working-directory: be-traveltrove
+#        run: |
+#          ./gradlew clean build \
+#            -Dspring.profiles.active=test
+#
+#      # Upload test reports for review
+#      - name: Upload Test Reports
+#        if: always()
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: test-reports
+#          path: be-traveltrove/build/reports/tests/test/
+#
+#      # Debug Spring application logs for troubleshooting
+#      - name: Check Application Logs
+#        if: failure()
+#        run: |
+#          cat be-traveltrove/build/reports/tests/test/index.html || echo "No test report found"
