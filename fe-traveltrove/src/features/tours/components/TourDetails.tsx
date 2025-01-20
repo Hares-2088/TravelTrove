@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useToursApi } from "../api/tours.api";
 import { TourResponseModel } from "../models/Tour";
 import "./TourDetails.css";
+import PackageList from '../../packages/components/PackageList';
 
 const TourDetails: React.FC = () => {
   const { getTourByTourId } = useToursApi();
@@ -37,6 +38,7 @@ const TourDetails: React.FC = () => {
         <h1 className="tour-title">{tour.name}</h1>
         <p className="tour-description">{tour.description}</p>
       </header>
+      <PackageList tourId={tourId!} />
     </div>
   );
 };
