@@ -48,16 +48,16 @@ public class UserServiceImpl implements UserService {
                                                         .doOnSuccess(updatedAuth0User -> log.info("Updated Auth0 User Details After Role Assignment: {}", updatedAuth0User))
                                                         .flatMap(updatedAuth0User ->
                                                                 userRepository.save(
-                                                                                User.builder()
-                                                                                        .userId(auth0UserId)
-                                                                                        .email(updatedAuth0User.getEmail())
-                                                                                        .firstName(updatedAuth0User.getFirstName())
-                                                                                        .lastName(updatedAuth0User.getLastName())
-                                                                                        .roles(updatedAuth0User.getRoles())
-                                                                                        .permissions(updatedAuth0User.getPermissions())
-                                                                                        .travelerId(UUID.randomUUID().toString())
-                                                                                        .build()
-                                                                        )
+                                                                        User.builder()
+                                                                                .userId(auth0UserId)
+                                                                                .email(updatedAuth0User.getEmail())
+                                                                                .firstName(updatedAuth0User.getFirstName())
+                                                                                .lastName(updatedAuth0User.getLastName())
+                                                                                .roles(updatedAuth0User.getRoles())
+                                                                                .permissions(updatedAuth0User.getPermissions())
+                                                                                .travelerId(UUID.randomUUID().toString())
+                                                                                .build()
+                                                                )
                                                                         .doOnSuccess(user -> {
                                                                             log.info("User successfully created in MongoDB: {}", user);
 
@@ -222,3 +222,4 @@ public class UserServiceImpl implements UserService {
                 .doOnError(error -> log.error("Failed to update roles for user {}: {}", userId, error.getMessage()));
     }
 }
+

@@ -13,5 +13,4 @@ public class UserRequestModel {
     private String lastName;
 //    private List<String> roles;
 //    private List<String> permissions;
-    private List<String> travelerIds;
 }

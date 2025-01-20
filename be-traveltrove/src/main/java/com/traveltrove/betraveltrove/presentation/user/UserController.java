@@ -1,7 +1,6 @@
 package com.traveltrove.betraveltrove.presentation.user;
 
 import com.traveltrove.betraveltrove.business.user.UserService;
-import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -82,4 +81,5 @@ public class UserController {
 //                .doOnComplete(() -> log.info("Successfully fetched all users from Auth0"))
 //                .doOnError(error -> log.error("Error fetching users from Auth0", error));
 //    }
+
 }
