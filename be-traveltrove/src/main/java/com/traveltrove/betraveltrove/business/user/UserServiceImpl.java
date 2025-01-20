@@ -168,10 +168,10 @@ public class UserServiceImpl implements UserService {
                 .switchIfEmpty(Mono.error(new NotFoundException("User not found with Auth0 ID: " + auth0UserId)));
     }
 
-    @Override
-    public Mono<UserResponseModel> createNewUser(UserResponseModel userResponseModel) {
-        return null;
-    }
+//    @Override
+//    public Mono<UserResponseModel> createNewUser(UserResponseModel userResponseModel) {
+//        return null;
+//    }
 
     @Override
     public Mono<Void> updateUserRole(String userId, List<String> roleId) {
@@ -224,30 +224,5 @@ public class UserServiceImpl implements UserService {
                 .doOnSuccess(unused -> log.info("Successfully updated user {} to have only one role: {}", userId, newRoleId))
                 .doOnError(error -> log.error("Failed to update roles for user {}: {}", userId, error.getMessage()));
     }
-
-
-
-
-
-//        log.info("Assigning roles: {} to user: {}", roleId, userId);
-//        Mono<Void> auth0Update = auth0Service.updateUserRole(userId, roleId);
-//
-//        // Update the roles locally in the database
-//        Mono<User> localUpdate = userRepository.findByUserId(userId)
-//                .flatMap(user -> {
-//                    user.setRoles(roleId); // Update roles locally
-//                    return userRepository.save(user);
-//                });
-//        return localUpdate.then(auth0Update)
-//                .doOnSuccess(unused -> log.info("Roles updated successfully for user: {}", userId))
-//                .doOnError(error -> log.error("Failed to update roles for user: {}", error.getMessage()));
-
-
-    @Override
-    public Mono<Void> deleteUser(String userId) {
-        return null;
-    }
-
-
 }
 

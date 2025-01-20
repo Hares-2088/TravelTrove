@@ -16,8 +16,7 @@ public interface UserService {
     Flux<UserResponseModel> getAllUsers();
     Flux<UserResponseModel> getAllUsersFromAuth0();
     Mono<UserResponseModel> updateUser(String auth0UserId, UserRequestModel userRequestModel);
-    Mono<UserResponseModel> createNewUser(UserResponseModel userResponseModel);
+//    Mono<UserResponseModel> createNewUser(UserResponseModel userResponseModel);
     Mono<Void> updateUserRole(String userId, List<String> roleId);
-    Mono<Void> deleteUser(String userId);
 }
 
