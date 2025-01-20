@@ -20,24 +20,43 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { getUser } = useUsersApi(); // Custom hook for fetching user data
 
   // Manage the `roles` state
-  const [roles, setRoles] = useState<string[]>([]);
+  const [roles, setRoles] = useState<string[]>(() => {
+    const cachedRoles = sessionStorage.getItem('userRoles');
+    return cachedRoles ? JSON.parse(cachedRoles) : [];
+  });
+
+  // Manage the `currentUser` state
+  const [currentUser, setCurrentUser] = useState<any>(user);
+
+  console.log("(UserContext) User:", currentUser);
+  console.log("(UserContext) Current User Id:", currentUser?.userId);
+  console.log("(UserContext) User Id:", user?.sub);
 
   // Fetch roles when the user changes and roles are empty
   useEffect(() => {
-    if (roles.length === 0 && user) {
-      // Extract the user id from the context user object
-      const userId = user.sub?.toString();
-      if (userId) {
-        void getUser(userId).then((response) => {
-          // Set the roles from the API response
-          setRoles(response.roles);
-        });
+    if (user && user?.sub && isAuthenticated && !isLoading) {
+      if ((user.sub != currentUser?.userId) || currentUser == null) { // Check if user has changed or if there is no current user
+        const cachedRoles = sessionStorage.getItem('userRoles');
+        if (cachedRoles) {
+          setRoles(JSON.parse(cachedRoles));
+        } else {
+          getUser(user.sub).then((userData) => {
+            if (!userData) return;
+
+            setCurrentUser(userData);
+            setRoles(userData.roles);
+            sessionStorage.setItem('userRoles', JSON.stringify(userData.roles));
+          }).catch((error) => {
+            console.error("Error fetching user roles:", error);
+          });
+        }
       }
     }
-  }, [user, roles.length, getUser]);
+  }, [user, user?.sub, isAuthenticated, isLoading]);
+  
 
   // Log roles for debugging
-  console.log("User Roles:", roles);
+  console.log("(UserContext) User Roles:", roles);
 
   // Provide context values
   return (

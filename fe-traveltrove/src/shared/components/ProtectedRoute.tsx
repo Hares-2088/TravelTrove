@@ -2,20 +2,23 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
-import { log } from "console";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRoles?: string [];
+  requiredRoles?: string[];
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles }) => {
-  const { roles, isAuthenticated, isLoading } = useUserContext();
+  const { user, roles, isAuthenticated, isLoading } = useUserContext();
 
-  console.log("roles:", roles);
   if (isLoading) return <div>Loading...</div>;
   
-  if (requiredRoles != null) {
+  console.log("(ProtectedRoute) user:", user);
+  console.log("(ProtectedRoute) isAuthenticated:", isAuthenticated);
+  console.log("(ProtectedRoute) requiredRoles:", requiredRoles);
+  console.log("(ProtectedRoute) user roles:", roles);
+
+  if (requiredRoles != null && requiredRoles != undefined) { // if no permissions were passed, allow access
     if (!isAuthenticated || !requiredRoles.some((role) => roles.includes(role))) {
       return <Navigate to="/unauthorized" />;
     }
