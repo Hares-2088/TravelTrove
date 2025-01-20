@@ -16,8 +16,8 @@ const UserContext = createContext<UserContextType | null>(null);
 
 // Define the UserProvider component
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, isAuthenticated, isLoading } = useAuth0(); // Get Auth0 data
-  const { getUser } = useUsersApi(); // Custom hook for fetching user data
+  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { getUser } = useUsersApi(); 
 
   // Manage the `roles` state
   const [roles, setRoles] = useState<string[]>(() => {
