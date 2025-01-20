@@ -11,18 +11,18 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles }) => {
   const { user, roles, isAuthenticated, isLoading } = useUserContext();
 
+  if (requiredRoles != null && requiredRoles != undefined) { // if no permissions were passed, allow access
+    if (!isAuthenticated || !requiredRoles.some((role) => roles.includes(role))) {
+      return <Navigate to="/forbidden" />;
+    }
+  }
+
   if (isLoading) return <div>Loading...</div>;
   
   console.log("(ProtectedRoute) user:", user);
   console.log("(ProtectedRoute) isAuthenticated:", isAuthenticated);
   console.log("(ProtectedRoute) requiredRoles:", requiredRoles);
   console.log("(ProtectedRoute) user roles:", roles);
-
-  if (requiredRoles != null && requiredRoles != undefined) { // if no permissions were passed, allow access
-    if (!isAuthenticated || !requiredRoles.some((role) => roles.includes(role))) {
-      return <Navigate to="/unauthorized" />;
-    }
-  }
 
   return <>{children}</>;
 };
