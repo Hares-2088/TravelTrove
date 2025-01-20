@@ -37,6 +37,7 @@ public class SecurityConfig {
         log.info("Initializing Security Web Filter Chain...");
 
         return http
+                .csrf(csrf -> csrf.disable()) // Disable CSRF
                 .authorizeExchange(authz -> {
                     log.info("Configuring endpoint permissions...");
                     authz.matchers(ServerWebExchangeMatchers

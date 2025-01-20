@@ -15,6 +15,8 @@ import RequestTimeoutPage from './pages/errors/RequestTimeoutPage';
 import ForbiddenPage from './pages/errors/ForbiddenPage';
 import Bookings from './features/staff/components/Pages/Bookings';
 import ProfileCreatePage from "./pages/user/ProfileCreatePage.tsx"; // Import the Bookings component
+import UserManagement from './features/staff/components/Pages/UserManagement/UserManagement'; // Import the UserActivation component
+import UsersDetail from './features/users/components/UsersDetail.tsx';
 
 const router = createBrowserRouter([
   {
@@ -56,6 +58,26 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
+      {
+        path: AppRoutes.UserManagement,
+        element: (
+          <ProtectedRoute>
+            <UserManagement />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.UsersDetail, 
+        element: (
+          <ProtectedRoute>
+            <UsersDetail />
+
+
+          </ProtectedRoute>
+        ),
+      },
+
       {
         path: AppRoutes.ProfileCreatePage,
         element: (
