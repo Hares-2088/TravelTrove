@@ -1,0 +1,59 @@
+.package-details {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.package-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.package-title {
+  font-size: 2em;
+  margin: 0;
+  color: #333;
+}
+
+.package-description {
+  font-size: 1.2em;
+  color: #666;
+}
+
+.package-info {
+  margin-bottom: 20px;
+}
+
+.package-info p {
+  font-size: 1em;
+  color: #333;
+  margin: 10px 0;
+}
+
+.book-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 1.2em;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.book-button:hover {
+  background-color: #0056b3;
+}
+
+.loading,
+.error {
+  text-align: center;
+  font-size: 1.2em;
+  color: #666;
+}

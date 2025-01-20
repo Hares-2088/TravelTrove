@@ -95,25 +95,26 @@ public class TravelerServiceImpl implements TravelerService {
         if (travelerRequestModel.getAddressLine1() == null || travelerRequestModel.getAddressLine1().isBlank()) {
             return Mono.error(new InvalidInputException("Traveler address line 1 is required"));
         }
-        if (travelerRequestModel.getCity() == null || travelerRequestModel.getCity().isBlank()) {
-            return Mono.error(new InvalidInputException("Traveler city is required"));
-        }
-        if (travelerRequestModel.getState() == null || travelerRequestModel.getState().isBlank()) {
-            return Mono.error(new InvalidInputException("Traveler state is required"));
-        }
-        if (travelerRequestModel.getCountryId() == null || travelerRequestModel.getCountryId().isBlank()) {
-            return Mono.error(new InvalidInputException("Traveler country id is required"));
-        }
+//        if (travelerRequestModel.getCity() == null || travelerRequestModel.getCity().isBlank()) {
+//            return Mono.error(new InvalidInputException("Traveler city is required"));
+//        }
+//        if (travelerRequestModel.getState() == null || travelerRequestModel.getState().isBlank()) {
+//            return Mono.error(new InvalidInputException("Traveler state is required"));
+//        }
+//        if (travelerRequestModel.getCountryId() == null || travelerRequestModel.getCountryId().isBlank()) {
+//            return Mono.error(new InvalidInputException("Traveler country id is required"));
+//        }
         if (travelerRequestModel.getEmail() == null || travelerRequestModel.getEmail().isBlank()) {
             return Mono.error(new InvalidInputException("Traveler email is required"));
         }
 
-        return countryService.getCountryById(travelerRequestModel.getCountryId())
-                .switchIfEmpty(Mono.error(new NotFoundException("Country id not found: " + travelerRequestModel.getCountryId())))
-                .flatMap(country -> {
-                    log.info("Country validated: {}", country);
-                    return Mono.just(TravelerEntityModelUtil.toTravelerEntity(travelerRequestModel));
-                });
+        // return countryService.getCountryById(travelerRequestModel.getCountryId())
+        //         .switchIfEmpty(Mono.error(new NotFoundException("Country id not found: " + travelerRequestModel.getCountryId())))
+        //         .flatMap(country -> {
+        //             log.info("Country validated: {}", country);
+        //             return Mono.just(TravelerEntityModelUtil.toTravelerEntity(travelerRequestModel));
+        //         });
+        return Mono.just(TravelerEntityModelUtil.toTravelerEntity(travelerRequestModel));
 
     }
 }

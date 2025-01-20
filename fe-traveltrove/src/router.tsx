@@ -15,6 +15,8 @@ import RequestTimeoutPage from './pages/errors/RequestTimeoutPage';
 import ForbiddenPage from './pages/errors/ForbiddenPage';
 import Bookings from './features/staff/components/Pages/Bookings';
 import ProfileCreatePage from "./pages/user/ProfileCreatePage.tsx"; // Import the Bookings component
+import PackageDetailsPage from "./pages/packages/PackageDetailsPage";
+import BookingFormPage from "./pages/booking/BookingFormPage";
 
 const router = createBrowserRouter([
   {
@@ -65,6 +67,22 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: AppRoutes.PackageDetailsPage,
+        element: (
+          <ProtectedRoute>
+            <PackageDetailsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.BookingFormPage,
+        element: (
+          <ProtectedRoute>
+            <BookingFormPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: AppRoutes.Unauthorized,
         element: (
           <ProtectedRoute>
@@ -110,7 +128,7 @@ const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <NotFoundPage />
+        element: <NotFoundPage />,
       },
     ],
   },

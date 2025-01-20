@@ -14,6 +14,7 @@ import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseMod
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
+import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -366,6 +368,297 @@ public class BookingServiceUnitTest {
                 .expectErrorMatches(error -> error instanceof NotFoundException &&
                         error.getMessage().equals("Booking not found with ID: " + bookingId1))
                 .verify();
+    }
+
+    @Test
+    public void validateUserAndPackage_whenUserAndPackageExistAndNoExistingBooking_thenReturnBooking() {
+        // Given
+        Booking booking = new Booking(
+                "mongoId",
+                "bookingId123",
+                "userId123",
+                "packageIdABC",
+                999.99,
+                BookingStatus.PAYMENT_PENDING,
+                LocalDate.now(),
+                new ArrayList<>()
+        );
+
+        // Mock userExistsReactive + packageExistsReactive to succeed
+        when(userService.syncUserWithAuth0("userId123"))
+                .thenReturn(Mono.just(UserResponseModel.builder().userId("userId123").build()));
+
+        // Similarly, we mock the packageService
+        when(packageService.getPackageByPackageId("packageIdABC"))
+                .thenReturn(Mono.just(PackageResponseModel.builder().packageId("packageIdABC").build()));
+
+        // Mock findBookingByPackageIdAndUserId => no existing booking
+        when(bookingRepository.findBookingByPackageIdAndUserId("packageIdABC", "userId123"))
+                .thenReturn(Mono.empty());
+
+        // When
+        StepVerifier.create(bookingService.validateUserAndPackage(booking))
+                .assertNext(result -> assertEquals("bookingId123", result.getBookingId()))
+                .verifyComplete();
+    }
+
+    @Test
+    public void validateUserAndPackage_whenBookingAlreadyExists_thenThrowInvalidStatusException() {
+        // Given
+        Booking booking = new Booking(
+                "mongoId",
+                "bookingId123",
+                "userId123",
+                "packageIdABC",
+                999.99,
+                BookingStatus.PAYMENT_PENDING,
+                LocalDate.now(),
+                new ArrayList<>()
+        );
+
+        // Mock userExistsReactive + packageExistsReactive to succeed
+        when(userService.syncUserWithAuth0("userId123"))
+                .thenReturn(Mono.just(UserResponseModel.builder().userId("userId123").build()));
+
+        // Similarly, we mock the packageService
+        when(packageService.getPackageByPackageId("packageIdABC"))
+                .thenReturn(Mono.just(PackageResponseModel.builder().packageId("packageIdABC").build()));
+
+        // Mock existing booking
+        when(bookingRepository.findBookingByPackageIdAndUserId("packageIdABC", "userId123"))
+                .thenReturn(Mono.just(booking)); // means an existing booking is found
+
+        // When
+        StepVerifier.create(bookingService.validateUserAndPackage(booking))
+                .expectErrorMatches(error -> error instanceof InvalidStatusException &&
+                        error.getMessage().contains("User already has a booking for this package"))
+                .verify();
+    }
+
+    // endregion
+
+    // region fetchUserFromAuth0(Booking booking)
+
+    @Test
+    public void fetchUserFromAuth0_whenUserIsFound_shouldReturnTuple() {
+        // Given
+        Booking booking = Booking.builder()
+                .bookingId("bookingId123")
+                .userId("userId123")
+                .build();
+
+        UserResponseModel mockUser = UserResponseModel.builder()
+                .userId("userId123")
+                .build();
+
+        when(userService.syncUserWithAuth0("userId123")).thenReturn(Mono.just(mockUser));
+
+        // When
+        StepVerifier.create(bookingService.fetchUserFromAuth0(booking))
+                .assertNext(tuple -> {
+                    assertEquals("bookingId123", tuple.getT1().getBookingId());
+                    assertEquals("userId123", tuple.getT2().getUserId());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void fetchUserFromAuth0_whenUserIsNotFound_shouldThrowNotFoundException() {
+        // Given
+        Booking booking = Booking.builder()
+                .bookingId("bookingId123")
+                .userId("userIdXYZ")
+                .build();
+
+        when(userService.syncUserWithAuth0("userIdXYZ")).thenReturn(Mono.empty());
+
+        // When
+        StepVerifier.create(bookingService.fetchUserFromAuth0(booking))
+                .expectErrorMatches(ex -> ex instanceof NotFoundException &&
+                        ex.getMessage().contains("User not found: userIdXYZ"))
+                .verify();
+    }
+
+    // endregion
+
+    // region gatherExistingTravelerDetails(Booking booking, UserResponseModel activeUser)
+
+    @Test
+    public void gatherExistingTravelerDetails_whenUserHasTravelerIds_shouldReturnListOfTravelers() {
+        // Given
+        Booking booking = Booking.builder().bookingId("bookingId123").build();
+        UserResponseModel activeUser = UserResponseModel.builder()
+                .userId("userId123")
+                .travelerId("TID-PRIMARY")
+                .travelerIds(List.of("TID-SECONDARY"))
+                .build();
+
+        TravelerResponseModel primaryTraveler = TravelerResponseModel.builder()
+                .travelerId("TID-PRIMARY")
+                .firstName("PrimaryFirst")
+                .lastName("PrimaryLast")
+                .build();
+
+        TravelerResponseModel secondaryTraveler = TravelerResponseModel.builder()
+                .travelerId("TID-SECONDARY")
+                .firstName("SecondFirst")
+                .lastName("SecondLast")
+                .build();
+
+        when(travelerService.getTravelerByTravelerId("TID-PRIMARY"))
+                .thenReturn(Mono.just(primaryTraveler));
+        when(travelerService.getTravelerByTravelerId("TID-SECONDARY"))
+                .thenReturn(Mono.just(secondaryTraveler));
+
+        // When
+        StepVerifier.create(bookingService.gatherExistingTravelerDetails(booking, activeUser))
+                .assertNext(tuple -> {
+                    Booking b = tuple.getT1();
+                    UserResponseModel usr = tuple.getT2();
+                    List<TravelerResponseModel> travelers = tuple.getT3();
+
+                    assertEquals("bookingId123", b.getBookingId());
+                    assertEquals("userId123", usr.getUserId());
+                    assertEquals(2, travelers.size());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void gatherExistingTravelerDetails_whenNoTravelerIds_shouldReturnEmptyList() {
+        // Given
+        Booking booking = Booking.builder().bookingId("bookingId123").build();
+        UserResponseModel activeUser = UserResponseModel.builder()
+                .userId("userId123")
+                .build(); // no travelerId or travelerIds
+
+        // When
+        StepVerifier.create(bookingService.gatherExistingTravelerDetails(booking, activeUser))
+                .assertNext(tuple -> {
+                    assertEquals(0, tuple.getT3().size());
+                })
+                .verifyComplete();
+    }
+
+    // endregion
+
+    // region compareTravelersAndCreateNew(Booking, UserResponseModel, existingTravelers, BookingRequestModel)
+
+    @Test
+    public void compareTravelersAndCreateNew_whenTravelersAreRequested_shouldReturnUpdatedBookingWithNewTravelers() {
+        // Given
+        Booking booking = Booking.builder()
+                .bookingId("bookingId123")
+                .travelerIds(new ArrayList<>())
+                .build();
+
+        UserResponseModel activeUser = UserResponseModel.builder()
+                .userId("userId123")
+                .build();
+
+        List<TravelerResponseModel> existingTravelers = List.of(
+                TravelerResponseModel.builder()
+                        .travelerId("TID-EXISTING-111")
+                        .firstName("Alice")
+                        .lastName("Wonderland")
+                        .build()
+        );
+
+        List<TravelerRequestModel> requestedTravelers = List.of(
+                TravelerRequestModel.builder()
+                        .firstName("Alice")
+                        .lastName("Wonderland")
+                        .build(),
+                TravelerRequestModel.builder()
+                        .firstName("Bob")
+                        .lastName("Marley")
+                        .build()
+        );
+
+        BookingRequestModel requestModel = BookingRequestModel.builder()
+                .travelers(requestedTravelers)
+                .build();
+
+        // Mock travelerService.createTraveler(...) for the new traveler
+        TravelerResponseModel newTraveler = TravelerResponseModel.builder()
+                .travelerId("TID-NEW-222")
+                .firstName("Bob")
+                .lastName("Marley")
+                .build();
+        when(travelerService.createTraveler(any(TravelerRequestModel.class)))
+                .thenReturn(Mono.just(newTraveler));
+
+        // When
+        StepVerifier.create(bookingService.compareTravelersAndCreateNew(booking, activeUser, existingTravelers, requestModel))
+                .assertNext(tuple -> {
+                    Booking updatedBooking = tuple.getT1();
+                    List<String> travelerIds = updatedBooking.getTravelerIds();
+                    List<String> request = tuple.getT4();
+
+                    assertEquals(2, travelerIds.size());
+                    assertTrue(travelerIds.contains("TID-EXISTING-111"));
+                    assertTrue(travelerIds.contains("TID-NEW-222"));
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void compareTravelersAndCreateNew_whenNoTravelersAreRequested_shouldReturnEmpty() {
+        // Given
+        Booking booking = Booking.builder()
+                .bookingId("bookingId123")
+                .travelerIds(new ArrayList<>())
+                .build();
+
+        UserResponseModel activeUser = UserResponseModel.builder()
+                .userId("userId123")
+                .build();
+
+        List<TravelerResponseModel> existingTravelers = List.of(); // none existing
+        BookingRequestModel requestModel = BookingRequestModel.builder()
+                .travelers(List.of()) // no requested travelers
+                .build();
+
+        // When
+        StepVerifier.create(bookingService.compareTravelersAndCreateNew(booking, activeUser, existingTravelers, requestModel))
+                .assertNext(tuple -> {
+                    assertEquals(0, tuple.getT1().getTravelerIds().size());
+                    assertEquals(0, tuple.getT4().size());
+                })
+                .verifyComplete();
+    }
+
+    // endregion
+
+    // region updateUserTravelerIds(Booking, UserResponseModel, List<TravelerResponseModel>, List<String>)
+
+    @Test
+    public void updateUserTravelerIds_whenCalled_shouldUpdateUserTravelerIdsAndReturnBooking() {
+        // Given
+        Booking booking = Booking.builder().bookingId("bookingId123").build();
+
+        UserResponseModel activeUser = UserResponseModel.builder()
+                .userId("userId123")
+                .travelerId("TID-PRIMARY")
+                .travelerIds(List.of("TID-OLD1"))
+                .build();
+
+        List<TravelerResponseModel> existingTravelers = List.of(); // not used directly here
+        List<String> newlyLinkedIds = List.of("TID-NEW1", "TID-NEW2");
+
+        // Mock updateUserProfile
+        when(userService.updateUserProfile(eq("userId123"), any()))
+                .thenReturn(Mono.just(activeUser.toBuilder()
+                        .travelerIds(List.of("TID-OLD1", "TID-PRIMARY", "TID-NEW1", "TID-NEW2"))
+                        .build()));
+
+        // When
+        StepVerifier.create(bookingService.updateUserTravelerIds(booking, activeUser, existingTravelers, newlyLinkedIds))
+                .assertNext(result -> {
+                    // The returned Booking should be the same instance we passed in
+                    assertEquals("bookingId123", result.getBookingId());
+                })
+                .verifyComplete();
     }
 
 }

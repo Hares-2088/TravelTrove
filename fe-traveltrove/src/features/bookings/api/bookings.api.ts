@@ -4,44 +4,44 @@ import { useAxiosInstance } from "../../../shared/axios/useAxiosInstance";
 export const useBookingsApi = () => {
   const axiosInstance = useAxiosInstance();
 
-  // Fetch all bookings (with optional filters)
+  // Fetch all bookings using Server-Sent Events (SSE)
   const getAllBookings = async (filters?: {
     userId?: string;
     packageId?: string;
     status?: BookingStatus;
   }): Promise<BookingResponseModel[]> => {
-    const bookings: BookingResponseModel[] = [];
-  
-    const response = await axiosInstance.get('/bookings', {
-      params: filters,
-      responseType: 'text',
-      headers: {
-        Accept: 'text/event-stream',
-      },
-    });
-  
-    // Parse Server-Sent Events (SSE)
-    const lines = response.data.split('\n');
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-      if (trimmedLine.startsWith('data:')) {
+    return new Promise((resolve, reject) => {
+      const bookings: BookingResponseModel[] = [];
+      const eventSource = new EventSource(
+        `${axiosInstance.defaults.baseURL}/bookings?${new URLSearchParams(filters as any)}`
+      );
+
+      eventSource.onmessage = (event) => {
         try {
-          const booking = JSON.parse(trimmedLine.substring(5).trim());
+          const booking = JSON.parse(event.data);
           bookings.push(booking);
         } catch (error) {
-          console.error('Error parsing line:', trimmedLine, error);
+          console.error("Error parsing SSE event:", error);
         }
-      }
-    }
-  
-    return bookings;
+      };
+
+      eventSource.onerror = (error) => {
+        eventSource.close();
+        reject(error);
+      };
+
+      eventSource.onopen = () => {
+        setTimeout(() => {
+          eventSource.close();
+          resolve(bookings);
+        }, 5000); // Close after collecting events
+      };
+    });
   };
 
   // Fetch a booking by ID
-  const getBookingById = async (
-    bookingId: string
-  ): Promise<BookingResponseModel> => {
-    const response = await axiosInstance.get<BookingResponseModel>(`/bookings/search`, {
+  const getBookingById = async (bookingId: string): Promise<BookingResponseModel> => {
+    const response = await axiosInstance.get<BookingResponseModel>(`/bookings/booking`, {
       params: { bookingId },
     });
     return response.data;
@@ -52,32 +52,33 @@ export const useBookingsApi = () => {
     packageId: string,
     userId: string
   ): Promise<BookingResponseModel> => {
-    const response = await axiosInstance.get<BookingResponseModel>(`/bookings/search`, {
+    const response = await axiosInstance.get<BookingResponseModel>(`/bookings/booking`, {
       params: { packageId, userId },
     });
     return response.data;
   };
 
-  // Create a new booking
-  const createBooking = async (
-    booking: BookingRequestModel
-  ): Promise<BookingResponseModel> => {
+  // Create a new booking (Requires at least one traveler)
+  const createBooking = async (booking: BookingRequestModel): Promise<BookingResponseModel> => {
+    if (!booking.travelers || booking.travelers.length === 0) {
+      throw new Error("At least one traveler must be provided.");
+    }
+
     const response = await axiosInstance.post<BookingResponseModel>("/bookings", booking);
     return response.data;
   };
 
-  // Generalized method to update booking status
+  // Update booking status
   const updateBookingStatus = async (
     bookingId: string,
     status: BookingStatus
   ): Promise<BookingResponseModel> => {
     const response = await axiosInstance.patch<BookingResponseModel>(
       `/bookings/${bookingId}`,
-      { status } // Matches the backend's BookingStatusUpdateRequest structure
+      { status }
     );
     return response.data;
   };
-  
 
   // Delete a booking
   const deleteBooking = async (bookingId: string): Promise<void> => {
