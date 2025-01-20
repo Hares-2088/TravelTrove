@@ -179,7 +179,6 @@ public class UserServiceImpl implements UserService {
         if (roleId == null || roleId.size() != 1) {
             return Mono.error(new IllegalArgumentException("A user can only have one role at a time."));
         }
-
         String newRoleId = roleId.get(0);
 
         return auth0Service.getUserById(userId)
@@ -197,16 +196,30 @@ public class UserServiceImpl implements UserService {
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
 
+                    Mono<Void> updateRolesInAuth0;
                     if (!existingRoleIds.isEmpty()) {
                         log.info("User {} has existing role IDs: {}. Removing them before assigning new role: {}",
                                 userId, existingRoleIds, newRoleId);
 
-                        return auth0Service.removeUserRoles(userId, existingRoleIds)
+                        updateRolesInAuth0 = auth0Service.removeUserRoles(userId, existingRoleIds)
                                 .then(auth0Service.updateUserRole(userId, List.of(newRoleId)));
+                    } else {
+                        log.info("User {} has no existing roles. Assigning new role: {}", userId, newRoleId);
+                        updateRolesInAuth0 = auth0Service.updateUserRole(userId, List.of(newRoleId));
                     }
 
-                    log.info("User {} has no existing roles. Assigning new role: {}", userId, newRoleId);
-                    return auth0Service.updateUserRole(userId, List.of(newRoleId));
+                    // Update the user in the database after updating Auth0
+                    return updateRolesInAuth0.then(
+                            userRepository.findByUserId(userId)
+                                    .flatMap(user -> {
+                                        // Update roles in the database
+                                        user.setRoles(List.of(newRoleId));
+                                        return userRepository.save(user);
+                                    })
+                                    .doOnSuccess(updatedUser -> log.info("Updated user {} in database with new role {}", userId, newRoleId))
+                                    .doOnError(error -> log.error("Failed to update user {} in database: {}", userId, error.getMessage()))
+                                    .then()
+                    );
                 })
                 .doOnSuccess(unused -> log.info("Successfully updated user {} to have only one role: {}", userId, newRoleId))
                 .doOnError(error -> log.error("Failed to update roles for user {}: {}", userId, error.getMessage()));
