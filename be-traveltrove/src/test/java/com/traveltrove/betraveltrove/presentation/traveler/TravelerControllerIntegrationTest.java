@@ -4,7 +4,6 @@ import com.traveltrove.betraveltrove.business.country.CountryService;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
-import com.traveltrove.betraveltrove.presentation.mockserverconfigs.MockServerConfigTravelerService;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
@@ -38,8 +37,6 @@ class TravelerControllerIntegrationTest {
 
     @Autowired
     private TravelerRepository travelerRepository;
-
-    private MockServerConfigTravelerService mockServerConfigTravelerService;
 
     @MockitoBean
     private CountryService countryService;
