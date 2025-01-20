@@ -1,0 +1,47 @@
+@startuml
+title CUST8 - Review A Package
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor User
+
+participant "ReviewController" as Controller
+participant "ReviewService" as Service
+participant "ReviewRepository" as Repository
+participant "PackageRepository" as PackageRepo
+participant "EntityModelUtil_review" as Utils
+
+== Add Review ==
+User -> Controller : addReview(reviewsRequestModel)
+Controller -> Service : addReview(reviewsRequestModel)
+Service -> PackageRepo : findTourPackageByPackageId(reviewsRequestModel.packageId)
+PackageRepo --> Service : TourPackage (if exists)
+Service -> Repository : save(Review)
+Repository --> Service : void
+Service -> Utils : toReviewResponseModel(Review)
+Utils --> Service : ReviewsResponseModel
+Service --> Controller : Mono<ReviewsResponseModel>
+Controller --> User : Mono<ResponseEntity<ReviewsResponseModel>>
+
+== Get All Reviews ==
+User -> Controller : getReviews(packageId)
+Controller -> Service : getReviewsByPackage(packageId)
+Service -> Repository : findByPackageId(packageId)
+Repository --> Service : List<Review>
+Service -> Utils : toReviewResponseModels(List<Review>)
+Utils --> Service : List<ReviewsResponseModel
+Service --> Controller : Flux<ReviewsResponseModel>
+Controller --> User : Flux<ResponseEntity<ReviewsResponseModel>>
+
+== Calculate Average Rating ==
+User -> Controller : getAverageRating(packageId)
+Controller -> Service : calculateAverageRating(packageId)
+Service -> Repository : findByPackageId(packageId)
+Repository --> Service : List<Review>
+Service -> Utils : calculateAverageRating(List<Review>)
+Utils --> Service : Double
+Service --> Controller : Mono<Double>
+Controller --> User : Mono<ResponseEntity<Double>>
+
+@enduml

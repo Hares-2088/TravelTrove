@@ -1,0 +1,89 @@
+@startuml
+title Standalone Class Diagram for Reviews
+
+package "reviewsubdomain" {
+
+    package "businesslayer" {
+        interface ReviewService {
+            + addReview(reviewsRequestModel: ReviewsRequestModel) : Mono<ReviewsResponseModel>
+            + getReviewsByPackage(packageId: String) : Flux<ReviewsResponseModel>
+            + calculateAverageRating(packageId: String) : Mono<Double>
+        }
+
+        class ReviewServiceImpl {
+            - reviewRepository: ReviewRepository
+            - packageRepository: PackageRepository
+            + addReview(reviewsRequestModel: ReviewsRequestModel) : Mono<ReviewsResponseModel>
+            + getReviewsByPackage(packageId: String) : Flux<ReviewsResponseModel>
+            + calculateAverageRating(packageId: String) : Mono<Double>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Review {
+            + reviewId: String
+            + packageId: String
+            + userId: String
+            + bookingId: String
+            + rating: Integer
+            + review: String
+            + date: Date
+        }
+
+        interface ReviewRepository extends ReactiveMongoRepository {
+            + save(review: Review) : Mono<Review>
+            + findByPackageId(packageId: String) : Flux<Review>
+        }
+    }
+
+    package "presentationlayer" {
+        class ReviewsRequestModel {
+            + packageId: String
+            + userId: String
+            + bookingId: String
+            + rating: Integer
+            + review: String
+            + date: Date
+        }
+
+        class ReviewsResponseModel {
+            + reviewId: String
+            + packageId: String
+            + userId: String
+            + bookingId: String
+            + rating: Integer
+            + review: String
+            + date: Date
+        }
+
+        class ReviewController {
+            - reviewService: ReviewService
+            + addReview(reviewsRequestModel: ReviewsRequestModel) : Mono<ResponseEntity<ReviewsResponseModel>>
+            + getReviews(packageId: String) : Flux<ResponseEntity<ReviewsResponseModel>>
+            + getAverageRating(packageId: String) : Mono<ResponseEntity<Double>>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil_review {
+            + toReviewResponseModel(review: Review) : ReviewsResponseModel
+            + toReviewEntity(reviewsRequestModel: ReviewsRequestModel) : Review
+            + calculateAverageRating(reviews: List<Review>) : Double
+        }
+    }
+
+    ReviewServiceImpl -down-|> ReviewService : implements
+    ReviewServiceImpl -down-> ReviewRepository : uses
+    ReviewServiceImpl -down-> PackageRepository : validates
+    ReviewController -down-> ReviewService : uses
+    ReviewController -down-> ReviewsRequestModel : uses
+    ReviewController -down-> ReviewsResponseModel : returns
+    ReviewServiceImpl -down-> Review : manipulates
+    ReviewServiceImpl -down-> ReviewsRequestModel : uses
+    ReviewServiceImpl -down-> ReviewsResponseModel : returns
+    EntityModelUtil_review -up-^ Review : converts
+    EntityModelUtil_review -up-^ ReviewsRequestModel : maps
+    EntityModelUtil_review -up-^ ReviewsResponseModel : maps
+}
+
+@enduml

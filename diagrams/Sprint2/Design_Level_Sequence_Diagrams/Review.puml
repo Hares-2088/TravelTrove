@@ -1,0 +1,131 @@
+@startuml
+title Review Management Sequence Diagram for User
+
+actor User as "<<Actor>>\nUser"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant ReviewPage as "<<View>>\nReviewPage"
+participant ReviewController as "<<Controller>>\nReviewController"
+participant ReviewService as "<<Service>>\nReviewService"
+participant ReviewEntity as "<<Entity>>\nReviewEntity"
+participant ReviewRepository as "<<Repository>>\nReviewRepository"
+participant PackageRepository as "<<Repository>>\nPackageRepository"
+participant Database as "<<Database>>"
+participant ReviewResponseModel as "<<Model>>\nReviewResponseModel"
+
+User -> ReactApplication : Access Review Page
+activate ReactApplication
+
+ReactApplication -> ReviewPage : render()
+activate ReviewPage
+deactivate ReactApplication
+
+ReviewPage -> ReviewController : GET /api/v1/reviews/{packageId}
+activate ReviewController
+
+ReviewController -> ReviewService : getReviewsByPackage(packageId)
+activate ReviewService
+
+ReviewService -> ReviewRepository : findByPackageId(packageId)
+activate ReviewRepository
+
+ReviewRepository -> Database : SELECT * FROM reviews WHERE packageId = packageId
+activate Database
+Database --> ReviewRepository : List of reviews
+deactivate Database
+
+ReviewRepository --> ReviewService : List<Review>
+deactivate ReviewRepository
+
+ReviewService -> ReviewResponseModel : Map entities to response models
+activate ReviewResponseModel
+ReviewResponseModel --> ReviewService : Response models ready
+deactivate ReviewResponseModel
+
+ReviewService --> ReviewController : List of ReviewResponseModels
+deactivate ReviewService
+
+ReviewController --> ReviewPage : Display reviews list
+deactivate ReviewController
+
+opt Add New Review
+    User -> ReviewPage : Fill review form and submit
+    ReviewPage -> ReviewController : POST /api/v1/reviews
+    activate ReviewController
+
+    ReviewController -> ReviewService : addReview(reviewsRequestModel)
+    activate ReviewService
+
+    ReviewService -> PackageRepository : findTourPackageByPackageId(reviewsRequestModel.packageId)
+    activate PackageRepository
+    alt Invalid packageId
+        PackageRepository --> ReviewService : Package not found
+        deactivate PackageRepository
+        ReviewService --> ReviewController : Return error message
+        deactivate ReviewService
+        ReviewController --> ReviewPage : Display error message
+        deactivate ReviewController
+    else Valid packageId
+        PackageRepository --> ReviewService : TourPackage
+        deactivate PackageRepository
+
+        ReviewService -> ReviewEntity : Create review entity from request model
+        activate ReviewEntity
+        ReviewEntity --> ReviewService : Review entity created
+        deactivate ReviewEntity
+
+        ReviewService -> ReviewRepository : save(reviewEntity)
+        activate ReviewRepository
+        ReviewRepository -> Database : INSERT INTO reviews
+        activate Database
+        Database --> ReviewRepository : Success
+        deactivate Database
+        ReviewRepository --> ReviewService : Review saved
+        deactivate ReviewRepository
+
+        ReviewService -> ReviewResponseModel : Create response model from entity
+        activate ReviewResponseModel
+        ReviewResponseModel --> ReviewService : Response ready
+        deactivate ReviewResponseModel
+
+        ReviewService --> ReviewController : ReviewResponseModel
+        deactivate ReviewService
+        ReviewController --> ReviewPage : Review added successfully
+        deactivate ReviewController
+    end
+end
+
+opt Calculate Average Rating
+    User -> ReviewPage : Request average rating
+    ReviewPage -> ReviewController : GET /api/v1/reviews/average/{packageId}
+    activate ReviewController
+
+    ReviewController -> ReviewService : calculateAverageRating(packageId)
+    activate ReviewService
+
+    ReviewService -> ReviewRepository : findByPackageId(packageId)
+    activate ReviewRepository
+    alt No reviews found
+        ReviewRepository --> ReviewService : No reviews
+        deactivate ReviewRepository
+        ReviewService --> ReviewController : Return error message (No reviews found)
+        deactivate ReviewService
+        ReviewController --> ReviewPage : Display error message
+        deactivate ReviewController
+    else Reviews exist
+        ReviewRepository --> ReviewService : List<Review>
+        deactivate ReviewRepository
+
+        ReviewService -> ReviewResponseModel : calculateAverageRating(List<Review>)
+        activate ReviewResponseModel
+        ReviewResponseModel --> ReviewService : Average rating
+        deactivate ReviewResponseModel
+
+        ReviewService --> ReviewController : Double average rating
+        deactivate ReviewService
+        ReviewController --> ReviewPage : Display average rating
+        deactivate ReviewController
+    end
+end
+
+@enduml
