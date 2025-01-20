@@ -1,0 +1,21 @@
+@startuml
+title Tour Package Status State Diagram
+
+[*] --> UPCOMING : Tour package created
+
+UPCOMING --> BOOKING_OPEN : Admin opens booking
+BOOKING_OPEN --> SOLD_OUT : No more available seats
+BOOKING_OPEN --> BOOKING_CLOSED : Admin closes booking
+BOOKING_OPEN --> CANCELLED : Admin cancels the tour
+
+SOLD_OUT --> CANCELLED : Admin cancels due to operational issues
+SOLD_OUT --> COMPLETED : Tour successfully conducted
+
+BOOKING_CLOSED --> CANCELLED : Admin cancels before start
+BOOKING_CLOSED --> UPCOMING : Admin reopens bookings
+
+CANCELLED --> [*] : Cannot be reopened
+
+COMPLETED --> [*] : End of process
+
+@enduml

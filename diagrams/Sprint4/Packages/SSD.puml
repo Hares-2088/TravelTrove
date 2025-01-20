@@ -1,0 +1,37 @@
+@startuml
+title EMPL1 - Browse and Manage Tour Packages
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Employee" as Employee #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+participant "Gmail API" as GmailAPI #FFFFFF
+
+Employee -> TMS : Request to Browse Tour Packages
+TMS -> Employee : Tour Packages Data (e.g., Destination, Price, Dates, Status, Availability)
+
+opt EMPL3 - Modify Tour Package
+    Employee -> TMS : Select a Tour Package to Modify
+    Employee -> TMS : Update Tour Package Details
+    TMS -> Employee : Modified Tour Package Data (e.g., Updated Dates, Price)
+
+    opt EMPL4 - Edit Tour Package Status
+        Employee -> TMS : Update Tour Package Status (e.g., UPCOMING → BOOKING_OPEN)
+        TMS -> Employee : Status Updated Successfully
+    end
+
+    opt EMPL5 - Custom Notification
+        Employee -> TMS : Create Custom Notification
+        TMS -> GmailAPI : Send Notification Email
+        GmailAPI -> TMS : Notification Email Data (e.g., Status, Email IDs)
+        TMS -> Employee : Notification Data (e.g., Success/Failure, Email Recipients)
+    end
+end
+
+opt EMPL2 - Add Tour Package
+    Employee -> TMS : Provide New Tour Package Details
+    TMS -> Employee : New Tour Package Data (e.g., Destination, Price, Dates, Initial Status: UPCOMING)
+end
+
+@enduml

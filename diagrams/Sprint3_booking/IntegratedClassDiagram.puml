@@ -480,25 +480,27 @@ package "travelersubdomain" {
 }
 
 ' ***********************************************************************
-' TOURPACKAGE SUBDOMAIN
+' TOUR PACKAGE SUBDOMAIN
 ' ***********************************************************************
 package "tourpackagesubdomain" {
     package "businesslayer" {
         interface TourPackageService {
             + getAllTourPackages() : Flux<TourPackageResponseModel>
             + getTourPackageById(packageId: String) : Mono<TourPackageResponseModel>
-            + addTourPackage(tourPackage: TourPackageRequestModel) : Mono<TourPackageResponseModel>
+            + addTourPackage(tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
             + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
             + deleteTourPackage(packageId: String) : Mono<Void>
+            + updatePackageStatus(packageId: String, newStatus: PackageStatus) : Mono<TourPackageResponseModel>
         }
 
         class TourPackageServiceImpl {
             - tourPackageRepository: TourPackageRepository
             + getAllTourPackages() : Flux<TourPackageResponseModel>
             + getTourPackageById(packageId: String) : Mono<TourPackageResponseModel>
-            + addTourPackage(tourPackage: TourPackageRequestModel) : Mono<TourPackageResponseModel>
+            + addTourPackage(tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
             + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
             + deleteTourPackage(packageId: String) : Mono<Void>
+            + updatePackageStatus(packageId: String, newStatus: PackageStatus) : Mono<TourPackageResponseModel>
         }
     }
 
@@ -515,11 +517,22 @@ package "tourpackagesubdomain" {
             + priceForThree: Decimal
             + airportId: String
             + tourId: String
+            + status: PackageStatus
+        }
+
+        enum PackageStatus {
+            UPCOMING
+            COMPLETED
+            CANCELLED
+            SOLD_OUT
+            BOOKING_OPEN
+            BOOKING_CLOSED
         }
 
         interface TourPackageRepository extends ReactiveMongoRepository {
             + findTourPackageByPackageId(packageId: String) : Mono<TourPackage>
             + findAll() : Flux<TourPackage>
+            + updatePackageStatus(packageId: String, newStatus: PackageStatus) : Mono<Void>
         }
     }
 
@@ -547,6 +560,7 @@ package "tourpackagesubdomain" {
             + priceForThree: Decimal
             + airportId: String
             + tourId: String
+            + status: PackageStatus
         }
 
         class TourPackageController {
@@ -556,6 +570,7 @@ package "tourpackagesubdomain" {
             + addTourPackage(tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
             + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<ResponseEntity<TourPackageResponseModel>>
             + deleteTourPackage(packageId: String) : Mono<Void>
+            + updatePackageStatus(packageId: String, newStatus: PackageStatus) : Mono<ResponseEntity<TourPackageResponseModel>>
         }
     }
 
@@ -567,6 +582,9 @@ package "tourpackagesubdomain" {
         }
     }
 
+    ' ***********************************************************************
+    ' RELATIONSHIPS
+    ' ***********************************************************************
     TourPackageServiceImpl -down-|> TourPackageService
     TourPackageServiceImpl -down-> TourPackageRepository
     TourPackageController -down-> TourPackageService
@@ -579,6 +597,20 @@ package "tourpackagesubdomain" {
     EntityModelUtil_tourpackage -up-^ TourPackageRequestModel
     EntityModelUtil_tourpackage -up-^ TourPackageResponseModel
 }
+
+
+' ***********************************************************************
+' CROSS-DOMAIN DEPENDENCIES
+' ***********************************************************************
+' Booking references a Tour Package by packageId
+bookingsubdomain.dataaccesslayer.Booking --> tourpackagesubdomain.dataaccesslayer.TourPackage : "packageId (ID-based reference)"
+
+' TourPackage references an airport by airportId
+tourpackagesubdomain.dataaccesslayer.TourPackage --> airportsubdomain.dataaccesslayer.Airport : "airportId (ID-based reference)"
+
+' TourPackage references a tour by tourId
+tourpackagesubdomain.dataaccesslayer.TourPackage --> toureventsubdomain.dataaccesslayer.TourEvent : "tourId (ID-based reference)"
+
 
 ' ***********************************************************************
 ' CROSS-DOMAIN DEPENDENCIES (Only between the provided subdomains)
