@@ -6,15 +6,18 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static org.mockito.Mockito.*;
+
 import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.data.mongodb.port=0"})
@@ -34,8 +37,12 @@ class UserControllerIntegrationTest {
 
     private final UserResponseModel existingUser = UserResponseModel.builder()
             .userId("auth0|675e3886e184fd643a8ed5aa")
+            .firstName("Hello")
+            .lastName("Goodbye")
             .email("admin@traveltrove.com")
             .roles(List.of("Admin"))
+            .permissions(List.of("read:notification"))
+            .travelerId("d572a38b-7dec-4064-8c29-839633ea238e")
             .build();
 
     private final UserResponseModel updatedUser = UserResponseModel.builder()
@@ -54,6 +61,9 @@ class UserControllerIntegrationTest {
                 .email(existingUser.getEmail())
                 .firstName(existingUser.getFirstName())
                 .lastName(existingUser.getLastName())
+                .roles(existingUser.getRoles())
+                .permissions(existingUser.getPermissions())
+                .travelerId(existingUser.getTravelerId())
                 .build();
 
         StepVerifier.create(userRepository.save(existingUserEntity))
@@ -66,19 +76,19 @@ class UserControllerIntegrationTest {
 //        webTestClient.get()
 //                .uri("/api/v1/users/{userId}", existingUser.getUserId())
 //                .exchange()
-//                .expectStatus().isEqualTo(HttpStatus.UNAUTHORIZED)
+//                .expectStatus().isOk()
 //                .expectBody(UserResponseModel.class)
 //                .value(user -> StepVerifier.create(Mono.just(user))
 //                        .expectNextMatches(u -> u.getEmail().equals(existingUser.getEmail()))
 //                        .verifyComplete());
 //    }
-//
+
 //    @Test
 //    void whenHandleGetUser_withInvalidUserId_thenReturnNotFound() {
 //        webTestClient.get()
 //                .uri("/api/v1/users/{userId}", INVALID_USER_ID)
 //                .exchange()
-//                .expectStatus().isEqualTo(HttpStatus.UNAUTHORIZED);
+//                .expectStatus().isNotFound();
 //    }
 
     @Test
@@ -127,4 +137,72 @@ class UserControllerIntegrationTest {
                 .expectStatus().isOk();
     }
 
+    @Test
+    void whenGetUserById_withValidUserId_thenReturnUserDetails() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
+                .mutateWith(SecurityMockServerConfigurers.mockUser("TestUser"))
+                .get()
+                .uri("/api/v1/users/{userId}", existingUser.getUserId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(UserResponseModel.class)
+                .value(user -> StepVerifier.create(Mono.just(user))
+                        .expectNextMatches(u ->
+                                u.getUserId().equals(existingUser.getUserId()) &&
+                                        u.getEmail().equals(existingUser.getEmail()) &&
+                                        u.getRoles().equals(existingUser.getRoles()) &&
+                                        u.getFirstName().equals(existingUser.getFirstName()) &&
+                                        u.getLastName().equals(existingUser.getLastName()) &&
+                                        u.getTravelerId().equals(existingUser.getTravelerId()) &&
+                                        u.getPermissions().equals(existingUser.getPermissions())
+                        )
+                        .expectNextMatches(u -> u.getEmail().equals(existingUser.getEmail()))
+                        .verifyComplete());
+    }
+
+    @Test
+    void whenGetUserById_withInvalidUserId_thenReturnNotFound() {
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
+                .mutateWith(SecurityMockServerConfigurers.mockUser("TestUser"))
+                .get()
+                .uri("/api/v1/users/{userId}", INVALID_USER_ID)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .isEmpty();
+    }
+
+
+    @Test
+    void whenUpdateUserRole_withValidUserId_thenReturnSuccess() {
+        RoleUpdateRequestModel roleUpdateRequest = new RoleUpdateRequestModel(List.of("rol_bGEYlXT5XYsHGhcQ")); //one of the roles from Auth0
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
+                .mutateWith(SecurityMockServerConfigurers.mockUser("TestUser"))
+                .post()
+                .uri("/api/v1/users/{userId}/roles", existingUser.getUserId())
+                .bodyValue(roleUpdateRequest)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class)
+                .isEqualTo("Roles updated successfully");
+    }
+
+    @Test
+    void whenUpdateUserRole_withInvalidUserId_thenReturnBadRequest() {
+        RoleUpdateRequestModel roleUpdateRequest = new RoleUpdateRequestModel(List.of("Admin", "Customer"));
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
+                .mutateWith(SecurityMockServerConfigurers.mockUser("TestUser"))
+                .post()
+                .uri("/api/v1/users/{userId}/roles", INVALID_USER_ID)
+                .bodyValue(roleUpdateRequest)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(String.class)
+                .value(errorMessage -> StepVerifier.create(Mono.just(errorMessage))
+                        .expectNextMatches(msg -> msg.contains("Failed to update roles"))
+                        .verifyComplete());
+    }
 }
+

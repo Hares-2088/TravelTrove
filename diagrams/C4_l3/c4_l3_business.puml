@@ -29,7 +29,7 @@ Container_Boundary(api_app, "API Application") {
         Component(HotelController, "Hotel Controller", "Spring REST Controller", "Handles HTTP requests related to hotels", $sprite="java")
         Component(UserController, "User Controller", "Spring REST Controller", "Handles HTTP requests related to users", $sprite="java")
         Component(BookingController, "Booking Controller", "Spring REST Controller", "Handles HTTP requests related to bookings", $sprite="java")
-        Component(TourPackageController, "Tour Package Controller", "Spring REST Controller", "Handles HTTP requests related to tour packages", $sprite="java")
+        Component(TourPackageController, "Package Controller", "Spring REST Controller", "Handles HTTP requests related to packages", $sprite="java")
         Component(AirportController, "Airport Controller", "Spring REST Controller", "Handles HTTP requests related to airports", $sprite="java")
         Component(HotelController, "Hotel Controller", "Spring REST Controller", "Handles HTTP requests related to hotels", $sprite="java")
         Component(TourEventController, "Tour Event Controller", "Spring REST Controller", "Handles HTTP requests related to tour events", $sprite="java")
@@ -44,6 +44,8 @@ Container_Boundary(api_app, "API Application") {
 
     Component(ReviewController, "Review Controller", "Spring REST Controller", "Handles HTTP requests related to reviews", $sprite="java")
     Component(TravelerController, "Traveler Controller", "Spring REST Controller", "Handles HTTP requests related to travelers", $sprite="java")
+
+
     }
 
     Container_Boundary(services, "Services") {
@@ -149,6 +151,7 @@ Component(ReviewService, "Review Service", "Spring Service", "Contains business 
     Rel(AuthenticationService, StaffService, "Verifies staff roles and permissions", "HTTP API")
     Rel(EventService, TourService, "Fetches associated tours for events", "HTTP API")
     Rel(EventService, NotificationService, "Notifies customers about event updates", "HTTP API")
+    Rel(EventService, BookingService, "Validates bookings associated with events", "HTTP API")
 
     Rel(CityService, CountryService, "Fetches country data for a city", "HTTP API")
     Rel(AirportService, CityService, "Fetches city data for an airport", "HTTP API")

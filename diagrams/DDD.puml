@@ -253,7 +253,6 @@ rectangle "TravelTrove" as BoundedContextTravelTrove #line.dashed {
     City ||--o{ Event : "1:M"
 
     Package ||--o{ Airport : "1:1"
-    Package ||--o{ TourEvent : "1:M"
 
     TourEvent ||--o{ Event : "1:M"
     TourEvent ||--o{ Hotel : "1:M"

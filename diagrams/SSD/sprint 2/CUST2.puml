@@ -35,6 +35,8 @@ opt CUST3 - Book a Tour Package
 
     group include [CUST5 - Pay for a Tour]
     end
+
+    TMS -> Customer : Decrease Available Seats
 end
 
 opt CUST6 - Subscribe to Notifications

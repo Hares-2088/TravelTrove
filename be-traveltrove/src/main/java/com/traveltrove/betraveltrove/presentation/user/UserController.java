@@ -4,9 +4,14 @@ import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -39,21 +44,42 @@ public class UserController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PatchMapping("/{userId}")
-    public Mono<ResponseEntity<UserResponseModel>> updateUser(
-            @PathVariable String userId,
-            @RequestBody UserUpdateRequest userUpdateRequest) {
+    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<UserResponseModel> getAllUser() {
+        return userService.getAllUsers();
+    }
 
-        return userService.updateUserProfile(userId, userUpdateRequest)
-                .map(ResponseEntity::ok)
-                .onErrorResume(NotFoundException.class, e -> {
-                    log.error("User not found: {}", e.getMessage());
-                    return Mono.just(ResponseEntity.notFound().build());
-                })
-                .onErrorResume(Exception.class, e -> {
-                    log.error("Unexpected error while updating user: {}", e.getMessage());
-                    return Mono.just(ResponseEntity.internalServerError().build());
+    @PostMapping("/{userId}/roles")
+    public Mono<ResponseEntity<String>> updateUserRole(
+            @PathVariable String userId,
+            @RequestBody UpdateRoleRequestModel request) {
+        log.info("Received request to update roles for user: {}", userId);
+        log.info("Roles to assign: {}", request.getRoles());
+
+        return userService.updateUserRole(userId, request.getRoles())
+                .thenReturn(ResponseEntity.ok("Role updated successfully"))
+                .onErrorResume(error -> {
+                    log.error("Failed to update roles for user {}: {}", userId, error.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("Failed to update roles: " + error.getMessage()));
                 });
     }
 
+
+    @PutMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<UserResponseModel>> updateUser(
+            @PathVariable String userId,
+            @RequestBody UserRequestModel userRequestModel) {
+        return userService.updateUser(userId, userRequestModel)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+//    @GetMapping("/auth0")
+//    public Flux<UserResponseModel> getAllUsersFromAuth0() {
+//        log.info("Fetching all users directly from Auth0...");
+//        return userService.getAllUsersFromAuth0()
+//                .doOnComplete(() -> log.info("Successfully fetched all users from Auth0"))
+//                .doOnError(error -> log.error("Error fetching users from Auth0", error));
+//    }
 }

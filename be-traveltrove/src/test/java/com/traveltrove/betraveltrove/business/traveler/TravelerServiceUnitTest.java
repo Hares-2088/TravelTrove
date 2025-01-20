@@ -6,6 +6,8 @@ import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.presentation.country.CountryResponseModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
+import com.traveltrove.betraveltrove.presentation.traveler.TravelerWithIdRequestModel;
+import com.traveltrove.betraveltrove.utils.entitymodelyutils.TravelerEntityModelUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TravelerServiceIntegrationTest {
+class TravelerServiceUnitTest {
 
     @Mock
     private TravelerRepository travelerRepository;
@@ -200,6 +202,38 @@ class TravelerServiceIntegrationTest {
                                 response.getState().equals("NY") &&
                                 response.getCountryId().equals("1")
                 )
+                .verifyComplete();
+    }
+
+    @Test
+    void whenCreateTravelerUser_withValidRequest_thenReturnResponseModel() {
+        TravelerWithIdRequestModel requestModel = TravelerWithIdRequestModel.builder()
+                .travelerId("123")
+                .seq(1)
+                .firstName("John")
+                .lastName("Doe")
+                .addressLine1("123 Main St")
+                .addressLine2("Apt 4B")
+                .city("Springfield")
+                .state("IL")
+                .email("john.doe@example.com")
+                .countryId("US")
+                .build();
+
+        Traveler travelerEntity = TravelerEntityModelUtil.toTravelerUserEntity(requestModel);
+
+        when(travelerRepository.save(any(Traveler.class))).thenReturn(Mono.just(travelerEntity));
+
+        Mono<TravelerResponseModel> result = travelerService.createTravelerUser(requestModel);
+
+        StepVerifier.create(result)
+                .expectNextMatches(response ->
+                        response.getTravelerId().equals("123") &&
+                                response.getFirstName().equals("John") &&
+                                response.getLastName().equals("Doe") &&
+                                response.getAddressLine1().equals("123 Main St") &&
+                                response.getCity().equals("Springfield") &&
+                                response.getEmail().equals("john.doe@example.com"))
                 .verifyComplete();
     }
 

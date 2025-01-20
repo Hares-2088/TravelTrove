@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -184,6 +183,45 @@ class TravelerControllerIntegrationTest {
         // Validate that there is now 3 travelers in the database
         StepVerifier.create(travelerRepository.findAll().filter(t -> t.getEmail().equals("alice.johnson@example.com")))
                 .expectNextMatches(traveler -> traveler.getFirstName().equals("Alice"))
+                .verifyComplete();
+    }
+
+    @Test
+    void whenCreateTravelerUser_withValidRequest_thenReturnCreatedTraveler() {
+        TravelerWithIdRequestModel requestModel = TravelerWithIdRequestModel.builder()
+                .travelerId("789")
+                .seq(3)
+                .firstName("Maximilian")
+                .lastName("Olivarez")
+                .addressLine1("789 Pine Ave")
+                .addressLine2("Floor 5")
+                .city("Rivertown")
+                .state("TX")
+                .email("max.olivarez@example.com")
+                .countryId("MX")
+                .build();
+
+        webTestClient
+                .mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf())
+                .post()
+                .uri("/api/v1/travelers/create-traveler-user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestModel)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(TravelerResponseModel.class)
+                .value(response -> {
+                    assertNotNull(response);
+                    assertEquals("Maximilian", response.getFirstName());
+                    assertEquals("Olivarez", response.getLastName());
+                    assertEquals("789 Pine Ave", response.getAddressLine1());
+                    assertEquals("Rivertown", response.getCity());
+                    assertEquals("max.olivarez@example.com", response.getEmail());
+                });
+
+        StepVerifier.create(travelerRepository.findAll().filter(t -> t.getEmail().equals("max.olivarez@example.com")))
+                .expectNextMatches(traveler -> traveler.getFirstName().equals("Maximilian"))
                 .verifyComplete();
     }
 

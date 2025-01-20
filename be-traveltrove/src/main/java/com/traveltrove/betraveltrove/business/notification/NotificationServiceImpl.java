@@ -3,6 +3,7 @@ package com.traveltrove.betraveltrove.business.notification;
 import com.traveltrove.betraveltrove.dataaccess.notification.Notification;
 import com.traveltrove.betraveltrove.dataaccess.notification.NotificationRepository;
 import com.traveltrove.betraveltrove.presentation.notification.NotificationResponseModel;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -90,13 +91,13 @@ public class NotificationServiceImpl implements NotificationService {
                         .messageContent(notification.getMessageContent())
                         .sentAt(notification.getSentAt())
                         .build())
-                .switchIfEmpty(Mono.error(new RuntimeException("Notification not found with ID: " + notificationId)));
+                .switchIfEmpty(Mono.error(new NotFoundException("Notification not found with ID: " + notificationId)));
     }
 
     @Override
     public Mono<Void> deleteNotificationByNotificationId(String notificationId) {
         return notificationRepository.findByNotificationId(notificationId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Notification not found with ID: " + notificationId)))
+                .switchIfEmpty(Mono.error(new NotFoundException("Notification not found with ID: " + notificationId)))
                 .flatMap(notificationRepository::delete);
     }
 
