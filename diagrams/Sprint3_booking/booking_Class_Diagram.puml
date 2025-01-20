@@ -1,0 +1,142 @@
+@startuml
+title Updated Standalone Class Diagram for Bookings
+
+package "bookingsubdomain" {
+
+    package "businesslayer" {
+        interface BookingService {
+            + getAllBookings() : Flux<BookingResponseModel>
+            + getBookingsByUserId(userId: String) : Flux<BookingResponseModel>
+            + getBookingsByPackageId(packageId: String) : Flux<BookingResponseModel>
+            + getBookingsByStatus(status: BookingStatus) : Flux<BookingResponseModel>
+            + getBookingById(bookingId: String) : Mono<BookingResponseModel>
+            + getBookingByPackageIdAndUserId(packageId: String, userId: String) : Mono<BookingResponseModel>
+            + addBooking(booking: BookingRequestModel) : Mono<BookingResponseModel>
+            + updateBookingStatus(bookingId: String, newStatus: BookingStatus) : Mono<BookingResponseModel>
+            + deleteBooking(bookingId: String) : Mono<Void>
+        }
+
+        class BookingServiceImpl {
+            - bookingRepository: BookingRepository
+            - packageService: PackageService
+            - userService: UserService
+            - travelerService: TravelerService
+            + getAllBookings() : Flux<BookingResponseModel>
+            + getBookingsByUserId(userId: String) : Flux<BookingResponseModel>
+            + getBookingsByPackageId(packageId: String) : Flux<BookingResponseModel>
+            + getBookingsByStatus(status: BookingStatus) : Flux<BookingResponseModel>
+            + getBookingById(bookingId: String) : Mono<BookingResponseModel>
+            + getBookingByPackageIdAndUserId(packageId: String, userId: String) : Mono<BookingResponseModel>
+            + addBooking(booking: BookingRequestModel) : Mono<BookingResponseModel>
+            + updateBookingStatus(bookingId: String, newStatus: BookingStatus) : Mono<BookingResponseModel>
+            + deleteBooking(bookingId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Booking {
+            + _id: ObjectId
+            + bookingId: String
+            + userId: String
+            + packageId: String
+            + travelerIds: List<String>
+            + bookingDate: DateTime
+            + totalPrice: Decimal
+            + status: BookingStatus
+        }
+
+        interface BookingRepository extends ReactiveMongoRepository {
+            + findBookingsByUserId(userId: String) : Flux<Booking>
+            + findBookingsByPackageId(packageId: String) : Flux<Booking>
+            + findBookingsByStatus(status: BookingStatus) : Flux<Booking>
+            + findBookingByBookingId(bookingId: String) : Mono<Booking>
+            + findBookingByPackageIdAndUserId(packageId: String, userId: String) : Mono<Booking>
+        }
+    }
+
+    package "presentationlayer" {
+        class BookingRequestModel {
+            + userId: String
+            + packageId: String
+            + travelerIds: List<String>
+            + bookingDate: DateTime
+            + totalPrice: Decimal
+            + status: BookingStatus
+        }
+
+        class BookingResponseModel {
+            + bookingId: String
+            + userId: String
+            + packageId: String
+            + travelerIds: List<String>
+            + bookingDate: DateTime
+            + totalPrice: Decimal
+            + status: BookingStatus
+        }
+
+        class BookingStatusUpdateRequest {
+            + status: BookingStatus
+        }
+
+        class BookingController {
+            - bookingService: BookingService
+            + getAllBookings() : Flux<BookingResponseModel>
+            + getBookingsByUserId(userId: String) : Flux<BookingResponseModel>
+            + getBookingsByPackageId(packageId: String) : Flux<BookingResponseModel>
+            + getBookingsByStatus(status: BookingStatus) : Flux<BookingResponseModel>
+            + getBookingById(bookingId: String) : Mono<ResponseEntity<BookingResponseModel>>
+            + getBookingByPackageIdAndUserId(packageId: String, userId: String) : Mono<ResponseEntity<BookingResponseModel>>
+            + addBooking(bookingRequestModel: BookingRequestModel) : Mono<ResponseEntity<BookingResponseModel>>
+            + updateBookingStatus(bookingId: String, statusUpdateRequest: BookingStatusUpdateRequest) : Mono<ResponseEntity<BookingResponseModel>>
+            + deleteBooking(bookingId: String) : Mono<ResponseEntity<Void>>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toBookingResponseModel(booking: Booking) : BookingResponseModel
+            + toBookingEntity(bookingRequestModel: BookingRequestModel) : Booking
+            + generateUUIDString() : String
+        }
+    }
+
+    package "enums" {
+        enum BookingStatus {
+            PAYMENT_PENDING
+            PAYMENT_ATTEMPT2_PENDING
+            PAYMENT_ATTEMPT3_PENDING
+            BOOKING_FAILED
+            PAYMENT_SUCCESS
+            BOOKING_CONFIRMED
+            BOOKING_FINALIZED
+            BOOKING_EXPIRED
+            BOOKING_CANCELLED
+            REFUNDED
+        }
+    }
+
+    BookingServiceImpl -down-|> BookingService : implements
+    BookingServiceImpl -down-> BookingRepository : interacts with
+    BookingServiceImpl -down-> PackageService : validates package
+    BookingServiceImpl -down-> UserService : validates user
+    BookingServiceImpl -down-> TravelerService : manages travelers
+
+    BookingController -down-> BookingService : interacts with
+    BookingController -down-> BookingRequestModel : uses
+    BookingController -down-> BookingResponseModel : returns
+    BookingController -down-> BookingStatusUpdateRequest : updates
+
+    BookingServiceImpl -down-> Booking : manipulates
+    BookingServiceImpl -down-> BookingRequestModel : uses
+    BookingServiceImpl -down-> BookingResponseModel : returns
+
+    BookingRepository -up-|> ReactiveMongoRepository : extends
+
+    EntityModelUtil -up-^ Booking : converts
+    EntityModelUtil -up-^ BookingRequestModel : maps
+    EntityModelUtil -up-^ BookingResponseModel : maps
+
+    Booking -up-> BookingStatus : has status
+
+}
+@enduml

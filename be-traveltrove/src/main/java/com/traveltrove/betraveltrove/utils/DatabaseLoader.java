@@ -1780,7 +1780,7 @@ public class DatabaseLoader {
                     .bookingId("032931cf-57d3-4278-b0db-8762731a7aa2")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
-                    .status(BookingStatus.BOOKING_CANCELLED)
+                    .status(BookingStatus.BOOKING_FINALIZED)
                     .bookingDate(LocalDate.now().minusWeeks(4))
                     .totalPrice(2000.0)
                     .build(),
@@ -1816,7 +1816,7 @@ public class DatabaseLoader {
                     .bookingId("b46bab5b-0358-4ed0-8136-f064e3ca6d08")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
-                    .status(BookingStatus.BOOKING_CANCELLED)
+                    .status(BookingStatus.BOOKING_FINALIZED)
                     .bookingDate(LocalDate.now().minusMonths(5))
                     .totalPrice(1800.0)
                     .build(),
@@ -1889,7 +1889,7 @@ public class DatabaseLoader {
                         .bookingId("98183e89-c6cb-415a-8fb3-ddbc3d327fc7")
                         .userId("auth0|675f4b619a80612ce548e068")
                         .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
-                        .status(BookingStatus.PAYMENT_SUCCESS)
+                        .status(BookingStatus.BOOKING_FINALIZED)
                         .bookingDate(LocalDate.now())
                         .totalPrice(1700.0)
                         .build(),
@@ -1899,7 +1899,7 @@ public class DatabaseLoader {
                         .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b177")
                         .userId("auth0|675f4b7ae184fd643a8ed902")
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
-                        .status(BookingStatus.PAYMENT_SUCCESS)
+                        .status(BookingStatus.BOOKING_FINALIZED)
                         .bookingDate(LocalDate.now().minusMonths(3))
                         .totalPrice(1600.0)
                         .build(),
@@ -1954,7 +1954,7 @@ public class DatabaseLoader {
                         .bookingId("032931cf-57d3-4278-b0db-8762731a7aa2")
                         .userId("auth0|675f4b9d9a80612ce548e069")
                         .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
-                        .status(BookingStatus.BOOKING_CANCELLED)
+                        .status(BookingStatus.BOOKING_FINALIZED)
                         .bookingDate(LocalDate.now().minusWeeks(6))
                         .totalPrice(2000.0)
                         .build(),
@@ -1963,7 +1963,7 @@ public class DatabaseLoader {
                         .bookingId("206fa0ba-4803-4730-a7ab-70e6f3cf5826")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
-                        .status(BookingStatus.PAYMENT_SUCCESS)
+                        .status(BookingStatus.BOOKING_FINALIZED)
                         .bookingDate(LocalDate.now().minusMonths(3))
                         .totalPrice(1600.0)
                         .build(),
@@ -2026,7 +2026,7 @@ public class DatabaseLoader {
                         .bookingId("1b02a876-9714-48ff-ace3-3035222e256c")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
-                        .status(BookingStatus.BOOKING_EXPIRED)
+                        .status(BookingStatus.BOOKING_FINALIZED)
                         .bookingDate(LocalDate.now().plusMonths(1))
                         .totalPrice(1900.0)
                         .build(),
@@ -2035,7 +2035,7 @@ public class DatabaseLoader {
                         .bookingId("dc04ebc7-82c3-4b89-a33b-cfd3c16d2420")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("9b5e2c1a-6f7d-4b9e-b8a7-d3f2b1c9a4e5")
-                        .status(BookingStatus.BOOKING_CANCELLED)
+                        .status(BookingStatus.BOOKING_FINALIZED)
                         .bookingDate(LocalDate.now().plusMonths(2))
                         .totalPrice(1500.0)
                         .build(),
@@ -2044,7 +2044,7 @@ public class DatabaseLoader {
                         .bookingId("e8f9b624-0fd8-4db7-8fdf-e28af7e652cb")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
-                        .status(BookingStatus.PAYMENT_ATTEMPT3_PENDING)
+                        .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
                         .bookingDate(LocalDate.now().plusMonths(3))
                         .totalPrice(2000.0)
                         .build()

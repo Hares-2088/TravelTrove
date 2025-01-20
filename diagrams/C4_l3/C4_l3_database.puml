@@ -12,12 +12,13 @@ entity "User" as User {
     + _id: ObjectId
     --
       userId: String <<Unique>>
+      travelerId: String <<Optional FK>>
       email: String <<Unique>>
       firstName: String
       lastName: String
       roles: List<String>
       permissions: List<String>
-      travelerId: String <<Optional FK>>
+      travelerIds: List<String>
 }
 
 entity "Traveler" as Traveler {
@@ -71,6 +72,7 @@ entity "Booking" as Booking {
     bookingDate: DateTime
     totalPrice: Decimal
     status: String
+    travelerIds: String <<FK>>
 }
 
 entity "Payment" as Payment {

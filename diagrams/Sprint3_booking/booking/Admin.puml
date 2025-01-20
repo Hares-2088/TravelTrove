@@ -13,14 +13,16 @@ skinparam usecase {
     ArrowColor Black
 }
 
-actor "Dar El Salam's Employee" as Employee
+actor "Dar El Salam's Admin" as Admin
 
 rectangle "Travel Trove System" {
 
     usecase "View Bookings"
+    usecase "Update Booking Status"
 
 }
 
-Employee -- "View Bookings"
+Admin -- "View Bookings"
+Admin -- "Update Booking Status"
 
 @enduml
