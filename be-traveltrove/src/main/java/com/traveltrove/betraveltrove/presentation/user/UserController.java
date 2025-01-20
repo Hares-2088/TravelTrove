@@ -74,12 +74,12 @@ public class UserController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/auth0")
-    public Flux<UserResponseModel> getAllUsersFromAuth0() {
-        log.info("Fetching all users directly from Auth0...");
-        return userService.getAllUsersFromAuth0()
-                .doOnComplete(() -> log.info("Successfully fetched all users from Auth0"))
-                .doOnError(error -> log.error("Error fetching users from Auth0", error));
-    }
+//    @GetMapping("/auth0")
+//    public Flux<UserResponseModel> getAllUsersFromAuth0() {
+//        log.info("Fetching all users directly from Auth0...");
+//        return userService.getAllUsersFromAuth0()
+//                .doOnComplete(() -> log.info("Successfully fetched all users from Auth0"))
+//                .doOnError(error -> log.error("Error fetching users from Auth0", error));
+//    }
 
 }

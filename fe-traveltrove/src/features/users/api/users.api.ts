@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import { useAxiosInstance } from "../../../shared/axios/useAxiosInstance";
 import { UserRequestModel, UserResponseModel } from "../model/users.model";
 
@@ -23,26 +23,27 @@ const parseEventStream = (data: string): UserResponseModel[] => {
 };
 
 export const useUsersApi = () => {
-    const axiosInstance = useAxiosInstance();
+  const axiosInstance = useAxiosInstance();
 
-    const getUser = async (userId: string): Promise<UserResponseModel | null> => {
-        const encodedUserId = encodeURIComponent(userId);
-    
-        try {
-            const response = await axiosInstance.get<UserResponseModel>(`/users/${encodedUserId}`);
-            return response.data;
-        } catch (error: any) {
-            if (axios.isAxiosError(error)) {
-                if (error.response?.status === 404) {
-                    console.log(`User with ID ${userId} not found (404).`);
-                    return null; // Return null to indicate user not found
-                }
-            }
-            console.error(`Error fetching user with ID ${userId}:`, error);
-            throw error; // Re-throw error for unexpected cases
+  const getUser = async (userId: string): Promise<UserResponseModel | null> => {
+    const encodedUserId = encodeURIComponent(userId);
+
+    try {
+      const response = await axiosInstance.get<UserResponseModel>(
+        `/users/${encodedUserId}`
+      );
+      return response.data;
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          console.log(`User with ID ${userId} not found (404).`);
+          return null; // Return null to indicate user not found
         }
-    };
-    
+      }
+      console.error(`Error fetching user with ID ${userId}:`, error);
+      throw error; // Re-throw error for unexpected cases
+    }
+  };
 
   const loginUser = async (userId: string): Promise<UserResponseModel> => {
     const encodedUserId = encodeURIComponent(userId);
@@ -52,9 +53,6 @@ export const useUsersApi = () => {
     return response.data;
   };
 
-
-
-  
   // Kinda wonky, this can be improved by using Token Claims to sync instead of fetching from Auth0 each time
   const syncUser = async (userId: string): Promise<UserResponseModel> => {
     const encodedUserId = encodeURIComponent(userId);
@@ -72,53 +70,54 @@ export const useUsersApi = () => {
         Accept: "text/event-stream",
       },
     });
-    return parseEventStream(response.data)
-    
+    return parseEventStream(response.data);
   };
 
   // get user by Id
   const getUserById = async (userId: string): Promise<UserResponseModel> => {
     const encodedUserId = encodeURIComponent(userId);
-    const response = await axiosInstance.get<UserResponseModel>(`/users/${encodedUserId}`);
+    const response = await axiosInstance.get<UserResponseModel>(
+      `/users/${encodedUserId}`
+    );
     return response.data;
-};
+  };
 
+  const updateUser = async (
+    userId: string,
+    userData: Partial<UserRequestModel>  
+  ): Promise<UserResponseModel> => {
+    const encodedUserId = encodeURIComponent(userId);
+    try {
+      const response = await axiosInstance.put<UserResponseModel>(
+        `/users/${encodedUserId}`,
+        userData
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating user ${userId}:`, error);
+      throw error;
+    }
+  };
+  
+  const updateUserRole = async (userId: string, roleIds: string[]): Promise<void> => {
+    const encodedUserId = encodeURIComponent(userId);
+    try {
+      await axiosInstance.post(`/users/${encodedUserId}/roles`, {
+        roles: roleIds, 
+      });
+    } catch (error) {
+      console.error(`Error updating roles for user ${userId}:`, error);
+      throw error;
+    }
+  };
 
-// New methods based on the business logic
-const updateUser = async (
-  userId: string,
-  userData: Partial<UserRequestModel>
-): Promise<UserResponseModel> => {
-  const encodedUserId = encodeURIComponent(userId);
-  const response = await axiosInstance.put<UserResponseModel>(
-    `/users/${encodedUserId}`,
-    userData
-  );
-  return response.data;
-};
-
-const updateUserRole = async (
-  userId: string,
-  roleIds: string[]
-): Promise<void> => {
-  const encodedUserId = encodeURIComponent(userId);
-  await axiosInstance.put(`/users/${encodedUserId}/roles`, roleIds);
-};
-
-const deleteUser = async (userId: string): Promise<void> => {
-  const encodedUserId = encodeURIComponent(userId);
-  await axiosInstance.delete(`/users/${encodedUserId}`);
-};
-
-
-    return {
-        getUser,
-        loginUser,
-        syncUser,
-        getUserById,
-        getAllUsers,
-        updateUser,
-        updateUserRole,
-        deleteUser
-    };
+  return {
+    getUser,
+    loginUser,
+    syncUser,
+    getUserById,
+    getAllUsers,
+    updateUser,
+    updateUserRole,
+  };
 };

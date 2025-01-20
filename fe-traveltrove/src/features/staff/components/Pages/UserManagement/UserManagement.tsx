@@ -1,55 +1,74 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button, Row, Col, InputGroup, Form } from "react-bootstrap";
 import { PersonPlus, Search } from "react-bootstrap-icons";
-import { useUsersApi } from "../../../../users/api/users.api";
 import { UserResponseModel } from "../../../../users/model/users.model";
+import { useUsersApi } from "../../../../users/api/users.api";
 import UsersList from "../../../../users/components/UsersList";
 
 const UserManagement: React.FC = () => {
-  const { getAllUsers, updateUser, deleteUser } = useUsersApi();
+  const { getAllUsers, updateUser, updateUserRole, syncUser } = useUsersApi();
   const [users, setUsers] = useState<UserResponseModel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRole, setSelectedRole] = useState("All Roles");
 
-  // Fetch users from API
+  const fetchAllUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllUsers();
+      setUsers(data || []);
+      setError(null);
+    } catch (err) {
+      setError("Failed to fetch users.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchAllUsers = async () => {
-      try {
-        const data = await getAllUsers();
-        setUsers(data || []);
-      } catch (err) {
-        setError("Failed to fetch users.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAllUsers();
-  }, [getAllUsers]);
+  }, []);
 
-  const handleUpdateUser = async (userId: string, updatedUser: Partial<UserResponseModel>) => {
+  const handleUpdateUser = async (
+    userId: string,
+    updatedUser: Partial<UserResponseModel>
+  ) => {
     try {
-      const updatedData = await updateUser(userId, updatedUser);
-      setUsers((prev) => prev.map((user) => (user.userId === userId ? updatedData : user)));
+      setLoading(true);
+      const userUpdateData = {
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+      };
+
+      await updateUser(userId, userUpdateData);
+      await fetchAllUsers();
     } catch (error) {
+      setError("Failed to update user");
       console.error("Failed to update user", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
+  const handleRoleUpdate = async (userId: string, roleIds: string[]) => {
     try {
-      await deleteUser(userId);
-      setUsers((prev) => prev.filter((user) => user.userId !== userId));
+      setLoading(true);
+      await updateUserRole(userId, roleIds);
+      await syncUser(userId);
+      await fetchAllUsers();
     } catch (error) {
-      console.error("Failed to delete user", error);
+      setError("Failed to update user role");
+      console.error("Failed to update user role", error);
+    } finally {
+      setLoading(false);
     }
   };
+
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-
-  const roles = ["All Roles", "Administrator", "Manager", "User"];
-  const statuses = ["All Status", "Active", "Inactive", "Suspended"];
+  if (error) return <div className="alert alert-danger">{error}</div>;
 
   return (
     <div
@@ -58,15 +77,9 @@ const UserManagement: React.FC = () => {
     >
       <Card
         className="rounded shadow border-0"
-        style={{
-          width: "100%",
-          maxWidth: "1600px",
-          borderRadius: "15px",
-          overflow: "hidden",
-        }}
+        style={{ width: "100%", maxWidth: "1600px" }}
       >
         <Card.Body>
-          {/* Header Section */}
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h2 className="mb-0">User Management</h2>
             <Button variant="primary">
@@ -75,13 +88,13 @@ const UserManagement: React.FC = () => {
             </Button>
           </div>
 
-          {/* Filters Section */}
           <Row className="mb-4 g-3">
             <Col md={4}>
               <InputGroup>
                 <Form.Control
                   placeholder="Search users..."
-                  aria-label="Search users"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <Button variant="outline-secondary">
                   <Search />
@@ -89,40 +102,29 @@ const UserManagement: React.FC = () => {
               </InputGroup>
             </Col>
             <Col md={3}>
-              <Form.Select aria-label="Filter by role">
-                {roles.map((role) => (
-                  <option key={role}>{role}</option>
-                ))}
-              </Form.Select>
-            </Col>
-            <Col md={3}>
-              <Form.Select aria-label="Filter by status">
-                {statuses.map((status) => (
-                  <option key={status}>{status}</option>
-                ))}
+              <Form.Select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+              >
+                <option>All Roles</option>
+                <option>Admin</option>
+                <option>Customer</option>
+                <option>Employee</option>
               </Form.Select>
             </Col>
           </Row>
 
-          {/* Render UsersList */}
-          <UsersList 
-            users={users} 
-            onUpdateUser={handleUpdateUser} 
-            onDeleteUser={handleDeleteUser} 
+          <UsersList
+            users={users}
+            onUpdateUser={handleUpdateUser}
+            onUpdateRole={handleRoleUpdate}
           />
 
-          {/* Pagination Placeholder */}
           <div className="d-flex justify-content-between align-items-center mt-4">
             <div>
-              <span className="text-muted">Showing 1 to {users.length} of {users.length} entries</span>
-            </div>
-            <div>
-              <Button variant="outline-secondary" size="sm" className="me-2" disabled>
-                Previous
-              </Button>
-              <Button variant="outline-secondary" size="sm" disabled>
-                Next
-              </Button>
+              <span className="text-muted">
+                Showing {users.length} of {users.length} entries
+              </span>
             </div>
           </div>
         </Card.Body>

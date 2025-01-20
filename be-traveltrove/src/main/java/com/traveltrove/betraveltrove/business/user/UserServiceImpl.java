@@ -127,23 +127,23 @@ public class UserServiceImpl implements UserService {
                 .doOnError(error -> log.error("Error fetching users: {}", error));
     }
 
-    @Override
-    public Flux<UserResponseModel> getAllUsersFromAuth0() {
-        log.info("Fetching all users directly from Auth0...");
-
-        return auth0Service.getAllUsersFromAuth0()
-                .map(auth0User -> UserResponseModel.builder()
-                        .userId(auth0User.getUserId())
-                        .email(auth0User.getEmail())
-                        .firstName(auth0User.getFirstName() != null ? auth0User.getFirstName() : "")
-                        .lastName(auth0User.getLastName() != null ? auth0User.getLastName() : "")
-                        .roles(List.of())
-                        .permissions(List.of())
-                        .build()
-                )
-                .doOnNext(user -> log.info("Fetched User from Auth0: {}", user))
-                .doOnError(error -> log.error("Error fetching users from Auth0: {}", error));
-    }
+//    @Override
+//    public Flux<UserResponseModel> getAllUsersFromAuth0() {
+//        log.info("Fetching all users directly from Auth0...");
+//
+//        return auth0Service.getAllUsersFromAuth0()
+//                .map(auth0User -> UserResponseModel.builder()
+//                        .userId(auth0User.getUserId())
+//                        .email(auth0User.getEmail())
+//                        .firstName(auth0User.getFirstName() != null ? auth0User.getFirstName() : "")
+//                        .lastName(auth0User.getLastName() != null ? auth0User.getLastName() : "")
+//                        .roles(List.of())
+//                        .permissions(List.of())
+//                        .build()
+//                )
+//                .doOnNext(user -> log.info("Fetched User from Auth0: {}", user))
+//                .doOnError(error -> log.error("Error fetching users from Auth0: {}", error));
+//    }
 
 
     @Override
@@ -156,8 +156,8 @@ public class UserServiceImpl implements UserService {
                     existingUser.setEmail(userRequestModel.getEmail());
                     existingUser.setFirstName(userRequestModel.getFirstName());
                     existingUser.setLastName(userRequestModel.getLastName());
-                    existingUser.setPermissions(userRequestModel.getPermissions());
-                    existingUser.setRoles(userRequestModel.getRoles());
+//                    existingUser.setPermissions(userRequestModel.getPermissions());
+//                    existingUser.setRoles(userRequestModel.getRoles());
 
                     return userRepository.save(existingUser)
                             .map(UserEntityToModel::toUserResponseModel)
@@ -168,10 +168,7 @@ public class UserServiceImpl implements UserService {
                 .switchIfEmpty(Mono.error(new NotFoundException("User not found with Auth0 ID: " + auth0UserId)));
     }
 
-//    @Override
-//    public Mono<UserResponseModel> createNewUser(UserResponseModel userResponseModel) {
-//        return null;
-//    }
+
 
     @Override
     public Mono<Void> updateUserRole(String userId, List<String> roleId) {

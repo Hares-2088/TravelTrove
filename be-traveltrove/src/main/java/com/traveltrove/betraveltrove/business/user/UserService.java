@@ -14,7 +14,7 @@ public interface UserService {
     Mono<UserResponseModel> syncUserWithAuth0(String auth0UserId);
     Mono<UserResponseModel> getUser(String userId);
     Flux<UserResponseModel> getAllUsers();
-    Flux<UserResponseModel> getAllUsersFromAuth0();
+//    Flux<UserResponseModel> getAllUsersFromAuth0();
     Mono<UserResponseModel> updateUser(String auth0UserId, UserRequestModel userRequestModel);
 //    Mono<UserResponseModel> createNewUser(UserResponseModel userResponseModel);
     Mono<Void> updateUserRole(String userId, List<String> roleId);
