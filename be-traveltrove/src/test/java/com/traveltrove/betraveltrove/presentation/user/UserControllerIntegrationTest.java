@@ -172,7 +172,6 @@ class UserControllerIntegrationTest {
                 .isEmpty();
     }
 
-    
 
     @Test
     void whenUpdateUserRole_withValidUserId_thenReturnSuccess() {
@@ -205,7 +204,5 @@ class UserControllerIntegrationTest {
                         .expectNextMatches(msg -> msg.contains("Failed to update roles"))
                         .verifyComplete());
     }
-
-
 }
 
