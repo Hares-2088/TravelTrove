@@ -57,6 +57,7 @@ class ReviewRepositoryIntegrationTest {
 
 //fails cuz of netty tf
 
+    @Test
     void whenFindReviewByPackageId_thenReturnReviews() {
 
         StepVerifier.create(reviewRepository.findByPackageId(EXISTING_PACKAGE_ID))

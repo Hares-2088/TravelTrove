@@ -380,6 +380,20 @@ package "tourpackagesubdomain" {
             + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
             + deleteTourPackage(packageId: String) : Mono<Void>
         }
+
+        class ReviewService {
+          +addReview(reviewsRequestModel: ReviewsRequestModel): void
+          +getReviewsByPackage(packageId: String): List<ReviewsResponseModel>
+          +calculateAverageRating(packageId: String): Double
+        }
+
+        class ReviewServiceImpl {
+          -reviewRepository: ReviewRepository
+          -packageRepository: PackageRepository
+          +addReview(reviewsRequestModel: ReviewsRequestModel): void
+          +getReviewsByPackage(packageId: String): List<ReviewsResponseModel>
+          +calculateAverageRating(packageId: String): Double
+        }
     }
 
     package "dataaccesslayer" {
@@ -395,6 +409,23 @@ package "tourpackagesubdomain" {
             + priceForThree: Decimal
             + airportId: String
             + tourId: String
+        }
+
+
+        class Review {
+          +reviewId: String
+          +packageId: String
+          +userId: String
+          +bookingId: String
+          +rating: Integer
+          +review: String
+          +date: Date
+        }
+
+
+        class ReviewRepository {
+          +save(review: Review): void
+          +findByPackageId(packageId: String): List<Review>
         }
 
         interface TourPackageRepository extends ReactiveMongoRepository {
@@ -437,6 +468,31 @@ package "tourpackagesubdomain" {
             + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<ResponseEntity<TourPackageResponseModel>>
             + deleteTourPackage(packageId: String) : Mono<Void>
         }
+
+        class ReviewController {
+          +addReview(reviewsRequestModel: ReviewsRequestModel): Mono<ReviewResponseModel>
+          +getReviews(packageId: String): Flux<ReviewResponseModel>
+          +getAverageRating(packageId: String): Double
+        }
+
+        class ReviewResponseModel {
+                  +reviewId: String
+                  +packageId: String
+                  +userId: String
+                  +bookingId: String
+                  +rating: Integer
+                  +review: String
+                  +date: Date
+                }
+
+        class ReviewRequestModel {
+                  +packageId: String
+                  +userId: String
+                  +bookingId: String
+                  +rating: Integer
+                  +review: String
+                  +date: Date
+                }
     }
 
     package "utils" {
@@ -458,6 +514,16 @@ package "tourpackagesubdomain" {
     EntityModelUtil_tourpackage -up-^ TourPackage
     EntityModelUtil_tourpackage -up-^ TourPackageRequestModel
     EntityModelUtil_tourpackage -up-^ TourPackageResponseModel
+
+    ReviewServiceImpl -down-|> ReviewService
+        ReviewServiceImpl -down-> ReviewRepository
+        ReviewController -down-> ReviewService
+        ReviewController -down-> ReviewRequestModel
+        ReviewController -down-> ReviewResponseModel
+        ReviewServiceImpl -down-> Review
+        ReviewServiceImpl -down-> ReviewRequestModel
+        ReviewServiceImpl -down-> ReviewResponseModel
+
 }
 
 ' ***********************************************************************
@@ -468,7 +534,7 @@ toureventsubdomain.dataaccesslayer.TourEvent --> hotelSubdomain.dataaccesslayer.
 
 ' TourPackage references an airport by airportId
 tourpackagesubdomain.dataaccesslayer.TourPackage --> airportsubdomain.dataaccesslayer.Airport : "airportId (ID-based reference)"
-
+tourpackagesubdomain.dataaccesslayer.Review --> tourpackagesubdomain.dataaccesslayer.TourPackage : "packageId (ID-based reference)"
 ' Note: No other inter-subdomain links are provided or mentioned.
 
 ' ***********************************************************************

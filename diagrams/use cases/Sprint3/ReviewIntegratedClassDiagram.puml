@@ -1,0 +1,41 @@
+@startuml
+ title Integrated Class Diagram (Review)
+
+ skinparam packageStyle rectangle
+ skinparam classAttributeIconSize 0
+ skinparam interfaceStyle circle
+ skinparam legendBorderColor black
+ skinparam legendBackgroundColor #DDDDDD
+
+
+
+class Review {
+  +reviewId: String
+  +packageId: String
+  +userId: String
+  +bookingId: String
+  +rating: Integer
+  +review: String
+  +date: Date
+}
+
+class User {
+  +userId: String
+  +name: String
+  +email: String
+  +addReview(packageId: String, rating: Integer, comment: String): Review
+  +viewReviews(packageId: String): List<Review>
+}
+
+class ReviewManager {
+  +addReview(review: Review): void
+  +getReviewsByPackage(packageId: String): List<Review>
+  +calculateAverageRating(packageId: String): Double
+}
+
+Package "1" *-- "0..*" Review : has
+User "1" --> "0..*" Review : writes
+Package "1" --> "1" ReviewManager : uses
+ReviewManager "1" --> "0..*" Review : manages
+
+@enduml
