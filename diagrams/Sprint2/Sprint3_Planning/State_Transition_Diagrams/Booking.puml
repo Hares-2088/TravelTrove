@@ -30,7 +30,8 @@ BookingFailed --> [*] : cancelBooking()
 PaymentSuccess -down-> BookingConfirmed : showBookingConfirmation()
 
 BookingConfirmed -right-> BookingFinalized : finalizeBooking()
-BookingFinalized --> [*] : completeBooking()
+BookingFinalized --> DecreasePackageAvailableSeats : completeBooking()
+DecreasePackageAvailableSeats --> [*] : decreaseAvailableSeats(quantity)
 
 BookingConfirmed -down-> Expired : handleTimeout()
 Expired --> [*] : sessionExpired()

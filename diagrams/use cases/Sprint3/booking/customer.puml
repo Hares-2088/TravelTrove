@@ -19,13 +19,13 @@ rectangle "Travel Trove System" {
 
     usecase "Browse Bookings"
     usecase "View Booking Details"
-    usecase "Request a Booking"
+    usecase "Booking a Package"
 
 }
 
 Customer -- "Browse Bookings"
-Customer -- "Request a Booking"
 
 "Browse Bookings" ..> "View Booking Details" : <<include>>
+"View Booking Details" ..> "Booking a Package" : <<extend>>
 
 @enduml

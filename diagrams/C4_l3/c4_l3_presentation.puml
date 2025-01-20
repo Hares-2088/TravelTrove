@@ -38,7 +38,7 @@ Container_Boundary(spa, "Web Application (React)") {
         Component(ToursFeature, "Tours Feature", "React Module", "Manages tours browsing functionality", $tags = "feature", $sprite="react")
 
         Component(ToursPage, "Tours Page", "React Component", "Displays available tours", $tags = "page", $sprite="react")
-        Component(TourDetailsPage, "Tour Details Page", "React Component", "Shows detailed tour information", $tags = "page", $sprite="react")
+        Component(TourDetailsPage, "Packages Page", "React Component", "Shows detailed tour information", $tags = "page", $sprite="react")
 
         Component(BookingPage, "Booking Page", "React Component", "Allows users to book trips", $tags = "page", $sprite="react")
         Component(BookingFeature, "Booking Feature", "React Module", "Handles trip booking operations", $tags = "feature", $sprite="react")

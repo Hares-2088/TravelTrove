@@ -1,5 +1,5 @@
 @startuml
-title Integrated Class Diagram (Airport, Hotel, TourEvent, TourPackage, Traveler Subdomains)
+title Integrated Class Diagram (Airport, Hotel, TourEvent, Package, Traveler Subdomains)
 
 skinparam packageStyle rectangle
 skinparam classAttributeIconSize 0
@@ -360,30 +360,34 @@ package "travelersubdomain" {
 }
 
 ' ***********************************************************************
-' TOURPACKAGE SUBDOMAIN
+' PACKAGE SUBDOMAIN
 ' ***********************************************************************
-package "tourpackagesubdomain" {
+package "packagesubdomain" {
     package "businesslayer" {
-        interface TourPackageService {
-            + getAllTourPackages() : Flux<TourPackageResponseModel>
-            + getTourPackageById(packageId: String) : Mono<TourPackageResponseModel>
-            + addTourPackage(tourPackage: TourPackageRequestModel) : Mono<TourPackageResponseModel>
-            + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
-            + deleteTourPackage(packageId: String) : Mono<Void>
+        interface PackageService {
+            + getAllPackages() : Flux<PackageResponseModel>
+            + getPackageById(packageId: String) : Mono<PackageResponseModel>
+            + addPackage(package: PackageRequestModel) : Mono<PackageResponseModel>
+            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
+            + deletePackage(packageId: String) : Mono<Void>
+            + decreaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
+            + increaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
         }
 
-        class TourPackageServiceImpl {
-            - tourPackageRepository: TourPackageRepository
-            + getAllTourPackages() : Flux<TourPackageResponseModel>
-            + getTourPackageById(packageId: String) : Mono<TourPackageResponseModel>
-            + addTourPackage(tourPackage: TourPackageRequestModel) : Mono<TourPackageResponseModel>
-            + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
-            + deleteTourPackage(packageId: String) : Mono<Void>
+        class PackageServiceImpl {
+            - packageRepository: PackageRepository
+            + getAllPackages() : Flux<PackageResponseModel>
+            + getPackageById(packageId: String) : Mono<PackageResponseModel>
+            + addPackage(package: PackageRequestModel) : Mono<PackageResponseModel>
+            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
+            + deletePackage(packageId: String) : Mono<Void>
+            + decreaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
+            + increaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
         }
     }
 
     package "dataaccesslayer" {
-        class TourPackage {
+        class Package {
             + _id: ObjectId
             + packageId: String
             + name: String
@@ -395,16 +399,19 @@ package "tourpackagesubdomain" {
             + priceForThree: Decimal
             + airportId: String
             + tourId: String
+            + availableSeats: Integer
+            + totalSeats: Integer
         }
 
-        interface TourPackageRepository extends ReactiveMongoRepository {
-            + findTourPackageByPackageId(packageId: String) : Mono<TourPackage>
-            + findAll() : Flux<TourPackage>
+        interface PackageRepository extends ReactiveMongoRepository {
+            + findPackageByPackageId(packageId: String) : Mono<Package>
+            + findAll() : Flux<Package>
+            + findPackagesByTourId(tourId: String) : Flux<Package>
         }
     }
 
     package "presentationlayer" {
-        class TourPackageRequestModel {
+        class PackageRequestModel {
             + name: String
             + description: String
             + startDate: DateTime
@@ -414,9 +421,10 @@ package "tourpackagesubdomain" {
             + priceForThree: Decimal
             + airportId: String
             + tourId: String
+            + totalSeats: Integer
         }
 
-        class TourPackageResponseModel {
+        class PackageResponseModel {
             + packageId: String
             + name: String
             + description: String
@@ -427,37 +435,41 @@ package "tourpackagesubdomain" {
             + priceForThree: Decimal
             + airportId: String
             + tourId: String
+            + availableSeats: Integer
+            + totalSeats: Integer
         }
 
-        class TourPackageController {
-            - tourPackageService: TourPackageService
-            + getAllTourPackages() : Flux<TourPackageResponseModel>
-            + getTourPackageById(packageId: String) : Mono<ResponseEntity<TourPackageResponseModel>>
-            + addTourPackage(tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
-            + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<ResponseEntity<TourPackageResponseModel>>
-            + deleteTourPackage(packageId: String) : Mono<Void>
+        class PackageController {
+            - packageService: PackageService
+            + getAllPackages() : Flux<PackageResponseModel>
+            + getPackageById(packageId: String) : Mono<ResponseEntity<PackageResponseModel>>
+            + addPackage(packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
+            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<ResponseEntity<PackageResponseModel>>
+            + deletePackage(packageId: String) : Mono<Void>
+            + decreaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
+            + increaseAvailableSeats(String packageId, Integer quantity) : Mono<PackageResponseModel>
         }
     }
 
     package "utils" {
-        class EntityModelUtil_tourpackage {
-            + toTourPackageResponseModel(tourPackage: TourPackage) : TourPackageResponseModel
-            + toTourPackageEntity(tourPackageRequestModel: TourPackageRequestModel) : TourPackage
+        class EntityModelUtil_package {
+            + toPackageResponseModel(package: Package) : PackageResponseModel
+            + toPackageEntity(packageRequestModel: PackageRequestModel) : Package
             + generateUUIDString() : String
         }
     }
 
-    TourPackageServiceImpl -down-|> TourPackageService
-    TourPackageServiceImpl -down-> TourPackageRepository
-    TourPackageController -down-> TourPackageService
-    TourPackageController -down-> TourPackageRequestModel
-    TourPackageController -down-> TourPackageResponseModel
-    TourPackageServiceImpl -down-> TourPackage
-    TourPackageServiceImpl -down-> TourPackageRequestModel
-    TourPackageServiceImpl -down-> TourPackageResponseModel
-    EntityModelUtil_tourpackage -up-^ TourPackage
-    EntityModelUtil_tourpackage -up-^ TourPackageRequestModel
-    EntityModelUtil_tourpackage -up-^ TourPackageResponseModel
+    PackageServiceImpl -down-|> PackageService
+    PackageServiceImpl -down-> PackageRepository
+    PackageController -down-> PackageService
+    PackageController -down-> PackageRequestModel
+    PackageController -down-> PackageResponseModel
+    PackageServiceImpl -down-> Package
+    PackageServiceImpl -down-> PackageRequestModel
+    PackageServiceImpl -down-> PackageResponseModel
+    EntityModelUtil_package -up-^ Package
+    EntityModelUtil_package -up-^ PackageRequestModel
+    EntityModelUtil_package -up-^ PackageResponseModel
 }
 
 ' ***********************************************************************
@@ -466,8 +478,8 @@ package "tourpackagesubdomain" {
 ' TourEvent references a hotel by hotelId
 toureventsubdomain.dataaccesslayer.TourEvent --> hotelSubdomain.dataaccesslayer.Hotel : "hotelId (ID-based reference)"
 
-' TourPackage references an airport by airportId
-tourpackagesubdomain.dataaccesslayer.TourPackage --> airportsubdomain.dataaccesslayer.Airport : "airportId (ID-based reference)"
+' Package references an airport by airportId
+packagesubdomain.dataaccesslayer.Package --> airportsubdomain.dataaccesslayer.Airport : "airportId (ID-based reference)"
 
 ' Note: No other inter-subdomain links are provided or mentioned.
 

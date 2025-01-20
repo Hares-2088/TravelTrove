@@ -32,7 +32,7 @@ System_Boundary(travelAgency, "Dar El Salam Travel Agency") {
     Container(singlepage_app, "Single-Page Application", "TypeScript, React", "Main interface for interacting with the Dar El Salam system", $sprite="react")
     Container(web_app, "Web Application", "TypeScript, React", "Delivers the Static content and the Dar El Salam single page application", $sprite="java")
     Container(api_app, "API Application", "Java, Spring Boot", "Handles all business logic and integrates with external services", $sprite="java")
-    Container(database, "MySQL Database", "MySQL", "Stores all travel agency data", $tags = "storage", $sprite="mysql")
+    Container(database, "Mongo Database", "MongoDB", "Stores all travel agency data", $tags = "storage", $sprite="mysql")
 }
 
 ' External systems placed at the bottom with icons
@@ -50,12 +50,10 @@ Rel(admin, web_app, "Uses for managing employees and system settings", "HTTPS")
 
 Rel(web_app, singlepage_app, "Interacts with", "HTTPS/JSON")
 Rel(singlepage_app, api_app, "Interacts with", "HTTPS/JSON")
-Rel_D(api_app, database, "Reads from and writes to", "MySQL queries")
+Rel_D(api_app, database, "Reads from and writes to", "MongoDB queries")
 
 ' Authentication Flow
-Rel_D(customer, Auth0, "Authenticates", "OAuth 2.0/JWT")
-Rel_D(employee, Auth0, "Authenticates", "OAuth 2.0/JWT")
-Rel_D(admin, Auth0, "Authenticates", "OAuth 2.0/JWT")
+Rel_D(api_app, Auth0, "Uses for authentication", "OAuth 2.0/JWT")
 
 ' Relationships with External Systems
 Rel(api_app, GmailAPI, "Sends emails via", "HTTPS")

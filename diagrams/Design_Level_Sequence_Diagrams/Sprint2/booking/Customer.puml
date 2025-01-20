@@ -1,19 +1,95 @@
 @startuml
-title Booking Viewing Sequence Diagram for Customer
+title Booking Sequence Diagram for Customer
 
 actor Customer
 participant ReactApplication
+participant PackageDetailsPage
+participant PackageBookingPage
 participant MyBookingsPage
 participant BookingController
 participant BookingService
 participant BookingEntity
 participant BookingRepository
+participant PackageRepository
 participant Database
 participant BookingResponseModel
 
-Customer -> ReactApplication : Access My Bookings Page
+Customer -> ReactApplication : Access Package Page
 activate ReactApplication
 
+ReactApplication -> PackageDetailsPage : render()
+deactivate ReactApplication
+activate PackageDetailsPage
+PackageDetailsPage --> Customer : Display placeholder for bookings
+
+opt Book a Package
+    Customer -> PackageBookingPage : Request to book package
+    activate PackageBookingPage
+
+    PackageBookingPage -> BookingController : POST /api/v1/bookings
+    activate BookingController
+
+    BookingController -> BookingService : bookPackage()
+    activate BookingService
+
+    BookingService -> BookingEntity : Map request to entity
+    activate BookingEntity
+
+    BookingEntity -> Database : INSERT INTO bookings
+    activate Database
+
+    Database --> BookingEntity : Booking entity created
+    deactivate Database
+
+    BookingEntity --> BookingService : Booking entity
+    deactivate BookingEntity
+
+    BookingService -> BookingRepository : save(bookingEntity)
+    activate BookingRepository
+
+    BookingRepository -> Database : INSERT INTO bookings
+    activate Database
+
+    Database --> BookingRepository : Booking entity saved
+    deactivate Database
+
+    BookingRepository --> BookingService : Booking entity saved
+    deactivate BookingRepository
+
+    BookingService -> BookingResponseModel : Map entity to response model
+    activate BookingResponseModel
+
+    BookingResponseModel --> BookingService : Response model ready
+    deactivate BookingResponseModel
+
+    BookingService --> PackageRepository : decreaseAvailableSeats()
+    activate PackageRepository
+
+    PackageRepository -> Database : UPDATE packages SET available_seats = available_seats - 1
+    activate Database
+
+    Database --> PackageRepository : Available seats decreased
+    deactivate Database
+
+    PackageRepository --> BookingService : Available seats decreased
+    deactivate PackageRepository
+
+    BookingService --> BookingController : Response model
+    deactivate BookingService
+
+    BookingController --> PackageBookingPage : Response with booking details
+    deactivate BookingController
+
+    PackageBookingPage --> Customer : Display booking details
+    deactivate PackageBookingPage
+
+
+end
+
+deactivate PackageDetailsPage
+Customer -> ReactApplication : Access My Bookings Page
+
+activate ReactApplication
 ReactApplication -> MyBookingsPage : render()
 activate MyBookingsPage
 deactivate ReactApplication
