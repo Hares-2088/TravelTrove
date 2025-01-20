@@ -181,8 +181,8 @@ public class UserServiceUnitTest {
                 .email("newemail@example.com")
                 .firstName("NewFirstName")
                 .lastName("NewLastName")
-                .roles(List.of("rol_bGEYlXT5XYsHGhcQ"))
-                .permissions(List.of(""))
+//                .roles(List.of("rol_bGEYlXT5XYsHGhcQ"))
+//                .permissions(List.of(""))
                 .build();
 
         User existingUser = User.builder()
@@ -224,8 +224,8 @@ public class UserServiceUnitTest {
                 .email("newemail@example.com")
                 .firstName("NewFirstName")
                 .lastName("NewLastName")
-                .roles(List.of("Admin", "Customer"))
-                .permissions(List.of("read:countries", "write:countries"))
+//                .roles(List.of("Admin"))
+//                .permissions(List.of("read:countries", "write:countries"))
                 .build();
 
         when(userRepository.findByUserId("invalid-user-id")).thenReturn(Mono.empty());
