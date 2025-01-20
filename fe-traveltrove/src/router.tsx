@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppRoutes } from './shared/models/app.routes';
-import { ProtectedRoute } from './shared/components/ProtectedRoute';
+import ProtectedRoute from './shared/components/ProtectedRoute';
 import DashboardPage from './pages/staff/DashboardPage';
 import ToursPage from './pages/tours/ToursPage';
 import TourDetailsPage from './pages/tours/TourDetailsPage';
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.TourDetailsPage,
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['employee', 'admin']}>
             <TourDetailsPage />
           </ProtectedRoute>
         ),
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.Dashboard,
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['employee', 'admin']}>
             <DashboardPage />
           </ProtectedRoute>
         ),
@@ -51,7 +51,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.Bookings, 
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['employee', 'admin']}>
             <Bookings />
           </ProtectedRoute>
         ),
