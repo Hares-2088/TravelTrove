@@ -13,12 +13,12 @@ const onRedirectCallback = () => {
 function App(): JSX.Element {
   return (
     <Auth0Provider
-      domain={auth0Config.domain} 
-      clientId={auth0Config.clientId} 
+      domain={auth0Config.domain}
+      clientId={auth0Config.clientId}
       authorizationParams={{
         redirect_uri: auth0Config.callback,
-        audience: auth0Config.audience, 
-        scope: "openid profile email", 
+        audience: auth0Config.audience,
+        scope: "openid profile email",
       }}
       onRedirectCallback={onRedirectCallback}
       cacheLocation="localstorage"
