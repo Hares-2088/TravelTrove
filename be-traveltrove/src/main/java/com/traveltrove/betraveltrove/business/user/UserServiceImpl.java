@@ -5,6 +5,7 @@ import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.externalservices.auth0.Auth0Service;
 
+import com.traveltrove.betraveltrove.externalservices.auth0.models.Auth0UserResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserRequestModel;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.UserEntityToModel;
@@ -125,6 +126,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Flux<UserResponseModel> getAllUsersFromAuth0() {
+        log.info("Fetching all users directly from Auth0...");
+
+        return auth0Service.getAllUsersFromAuth0()
+                .map(auth0User -> UserResponseModel.builder()
+                        .userId(auth0User.getUserId())
+                        .email(auth0User.getEmail())
+                        .firstName(auth0User.getFirstName() != null ? auth0User.getFirstName() : "")
+                        .lastName(auth0User.getLastName() != null ? auth0User.getLastName() : "")
+                        .roles(List.of())
+                        .permissions(List.of())
+                        .build()
+                )
+                .doOnNext(user -> log.info("Fetched User from Auth0: {}", user))
+                .doOnError(error -> log.error("Error fetching users from Auth0: {}", error));
+    }
+
+
+    @Override
     public Mono<UserResponseModel> updateUser(String auth0UserId, UserRequestModel userRequestModel) {
         log.info("Starting update process for user with Auth0 ID: {}", auth0UserId);
 
@@ -153,22 +173,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Void> updateUserRole(String userId, List<String> roleId) {
-//        log.info("Assigning roles: {} to user: {}", roleId, userId);
-//        // Update the roles locally in the database
-//        Mono<User> localUpdate = userRepository.findByUserId(userId)
-//                .flatMap(user -> {
-//                    user.setRoles(roleId); // Update roles locally
-//                    return userRepository.save(user);
-//                })
-//                .doOnSuccess(updatedUser -> log.info("User roles updated locally: {}", updatedUser))
-//                .doOnError(error -> log.error("Failed to update user roles locally: {}", error.getMessage()));
-
-        // Remove Previous Roles
-        Mono<Void> removeRoles = auth0Service.removeUserRoles(userId, roleId.get(0));
-        // Update the roles in Auth0
+        log.info("Assigning roles: {} to user: {}", roleId, userId);
         Mono<Void> auth0Update = auth0Service.updateUserRole(userId, roleId);
 
-        return removeRoles.then(auth0Update)
+        // Update the roles locally in the database
+        Mono<User> localUpdate = userRepository.findByUserId(userId)
+                .flatMap(user -> {
+                    user.setRoles(roleId); // Update roles locally
+                    return userRepository.save(user);
+                });
+        return localUpdate.then(auth0Update)
                 .doOnSuccess(unused -> log.info("Roles updated successfully for user: {}", userId))
                 .doOnError(error -> log.error("Failed to update roles for user: {}", error.getMessage()));
     }

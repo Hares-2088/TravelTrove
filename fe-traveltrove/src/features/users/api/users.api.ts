@@ -1,8 +1,6 @@
 import axios from 'axios';
-import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
-import { UserResponseModel } from '../model/users.model';
-
-
+import { useAxiosInstance } from "../../../shared/axios/useAxiosInstance";
+import { UserRequestModel, UserResponseModel } from "../model/users.model";
 
 // Utility function to parse event-stream data
 const parseEventStream = (data: string): UserResponseModel[] => {
@@ -78,16 +76,49 @@ export const useUsersApi = () => {
     
   };
 
+  // get user by Id
   const getUserById = async (userId: string): Promise<UserResponseModel> => {
     const encodedUserId = encodeURIComponent(userId);
     const response = await axiosInstance.get<UserResponseModel>(`/users/${encodedUserId}`);
     return response.data;
 };
+
+
+// New methods based on the business logic
+const updateUser = async (
+  userId: string,
+  userData: Partial<UserRequestModel>
+): Promise<UserResponseModel> => {
+  const encodedUserId = encodeURIComponent(userId);
+  const response = await axiosInstance.put<UserResponseModel>(
+    `/users/${encodedUserId}`,
+    userData
+  );
+  return response.data;
+};
+
+const updateUserRole = async (
+  userId: string,
+  roleIds: string[]
+): Promise<void> => {
+  const encodedUserId = encodeURIComponent(userId);
+  await axiosInstance.put(`/users/${encodedUserId}/roles`, roleIds);
+};
+
+const deleteUser = async (userId: string): Promise<void> => {
+  const encodedUserId = encodeURIComponent(userId);
+  await axiosInstance.delete(`/users/${encodedUserId}`);
+};
+
+
     return {
         getUser,
         loginUser,
         syncUser,
         getUserById,
-        getAllUsers
+        getAllUsers,
+        updateUser,
+        updateUserRole,
+        deleteUser
     };
 };

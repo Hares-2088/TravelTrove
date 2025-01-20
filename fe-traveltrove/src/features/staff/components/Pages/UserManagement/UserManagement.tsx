@@ -6,7 +6,7 @@ import { UserResponseModel } from "../../../../users/model/users.model";
 import UsersList from "../../../../users/components/UsersList";
 
 const UserManagement: React.FC = () => {
-  const { getAllUsers } = useUsersApi();
+  const { getAllUsers, updateUser, deleteUser } = useUsersApi();
   const [users, setUsers] = useState<UserResponseModel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,10 +27,27 @@ const UserManagement: React.FC = () => {
     fetchAllUsers();
   }, [getAllUsers]);
 
+  const handleUpdateUser = async (userId: string, updatedUser: Partial<UserResponseModel>) => {
+    try {
+      const updatedData = await updateUser(userId, updatedUser);
+      setUsers((prev) => prev.map((user) => (user.userId === userId ? updatedData : user)));
+    } catch (error) {
+      console.error("Failed to update user", error);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      await deleteUser(userId);
+      setUsers((prev) => prev.filter((user) => user.userId !== userId));
+    } catch (error) {
+      console.error("Failed to delete user", error);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  // Placeholder values for filters
   const roles = ["All Roles", "Administrator", "Manager", "User"];
   const statuses = ["All Status", "Active", "Inactive", "Suspended"];
 
@@ -88,7 +105,11 @@ const UserManagement: React.FC = () => {
           </Row>
 
           {/* Render UsersList */}
-          <UsersList users={users} />
+          <UsersList 
+            users={users} 
+            onUpdateUser={handleUpdateUser} 
+            onDeleteUser={handleDeleteUser} 
+          />
 
           {/* Pagination Placeholder */}
           <div className="d-flex justify-content-between align-items-center mt-4">
@@ -111,4 +132,3 @@ const UserManagement: React.FC = () => {
 };
 
 export default UserManagement;
-
