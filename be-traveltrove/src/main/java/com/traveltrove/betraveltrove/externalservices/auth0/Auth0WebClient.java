@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.externalservices.auth0;
 
 import com.traveltrove.betraveltrove.externalservices.auth0.models.*;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
+import com.traveltrove.betraveltrove.utils.RoleMapper;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -188,14 +189,14 @@ public class Auth0WebClient implements Auth0Service {
 
         return getAccessToken()
                 .flatMap(token -> {
-                    // Ensure role IDs are being sent, not role names
+                    // Construct payload with the actual role IDs
                     Map<String, List<String>> payload = Map.of("roles", roleId);
                     log.info("Payload for role removal: {}", payload);
 
                     return webClient.method(HttpMethod.DELETE)
                             .uri("https://" + domain + "/api/v2/users/" + auth0UserId + "/roles")
                             .headers(headers -> headers.setBearerAuth(token))
-                            .bodyValue(payload) // Send role IDs, not names
+                            .bodyValue(payload)
                             .retrieve()
                             .onStatus(HttpStatusCode::isError, response ->
                                     response.bodyToMono(String.class)
@@ -203,11 +204,87 @@ public class Auth0WebClient implements Auth0Service {
                                             .flatMap(errorBody -> Mono.error(new RuntimeException("Auth0 API Error: " + errorBody)))
                             )
                             .toBodilessEntity()
-                            .doOnSuccess(response -> log.info("Successfully removed roles for user: {}", auth0UserId))
-                            .doOnError(error -> log.error("Failed to remove roles for user {}: {}", auth0UserId, error.getMessage()))
+                            .doOnSuccess(response -> log.info("Successfully removed roles {} for user: {}", roleId, auth0UserId))
+                            .doOnError(error -> log.error("Failed to remove roles {} for user {}: {}", roleId, auth0UserId, error.getMessage()))
                             .then();
                 });
+
+
+
+
+
+
+//        log.info("Assigning roles {} to user {}", roleId, auth0UserId);
+//
+//        return getAccessToken()
+//                .flatMap(token -> {
+//                    // Wrap the role IDs in an object with a "roles" key
+//                    Map<String, List<String>> payload = Map.of("roles", roleId);
+//                    log.info("Payload for role assignment: {}", payload);
+//
+//                    return webClient.post()
+//                            .uri("https://" + domain + "/api/v2/users/" + auth0UserId + "/roles")
+//                            .headers(headers -> headers.setBearerAuth(token))
+//                            .bodyValue(payload) // Send the correct payload format
+//                            .retrieve()
+//                            .onStatus(HttpStatusCode::isError, response ->
+//                                    response.bodyToMono(String.class)
+//                                            .doOnNext(errorBody -> log.error("Error from Auth0 API: {}", errorBody))
+//                                            .flatMap(errorBody -> Mono.error(new RuntimeException("Auth0 API Error: " + errorBody)))
+//                            )
+//                            .toBodilessEntity()
+//                            .doOnSuccess(response -> log.info("Successfully assigned roles for user: {}", auth0UserId))
+//                            .doOnError(error -> log.error("Failed to assign roles for user {}: {}", auth0UserId, error.getMessage()))
+//                            .then();
+//                });
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        log.info("Removing roles {} from user {}", roleId, auth0UserId);
+//
+//        return getAccessToken()
+//                .flatMap(token -> {
+//                    // Ensure role IDs are being sent, not role names
+//                    Map<String, List<String>> payload = Map.of("roles", roleId);
+//                    log.info("Payload for role removal: {}", payload);
+//
+//                    return webClient.method(HttpMethod.DELETE)
+//                            .uri("https://" + domain + "/api/v2/users/" + auth0UserId + "/roles")
+//                            .headers(headers -> headers.setBearerAuth(token))
+//                            .bodyValue(payload) // Send role IDs, not names
+//                            .retrieve()
+//                            .onStatus(HttpStatusCode::isError, response ->
+//                                    response.bodyToMono(String.class)
+//                                            .doOnNext(errorBody -> log.error("Error from Auth0 API: {}", errorBody))
+//                                            .flatMap(errorBody -> Mono.error(new RuntimeException("Auth0 API Error: " + errorBody)))
+//                            )
+//                            .toBodilessEntity()
+//                            .doOnSuccess(response -> log.info("Successfully removed roles for user: {}", auth0UserId))
+//                            .doOnError(error -> log.error("Failed to remove roles for user {}: {}", auth0UserId, error.getMessage()))
+//                            .then();
+//                });
+
 
     @Override
     public Flux<Auth0UserResponseModel> fetchUsersFromAuth0(String token, int page, int perPage) {

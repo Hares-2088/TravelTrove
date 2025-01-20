@@ -51,20 +51,19 @@ public class UserController {
     @PostMapping("/{userId}/roles")
     public Mono<ResponseEntity<String>> updateUserRole(
             @PathVariable String userId,
-            @RequestBody RoleUpdateRequestModel roleUpdateRequest) {
+            @RequestBody UpdateRoleRequestModel request) {
         log.info("Received request to update roles for user: {}", userId);
-        log.info("Request body: {}", roleUpdateRequest.getRoles()); // Log the roles field
+        log.info("Roles to assign: {}", request.getRoles());
 
-        return userService.updateUserRole(userId, roleUpdateRequest.getRoles())
-//                .then(userService.syncUserWithAuth0(userId))// sync user from auth0 locally
-                //
-                .thenReturn(ResponseEntity.ok("Roles updated successfully"))
+        return userService.updateUserRole(userId, request.getRoles())
+                .thenReturn(ResponseEntity.ok("Role updated successfully"))
                 .onErrorResume(error -> {
                     log.error("Failed to update roles for user {}: {}", userId, error.getMessage());
                     return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body("Failed to update roles: " + error.getMessage()));
                 });
     }
+
 
     @PutMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<UserResponseModel>> updateUser(

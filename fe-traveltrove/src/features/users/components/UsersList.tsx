@@ -10,9 +10,9 @@ interface Auth0Role {
 }
 
 const AUTH0_ROLES: Auth0Role[] = [
-  { id: "rol_n0x6f30TQGgcKJWo", name: "admin" },
-  { id: "rol_bGEYlXT5XYsHGhcQ", name: "customer" },
-  { id: "rol_e6pFgGUgGlnHZz1D", name: "employee" }
+  { id: "rol_n0x6f30TQGgcKJWo", name: "Admin" },
+  { id: "rol_bGEYlXT5XYsHGhcQ", name: "Customer" },
+  { id: "rol_e6pFgGUgGlnHZz1D", name: "Employee" }
 ];
 
 interface UsersListProps {

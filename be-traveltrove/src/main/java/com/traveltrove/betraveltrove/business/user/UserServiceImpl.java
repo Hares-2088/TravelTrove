@@ -18,7 +18,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -173,19 +175,60 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Void> updateUserRole(String userId, List<String> roleId) {
-        log.info("Assigning roles: {} to user: {}", roleId, userId);
-        Mono<Void> auth0Update = auth0Service.updateUserRole(userId, roleId);
+        // Ensure only one role is provided
+        if (roleId == null || roleId.size() != 1) {
+            return Mono.error(new IllegalArgumentException("A user can only have one role at a time."));
+        }
 
-        // Update the roles locally in the database
-        Mono<User> localUpdate = userRepository.findByUserId(userId)
-                .flatMap(user -> {
-                    user.setRoles(roleId); // Update roles locally
-                    return userRepository.save(user);
-                });
-        return localUpdate.then(auth0Update)
-                .doOnSuccess(unused -> log.info("Roles updated successfully for user: {}", userId))
-                .doOnError(error -> log.error("Failed to update roles for user: {}", error.getMessage()));
+        String newRoleId = roleId.get(0);
+
+        return auth0Service.getUserById(userId)
+                .flatMap(auth0User -> {
+                    // Extract role IDs from the user's existing roles
+                    List<String> existingRoleIds = auth0User.getRoles().stream()
+                            .map(role -> {
+                                switch (role) {
+                                    case "Admin": return "rol_n0x6f30TQGgcKJWo";
+                                    case "Customer": return "rol_bGEYlXT5XYsHGhcQ";
+                                    case "Employee": return "rol_e6pFgGUgGlnHZz1D";
+                                    default: return null;
+                                }
+                            })
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+
+                    if (!existingRoleIds.isEmpty()) {
+                        log.info("User {} has existing role IDs: {}. Removing them before assigning new role: {}",
+                                userId, existingRoleIds, newRoleId);
+
+                        return auth0Service.removeUserRoles(userId, existingRoleIds)
+                                .then(auth0Service.updateUserRole(userId, List.of(newRoleId)));
+                    }
+
+                    log.info("User {} has no existing roles. Assigning new role: {}", userId, newRoleId);
+                    return auth0Service.updateUserRole(userId, List.of(newRoleId));
+                })
+                .doOnSuccess(unused -> log.info("Successfully updated user {} to have only one role: {}", userId, newRoleId))
+                .doOnError(error -> log.error("Failed to update roles for user {}: {}", userId, error.getMessage()));
     }
+
+
+
+
+
+//        log.info("Assigning roles: {} to user: {}", roleId, userId);
+//        Mono<Void> auth0Update = auth0Service.updateUserRole(userId, roleId);
+//
+//        // Update the roles locally in the database
+//        Mono<User> localUpdate = userRepository.findByUserId(userId)
+//                .flatMap(user -> {
+//                    user.setRoles(roleId); // Update roles locally
+//                    return userRepository.save(user);
+//                });
+//        return localUpdate.then(auth0Update)
+//                .doOnSuccess(unused -> log.info("Roles updated successfully for user: {}", userId))
+//                .doOnError(error -> log.error("Failed to update roles for user: {}", error.getMessage()));
+
 
     @Override
     public Mono<Void> deleteUser(String userId) {
