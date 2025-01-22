@@ -15,13 +15,15 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | null>(null);
 
 // Define the UserProvider component
-export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const { getUser } = useUsersApi(); 
+  const { getUser } = useUsersApi();
 
   // Manage the `roles` state
   const [roles, setRoles] = useState<string[]>(() => {
-    const cachedRoles = sessionStorage.getItem('userRoles');
+    const cachedRoles = sessionStorage.getItem("userRoles");
     return cachedRoles ? JSON.parse(cachedRoles) : [];
   });
 
@@ -35,25 +37,30 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Fetch roles when the user changes and roles are empty
   useEffect(() => {
     if (user && user?.sub && isAuthenticated && !isLoading) {
-      if ((user.sub != currentUser?.userId) || currentUser == null) { // Check if user has changed or if there is no current user
-        const cachedRoles = sessionStorage.getItem('userRoles');
+      if (user.sub != currentUser?.userId || currentUser == null) {
+        // Check if user has changed or if there is no current user
+        const cachedRoles = sessionStorage.getItem("userRoles");
         if (cachedRoles) {
           setRoles(JSON.parse(cachedRoles));
         } else {
-          getUser(user.sub).then((userData) => {
-            if (!userData) return;
+          getUser(user.sub)
+            .then((userData) => {
+              if (!userData) return;
 
-            setCurrentUser(userData);
-            setRoles(userData.roles);
-            sessionStorage.setItem('userRoles', JSON.stringify(userData.roles));
-          }).catch((error) => {
-            console.error("Error fetching user roles:", error);
-          });
+              setCurrentUser(userData);
+              setRoles(userData.roles);
+              sessionStorage.setItem(
+                "userRoles",
+                JSON.stringify(userData.roles)
+              );
+            })
+            .catch((error) => {
+              console.error("Error fetching user roles:", error);
+            });
         }
       }
     }
   }, [user, user?.sub, isAuthenticated, isLoading]);
-  
 
   // Log roles for debugging
   console.log("(UserContext) User Roles:", roles);

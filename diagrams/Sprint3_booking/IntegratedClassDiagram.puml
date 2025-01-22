@@ -1,0 +1,636 @@
+@startuml
+title Integrated Class Diagram (Airport, Hotel, TourEvent, TourPackage, Traveler Subdomains)
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam interfaceStyle circle
+skinparam legendBorderColor black
+skinparam legendBackgroundColor #DDDDDD
+
+' ***********************************************************************
+' AIRPORT SUBDOMAIN
+' ***********************************************************************
+package "airportsubdomain" {
+    package "businesslayer" {
+        interface AirportService {
+            + getAllAirports() : Flux<AirportResponseModel>
+            + getAirportById(id: String) : Mono<AirportResponseModel>
+            + addAirport(airportRequestModel: AirportRequestModel) : Mono<AirportResponseModel>
+            + updateAirport(id: String, airportRequestModel: AirportRequestModel) : Mono<AirportResponseModel>
+            + deleteAirport(id: String) : Mono<Void>
+        }
+
+        class AirportServiceImpl {
+            - airportRepository: AirportRepository
+            + getAllAirports() : Flux<AirportResponseModel>
+            + getAirportById(id: String) : Mono<AirportResponseModel>
+            + addAirport(airportRequestModel: AirportRequestModel) : Mono<AirportResponseModel>
+            + updateAirport(id: String, airportRequestModel: AirportRequestModel) : Mono<AirportResponseModel>
+            + deleteAirport(id: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Airport {
+            + id: String
+            + airportId: String
+            + name: String
+            + cityId: String
+        }
+
+        interface AirportRepository extends ReactiveMongoRepository {
+            + findAirportByAirportId(airportId: String) : Mono<Airport>
+            + findAll() : Flux<Airport>
+        }
+    }
+
+    package "presentationlayer" {
+        class AirportRequestModel {
+            + name: String
+            + cityId: String
+        }
+
+        class AirportResponseModel {
+            + airportId: String
+            + name: String
+            + cityId: String
+        }
+
+        class AirportController {
+            - airportService: AirportService
+            + getAllAirports() : Flux<AirportResponseModel>
+            + getAirportById(id: String) : Mono<ResponseEntity<AirportResponseModel>>
+            + addAirport(airportRequestModel: AirportRequestModel) : Mono<AirportResponseModel>
+            + updateAirport(id: String, airportRequestModel: AirportRequestModel) : Mono<ResponseEntity<AirportResponseModel>>
+            + deleteAirport(id: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toAirportResponseModel(airport: Airport) : AirportResponseModel
+            + toAirportEntity(airportRequestModel: AirportRequestModel) : Airport
+            + generateUUIDString() : String
+        }
+    }
+
+    AirportServiceImpl -down-|> AirportService
+    AirportServiceImpl -down-> AirportRepository
+    AirportController -down-> AirportService
+    AirportController -down-> AirportRequestModel
+    AirportController -down-> AirportResponseModel
+    AirportServiceImpl -down-> Airport
+    AirportServiceImpl -down-> AirportRequestModel
+    AirportServiceImpl -down-> AirportResponseModel
+    EntityModelUtil -up-^ Airport
+    EntityModelUtil -up-^ AirportRequestModel
+    EntityModelUtil -up-^ AirportResponseModel
+}
+
+' ***********************************************************************
+' BOOKING SUBDOMAIN
+' ***********************************************************************
+package "bookingsubdomain" {
+    package "businesslayer" {
+        interface BookingService {
+            + getBookings(): Flux<BookingResponseModel>
+            + getBooking(bookingId: String): Mono<BookingResponseModel>
+            + getBookingsByUserId(userId: String): Flux<BookingResponseModel>
+            + getBookingsByPackageId(packageId: String): Flux<BookingResponseModel>
+            + createBooking(bookingRequestModel: BookingRequestModel): Mono<BookingResponseModel>
+            + updateBookingStatus(bookingId: String, newStatus: BookingStatus): Mono<BookingResponseModel>
+            + deleteBooking(bookingId: String): Mono<Void>
+        }
+
+        class BookingServiceImpl {
+            - bookingRepository: BookingRepository
+            - packageService: PackageService
+            - userService: UserService
+            - travelerService: TravelerService
+            + getBookings(): Flux<BookingResponseModel>
+            + getBooking(bookingId: String): Mono<BookingResponseModel>
+            + getBookingsByUserId(userId: String): Flux<BookingResponseModel>
+            + getBookingsByPackageId(packageId: String): Flux<BookingResponseModel>
+            + createBooking(bookingRequestModel: BookingRequestModel): Mono<BookingResponseModel>
+            + updateBookingStatus(bookingId: String, newStatus: BookingStatus): Mono<BookingResponseModel>
+            + deleteBooking(bookingId: String): Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Booking {
+            + id: String
+            + bookingId: String
+            + userId: String
+            + packageId: String
+            + totalPrice: Double
+            + status: BookingStatus
+            + bookingDate: LocalDate
+            + travelerIds: List<String>
+        }
+
+        interface BookingRepository extends ReactiveMongoRepository {
+            + findBookingsByPackageId(packageId: String): Flux<Booking>
+            + findBookingsByUserId(userId: String): Flux<Booking>
+            + findBookingByBookingId(bookingId: String): Mono<Booking>
+            + findBookingByPackageIdAndUserId(packageId: String, userId: String): Mono<Booking>
+        }
+    }
+
+    package "presentationlayer" {
+        class BookingRequestModel {
+            + userId: String
+            + packageId: String
+            + totalPrice: Double
+            + status: BookingStatus
+            + bookingDate: LocalDate
+            + travelers: List<TravelerRequestModel>
+        }
+
+        class BookingResponseModel {
+            + bookingId: String
+            + userId: String
+            + packageId: String
+            + totalPrice: Double
+            + status: BookingStatus
+            + bookingDate: LocalDate
+            + travelerIds: List<String>
+        }
+
+        class BookingStatusUpdateRequest {
+            + status: BookingStatus
+        }
+
+        class BookingController {
+            - bookingService: BookingService
+            + getBookings(userId: String, packageId: String, status: String): Flux<BookingResponseModel>
+            + getBookingByPackageIdAndUserIdOrBookingId(packageId: String, userId: String, bookingId: String): Mono<ResponseEntity<BookingResponseModel>>
+            + createBooking(bookingRequestModel: BookingRequestModel): Mono<ResponseEntity<BookingResponseModel>>
+            + updateBookingStatus(bookingId: String, statusUpdateRequest: BookingStatusUpdateRequest): Mono<ResponseEntity<BookingResponseModel>>
+            + deleteBooking(bookingId: String): Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class BookingEntityModelUtil {
+            + toBookingResponseModel(booking: Booking): BookingResponseModel
+            + toBookingEntity(bookingRequestModel: BookingRequestModel): Booking
+        }
+    }
+
+    BookingServiceImpl -down-|> BookingService
+    BookingServiceImpl -down-> BookingRepository
+    BookingController -down-> BookingService
+    BookingController -down-> BookingRequestModel
+    BookingController -down-> BookingResponseModel
+    BookingServiceImpl -down-> Booking
+    BookingServiceImpl -down-> BookingRequestModel
+    BookingServiceImpl -down-> BookingResponseModel
+    BookingEntityModelUtil -up-^ Booking
+    BookingEntityModelUtil -up-^ BookingRequestModel
+    BookingEntityModelUtil -up-^ BookingResponseModel
+}
+
+' ***********************************************************************
+' RELATIONSHIPS WITH OTHER DOMAINS
+' ***********************************************************************
+' Booking references a Tour Package by packageId
+bookingsubdomain.dataaccesslayer.Booking --> tourpackagesubdomain.dataaccesslayer.TourPackage : "packageId (ID-based reference)"
+
+' Booking references a User by userId
+bookingsubdomain.dataaccesslayer.Booking --> travelersubdomain.dataaccesslayer.Traveler : "travelerIds (List)"
+
+' Booking references Travelers
+bookingsubdomain.dataaccesslayer.Booking --> travelersubdomain.dataaccesslayer.Traveler : "travelerIds (List)"
+
+' BookingController depends on BookingService
+bookingsubdomain.presentationlayer.BookingController -down-> bookingsubdomain.businesslayer.BookingService
+
+
+' ***********************************************************************
+' HOTEL SUBDOMAIN
+' ***********************************************************************
+package "hotelSubdomain" {
+    package "businesslayer" {
+        interface HotelService {
+            + getHotelByHotelId(hotelId: String) : Mono<HotelResponseModel>
+            + getHotels(cityId: String) : Flux<HotelResponseModel>
+            + createHotel(hotelRequestModel: Mono<HotelRequestModel>) : Mono<HotelResponseModel>
+            + updateHotel(hotelId: String, hotelRequestModel: Mono<HotelRequestModel>) : Mono<HotelResponseModel>
+            + deleteHotel(hotelId: String) : Mono<Void>
+        }
+
+        class HotelServiceImpl {
+            - hotelRepository: HotelRepository
+            + getHotelByHotelId(hotelId: String) : Mono<HotelResponseModel>
+            + getHotels(cityId: String) : Flux<HotelResponseModel>
+            + createHotel(hotelRequestModel: Mono<HotelRequestModel>) : Mono<HotelResponseModel>
+            + updateHotel(hotelId: String, hotelRequestModel: Mono<HotelRequestModel>) : Mono<HotelResponseModel>
+            + deleteHotel(hotelId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Hotel {
+            + id: String
+            + hotelId: String
+            + name: String
+            + cityId: String
+            + url: String
+        }
+
+        interface HotelRepository extends ReactiveMongoRepository {
+            + findHotelByHotelId(hotelId: String) : Mono<Hotel>
+            + findAllByCityId(cityId: String) : Flux<Hotel>
+            + findAll() : Flux<Hotel>
+        }
+    }
+
+    package "presentationlayer" {
+        class HotelRequestModel {
+            + name: String
+            + cityId: String
+            + url: String
+        }
+
+        class HotelResponseModel {
+            + hotelId: String
+            + name: String
+            + cityId: String
+            + url: String
+        }
+
+        class HotelController {
+            - hotelService: HotelService
+            + getHotels(cityId: String) : Flux<HotelResponseModel>
+            + getHotelByHotelId(hotelId: String) : Mono<ResponseEntity<HotelResponseModel>>
+            + createHotel(hotelRequestModel: Mono<HotelRequestModel>) : Mono<ResponseEntity<HotelResponseModel>>
+            + updateHotel(hotelId: String, hotelRequestModel: Mono<HotelRequestModel>) : Mono<ResponseEntity<HotelResponseModel>>
+            + deleteHotel(hotelId: String) : Mono<ResponseEntity<Void>>
+        }
+    }
+
+    package "utils" {
+        class HotelEntityModel {
+            + toHotelResponseModel(hotel: Hotel) : HotelResponseModel
+            + toHotelEntity(hotelRequestModel: HotelRequestModel) : Hotel
+            + generateUUIDString() : String
+        }
+    }
+
+    HotelServiceImpl -down-|> HotelService
+    HotelServiceImpl -down-> HotelRepository
+    HotelController -down-> HotelService
+    HotelController -down-> HotelRequestModel
+    HotelController -down-> HotelResponseModel
+    HotelServiceImpl -down-> Hotel
+    HotelServiceImpl -down-> HotelRequestModel
+    HotelServiceImpl -down-> HotelResponseModel
+    HotelEntityModel -up-^ Hotel
+    HotelEntityModel -up-^ HotelRequestModel
+    HotelEntityModel -up-^ HotelResponseModel
+}
+
+' ***********************************************************************
+' TOUREVENT SUBDOMAIN
+' ***********************************************************************
+package "toureventsubdomain" {
+    package "businesslayer" {
+        interface TourEventService {
+            + getAllTourEvents() : Flux<TourEventResponseModel>
+            + getTourEventById(tourEventId: String) : Mono<TourEventResponseModel>
+            + addTourEvent(tourEvent: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + updateTourEvent(tourEventId: String, tourEventRequestModel: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + deleteTourEvent(tourEventId: String) : Mono<Void>
+        }
+
+        class TourEventServiceImpl {
+            - tourEventRepository: TourEventRepository
+            + getAllTourEvents() : Flux<TourEventResponseModel>
+            + getTourEventById(tourEventId: String) : Mono<TourEventResponseModel>
+            + addTourEvent(tourEvent: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + updateTourEvent(tourEventId: String, tourEventRequestModel: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + deleteTourEvent(tourEventId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class TourEvent {
+            + _id: ObjectId
+            + tourEventId: String
+            + seq: Integer
+            + seqDesc: String
+            + tourId: String
+            + eventId: String
+            + hotelId: String
+        }
+
+        interface TourEventRepository extends ReactiveMongoRepository {
+            + findTourEventByTourEventId(tourEventId: String) : Mono<TourEvent>
+            + findAll() : Flux<TourEvent>
+        }
+    }
+
+    package "presentationlayer" {
+        class TourEventRequestModel {
+            + seq: Integer
+            + seqDesc: String
+            + tourId: String
+            + eventId: String
+        }
+
+        class TourEventResponseModel {
+            + tourEventId: String
+            + seq: Integer
+            + seqDesc: String
+            + tourId: String
+            + eventId: String
+        }
+
+        class TourEventController {
+            - tourEventService: TourEventService
+            + getAllTourEvents() : Flux<TourEventResponseModel>
+            + getTourEventById(tourEventId: String) : Mono<ResponseEntity<TourEventResponseModel>>
+            + addTourEvent(tourEventRequestModel: TourEventRequestModel) : Mono<TourEventResponseModel>
+            + updateTourEvent(tourEventId: String, tourEventRequestModel: TourEventRequestModel) : Mono<ResponseEntity<TourEventResponseModel>>
+            + deleteTourEvent(tourEventId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil_tourevent {
+            + toTourEventResponseModel(tourEvent: TourEvent) : TourEventResponseModel
+            + toTourEventEntity(tourEventRequestModel: TourEventRequestModel) : TourEvent
+            + generateUUIDString() : String
+        }
+    }
+
+    TourEventServiceImpl -down-|> TourEventService
+    TourEventServiceImpl -down-> TourEventRepository
+    TourEventController -down-> TourEventService
+    TourEventController -down-> TourEventRequestModel
+    TourEventController -down-> TourEventResponseModel
+    TourEventServiceImpl -down-> TourEvent
+    TourEventServiceImpl -down-> TourEventRequestModel
+    TourEventServiceImpl -down-> TourEventResponseModel
+    EntityModelUtil_tourevent -up-^ TourEvent
+    EntityModelUtil_tourevent -up-^ TourEventRequestModel
+    EntityModelUtil_tourevent -up-^ TourEventResponseModel
+}
+
+' ***********************************************************************
+' TRAVELER SUBDOMAIN
+' ***********************************************************************
+package "travelersubdomain" {
+    package "businesslayer" {
+        interface TravelerService {
+            + getAllTravelers(firstName: String) : Flux<TravelerResponseModel>
+            + getTravelerByTravelerId(travelerId: String) : Mono<TravelerResponseModel>
+            + createTraveler(travelerRequestModel: TravelerRequestModel) : Mono<TravelerResponseModel>
+            + updateTraveler(travelerId: String, travelerRequestModel: TravelerRequestModel) : Mono<TravelerResponseModel>
+            + deleteTraveler(travelerId: String) : Mono<TravelerResponseModel>
+        }
+
+        class TravelerServiceImpl {
+            - travelerRepository: TravelerRepository
+            + getAllTravelers(firstName: String) : Flux<TravelerResponseModel>
+            + getTravelerByTravelerId(travelerId: String) : Mono<TravelerResponseModel>
+            + createTraveler(travelerRequestModel: TravelerRequestModel) : Mono<TravelerResponseModel>
+            + updateTraveler(travelerId: String, travelerRequestModel: TravelerRequestModel) : Mono<TravelerResponseModel>
+            + deleteTraveler(travelerId: String) : Mono<TravelerResponseModel>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Traveler {
+            + id: String
+            + travelerId: String
+            + seq: Integer
+            + firstName: String
+            + lastName: String
+            + addressLine1: String
+            + addressLine2: String
+            + city: String
+            + state: String
+            + email: String
+            + countryId: String
+        }
+
+        interface TravelerRepository extends ReactiveMongoRepository {
+            + findTravelerByTravelerId(travelerId: String) : Mono<Traveler>
+            + findTravelerByFirstName(firstName: String) : Flux<Traveler>
+            + findAll() : Flux<Traveler>
+        }
+    }
+
+    package "presentationlayer" {
+        class TravelerRequestModel {
+            + seq: Integer
+            + firstName: String
+            + lastName: String
+            + addressLine1: String
+            + addressLine2: String
+            + city: String
+            + state: String
+            + email: String
+            + countryId: String
+        }
+
+        class TravelerResponseModel {
+            + travelerId: String
+            + seq: Integer
+            + firstName: String
+            + lastName: String
+            + addressLine1: String
+            + addressLine2: String
+            + city: String
+            + state: String
+            + email: String
+            + countryId: String
+        }
+
+        class TravelerController {
+            - travelerService: TravelerService
+            + getAllTravelers(firstName: String) : Flux<TravelerResponseModel>
+            + getTravelerByTravelerId(travelerId: String) : Mono<ResponseEntity<TravelerResponseModel>>
+            + createTraveler(travelerRequestModel: TravelerRequestModel) : Mono<ResponseEntity<TravelerResponseModel>>
+            + updateTraveler(travelerId: String, travelerRequestModel: TravelerRequestModel) : Mono<ResponseEntity<TravelerResponseModel>>
+            + deleteTraveler(travelerId: String) : Mono<ResponseEntity<TravelerResponseModel>>
+        }
+    }
+
+    package "utils" {
+        class TravelerEntityModelUtil {
+            + toTravelerResponseModel(traveler: Traveler) : TravelerResponseModel
+            + toTravelerEntity(travelerRequestModel: TravelerRequestModel) : Traveler
+        }
+    }
+
+    TravelerServiceImpl -down-|> TravelerService
+    TravelerServiceImpl -down-> TravelerRepository
+    TravelerController -down-> TravelerService
+    TravelerController -down-> TravelerRequestModel
+    TravelerController -down-> TravelerResponseModel
+    TravelerServiceImpl -down-> Traveler
+    TravelerServiceImpl -down-> TravelerRequestModel
+    TravelerServiceImpl -down-> TravelerResponseModel
+    TravelerEntityModelUtil -up-^ Traveler
+    TravelerEntityModelUtil -up-^ TravelerRequestModel
+    TravelerEntityModelUtil -up-^ TravelerResponseModel
+}
+
+' ***********************************************************************
+' TOUR PACKAGE SUBDOMAIN
+' ***********************************************************************
+package "tourpackagesubdomain" {
+    package "businesslayer" {
+        interface TourPackageService {
+            + getAllTourPackages() : Flux<TourPackageResponseModel>
+            + getTourPackageById(packageId: String) : Mono<TourPackageResponseModel>
+            + addTourPackage(tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
+            + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
+            + deleteTourPackage(packageId: String) : Mono<Void>
+            + updatePackageStatus(packageId: String, newStatus: PackageStatus) : Mono<TourPackageResponseModel>
+        }
+
+        class TourPackageServiceImpl {
+            - tourPackageRepository: TourPackageRepository
+            + getAllTourPackages() : Flux<TourPackageResponseModel>
+            + getTourPackageById(packageId: String) : Mono<TourPackageResponseModel>
+            + addTourPackage(tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
+            + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
+            + deleteTourPackage(packageId: String) : Mono<Void>
+            + updatePackageStatus(packageId: String, newStatus: PackageStatus) : Mono<TourPackageResponseModel>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class TourPackage {
+            + _id: ObjectId
+            + packageId: String
+            + name: String
+            + description: String
+            + startDate: DateTime
+            + endDate: DateTime
+            + priceForOne: Decimal
+            + priceForTwo: Decimal
+            + priceForThree: Decimal
+            + airportId: String
+            + tourId: String
+            + status: PackageStatus
+        }
+
+        enum PackageStatus {
+            UPCOMING
+            COMPLETED
+            CANCELLED
+            SOLD_OUT
+            BOOKING_OPEN
+            BOOKING_CLOSED
+        }
+
+        interface TourPackageRepository extends ReactiveMongoRepository {
+            + findTourPackageByPackageId(packageId: String) : Mono<TourPackage>
+            + findAll() : Flux<TourPackage>
+            + updatePackageStatus(packageId: String, newStatus: PackageStatus) : Mono<Void>
+        }
+    }
+
+    package "presentationlayer" {
+        class TourPackageRequestModel {
+            + name: String
+            + description: String
+            + startDate: DateTime
+            + endDate: DateTime
+            + priceForOne: Decimal
+            + priceForTwo: Decimal
+            + priceForThree: Decimal
+            + airportId: String
+            + tourId: String
+        }
+
+        class TourPackageResponseModel {
+            + packageId: String
+            + name: String
+            + description: String
+            + startDate: DateTime
+            + endDate: DateTime
+            + priceForOne: Decimal
+            + priceForTwo: Decimal
+            + priceForThree: Decimal
+            + airportId: String
+            + tourId: String
+            + status: PackageStatus
+        }
+
+        class TourPackageController {
+            - tourPackageService: TourPackageService
+            + getAllTourPackages() : Flux<TourPackageResponseModel>
+            + getTourPackageById(packageId: String) : Mono<ResponseEntity<TourPackageResponseModel>>
+            + addTourPackage(tourPackageRequestModel: TourPackageRequestModel) : Mono<TourPackageResponseModel>
+            + updateTourPackage(packageId: String, tourPackageRequestModel: TourPackageRequestModel) : Mono<ResponseEntity<TourPackageResponseModel>>
+            + deleteTourPackage(packageId: String) : Mono<Void>
+            + updatePackageStatus(packageId: String, newStatus: PackageStatus) : Mono<ResponseEntity<TourPackageResponseModel>>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil_tourpackage {
+            + toTourPackageResponseModel(tourPackage: TourPackage) : TourPackageResponseModel
+            + toTourPackageEntity(tourPackageRequestModel: TourPackageRequestModel) : TourPackage
+            + generateUUIDString() : String
+        }
+    }
+
+    ' ***********************************************************************
+    ' RELATIONSHIPS
+    ' ***********************************************************************
+    TourPackageServiceImpl -down-|> TourPackageService
+    TourPackageServiceImpl -down-> TourPackageRepository
+    TourPackageController -down-> TourPackageService
+    TourPackageController -down-> TourPackageRequestModel
+    TourPackageController -down-> TourPackageResponseModel
+    TourPackageServiceImpl -down-> TourPackage
+    TourPackageServiceImpl -down-> TourPackageRequestModel
+    TourPackageServiceImpl -down-> TourPackageResponseModel
+    EntityModelUtil_tourpackage -up-^ TourPackage
+    EntityModelUtil_tourpackage -up-^ TourPackageRequestModel
+    EntityModelUtil_tourpackage -up-^ TourPackageResponseModel
+}
+
+
+' ***********************************************************************
+' CROSS-DOMAIN DEPENDENCIES
+' ***********************************************************************
+' Booking references a Tour Package by packageId
+bookingsubdomain.dataaccesslayer.Booking --> tourpackagesubdomain.dataaccesslayer.TourPackage : "packageId (ID-based reference)"
+
+' TourPackage references an airport by airportId
+tourpackagesubdomain.dataaccesslayer.TourPackage --> airportsubdomain.dataaccesslayer.Airport : "airportId (ID-based reference)"
+
+' TourPackage references a tour by tourId
+tourpackagesubdomain.dataaccesslayer.TourPackage --> toureventsubdomain.dataaccesslayer.TourEvent : "tourId (ID-based reference)"
+
+
+' ***********************************************************************
+' CROSS-DOMAIN DEPENDENCIES (Only between the provided subdomains)
+' ***********************************************************************
+' TourEvent references a hotel by hotelId
+toureventsubdomain.dataaccesslayer.TourEvent --> hotelSubdomain.dataaccesslayer.Hotel : "hotelId (ID-based reference)"
+
+' TourPackage references an airport by airportId
+tourpackagesubdomain.dataaccesslayer.TourPackage --> airportsubdomain.dataaccesslayer.Airport : "airportId (ID-based reference)"
+
+' Note: No other inter-subdomain links are provided or mentioned.
+
+' ***********************************************************************
+' Legend
+' ***********************************************************************
+legend
+|=Symbol=|=Meaning=|
+|-->|Dependency (ID-based reference)|
+|-| or -down->| Normal relationship (association)|
+|^| Generalization (implements/extends)|
+endlegend
+
+@enduml

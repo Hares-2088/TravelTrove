@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponseModel {
@@ -19,4 +19,6 @@ public class UserResponseModel {
     private List<String> roles;
     private List<String> permissions;
     private String travelerId;
+    private List<String> travelerIds;
 }
+

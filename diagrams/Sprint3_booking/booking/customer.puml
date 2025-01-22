@@ -17,15 +17,10 @@ actor "Customer" as Customer
 
 rectangle "Travel Trove System" {
 
-    usecase "Browse Bookings"
-    usecase "View Booking Details"
-    usecase "Booking a Package"
+    usecase "Book a Package"
 
 }
 
-Customer -- "Browse Bookings"
-
-"Browse Bookings" ..> "View Booking Details" : <<include>>
-"View Booking Details" ..> "Booking a Package" : <<extend>>
+Customer -- "Book a Package"
 
 @enduml

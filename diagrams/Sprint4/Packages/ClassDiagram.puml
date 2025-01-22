@@ -1,0 +1,121 @@
+@startuml
+title Tour Package Management Class Diagram
+
+package "Tour Package Subdomain" {
+
+    ' ======== ENTITY ========
+    class Package <<Entity>> {
+        - id: String
+        - packageId: String
+        - name: String
+        - description: String
+        - startDate: LocalDate
+        - endDate: LocalDate
+        - priceSingle: Double
+        - priceDouble: Double
+        - priceTriple: Double
+        - availableSeats: Integer
+        - totalSeats: Integer
+        - airportId: String
+        - tourId: String
+    }
+
+    ' ======== ENUMS ========
+    enum PackageStatus {
+        UPCOMING
+        COMPLETED
+        CANCELLED
+        SOLD_OUT
+        BOOKING_OPEN
+        BOOKING_CLOSED
+    }
+
+    ' ======== REPOSITORY ========
+    interface PackageRepository <<Repository>> {
+        + findPackageByPackageId(packageId: String): Mono<Package>
+        + findPackagesByTourId(tourId: String): Flux<Package>
+    }
+
+    ' ======== SERVICE ========
+    interface PackageService <<Service>> {
+        + getAllPackages(tourId: String): Flux<PackageResponseModel>
+        + getPackageByPackageId(packageId: String): Mono<PackageResponseModel>
+        + createPackage(packageRequestModel: Mono<PackageRequestModel>): Mono<PackageResponseModel>
+        + updatePackage(packageId: String, packageRequestModel: Mono<PackageRequestModel>): Mono<PackageResponseModel>
+        + deletePackage(packageId: String): Mono<PackageResponseModel>
+        + updatePackageStatus(packageId: String, newStatus: PackageStatus): Mono<PackageResponseModel>
+        + decreaseAvailableSeats(packageId: String, quantity: Integer): Mono<PackageResponseModel>
+        + increaseAvailableSeats(packageId: String, quantity: Integer): Mono<PackageResponseModel>
+    }
+
+    class PackageServiceImpl <<Service Impl>> {
+        - packageRepository: PackageRepository
+        - tourService: TourService
+        - airportService: AirportService
+    }
+
+    ' ======== CONTROLLER ========
+    class PackageController <<Controller>> {
+        + getPackages(tourId: String): Flux<PackageResponseModel>
+        + getPackageByPackageId(packageId: String): Mono<ResponseEntity<PackageResponseModel>>
+        + createPackage(packageRequestModel: Mono<PackageRequestModel>): Mono<ResponseEntity<PackageResponseModel>>
+        + updatePackage(packageId: String, packageRequestModel: Mono<PackageRequestModel>): Mono<ResponseEntity<PackageResponseModel>>
+        + deletePackage(packageId: String): Mono<ResponseEntity<PackageResponseModel>>
+        + updatePackageStatus(packageId: String, newStatus: PackageStatus): Mono<ResponseEntity<PackageResponseModel>>
+        + decreaseAvailableSeats(packageId: String, quantity: Integer): Mono<ResponseEntity<PackageResponseModel>>
+        + increaseAvailableSeats(packageId: String, quantity: Integer): Mono<ResponseEntity<PackageResponseModel>>
+    }
+
+    ' ======== DTOs ========
+    class PackageRequestModel <<DTO>> {
+        - name: String
+        - description: String
+        - startDate: LocalDate
+        - endDate: LocalDate
+        - priceSingle: Double
+        - priceDouble: Double
+        - priceTriple: Double
+        - totalSeats: Integer
+        - airportId: String
+        - tourId: String
+    }
+
+    class PackageResponseModel <<DTO>> {
+        - packageId: String
+        - name: String
+        - description: String
+        - startDate: LocalDate
+        - endDate: LocalDate
+        - priceSingle: Double
+        - priceDouble: Double
+        - priceTriple: Double
+        - availableSeats: Integer
+        - totalSeats: Integer
+        - status: PackageStatus
+        - airportId: String
+        - tourId: String
+    }
+
+    ' ======== UTILITIES ========
+    class PackageEntityModelUtil <<Utility>> {
+        + toPackage(requestModel: PackageRequestModel, tour: Tour, airport: Airport): Package
+        + toPackageResponseModel(package: Package): PackageResponseModel
+    }
+
+    ' ======== RELATIONSHIPS ========
+    PackageServiceImpl -[hidden]-> PackageService
+    PackageServiceImpl --|> PackageService
+    PackageServiceImpl --> PackageRepository
+    PackageController --> PackageService
+    PackageController --> PackageRequestModel
+    PackageController --> PackageResponseModel
+    PackageService --> PackageRequestModel
+    PackageService --> PackageResponseModel
+    Package --> PackageStatus
+    PackageResponseModel --> PackageStatus
+    PackageServiceImpl --> PackageEntityModelUtil
+    PackageEntityModelUtil --> PackageRequestModel
+    PackageEntityModelUtil --> PackageResponseModel
+}
+
+@enduml

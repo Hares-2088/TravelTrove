@@ -88,6 +88,126 @@ package "airportsubdomain" {
 }
 
 ' ***********************************************************************
+' BOOKING SUBDOMAIN
+' ***********************************************************************
+package "bookingsubdomain" {
+    package "businesslayer" {
+        interface BookingService {
+            + getBookings(): Flux<BookingResponseModel>
+            + getBooking(bookingId: String): Mono<BookingResponseModel>
+            + getBookingsByUserId(userId: String): Flux<BookingResponseModel>
+            + getBookingsByPackageId(packageId: String): Flux<BookingResponseModel>
+            + createBooking(bookingRequestModel: BookingRequestModel): Mono<BookingResponseModel>
+            + updateBookingStatus(bookingId: String, newStatus: BookingStatus): Mono<BookingResponseModel>
+            + deleteBooking(bookingId: String): Mono<Void>
+        }
+
+        class BookingServiceImpl {
+            - bookingRepository: BookingRepository
+            - packageService: PackageService
+            - userService: UserService
+            - travelerService: TravelerService
+            + getBookings(): Flux<BookingResponseModel>
+            + getBooking(bookingId: String): Mono<BookingResponseModel>
+            + getBookingsByUserId(userId: String): Flux<BookingResponseModel>
+            + getBookingsByPackageId(packageId: String): Flux<BookingResponseModel>
+            + createBooking(bookingRequestModel: BookingRequestModel): Mono<BookingResponseModel>
+            + updateBookingStatus(bookingId: String, newStatus: BookingStatus): Mono<BookingResponseModel>
+            + deleteBooking(bookingId: String): Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Booking {
+            + id: String
+            + bookingId: String
+            + userId: String
+            + packageId: String
+            + totalPrice: Double
+            + status: BookingStatus
+            + bookingDate: LocalDate
+            + travelerIds: List<String>
+        }
+
+        interface BookingRepository extends ReactiveMongoRepository {
+            + findBookingsByPackageId(packageId: String): Flux<Booking>
+            + findBookingsByUserId(userId: String): Flux<Booking>
+            + findBookingByBookingId(bookingId: String): Mono<Booking>
+            + findBookingByPackageIdAndUserId(packageId: String, userId: String): Mono<Booking>
+        }
+    }
+
+    package "presentationlayer" {
+        class BookingRequestModel {
+            + userId: String
+            + packageId: String
+            + totalPrice: Double
+            + status: BookingStatus
+            + bookingDate: LocalDate
+            + travelers: List<TravelerRequestModel>
+        }
+
+        class BookingResponseModel {
+            + bookingId: String
+            + userId: String
+            + packageId: String
+            + totalPrice: Double
+            + status: BookingStatus
+            + bookingDate: LocalDate
+            + travelerIds: List<String>
+        }
+
+        class BookingStatusUpdateRequest {
+            + status: BookingStatus
+        }
+
+        class BookingController {
+            - bookingService: BookingService
+            + getBookings(userId: String, packageId: String, status: String): Flux<BookingResponseModel>
+            + getBookingByPackageIdAndUserIdOrBookingId(packageId: String, userId: String, bookingId: String): Mono<ResponseEntity<BookingResponseModel>>
+            + createBooking(bookingRequestModel: BookingRequestModel): Mono<ResponseEntity<BookingResponseModel>>
+            + updateBookingStatus(bookingId: String, statusUpdateRequest: BookingStatusUpdateRequest): Mono<ResponseEntity<BookingResponseModel>>
+            + deleteBooking(bookingId: String): Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class BookingEntityModelUtil {
+            + toBookingResponseModel(booking: Booking): BookingResponseModel
+            + toBookingEntity(bookingRequestModel: BookingRequestModel): Booking
+        }
+    }
+
+    BookingServiceImpl -down-|> BookingService
+    BookingServiceImpl -down-> BookingRepository
+    BookingController -down-> BookingService
+    BookingController -down-> BookingRequestModel
+    BookingController -down-> BookingResponseModel
+    BookingServiceImpl -down-> Booking
+    BookingServiceImpl -down-> BookingRequestModel
+    BookingServiceImpl -down-> BookingResponseModel
+    BookingEntityModelUtil -up-^ Booking
+    BookingEntityModelUtil -up-^ BookingRequestModel
+    BookingEntityModelUtil -up-^ BookingResponseModel
+}
+
+' ***********************************************************************
+' RELATIONSHIPS WITH OTHER DOMAINS
+' ***********************************************************************
+' Booking references a Tour Package by packageId
+bookingsubdomain.dataaccesslayer.Booking --> tourpackagesubdomain.dataaccesslayer.TourPackage : "packageId (ID-based reference)"
+
+' Booking references a User by userId
+bookingsubdomain.dataaccesslayer.Booking --> travelersubdomain.dataaccesslayer.Traveler : "travelerIds (List)"
+
+' Booking references Travelers
+bookingsubdomain.dataaccesslayer.Booking --> travelersubdomain.dataaccesslayer.Traveler : "travelerIds (List)"
+
+' BookingController depends on BookingService
+bookingsubdomain.presentationlayer.BookingController -down-> bookingsubdomain.businesslayer.BookingService
+
+
+' ***********************************************************************
 ' HOTEL SUBDOMAIN
 ' ***********************************************************************
 package "hotelSubdomain" {

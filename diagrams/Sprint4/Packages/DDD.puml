@@ -1,0 +1,257 @@
+@startuml
+hide circle
+left to right direction
+
+!define ENTITY(entityName) class entityName << Entity >>
+!define AGGREGATE(aggregateName) class aggregateName << Aggregate >>
+!define AGGREGATE_ROOT(aggregateRootName) class aggregateRootName << Aggregate Root >>
+!define AGGREGATE_ROOT_ENTITY(aggregateRootEntityName) class aggregateRootEntityName << Aggregate Root >> << Entity >>
+!define VALUE_OBJECT(valueObjectName) class valueObjectName << Value Object >>
+
+skinparam packageStyle rectangle
+skinparam rectangle {
+    BackgroundColor #f7f4eb
+    BorderColor Black
+}
+
+rectangle "TravelTrove" as BoundedContextTravelTrove #line.dashed {
+
+    Package "City Sub-Domain" <<Rectangle>> #Lavender {
+        AGGREGATE_ROOT(City) #lightblue {
+            name: String
+            population: Integer
+        }
+
+        VALUE_OBJECT(CityId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(Location) #Bisque {
+            latitude: Double
+            longitude: Double
+        }
+
+        City "1" o-- "1" CityId
+        City "1" o-- "1" Location
+    }
+
+    Package "Country Sub-Domain" <<Rectangle>> #LightSalmon {
+        AGGREGATE_ROOT(Country) #lightblue {
+            name: String
+            isoCode: String
+        }
+
+        VALUE_OBJECT(CountryId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(Language) #Bisque {
+            languageCode: String
+            languageName: String
+        }
+
+        Country "1" o-- "1" CountryId
+        Country "1" o-- "0..*" Language
+
+        Country "1" o-- "0..*" City : "Contains cities"
+    }
+
+    Package "Airport Sub-Domain" <<Rectangle>> #LightGray {
+        AGGREGATE_ROOT(Airport) #lightblue {
+            name: String
+            code: String
+        }
+
+        VALUE_OBJECT(AirportId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(Location) #Bisque {
+            latitude: Double
+            longitude: Double
+        }
+
+        Airport "1" o-- "1" AirportId
+        Airport "1" o-- "1" Location
+        Airport "1" o-- "1" City : "Located in"
+    }
+
+    Package "Hotel Sub-Domain" <<Rectangle>> #LightYellow {
+        AGGREGATE_ROOT(Hotel) #lightblue {
+            name: String
+            rating: Double
+            pricePerNight: Decimal
+        }
+
+        VALUE_OBJECT(HotelId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(Address) #Bisque {
+            street: String
+            city: String
+            country: String
+        }
+
+        Hotel "1" o-- "1" HotelId
+        Hotel "1" o-- "1" Address
+        Hotel "1" o-- "1" City : "Located in"
+    }
+
+    Package "Event Sub-Domain" <<Rectangle>> #LightYellow {
+        AGGREGATE_ROOT(Event) #lightblue {
+            name: String
+            description: String
+            date: DateTime
+        }
+
+        VALUE_OBJECT(EventId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(EventDetails) #Bisque {
+            venue: String
+            duration: Duration
+        }
+
+        Event "1" o-- "1" EventId
+        Event "1" o-- "1" EventDetails
+
+        Event "1" o-- "1" City : "Takes place in"
+    }
+
+    Package "Tour Sub-Domain" <<Rectangle>> #LightGreen {
+        AGGREGATE_ROOT(Tour) #lightblue {
+            name: String
+            startDate: DateTime
+            endDate: DateTime
+            price: Decimal
+            availability: Boolean
+        }
+
+        VALUE_OBJECT(TourId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(Itinerary) #Bisque {
+            details: List[String]
+        }
+
+        AGGREGATE(TourEvent) #lightblue {
+            order: Integer
+        }
+
+        VALUE_OBJECT(TourEventId) #Bisque {
+            id: UUID
+        }
+
+        Tour "1" o-- "1" TourId
+        Tour "1" o-- "1" Itinerary
+        Tour "1" o-- "0..*" TourEvent : "Includes"
+        TourEvent "1" o-- "1" TourEventId
+        TourEvent "1" o-- "1" Event : "References"
+        Tour "1" o-- "0..*" Hotel : "Includes stay in"
+    }
+
+        Package "Tour Package Sub-Domain" <<Rectangle>> #FFCC99 {
+            AGGREGATE_ROOT(TourPackage) #lightblue {
+                name: String
+                description: String
+                price: Decimal
+                status: PackageStatus
+            }
+
+            VALUE_OBJECT(PackageStatus) #Bisque {
+                status: Enum { UPCOMING,
+                              COMPLETED,
+                              CANCELLED,
+                              SOLD_OUT,
+                              BOOKING_OPEN,
+                              BOOKING_CLOSED }
+            }
+
+            TourPackage "1" o-- "1" PackageStatus
+            TourPackage "1" o-- "0..*" Tour : "Includes tours"
+            TourPackage "1" o-- "0..*" Hotel : "Includes hotels"
+            TourPackage "1" o-- "0..*" Airport : "Includes transportation"
+        }
+
+
+    Package "Booking Sub-Domain" <<Rectangle>> #FFCDD2 {
+        AGGREGATE_ROOT(Booking) #lightpink {
+            bookingDate: DateTime
+            totalPrice: Decimal
+            travelerIds: List[String]
+        }
+
+        VALUE_OBJECT(BookingStatus) #Bisque {
+            status: Enum { PAYMENT_PENDING,
+                              PAYMENT_ATTEMPT2_PENDING,
+                              BOOKING_FAILED,
+                              BOOKING_CONFIRMED,
+                              BOOKING_FINALIZED,
+                              REFUNDED}
+        }
+
+        Booking "1" o-- "1" BookingStatus
+        Booking "1" o-- "1" TourPackage : "For"
+    }
+
+    Package "User Sub-Domain" <<Rectangle>> #FFEE93 {
+        AGGREGATE_ROOT_ENTITY(User) #lightblue {
+            username: String
+            email: String
+            role: Enum { CUSTOMER, ADMIN, EMPLOYEE }
+        }
+
+        VALUE_OBJECT(UserId) #Bisque {
+            id: UUID
+        }
+
+        User "1" o-- "1" UserId
+        User "1" o-- "0..*" Booking : "Makes"
+    }
+
+    Package "Payment Sub-Domain" <<Rectangle>> #LightGray {
+        AGGREGATE_ROOT(Payment) #lightblue {
+            amount: Decimal
+            status: Enum { PENDING, COMPLETED, FAILED }
+        }
+
+        VALUE_OBJECT(PaymentId) #Bisque {
+            id: UUID
+        }
+
+        VALUE_OBJECT(CurrencyType) #Bisque {
+            type: Enum { USD, EUR, GBP, CAD }
+        }
+
+        Payment "1" o-- "1" PaymentId
+        Payment "1" o-- "1" CurrencyType
+        Payment "1" o-- "1" Booking : "References"
+    }
+
+    Package "Notification Sub-Domain" <<Rectangle>> #FFCDD2 {
+        ENTITY(Email) #lightpink {
+            recipient: String
+            subject: String
+            body: String
+        }
+
+        VALUE_OBJECT(EmailStatus) #Bisque {
+            status: Enum { PENDING, SENT, FAILED }
+            sentDate: DateTime
+        }
+
+        VALUE_OBJECT(EmailId) #Bisque {
+            id: UUID
+        }
+
+        Email "1" o-- "1" EmailId
+        Email "1" o-- "1" EmailStatus
+
+        User "1" o-- "0..*" Email : "Receives"
+    }
+}
+
+@enduml

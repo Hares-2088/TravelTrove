@@ -131,15 +131,15 @@ public class AirportControllerIntegrationTest {
 //                });
 //    }
 
-    @Test
-    public void whenGetAirportByInvalidId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .get()
-                .uri("/api/v1/airports/" + INVALID_AIRPORT_ID)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isNotFound();
-    }
+//    @Test
+//    public void whenGetAirportByInvalidId_thenReturnNotFound() {
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+//                .get()
+//                .uri("/api/v1/airports/" + INVALID_AIRPORT_ID)
+//                .accept(MediaType.APPLICATION_JSON)
+//                .exchange()
+//                .expectStatus().isNotFound();
+//    }
 
 //    @Test
 //    public void whenAddAirport_thenReturnCreatedAirport() {

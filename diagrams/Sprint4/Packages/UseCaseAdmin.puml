@@ -17,14 +17,16 @@ actor "Dar El Salam's Admin" as Admin
 
 rectangle "Travel Trove System" {
 
-    usecase "View Bookings"
-    usecase "Edit a Booking"
-    usecase "Remove a Booking"
+    usecase "View Tour Packages"
+    usecase "Add a Tour Package"
+    usecase "Edit Tour Package Details"
+    usecase "Update Tour Package Status"
 
 }
 
-Admin -- "View Bookings"
-Admin -- "Edit a Booking"
-Admin -- "Remove a Booking"
+Admin -- "View Tour Packages"
+Admin -- "Add a Tour Package"
+Admin -- "Edit Tour Package Details"
+Admin -- "Update Tour Package Status"
 
 @enduml

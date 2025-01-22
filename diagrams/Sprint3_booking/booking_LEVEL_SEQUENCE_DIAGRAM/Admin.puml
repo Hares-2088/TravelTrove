@@ -1,0 +1,161 @@
+@startuml
+title Booking Management Sequence Diagram for Admin
+
+actor Admin
+participant ReactApplication
+participant BookingsPage
+participant BookingController
+participant BookingService
+participant BookingEntity
+participant BookingRepository
+participant Database
+participant BookingResponseModel
+
+Admin -> ReactApplication : Access Bookings Page
+activate ReactApplication
+
+ReactApplication -> BookingsPage : render()
+activate BookingsPage
+deactivate ReactApplication
+
+BookingsPage --> Admin : Display list of customer bookings
+
+== View All Bookings ==
+Admin -> BookingsPage : Request all bookings
+BookingsPage -> BookingController : GET /api/v1/bookings
+activate BookingController
+
+BookingController -> BookingService : getAllBookings()
+activate BookingService
+
+BookingService -> BookingRepository : findAll()
+activate BookingRepository
+
+BookingRepository -> Database : SELECT * FROM bookings
+Database --> BookingRepository : List of bookings
+deactivate Database
+
+BookingRepository --> BookingService : List of booking entities
+deactivate BookingRepository
+
+BookingService -> BookingResponseModel : Map entities to response models
+activate BookingResponseModel
+BookingResponseModel --> BookingService : Response models ready
+deactivate BookingResponseModel
+
+BookingService --> BookingController : List of BookingResponseModels
+deactivate BookingService
+
+BookingController --> BookingsPage : Response with all bookings
+deactivate BookingController
+
+BookingsPage --> Admin : Display all bookings
+
+== View Bookings by Tour Package ==
+Admin -> BookingsPage : Select a Tour Package
+BookingsPage -> BookingController : GET /api/v1/bookings?packageId={packageId}
+activate BookingController
+
+BookingController -> BookingService : getBookingsByPackageId(packageId)
+activate BookingService
+
+BookingService -> BookingRepository : findBookingsByPackageId(packageId)
+activate BookingRepository
+
+BookingRepository -> Database : SELECT * FROM bookings WHERE packageId = packageId
+Database --> BookingRepository : List of bookings
+deactivate Database
+
+BookingRepository --> BookingService : List of booking entities
+deactivate BookingRepository
+
+BookingService -> BookingResponseModel : Map entities to response models
+activate BookingResponseModel
+BookingResponseModel --> BookingService : Response models ready
+deactivate BookingResponseModel
+
+BookingService --> BookingController : List of BookingResponseModels
+deactivate BookingService
+
+BookingController --> BookingsPage : Response with bookings for package
+deactivate BookingController
+
+BookingsPage --> Admin : Display bookings for package
+
+== Update Booking Status ==
+Admin -> BookingsPage : Select a booking to update status
+BookingsPage -> BookingController : PATCH /api/v1/bookings/{bookingId}
+activate BookingController
+
+BookingController -> BookingService : updateBookingStatus(bookingId, newStatus)
+activate BookingService
+
+BookingService -> BookingRepository : findBookingByBookingId(bookingId)
+activate BookingRepository
+
+BookingRepository -> Database : SELECT * FROM bookings WHERE bookingId = bookingId
+Database --> BookingRepository : Booking found
+deactivate Database
+
+BookingRepository --> BookingService : BookingEntity
+deactivate BookingRepository
+
+alt Status is the same
+    BookingService --> BookingController : Error: SameStatusException
+    BookingController --> BookingsPage : Notify admin: "Booking already in this status"
+    deactivate BookingService
+else Status is valid
+    BookingService -> BookingEntity : Update booking status
+    BookingService -> BookingRepository : save(updatedBooking)
+    activate BookingRepository
+    BookingRepository -> Database : UPDATE bookings SET status = newStatus WHERE id = bookingId
+    Database --> BookingRepository : Update successful
+    deactivate BookingRepository
+
+    BookingService --> BookingResponseModel : Convert updated booking
+    activate BookingResponseModel
+    BookingResponseModel --> BookingService : Updated BookingResponseModel
+    deactivate BookingResponseModel
+
+    BookingService --> BookingController : Updated booking response
+    deactivate BookingService
+
+    BookingController --> BookingsPage : Notify status updated
+    deactivate BookingController
+
+    BookingsPage --> Admin : Booking status updated successfully
+end
+
+== Remove a Customer Booking ==
+Admin -> BookingsPage : Select a booking to delete
+BookingsPage -> BookingController : DELETE /api/v1/bookings/{bookingId}
+activate BookingController
+
+BookingController -> BookingService : deleteBooking(bookingId)
+activate BookingService
+
+BookingService -> BookingRepository : findById(bookingId)
+activate BookingRepository
+
+BookingRepository -> Database : SELECT * FROM bookings WHERE id = bookingId
+Database --> BookingRepository : Booking found
+deactivate Database
+
+BookingRepository --> BookingService : BookingEntity
+deactivate BookingRepository
+
+BookingService -> BookingRepository : delete(bookingId)
+activate BookingRepository
+BookingRepository -> Database : DELETE FROM bookings WHERE id = bookingId
+Database --> BookingRepository : Deletion successful
+deactivate BookingRepository
+
+BookingService --> BookingController : Deletion confirmation
+deactivate BookingService
+
+BookingController --> BookingsPage : Booking deleted successfully
+deactivate BookingController
+
+BookingsPage --> Admin : Notify booking removed
+
+@enduml
