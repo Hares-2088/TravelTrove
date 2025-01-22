@@ -8,21 +8,19 @@ import {
   BookingResponseModel,
   BookingStatus,
 } from "../../../bookings/models/bookings.model";
-import "./Bookings.css"; // Import custom CSS file
-import "../../../../shared/css/Scrollbar.css"; // Import scrollbar CSS
+import "./Bookings.css";
+import "../../../../shared/css/Scrollbar.css";
 
 const Bookings: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const packageId = searchParams.get("packageId");
-  const { getAllBookings, updateBookingStatus, deleteBooking } =
-    useBookingsApi();
+  const { getAllBookings, updateBookingStatus } = useBookingsApi(); // Removed deleteBooking
   const [bookings, setBookings] = useState<BookingResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const { createBooking } = useBookingsApi();
-  const [modalType, setModalType] = useState<
-    "create" | "update" | "delete" | "view"
-  >("create");
+  const [modalType, setModalType] = useState<"create" | "update" | "view">(
+    "create"
+  );
   const [selectedBooking, setSelectedBooking] =
     useState<BookingResponseModel | null>(null);
   const [formData, setFormData] = useState<BookingRequestModel>({
@@ -74,18 +72,6 @@ const Bookings: React.FC = () => {
       await fetchBookings();
     } catch (error) {
       console.error("Error saving booking:", error);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      if (selectedBooking) {
-        await deleteBooking(selectedBooking.bookingId);
-        setShowModal(false);
-        await fetchBookings();
-      }
-    } catch (error) {
-      console.error("Error deleting booking:", error);
     }
   };
 
@@ -157,17 +143,6 @@ const Bookings: React.FC = () => {
                         >
                           {t("Edit Booking")}
                         </Button>
-                        <Button
-                          variant="outline-danger"
-                          className="ms-2"
-                          onClick={() => {
-                            setSelectedBooking(booking);
-                            setModalType("delete");
-                            setShowModal(true);
-                          }}
-                        >
-                          {t("Delete Booking")}
-                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -183,17 +158,11 @@ const Bookings: React.FC = () => {
           >
             <Modal.Header closeButton>
               <Modal.Title>
-                {modalType === "update"
-                  ? t("Edit Booking")
-                  : modalType === "delete"
-                  ? t("Delete Booking")
-                  : t("View Booking")}
+                {modalType === "update" ? t("Edit Booking") : t("View Booking")}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {modalType === "delete" ? (
-                <p>{t("areYouSureDelete")}</p>
-              ) : modalType === "view" ? (
+              {modalType === "view" ? (
                 <div>
                   <p>
                     <strong>{t("User ID")}:</strong> {selectedBooking?.userId}
@@ -299,16 +268,6 @@ const Bookings: React.FC = () => {
                 </Form>
               )}
             </Modal.Body>
-            {modalType === "delete" && (
-              <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowModal(false)}>
-                  {t("Cancel")}
-                </Button>
-                <Button variant="danger" onClick={handleDelete}>
-                  {t("Confirm")}
-                </Button>
-              </Modal.Footer>
-            )}
           </Modal>
         </Card.Body>
       </Card>

@@ -4,40 +4,38 @@ import { useAxiosInstance } from "../../../shared/axios/useAxiosInstance";
 export const useBookingsApi = () => {
   const axiosInstance = useAxiosInstance();
 
-  // Fetch all bookings using Server-Sent Events (SSE)
   const getAllBookings = async (filters?: {
     userId?: string;
     packageId?: string;
     status?: BookingStatus;
   }): Promise<BookingResponseModel[]> => {
-    return new Promise((resolve, reject) => {
-      const bookings: BookingResponseModel[] = [];
-      const eventSource = new EventSource(
-        `${axiosInstance.defaults.baseURL}/bookings?${new URLSearchParams(filters as any)}`
-      );
+    const bookings: BookingResponseModel[] = [];
 
-      eventSource.onmessage = (event) => {
+    const response = await axiosInstance.get('/bookings', {
+      params: filters,
+      responseType: 'text', // Ensure SSE response is treated as text
+      headers: {
+        Accept: 'text/event-stream',
+      },
+    });
+
+    // Parse Server-Sent Events (SSE) line by line
+    const lines = response.data.split('\n');
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      if (trimmedLine.startsWith('data:')) {
         try {
-          const booking = JSON.parse(event.data);
+          const booking = JSON.parse(trimmedLine.substring(5).trim());
           bookings.push(booking);
         } catch (error) {
-          console.error("Error parsing SSE event:", error);
+          console.error('Error parsing line:', trimmedLine, error);
         }
-      };
+      }
+    }
 
-      eventSource.onerror = (error) => {
-        eventSource.close();
-        reject(error);
-      };
-
-      eventSource.onopen = () => {
-        setTimeout(() => {
-          eventSource.close();
-          resolve(bookings);
-        }, 5000); // Close after collecting events
-      };
-    });
+    return bookings;
   };
+
 
   // Fetch a booking by ID
   const getBookingById = async (bookingId: string): Promise<BookingResponseModel> => {
