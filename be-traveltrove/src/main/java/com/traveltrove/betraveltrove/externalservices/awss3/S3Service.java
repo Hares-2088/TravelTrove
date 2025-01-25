@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -39,24 +40,28 @@ public class S3Service {
                 .build();
     }
 
+    public S3Presigner getPresigner() {
+        return presigner;
+    }
+
+
     public String generatePresignedUrl(String userId, String fileName, String contentType) {
         log.info("Generating pre-signed URL for user: {} and file: {}", userId, fileName);
 
-        // ✅ Generate a unique file name to avoid collisions
         String uniqueFileName = userId.replace("|", "-") + "_" + UUID.randomUUID() + "_" + fileName;
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(uniqueFileName)
                 .contentType(contentType)
-//                .acl(ObjectCannedACL.PUBLIC_READ) 
                 .build();
 
-
-        // ✅ Generate a pre-signed URL with a 10-minute expiration time
-        PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(r -> r
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(10))
-                .putObjectRequest(putObjectRequest));
+                .putObjectRequest(putObjectRequest)
+                .build();
+
+        PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
 
         log.info("Pre-signed URL generated successfully: {}", presignedRequest.url());
 
