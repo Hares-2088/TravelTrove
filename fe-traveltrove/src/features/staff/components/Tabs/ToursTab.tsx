@@ -8,6 +8,8 @@ import "../../../../shared/css/Scrollbar.css";
 import { useTranslation } from "react-i18next";
 import UploadImage from "../../../../shared/AWS/UploadImage";
 import { useS3Upload } from "../../../../shared/AWS/useS3Upload"; // Import the custom hook
+import { toast } from "react-toastify"; // Import toast
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 const ToursTab: React.FC = () => {
   const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour, updateTourImage } = useToursApi();
@@ -91,6 +93,23 @@ const ToursTab: React.FC = () => {
       setSelectedImage(file); // Store selected image
     } catch (error) {
       console.error("Error generating pre-signed URL:", error);
+    }
+  };
+
+  const extractImportantPart = (url: string) => {
+    const parts = url.split('/');
+    return parts[parts.length - 1];
+  };
+
+  const handleImageUploadComplete = (imageUrl: string) => {
+    if (imageUploadTourId) {
+      setTours((prevTours) =>
+        prevTours.map((tour) =>
+          tour.tourId === imageUploadTourId ? { ...tour, tourImageUrl: imageUrl } : tour
+        )
+      );
+      setImageUploadTourId(null);
+      toast.success("Image updated successfully!"); // Show success message
     }
   };
 
@@ -277,7 +296,10 @@ const ToursTab: React.FC = () => {
                   tourId={selectedTour ? selectedTour.tourId : null} // Pass tourId prop
                 />
                 {formData.tourImageUrl && (
-                  <img src={formData.tourImageUrl} alt="Tour Preview" width="100" className="mt-2" />
+                  <div>
+                    <img src={formData.tourImageUrl} alt="Tour Preview" width="100" className="mt-2" />
+                    <p>{extractImportantPart(formData.tourImageUrl)}</p>
+                  </div>
                 )}
               </Form.Group>
             </Form>
@@ -305,9 +327,7 @@ const ToursTab: React.FC = () => {
           <UploadImage
             onFileSelect={requestPresignedUrl}
             presignedUrl={presignedUrl}
-            onUploadComplete={(imageUrl) => {
-              setImageUploadTourId(null);
-            }}
+            onUploadComplete={handleImageUploadComplete} // Use the new handler
             tourId={imageUploadTourId} // Pass tourId prop
           />
         </Modal.Body>

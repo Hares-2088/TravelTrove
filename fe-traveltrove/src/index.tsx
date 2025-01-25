@@ -9,6 +9,7 @@ import { auth0Config } from "./auth/auth0-config";
 import { AppRoutes } from "./shared/models/app.routes";
 import "./i18n";
 import { UserProvider } from "./context/UserContext";
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer
 
 const elfsightScript = document.createElement("script");
 elfsightScript.src = "https://static.elfsight.com/platform/platform.js";
@@ -43,6 +44,7 @@ root.render(
     >
       <UserProvider>
         <App />
+        <ToastContainer /> {/* Add ToastContainer */}
       </UserProvider>
     </Auth0Provider>
   </React.StrictMode>

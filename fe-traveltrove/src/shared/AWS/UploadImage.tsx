@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useS3Upload } from "./useS3Upload";
 import { useToursApi } from "../../features/tours/api/tours.api"; // Import the tours API
+import { toast } from "react-toastify"; // Import toast
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 interface UploadImageProps {
   onFileSelect: (file: File) => Promise<void>;
@@ -62,6 +64,9 @@ const UploadImage: React.FC<UploadImageProps> = ({ onUploadComplete, tourId }) =
         await updateTourImage(tourId, uploadedImageUrl); // Update the tour image in the database
       }
       onUploadComplete(uploadedImageUrl);
+      toast.success("Upload successful!"); // Show success message
+      setImage(null); // Reset image state
+      setPresignedUrl(null); // Reset presigned URL state
       console.log("Upload success! Image URL:", uploadedImageUrl);
     } catch (error) {
       console.error("Upload failed:", error);
