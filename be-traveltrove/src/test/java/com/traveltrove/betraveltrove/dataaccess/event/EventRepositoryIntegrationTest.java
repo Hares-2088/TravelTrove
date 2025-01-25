@@ -10,8 +10,6 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @DataMongoTest
 @ActiveProfiles("test")
 class EventRepositoryIntegrationTest {
@@ -38,7 +36,7 @@ class EventRepositoryIntegrationTest {
                 .description("Test Event Description")
                 .cityId(EXISTING_CITY_ID)
                 .countryId(EXISTING_COUNTRY_ID)
-                .image("test_image.jpg")
+                .eventImageUrl("test_image.jpg")
                 .build();
 
         StepVerifier.create(eventRepository.save(event))
@@ -61,7 +59,7 @@ class EventRepositoryIntegrationTest {
                                 event.getDescription().equals("Test Event Description") &&
                                 event.getCityId().equals(EXISTING_CITY_ID) &&
                                 event.getCountryId().equals(EXISTING_COUNTRY_ID) &&
-                                event.getImage().equals("test_image.jpg")
+                                event.getEventImageUrl().equals("test_image.jpg")
                 )
                 .verifyComplete();
     }
@@ -81,7 +79,7 @@ class EventRepositoryIntegrationTest {
                                 event.getDescription().equals("Test Event Description") &&
                                 event.getCityId().equals(EXISTING_CITY_ID) &&
                                 event.getCountryId().equals(EXISTING_COUNTRY_ID) &&
-                                event.getImage().equals("test_image.jpg")
+                                event.getEventImageUrl().equals("test_image.jpg")
                 )
                 .verifyComplete();
     }
@@ -101,7 +99,7 @@ class EventRepositoryIntegrationTest {
                                 event.getDescription().equals("Test Event Description") &&
                                 event.getCityId().equals(EXISTING_CITY_ID) &&
                                 event.getCountryId().equals(EXISTING_COUNTRY_ID) &&
-                                event.getImage().equals("test_image.jpg")
+                                event.getEventImageUrl().equals("test_image.jpg")
                 )
                 .verifyComplete();
     }

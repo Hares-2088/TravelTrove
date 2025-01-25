@@ -21,6 +21,4 @@ public class TourEvent {
     private String tourId;
     private String eventId;
     private String hotelId;
-
-
 }

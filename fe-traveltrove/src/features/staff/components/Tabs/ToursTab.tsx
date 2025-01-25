@@ -6,12 +6,14 @@ import TourEventsTab from "./TourEventsTab";
 import TourPackagesTab from "./TourPackagesTab";
 import "../../../../shared/css/Scrollbar.css";
 import { useTranslation } from "react-i18next";
-
+import UploadImage from "../../../../shared/AWS/UploadImage";
+import { useS3Upload } from "../../../../shared/AWS/useS3Upload"; // Import the custom hook
 
 const ToursTab: React.FC = () => {
-  const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour } = useToursApi();
-
+  const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour, updateTourImage } = useToursApi();
   const { t } = useTranslation(); // For i18n translation
+  const { getPresignedUrl } = useS3Upload();
+
   const [tours, setTours] = useState<TourResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
@@ -20,6 +22,10 @@ const ToursTab: React.FC = () => {
   const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(null);
   const [tourNameError, setTourNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
+  const [imageUploadModal, setImageUploadModal] = useState(false);
+  const [imageUploadTourId, setImageUploadTourId] = useState<string | null>(null);
+  const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     fetchTours();
@@ -54,9 +60,9 @@ const ToursTab: React.FC = () => {
 
     try {
       if (modalType === "create") {
-        await addTour(formData);
+        await addTour({ ...formData, tourImageUrl: formData.tourImageUrl || "" });
       } else if (modalType === "update" && selectedTour) {
-        await updateTour(selectedTour.tourId, formData);
+        await updateTour(selectedTour.tourId, { ...formData, tourImageUrl: formData.tourImageUrl || "" });
       }
       setShowModal(false);
       await fetchTours();
@@ -70,10 +76,21 @@ const ToursTab: React.FC = () => {
       if (selectedTour) {
         await deleteTour(selectedTour.tourId);
         setShowModal(false);
+        setImageUploadTourId(null); // Reset Image Upload ID
         await fetchTours();
       }
     } catch (error) {
       console.error("Error deleting tour:", error);
+    }
+  };
+
+  const requestPresignedUrl = async (file: File) => {
+    try {
+      const { url } = await getPresignedUrl(file.name, file.type);
+      setPresignedUrl(url);
+      setSelectedImage(file); // Store selected image
+    } catch (error) {
+      console.error("Error generating pre-signed URL:", error);
     }
   };
 
@@ -129,6 +146,7 @@ const ToursTab: React.FC = () => {
               <thead className="bg-light">
                 <tr>
                   <th>{t('tourName')}</th>
+                  <th>{t('tourImageUrl')}</th>
                   <th>{t('actionsT')}</th>
                 </tr>
               </thead>
@@ -146,6 +164,19 @@ const ToursTab: React.FC = () => {
                       {tour.name}
                     </td>
                     <td>
+                      {tour.tourImageUrl ? (
+                        <img
+                          src={tour.tourImageUrl}
+                          alt="Tour"
+                          width="50"
+                          height="50"
+                          style={{ objectFit: "cover", borderRadius: "5px" }}
+                        />
+                      ) : (
+                        <span>{t('noImage')}</span>
+                      )}
+                    </td>
+                    <td>
                       <Button
                         variant="outline-primary"
                         onClick={() => {
@@ -159,6 +190,16 @@ const ToursTab: React.FC = () => {
                         }}
                       >
                         {t('editTour')}
+                      </Button>
+                      <Button
+                        variant="outline-secondary"
+                        className="ms-2"
+                        onClick={() => {
+                          setImageUploadTourId(tour.tourId);
+                          setImageUploadModal(true);
+                        }}
+                      >
+                        {t('updateImage')}
                       </Button>
                       <Button
                         variant="outline-danger"
@@ -187,8 +228,8 @@ const ToursTab: React.FC = () => {
             {modalType === "create"
               ? t('createTour')
               : modalType === "update"
-              ? t('editTour')
-              : t('deleteTour')}
+                ? t('editTour')
+                : t('deleteTour')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -224,6 +265,21 @@ const ToursTab: React.FC = () => {
                 />
                 <div className="invalid-feedback">{t('tourDescriptionRequired')}</div>
               </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>{t('tourImage')}</Form.Label>
+                <UploadImage
+                  onFileSelect={requestPresignedUrl}  // ✅ Pass the function that gets the pre-signed URL
+                  presignedUrl={presignedUrl}  // ✅ Ensure this is updated
+                  onUploadComplete={(imageUrl) => {
+                    console.log("Image uploaded successfully:", imageUrl);
+                    setFormData({ ...formData, tourImageUrl: imageUrl });
+                  }}
+                  tourId={selectedTour ? selectedTour.tourId : null} // Pass tourId prop
+                />
+                {formData.tourImageUrl && (
+                  <img src={formData.tourImageUrl} alt="Tour Preview" width="100" className="mt-2" />
+                )}
+              </Form.Group>
             </Form>
           )}
         </Modal.Body>
@@ -236,6 +292,28 @@ const ToursTab: React.FC = () => {
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
             {modalType === "delete" ? t('confirmT') : t('saveT')}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Image Upload Modal */}
+      <Modal show={!!imageUploadTourId} onHide={() => setImageUploadTourId(null)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t('updateImage')}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <UploadImage
+            onFileSelect={requestPresignedUrl}
+            presignedUrl={presignedUrl}
+            onUploadComplete={(imageUrl) => {
+              setImageUploadTourId(null);
+            }}
+            tourId={imageUploadTourId} // Pass tourId prop
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setImageUploadTourId(null)}>
+            {t('cancelT')}
           </Button>
         </Modal.Footer>
       </Modal>

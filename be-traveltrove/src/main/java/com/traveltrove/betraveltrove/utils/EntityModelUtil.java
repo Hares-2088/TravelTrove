@@ -38,6 +38,7 @@ public class EntityModelUtil {
                 .tourId(generateUUIDString())
                 .name(tourRequestModel.getName())
                 .description(tourRequestModel.getDescription())
+                .tourImageUrl(tourRequestModel.getTourImageUrl())
                 .build();
     }
 

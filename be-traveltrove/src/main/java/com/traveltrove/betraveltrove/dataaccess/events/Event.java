@@ -9,10 +9,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -33,6 +29,6 @@ public class Event {
 
     private String name;
     private String description;
-    private String image;
+    private String eventImageUrl;
 
 }

@@ -39,7 +39,7 @@ public class TourServiceImpl implements TourService {
     @Override
     public Mono<TourResponseModel> addTour(Tour tour) {
         return tourRepository.save(tour)
-                .doOnSuccess(savedTour -> log.info("Added new tour {}: ", savedTour))
+                .doOnSuccess(savedTour -> log.info("Added new tour with image {}: ", savedTour.getTourImageUrl()))
                 .map(EntityModelUtil::toTourResponseModel);
     }
 
@@ -64,5 +64,18 @@ public class TourServiceImpl implements TourService {
                 .flatMap(tourRepository::delete)
                 .doOnSuccess(unused -> log.info("Deleted country with id {}: ", tourId));
     }
+
+    @Override
+    public Mono<TourResponseModel> updateTourImage(String tourId, String tourImageUrl) {
+        return tourRepository.findTourByTourId(tourId)
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Tour Id not found: " + tourId))))
+                .flatMap(existingTour -> {
+                    existingTour.setTourImageUrl(tourImageUrl);
+                    return tourRepository.save(existingTour);
+                })
+                .doOnSuccess(updatedTour -> log.info("Updated tour image for {}: {}", tourId, tourImageUrl))
+                .map(EntityModelUtil::toTourResponseModel);
+    }
+
 
 }

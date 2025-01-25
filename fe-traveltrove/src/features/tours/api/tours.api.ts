@@ -57,6 +57,12 @@ export const useToursApi = () => {
     return response.data;
   };
 
+  // Update Tour Image
+  const updateTourImage = async (tourId: string, tourImageUrl: string): Promise<TourResponseModel> => {
+    const response = await axiosInstance.patch<TourResponseModel>(`/tours/${tourId}/image`, tourImageUrl);
+    return response.data;
+  };
+
   // Delete a Tour
   const deleteTour = async (tourId: string): Promise<void> => {
     await axiosInstance.delete(`/tours/${tourId}`);
@@ -67,6 +73,7 @@ export const useToursApi = () => {
     getTourByTourId,
     addTour,
     updateTour,
+    updateTourImage,
     deleteTour,
   };
 };
