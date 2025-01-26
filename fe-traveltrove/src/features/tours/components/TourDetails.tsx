@@ -37,6 +37,9 @@ const TourDetails: React.FC = () => {
       <header className="tour-header">
         <h1 className="tour-title">{tour.name}</h1>
         <p className="tour-description">{tour.description}</p>
+        {tour.tourImageUrl && (
+          <img src={tour.tourImageUrl} alt={tour.name} className="tour-image" />
+        )}
       </header>
       <PackageList tourId={tourId!} />
     </div>

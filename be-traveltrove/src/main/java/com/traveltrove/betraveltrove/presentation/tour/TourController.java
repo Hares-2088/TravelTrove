@@ -66,4 +66,15 @@ public class TourController {
         log.info("Deleting tour with id: {}", tourId);
         return tourService.deleteTourByTourId(tourId);
     }
+
+    @PatchMapping(value = "/{tourId}/image", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<TourResponseModel>> updateTourImage(
+            @PathVariable String tourId,
+            @RequestBody String tourImageUrl) {
+        log.info("Updating tour image for id: {}", tourId);
+        return tourService.updateTourImage(tourId, tourImageUrl)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
 }

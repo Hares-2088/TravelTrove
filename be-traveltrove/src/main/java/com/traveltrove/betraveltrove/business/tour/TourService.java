@@ -13,4 +13,6 @@ public interface TourService {
     Mono<TourResponseModel> addTour(Tour tour);
     Mono<TourResponseModel> updateTour(String tourId, TourRequestModel tourRequestModel);
     Mono<Void> deleteTourByTourId(String tourId);
+    Mono<TourResponseModel> updateTourImage(String tourId, String tourImageUrl);
+
 }

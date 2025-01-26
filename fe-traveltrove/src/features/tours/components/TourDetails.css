@@ -7,17 +7,22 @@
 
 .tour-details {
   flex: 1;
-  padding: 2rem 5%; /* Add padding to prevent content from touching screen edges */
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .tour-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
 .tour-title {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: 2em;
+  margin-bottom: 10px;
   color: #333;
 }
 
@@ -30,12 +35,12 @@
 }
 
 .tour-description {
-  font-size: 1.2rem;
-  color: #666;
+  font-size: 1.2em;
+  color: #555;
 }
 
 .tour-info {
-  margin-top: 2rem;
+  margin-top: 20px;
 }
 
 h2 {
@@ -88,7 +93,17 @@ h2 {
 
 .itinerary-image {
   width: 100%;
+  margin-top: 1rem;
   max-width: 800px;
   height: auto;
-  margin-top: 1rem;
+}
+
+.tour-info h2 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.tour-info p {
+  font-size: 1.1em;
+  margin: 5px 0;
 }

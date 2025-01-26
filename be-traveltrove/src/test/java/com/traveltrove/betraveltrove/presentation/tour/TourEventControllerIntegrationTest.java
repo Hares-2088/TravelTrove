@@ -83,7 +83,7 @@ class TourEventControllerIntegrationTest {
         MockitoAnnotations.openMocks(this);
 
         Mockito.when(tourService.getTourByTourId("tour123"))
-                .thenReturn(Mono.just(new TourResponseModel("tour123", "Tour 123", "Tour 123 Description")));
+                .thenReturn(Mono.just(new TourResponseModel("tour123", "Tour 123", "Tour 123 Description", "imageUrl")));
 
         Mockito.when(eventService.getEventByEventId("event101"))
                 .thenReturn(Mono.just(new EventResponseModel("event101", "Event 456", "Event 456 Description", "yes", "yes", "yes")));

@@ -35,7 +35,7 @@ public class EventEntityModelUtil {
                 .countryId(eventRequestModel.getCountryId())
                 .name(eventRequestModel.getName())
                 .description(eventRequestModel.getDescription())
-                .image(eventRequestModel.getImage())
+                .eventImageUrl(eventRequestModel.getEventImageUrl())
                 .build();
     }
 

@@ -19,4 +19,5 @@ public class Tour {
     private String tourId;
     private String name;
     private String description;
+    private String tourImageUrl;
 }

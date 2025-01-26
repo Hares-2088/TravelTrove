@@ -14,16 +14,18 @@ export interface Tour {
   itineraryPicture: string;
   cities: City[];
   events?: Event[];
+  tourImageUrl?: string;
 }
 
-export interface TourResponseModel{
+export interface TourResponseModel {
   tourId: string;
   name: string;
   description: string;
-  
+  tourImageUrl?: string;
 }
 
-export interface TourRequestModel{
+export interface TourRequestModel {
   name: string;
   description: string;
+  tourImageUrl?: string;
 }

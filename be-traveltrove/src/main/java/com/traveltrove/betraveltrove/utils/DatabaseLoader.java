@@ -28,7 +28,6 @@ import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -105,7 +104,7 @@ public class DatabaseLoader {
                         .cityId("b713c09a-9c3e-4b30-872a-4d89089badd0") // New York
                         .countryId("ad633b50-83d4-41f3-866a-26452bdd6f33") // United States
                         .name("New York Summer Carnival")
-                        .image("ny_summer_carnival.png")
+                        .eventImageUrl("ny_summer_carnival.png")
                         .description("Experience the thrill of summer with live music, street parades, and food festivals across New York City.")
                         .build(),
                 Event.builder()
@@ -114,7 +113,7 @@ public class DatabaseLoader {
                         .cityId("11a85d86-3fc8-4504-b1e9-25fd87eba3cf") // Toronto
                         .countryId("b1db23af-4f2d-4138-b623-e906f5287e90") // Canada
                         .name("Toronto Winter Lights Festival")
-                        .image("toronto_winter_lights.png")
+                        .eventImageUrl("toronto_winter_lights.png")
                         .description("Enjoy dazzling light displays and magical winter-themed experiences throughout Toronto’s iconic landmarks.")
                         .build(),
                 Event.builder()
@@ -123,7 +122,7 @@ public class DatabaseLoader {
                         .cityId("f5ad630f-830d-47a8-a26c-76b87163a7e4") // Paris
                         .countryId("118495e2-e1ce-4987-bb09-a95f93515bda") // France
                         .name("Paris Fashion Week")
-                        .image("paris_fashion_week.png")
+                        .eventImageUrl("paris_fashion_week.png")
                         .description("Discover the world of high fashion and luxury with runway shows, designer exhibitions, and celebrity sightings.")
                         .build(),
                 Event.builder()
@@ -132,7 +131,7 @@ public class DatabaseLoader {
                         .cityId("000f3f3a-8ee2-4690-be4d-a5bd38a5f06f") // Berlin
                         .countryId("cf09374e-6d51-47ec-91e1-2b69a788457f") // Germany
                         .name("Berlin Tech Conference")
-                        .image("berlin_tech_conference.png")
+                        .eventImageUrl("berlin_tech_conference.png")
                         .description("Explore groundbreaking innovations and network with industry leaders at Europe’s largest tech conference.")
                         .build(),
                 Event.builder()
@@ -141,7 +140,7 @@ public class DatabaseLoader {
                         .cityId("7f15fafc-85f4-4ba5-822b-27b7ddce6c37") // Rome
                         .countryId("dde33653-fc58-457c-9d33-a322a2a82835") // Italy
                         .name("Rome Food & Wine Festival")
-                        .image("rome_food_wine_festival.png")
+                        .eventImageUrl("rome_food_wine_festival.png")
                         .description("Indulge in authentic Italian cuisine, world-class wines, and cultural performances in the heart of Rome.")
                         .build(),
                 Event.builder()
@@ -150,7 +149,7 @@ public class DatabaseLoader {
                         .cityId("92537e75-3fc2-42af-b105-b6150395acbb") // Tokyo
                         .countryId("f05f8f2c-f86d-4cf5-8a9b-19e70f1b96d5") // Japan
                         .name("Tokyo Cherry Blossom Festival")
-                        .image("tokyo_cherry_blossom.png")
+                        .eventImageUrl("tokyo_cherry_blossom.png")
                         .description("Celebrate the arrival of spring with breathtaking cherry blossoms, cultural exhibits, and traditional performances.")
                         .build(),
                 Event.builder()
@@ -159,7 +158,7 @@ public class DatabaseLoader {
                         .cityId("affc7cc1-b3d8-4146-bc39-6e9ff1e66704") // Rio de Janeiro
                         .countryId("b511c7ee-c0f3-4902-9bfa-d50f59ef2b3c") // Brazil
                         .name("Rio Carnival")
-                        .image("rio_carnival.png")
+                        .eventImageUrl("rio_carnival.png")
                         .description("Join the world's biggest street party with samba parades, dazzling costumes, and endless celebrations in Rio.")
                         .build(),
                 Event.builder()
@@ -168,7 +167,7 @@ public class DatabaseLoader {
                         .cityId("f978f76c-abfc-4b25-ba32-9e1b085b5ab0") // Sydney
                         .countryId("d5d4e5e2-f960-4cf4-beed-c38104e5d5b4") // Australia
                         .name("Sydney New Year’s Eve Fireworks")
-                        .image("sydney_fireworks.png")
+                        .eventImageUrl("sydney_fireworks.png")
                         .description("Ring in the new year with one of the world's most spectacular fireworks displays over Sydney Harbour.")
                         .build(),
                 Event.builder()
@@ -177,7 +176,7 @@ public class DatabaseLoader {
                         .cityId("0361c975-fe28-4817-be51-6864b8a2bf38") // Mumbai
                         .countryId("3cd2ad86-26cc-42ad-8b20-8b0b6e6d2a2e") // India
                         .name("Mumbai Film Festival")
-                        .image("mumbai_film_festival.png")
+                        .eventImageUrl("mumbai_film_festival.png")
                         .description("Celebrate the art of cinema with film screenings, celebrity interviews, and cultural showcases in Mumbai.")
                         .build(),
                 Event.builder()
@@ -186,7 +185,7 @@ public class DatabaseLoader {
                         .cityId("2fce64d8-dfa6-4abe-9a84-af7aaac1293f") // Beijing
                         .countryId("877ec1c0-ffab-449e-a2ec-08f95db58f55") // China
                         .name("Beijing Dragon Boat Festival")
-                        .image("beijing_dragon_boat.png")
+                        .eventImageUrl("beijing_dragon_boat.png")
                         .description("Experience the thrilling dragon boat races and traditional festivities along Beijing’s scenic waterways.")
                         .build()
         );

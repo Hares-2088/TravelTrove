@@ -19,7 +19,7 @@ public class TourRequestModel {
 //    private String overallDescription;
 //    private double price;
 //    private int spotsAvailable;
-//    private String image;
+    private String tourImageUrl;
 //    private String itineraryPicture;
 }
 

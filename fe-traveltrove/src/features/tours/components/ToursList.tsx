@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useToursApi } from "../api/tours.api";
 import { TourResponseModel } from "../models/Tour";
 import "./ToursList.css";
-import { AppRoutes } from "../../../shared/models/app.routes";
 
 const ToursList: React.FC = () => {
   const { getAllTours } = useToursApi();
@@ -35,11 +34,12 @@ const ToursList: React.FC = () => {
     <div className="tours-list">
       {tours.map((tour) => (
         <Link
-          to={`${AppRoutes.ToursPage}/${tour.tourId}`}
+          to={`/tours/${tour.tourId}`}
           key={tour.tourId}
           className="tour-item"
         >
           <div>
+            {tour.tourImageUrl && <img src={tour.tourImageUrl} alt={tour.name} className="tour-thumbnail" />}
             <h3 className="tour-name">{tour.name}</h3>
             <p className="tour-description">{tour.description}</p>
           </div>

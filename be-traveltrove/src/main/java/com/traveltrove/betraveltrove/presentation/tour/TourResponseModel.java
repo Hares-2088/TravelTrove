@@ -17,4 +17,5 @@ public class TourResponseModel {
     private String tourId;
     private String name;
     private String description;
+    private String tourImageUrl;
 }

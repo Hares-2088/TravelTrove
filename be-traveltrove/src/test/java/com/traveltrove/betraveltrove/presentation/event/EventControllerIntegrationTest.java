@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -41,7 +40,7 @@ class EventControllerIntegrationTest {
             .countryId("1")
             .cityId("1")
             .description("Description 1")
-            .image("image1.jpg")
+            .eventImageUrl("image1.jpg")
             .build();
 
     private final Event event2 = Event.builder()
@@ -51,7 +50,7 @@ class EventControllerIntegrationTest {
             .countryId("2")
             .cityId("2")
             .description("Description 2")
-            .image("image2.jpg")
+            .eventImageUrl("image2.jpg")
             .build();
 
     @BeforeEach
@@ -149,7 +148,7 @@ class EventControllerIntegrationTest {
                 .description("Description 3")
                 .cityId("3")
                 .countryId("3")
-                .image("image3.jpg")
+                .eventImageUrl("image3.jpg")
                 .build();
 
         // Act & Assert
@@ -167,7 +166,7 @@ class EventControllerIntegrationTest {
                     assertEquals(newEvent.getDescription(), savedEvent.getDescription());
                     assertEquals(newEvent.getCityId(), savedEvent.getCityId());
                     assertEquals(newEvent.getCountryId(), savedEvent.getCountryId());
-                    assertEquals(newEvent.getImage(), savedEvent.getImage());
+                    assertEquals(newEvent.getEventImageUrl(), savedEvent.getEventImageUrl());
                 });
 
         // Verify repository contents
@@ -176,17 +175,17 @@ class EventControllerIntegrationTest {
                         && event.getDescription().equals(event1.getDescription())
                         && event.getCityId().equals(event1.getCityId())
                         && event.getCountryId().equals(event1.getCountryId())
-                        && event.getImage().equals(event1.getImage()))
+                        && event.getEventImageUrl().equals(event1.getEventImageUrl()))
                 .expectNextMatches(event -> event.getName().equals(event2.getName())
                         && event.getDescription().equals(event2.getDescription())
                         && event.getCityId().equals(event2.getCityId())
                         && event.getCountryId().equals(event2.getCountryId())
-                        && event.getImage().equals(event2.getImage()))
+                        && event.getEventImageUrl().equals(event2.getEventImageUrl()))
                 .expectNextMatches(event -> event.getName().equals("Event 3")
                         && event.getDescription().equals("Description 3")
                         && event.getCityId().equals("3")
                         && event.getCountryId().equals("3")
-                        && event.getImage().equals("image3.jpg"))
+                        && event.getEventImageUrl().equals("image3.jpg"))
                 .verifyComplete();
     }
 
@@ -197,7 +196,7 @@ class EventControllerIntegrationTest {
                 .description("Updated Description")
                 .cityId("3")
                 .countryId("3")
-                .image("updated_image.jpg")
+                .eventImageUrl("updated_image.jpg")
                 .build();
 
         webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
@@ -214,7 +213,7 @@ class EventControllerIntegrationTest {
                     assertEquals(updatedEvent.getDescription(), event.getDescription());
                     assertEquals(updatedEvent.getCityId(), event.getCityId());
                     assertEquals(updatedEvent.getCountryId(), event.getCountryId());
-                    assertEquals(updatedEvent.getImage(), event.getImage());
+                    assertEquals(updatedEvent.getEventImageUrl(), event.getEventImageUrl());
                 });
 
         StepVerifier.create(eventRepository.findById(event1.getId()))

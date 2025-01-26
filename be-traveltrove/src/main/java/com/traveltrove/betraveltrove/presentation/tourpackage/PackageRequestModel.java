@@ -26,6 +26,7 @@ public class PackageRequestModel {
     private Double priceTriple;
 
     private Integer totalSeats;
+    private String packageImageUrl;
 
     /*
     private Integer availableSeats; //commented out because it will be managed by the system

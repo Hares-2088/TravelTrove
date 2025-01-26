@@ -28,4 +28,6 @@ public class PackageResponseModel {
 
     private Integer totalSeats;
     private Integer availableSeats;
+
+    private String packageImageUrl;
 }

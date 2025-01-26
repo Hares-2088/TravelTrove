@@ -8,31 +8,24 @@ export const useAxiosInstance = (): AxiosInstance => {
   // Create Axios instance
   const instance = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { "Content-Type": "application/json" },
   });
 
-  // Request Interceptor: Attach Access Token
-  instance.interceptors.request.use(
-    async config => {
-      try {
-        const token = await getAccessTokenSilently();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        } else {
-          console.warn('Access token not found.');
-        }
-      } catch (error) {
-        console.error('Error fetching access token:', error);
+  // Attach Authorization Token
+  instance.interceptors.request.use(async config => {
+    try {
+      const token = await getAccessTokenSilently();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        console.warn("No JWT token found.");
       }
-      return config;
-    },
-    error => {
-      console.error('Request error:', error);
-      return Promise.reject(error);
+    } catch (error) {
+      console.error("Error getting JWT token:", error);
     }
-  );
+    return config;
+  });
+
 
   // Response Interceptor: Handle Errors
   instance.interceptors.response.use(
