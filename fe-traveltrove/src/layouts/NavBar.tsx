@@ -69,10 +69,8 @@ const NavBar: React.FC = () => {
                 {t("dashboard")}
               </Nav.Link>
             )}
-            <Nav.Link href={AppRoutes.UserManagement}>
-                <i className="bi bi-people-fill" style={{ fontSize: "20px" }}
-                onClick={() => console.log("You clicked me")}
-                />
+            <Nav.Link href={AppRoutes.UserManagementPage}>
+              <i className="bi bi-people-fill" style={{ fontSize: "20px" }} />
             </Nav.Link>
             <NavDropdown
               title={

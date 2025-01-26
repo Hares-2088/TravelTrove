@@ -17,6 +17,8 @@ import Bookings from "./features/staff/components/Pages/Bookings";
 import ProfileCreatePage from "./pages/user/ProfileCreatePage.tsx"; // Import the Bookings component
 import PackageDetailsPage from "./pages/packages/PackageDetailsPage";
 import BookingFormPage from "./pages/booking/BookingFormPage";
+import UserManagementPage from "./pages/staff/UserManagementPage.tsx";
+import UsersDetail from "./features/users/components/UsersDetail.tsx";
 
 const router = createBrowserRouter([
   {
@@ -63,6 +65,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PackageDetailsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.UserManagementPage,
+        element: (
+          <ProtectedRoute>
+            <UserManagementPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: AppRoutes.UsersDetail,
+        element: (
+          <ProtectedRoute>
+            <UsersDetail />
           </ProtectedRoute>
         ),
       },
