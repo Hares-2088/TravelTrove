@@ -5,6 +5,7 @@ title Tour Package Status State Diagram
 
 UPCOMING --> BOOKING_OPEN : Admin opens booking
 BOOKING_OPEN --> SOLD_OUT : No more available seats
+BOOKING_OPEN --> COMPLETED : Deadline
 BOOKING_OPEN --> BOOKING_CLOSED : Admin closes booking
 BOOKING_OPEN --> CANCELLED : Admin cancels the tour
 

@@ -88,7 +88,7 @@ class BookingControllerIntegrationTest {
             .userId("auth0|675f4bb4e184fd643a8ed909")
             .packageId("a522256a-3fef-4b27-8a77-50b173c4d6f0")
             .totalPrice(1300.00)
-            .status(BookingStatus.BOOKING_FINALIZED)
+            .status(BookingStatus.BOOKING_CONFIRMED)
             .bookingDate(LocalDate.of(2025, 6,5))
             .build();
 

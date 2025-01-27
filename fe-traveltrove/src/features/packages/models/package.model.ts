@@ -24,5 +24,14 @@ export interface PackageResponseModel {
     priceTriple: number;
     availableSeats: number;
     totalSeats: number;
-    status?: string; // Add status property
+    status?: PackageStatus; // Add status property
+}
+
+export enum PackageStatus {
+    UPCOMING = 'UPCOMING',
+    BOOKING_OPEN = 'BOOKING_OPEN',
+    BOOKING_CLOSED = 'BOOKING_CLOSED',
+    SOLD_OUT = 'SOLD_OUT',
+    CANCELLED = 'CANCELLED',
+    COMPLETED = 'COMPLETED',
 }

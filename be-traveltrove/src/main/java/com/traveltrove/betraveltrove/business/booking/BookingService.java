@@ -23,6 +23,7 @@ public interface BookingService {
 
     // Generalized method for updating booking status
     Mono<BookingResponseModel> updateBookingStatus(String bookingId, BookingStatus newStatus);
+    Mono<BookingResponseModel> confirmBookingPayment(String bookingId);
 
     // Delete a booking
     Mono<BookingResponseModel> deleteBooking(String bookingId);
