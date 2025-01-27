@@ -35,6 +35,7 @@ public class Package {
 
     private Integer availableSeats;
     private Integer totalSeats;
+    private PackageStatus status;
 
     private String packageImageUrl;
 }

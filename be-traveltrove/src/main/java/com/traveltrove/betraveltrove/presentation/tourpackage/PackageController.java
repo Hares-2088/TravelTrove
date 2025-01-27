@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.presentation.tourpackage;
 
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -56,22 +57,20 @@ public class PackageController {
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
-    @PatchMapping(value = "/{packageId}/decreaseAvailableSeats", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<PackageResponseModel>> decreaseAvailableSeats(@PathVariable String packageId, @RequestParam Integer quantity) {
-        log.info("Decreasing available seats for package with package ID: {}", packageId);
-        return packageService.decreaseAvailableSeats(packageId, quantity)
+
+    @PatchMapping(value = "/{packageId}/status", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<PackageResponseModel>> updatePackageStatus(@PathVariable String packageId, @RequestBody PackageRequestStatus newStatus) {
+        log.info("Received request to update package status for packageId={}, newStatus={}", packageId, newStatus);
+
+        return packageService.updatePackageStatus(packageId, newStatus)
+                .doOnSuccess(response -> log.info("Successfully updated package status for packageId={}, newStatus={}", packageId, newStatus))
+                .doOnError(error -> log.error("Error updating package status for packageId={}, error={}", packageId, error.getMessage(), error))
                 .map(ResponseEntity::ok)
-                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
-                .onErrorResume(throwable -> Mono.just(ResponseEntity.badRequest().build()));
+                .onErrorResume(throwable -> {
+                    log.warn("Returning BAD REQUEST due to error updating package status: {}", throwable.getMessage());
+                    return Mono.just(ResponseEntity.badRequest().build());
+                });
     }
 
-    @PatchMapping(value = "/{packageId}/increaseAvailableSeats", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<PackageResponseModel>> increaseAvailableSeats(@PathVariable String packageId, @RequestParam Integer quantity) {
-        log.info("Increasing available seats for package with package ID: {}", packageId);
-        return packageService.increaseAvailableSeats(packageId, quantity)
-                .map(ResponseEntity::ok)
-                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
-                .onErrorResume(throwable -> Mono.just(ResponseEntity.badRequest().build()));
-    }
 
 }
