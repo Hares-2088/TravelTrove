@@ -59,18 +59,25 @@ public class PackageController {
 
 
     @PatchMapping(value = "/{packageId}/status", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<PackageResponseModel>> updatePackageStatus(@PathVariable String packageId, @RequestBody PackageRequestStatus newStatus) {
-        log.info("Received request to update package status for packageId={}, newStatus={}", packageId, newStatus);
+    public Mono<ResponseEntity<PackageResponseModel>> updatePackageStatus(
+            @PathVariable String packageId,
+            @RequestBody PackageRequestStatus newStatus) {
+
+        log.info("📢 Received request to update package status for packageId={}, payload={}", packageId, newStatus);
+
+        if (newStatus == null || newStatus.getStatus() == null) {
+            log.error("❌ ERROR: Received null status in request for packageId={}", packageId);
+            return Mono.just(ResponseEntity.badRequest().body(null));
+        }
 
         return packageService.updatePackageStatus(packageId, newStatus)
-                .doOnSuccess(response -> log.info("Successfully updated package status for packageId={}, newStatus={}", packageId, newStatus))
-                .doOnError(error -> log.error("Error updating package status for packageId={}, error={}", packageId, error.getMessage(), error))
+                .doOnSuccess(response -> log.info("✅ Successfully updated package status for packageId={}, newStatus={}", packageId, response.getStatus()))
+                .doOnError(error -> log.error("❌ Error updating package status for packageId={}, error={}", packageId, error.getMessage(), error))
                 .map(ResponseEntity::ok)
                 .onErrorResume(throwable -> {
-                    log.warn("Returning BAD REQUEST due to error updating package status: {}", throwable.getMessage());
+                    log.warn("⚠️ Returning BAD REQUEST due to error updating package status: {}", throwable.getMessage());
                     return Mono.just(ResponseEntity.badRequest().build());
                 });
     }
-
 
 }

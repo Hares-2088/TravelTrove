@@ -68,48 +68,48 @@ const PackageDetails: React.FC = () => {
   if (!pkg) return <div>No package details found.</div>;
 
   return (
-      <div className="package-details">
-        <header className="package-header">
-          <h1 className="package-title">{pkg.name}</h1>
-          <p className="package-description">{pkg.description}</p>
-        </header>
-        <div className="package-info">
-          <p>
-            <strong>Price (Single):</strong> ${pkg.priceSingle}
-          </p>
-          <p>
-            <strong>Price (Double):</strong> ${pkg.priceDouble}
-          </p>
-          <p>
-            <strong>Price (Triple):</strong> ${pkg.priceTriple}
-          </p>
-          <p>
-            <strong>Available Seats:</strong> {pkg.availableSeats}
-          </p>
-          <p>
-            <strong>Start Date:</strong> {pkg.startDate}
-          </p>
-          <p>
-            <strong>End Date:</strong> {pkg.endDate}
-          </p>
-        </div>
-        {isAuthenticated && (
-            <>
-              <button onClick={handleBook} className="book-button">
-                Book Now
-              </button>
-              {isSubscribed ? (
-                  <button onClick={handleUnsubscribe} className="unsubscribe-button">
-                    Unsubscribe
-                  </button>
-              ) : (
-                  <button onClick={handleSubscribe} className="subscribe-button">
-                    Subscribe
-                  </button>
-              )}
-            </>
-        )}
+    <div className="package-details">
+      <header className="package-header">
+        <h1 className="package-title">{pkg.name}</h1>
+        <p className="package-description">{pkg.description}</p>
+      </header>
+      <div className="package-info">
+        <p>
+          <strong>Price (Single):</strong> ${pkg.priceSingle}
+        </p>
+        <p>
+          <strong>Price (Double):</strong> ${pkg.priceDouble}
+        </p>
+        <p>
+          <strong>Price (Triple):</strong> ${pkg.priceTriple}
+        </p>
+        <p>
+          <strong>Available Seats:</strong> {pkg.availableSeats}
+        </p>
+        <p>
+          <strong>Start Date:</strong> {pkg.startDate}
+        </p>
+        <p>
+          <strong>End Date:</strong> {pkg.endDate}
+        </p>
       </div>
+      {isAuthenticated && (
+          <>
+            <button onClick={handleUnsubscribe} className="unsubscribe-button">
+              Unsubscribe
+            </button>
+            ) : (
+            <button onClick={handleSubscribe} className="subscribe-button">
+              Subscribe
+            </button>
+      {isAuthenticated && pkg.status !== "UPCOMING" && pkg.status !== "SOLD_OUT" && (
+        <button onClick={handleBook} className="book-button">
+          Book Now
+        </button>
+      )}
+          </>
+      )}
+    </div>
   );
 };
 
