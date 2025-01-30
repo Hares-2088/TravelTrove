@@ -22,6 +22,7 @@ import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
@@ -1551,6 +1552,7 @@ public class DatabaseLoader {
                         .priceTriple(1400.0)
                         .totalSeats(130)
                         .availableSeats(50)
+                        .status(PackageStatus.UPCOMING)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1567,6 +1569,7 @@ public class DatabaseLoader {
                         .priceTriple(1100.0)
                         .totalSeats(125)
                         .availableSeats(10)
+                        .status(PackageStatus.UPCOMING)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1582,6 +1585,7 @@ public class DatabaseLoader {
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
                         .totalSeats(120)
+                        .status(PackageStatus.UPCOMING)
                         .availableSeats(0)
                         .build(),
 
@@ -1599,6 +1603,7 @@ public class DatabaseLoader {
                         .priceTriple(1400.0)
                         .totalSeats(135)
                         .availableSeats(0)
+                        .status(PackageStatus.UPCOMING)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1615,6 +1620,7 @@ public class DatabaseLoader {
                         .priceTriple(1500.0)
                         .totalSeats(130)
                         .availableSeats(100)
+                        .status(PackageStatus.UPCOMING)
                         .build()
         );
 

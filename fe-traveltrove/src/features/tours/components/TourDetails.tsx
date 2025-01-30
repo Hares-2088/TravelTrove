@@ -14,19 +14,37 @@ const TourDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!tourId) return; // Prevent fetching if tourId is null
+
+    let isMounted = true;
+
     const fetchTour = async () => {
       try {
-        const data = await getTourByTourId(tourId!);
-        setTour(data);
-      } catch {
-        setError("Failed to fetch tour details.");
+        console.log(`📢 Fetching tour details for tourId=${tourId}`);
+        const data = await getTourByTourId(tourId);
+
+        if (isMounted) {
+          console.log(`✅ Tour details loaded for tourId=${tourId}`, data);
+          setTour(data);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error(`❌ Failed to fetch tour details for tourId=${tourId}:`, err);
+          setError("Failed to fetch tour details.");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    if (tourId) fetchTour();
-  }, [tourId, getTourByTourId]);
+    fetchTour();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [tourId]); // ✅ Ensure `useEffect` runs when `tourId` changes
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
@@ -41,7 +59,8 @@ const TourDetails: React.FC = () => {
           <img src={tour.tourImageUrl} alt={tour.name} className="tour-image" />
         )}
       </header>
-      <PackageList tourId={tourId!} />
+
+      {tourId && <PackageList tourId={tourId} />}
     </div>
   );
 };

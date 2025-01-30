@@ -34,6 +34,11 @@ const PackageDetails: React.FC = () => {
     navigate(AppRoutes.BookingFormPage, { state: { package: pkg } });
   };
 
+  const handleEnableNotifications = () => {
+    // Logic to enable notifications will be added here
+    alert("Notifications enabled for this package.");
+  };
+
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
   if (!pkg) return <div>No package details found.</div>;
@@ -64,7 +69,23 @@ const PackageDetails: React.FC = () => {
           <strong>End Date:</strong> {pkg.endDate}
         </p>
       </div>
-      {isAuthenticated && (
+      {pkg.status === "UPCOMING" && (
+        <div className="status-message">
+          <p>This package is upcoming.</p>
+          <button onClick={handleEnableNotifications} className="notify-button">
+            Enable Notifications
+          </button>
+        </div>
+      )}
+      {pkg.status === "SOLD_OUT" && (
+        <div className="status-message">
+          <p>This package is sold out. Sign up for notifications for this package.</p>
+          <button onClick={handleEnableNotifications} className="notify-button">
+            Enable Notifications
+          </button>
+        </div>
+      )}
+      {isAuthenticated && pkg.status !== "UPCOMING" && pkg.status !== "SOLD_OUT" && (
         <button onClick={handleBook} className="book-button">
           Book Now
         </button>

@@ -9,6 +9,7 @@ export interface PackageRequestModel {
     priceDouble: number;
     priceTriple: number;
     totalSeats: number;
+    packageImageUrl?: string;
 }
 
 export interface PackageResponseModel {
@@ -24,7 +25,8 @@ export interface PackageResponseModel {
     priceTriple: number;
     availableSeats: number;
     totalSeats: number;
-    status?: PackageStatus; // Add status property
+    status: PackageStatus;
+    packageImageUrl?: string;
 }
 
 export enum PackageStatus {

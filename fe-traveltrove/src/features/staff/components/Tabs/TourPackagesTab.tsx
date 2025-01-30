@@ -592,6 +592,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                         });
                                         setShowModal(true);
                                     }}
+                                    disabled={pkg.status === PackageStatus.CANCELLED || pkg.status === PackageStatus.COMPLETED} // Disable if status is CANCELLED
                                 >
                                     {t("Edit Package")}
                                 </Button>
@@ -882,7 +883,10 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                         <Form.Control
                             as="select"
                             value={newStatus || ""}
-                            onChange={(e) => setNewStatus(e.target.value as PackageStatus)}
+                            onChange={(e) => {
+                                const selectedValue = e.target.value as PackageStatus;
+                                setNewStatus(selectedValue);
+                            }}
                         >
                             <option value="">{t("Select Status")}</option>
                             <option value={PackageStatus.BOOKING_OPEN}>{t("Booking Open")}</option>

@@ -66,21 +66,28 @@ export const usePackagesApi = () => {
         status: PackageStatus
     ): Promise<PackageResponseModel> => {
         if (!status) {
-            console.error(`❌ updatePackageStatus called with invalid status: ${status}`);
+            console.error("❌ Invalid status provided:", status);
             return Promise.reject("Invalid status provided");
         }
 
-        const payload = { packageStatus: status }; // Ensure correct request structure
-        console.log(`📢 Sending request to update package status:`, payload);
+        const payload = { status }; // Ensure this key matches the backend DTO
 
-        const response = await axiosInstance.patch<PackageResponseModel>(
-            `/packages/${packageId}/status`,
-            payload
-        );
+        console.log(`📢 Sending request to update package status:`, JSON.stringify(payload, null, 2));
 
-        console.log(`✅ Successfully updated package status:`, response.data);
-        return response.data;
+        try {
+            const response = await axiosInstance.patch<PackageResponseModel>(
+                `/packages/${packageId}/status`,
+                payload
+            );
+
+            console.log(`✅ Successfully updated package status:`, response.data);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error updating package status for ${packageId}:`, error);
+            throw error;
+        }
     };
+
 
 
 

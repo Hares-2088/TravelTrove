@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useToursApi } from "../api/tours.api";
 import { TourResponseModel } from "../models/Tour";
@@ -10,20 +10,25 @@ const ToursList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchTours = async () => {
-      try {
-        const data = await getAllTours();
-        setTours(data || []);
-      } catch {
-        setError("Failed to fetch tours.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // ✅ Memoize the API call function to prevent infinite useEffect loops
+  const fetchTours = useCallback(async () => {
+    try {
+      console.log("📢 Fetching tour list...");
+      const data = await getAllTours();
+      setTours(data || []);
+      console.log("✅ Tours fetched successfully:", data);
+    } catch (err) {
+      console.error("❌ Failed to fetch tours:", err);
+      setError("Failed to fetch tours.");
+    } finally {
+      setLoading(false);
+    }
+  }, [getAllTours]); // ✅ Now stable across renders
 
+  useEffect(() => {
+    console.log("🚀 useEffect triggered: Fetching tours...");
     fetchTours();
-  }, [getAllTours]);
+  }, [fetchTours]);
 
   if (loading) return <div className="tours-list-loading">Loading...</div>;
   if (error) return <div className="tours-list-error">{error}</div>;
@@ -33,13 +38,11 @@ const ToursList: React.FC = () => {
   return (
     <div className="tours-list">
       {tours.map((tour) => (
-        <Link
-          to={`/tours/${tour.tourId}`}
-          key={tour.tourId}
-          className="tour-item"
-        >
+        <Link to={`/tours/${tour.tourId}`} key={tour.tourId} className="tour-item">
           <div>
-            {tour.tourImageUrl && <img src={tour.tourImageUrl} alt={tour.name} className="tour-thumbnail" />}
+            {tour.tourImageUrl && (
+              <img src={tour.tourImageUrl} alt={tour.name} className="tour-thumbnail" />
+            )}
             <h3 className="tour-name">{tour.name}</h3>
             <p className="tour-description">{tour.description}</p>
           </div>
