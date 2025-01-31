@@ -93,24 +93,28 @@ const PackageDetails: React.FC = () => {
           <strong>End Date:</strong> {pkg.endDate}
         </p>
       </div>
-      {isAuthenticated && (
-          <>
-            <button onClick={handleUnsubscribe} className="unsubscribe-button">
-              Unsubscribe
-            </button>
-            ) : (
-            <button onClick={handleSubscribe} className="subscribe-button">
-              Subscribe
-            </button>
       {isAuthenticated && pkg.status !== "UPCOMING" && pkg.status !== "SOLD_OUT" && (
         <button onClick={handleBook} className="book-button">
           Book Now
         </button>
       )}
-          </>
+      {isAuthenticated && (
+        <>
+          {isSubscribed ? (
+            <button onClick={handleUnsubscribe} className="unsubscribe-button">
+              Unsubscribe
+            </button>
+          ) : (
+            <button onClick={handleSubscribe} className="subscribe-button">
+              Subscribe
+            </button>
+          )}
+        </>
       )}
     </div>
   );
 };
 
 export default PackageDetails;
+
+
