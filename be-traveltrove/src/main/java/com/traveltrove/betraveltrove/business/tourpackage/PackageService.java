@@ -24,4 +24,5 @@ public interface PackageService {
     Mono<PackageResponseModel> decreaseAvailableSeats(String packageId, Integer quantity);
 
     Mono<PackageResponseModel> increaseAvailableSeats(String packageId, Integer quantity);
+
 }

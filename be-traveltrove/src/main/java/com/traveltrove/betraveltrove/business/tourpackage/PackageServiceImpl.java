@@ -1,10 +1,13 @@
 package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
+import com.traveltrove.betraveltrove.dataaccess.user.User;
+import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
@@ -27,12 +30,17 @@ public class PackageServiceImpl implements PackageService {
 
     private final AirportService airportService;
 
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
+
     private PackageStatus packageStatus;
 
-    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService) {
+    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, UserRepository userRepository) {
         this.packageRepository = packageRepository;
         this.tourService = tourService;
         this.airportService = airportService;
+        this.notificationService = notificationService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -144,16 +152,43 @@ public class PackageServiceImpl implements PackageService {
                     } else if (quantity < 0) {
                         return Mono.error(new IllegalArgumentException("Quantity of seats decreased cannot be less than 0"));
                     }
+
+                    // Update available seats
                     pk.setAvailableSeats(pk.getAvailableSeats() - quantity);
 
-                    // if the available seats is 0, then set the package status to SOLD_OUT
+                    // If available seats reach zero, mark as SOLD_OUT
                     if (pk.getAvailableSeats() == 0) {
                         pk.setStatus(PackageStatus.SOLD_OUT);
                     }
+
                     return packageRepository.save(pk)
-                            .map(PackageEntityModelUtil::toPackageResponseModel);
+                            .flatMap(savedPackage -> {
+                                // If available seats are <= 5, send notification
+                                if (savedPackage.getAvailableSeats() <= 5) {
+                                    return notifyAdminsForLowSeats(savedPackage)
+                                            .thenReturn(PackageEntityModelUtil.toPackageResponseModel(savedPackage));
+                                }
+                                return Mono.just(PackageEntityModelUtil.toPackageResponseModel(savedPackage));
+                            });
                 });
     }
+
+
+    private Mono<Void> notifyAdminsForLowSeats(Package savedPackage) {
+        return userRepository.findByRoles("Admin")  // Assuming User entity stores roles
+                .map(User::getEmail)
+                .collectList()
+                .flatMap(adminEmails -> {
+                    if (!adminEmails.isEmpty()) {
+                        String subject = "Low Seats Alert: " + savedPackage.getName();
+                        String message = "The package '" + savedPackage.getName() +
+                                "' has only " + savedPackage.getAvailableSeats() + " seats left. Please take action!";
+                        return notificationService.sendCustomEmail(adminEmails.toString(), subject, message);
+                    }
+                    return Mono.empty();
+                });
+    }
+
 
     @Override
     public Mono<PackageResponseModel> increaseAvailableSeats(String packageId, Integer quantity) {

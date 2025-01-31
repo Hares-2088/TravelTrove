@@ -1,4 +1,5 @@
 export interface PackageRequestModel {
+   // availableSeats: string | number | string[] | undefined;
     airportId: string;
     tourId: string;
     name: string;
@@ -23,7 +24,7 @@ export interface PackageResponseModel {
     priceSingle: number;
     priceDouble: number;
     priceTriple: number;
-    availableSeats: number;
+    //availableSeats: number;
     totalSeats: number;
     status: PackageStatus;
     packageImageUrl?: string;
