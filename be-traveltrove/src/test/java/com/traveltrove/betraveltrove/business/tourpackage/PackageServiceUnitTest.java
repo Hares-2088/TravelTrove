@@ -597,6 +597,9 @@ class PackageServiceUnitTest {
         when(packageRepository.findPackageByPackageId(packageId))
                 .thenReturn(Mono.just(package1));
 
+        // ❌ Ensure that `packageRepository.save` should NEVER be called
+        verify(packageRepository, never()).save(any(Package.class));
+
         Mono<PackageResponseModel> result = packageService.updatePackageStatus(
                 packageId, PackageRequestStatus.builder().status(PackageStatus.BOOKING_OPEN).build()
         );
@@ -606,6 +609,5 @@ class PackageServiceUnitTest {
                         throwable.getMessage().equals("Cannot update a package that is CANCELLED"))
                 .verify();
     }
-
 
 }

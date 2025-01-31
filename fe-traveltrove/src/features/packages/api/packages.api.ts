@@ -75,6 +75,9 @@ export const usePackagesApi = () => {
         console.log(`📢 Sending request to update package status:`, JSON.stringify(payload, null, 2));
 
         try {
+            const currentPackage = await getPackageById(packageId);
+            console.log(`Current package status: ${currentPackage.status}, Requested status: ${status}`);
+
             const response = await axiosInstance.patch<PackageResponseModel>(
                 `/packages/${packageId}/status`,
                 payload
@@ -87,9 +90,6 @@ export const usePackagesApi = () => {
             throw error;
         }
     };
-
-
-
 
     return {
         getAllPackages,
