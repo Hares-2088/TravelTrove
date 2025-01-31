@@ -9,13 +9,12 @@ import java.time.LocalDateTime;
 
 public class PaymentModelUtil {
 
-    public static PaymentResponseModel toPaymentResponseModel(Payment payment, String clientSecret) {
+    public static PaymentResponseModel toPaymentResponseModel(Payment payment, String sessionId) {
         PaymentResponseModel paymentResponseModel = new PaymentResponseModel();
-        BeanUtils.copyProperties(payment, paymentResponseModel);
-        paymentResponseModel.setStripePaymentId(payment.getStripePaymentId());
-        paymentResponseModel.setPaymentId(payment.getPaymentId());
-        // Set clientSecret from Stripe API response (not stored in entity)
-        paymentResponseModel.setClientSecret(clientSecret);
+        BeanUtils.copyProperties(payment, paymentResponseModel); // Copy common properties
+//        paymentResponseModel.setStripePaymentId(payment.getStripePaymentId()); // Set Stripe Payment ID
+        paymentResponseModel.setPaymentId(payment.getPaymentId()); // Set internal Payment ID
+        paymentResponseModel.setSessionId(sessionId); // Set Stripe Checkout Session ID
         return paymentResponseModel;
     }
 

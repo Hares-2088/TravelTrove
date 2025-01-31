@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PaymentResponseModel {
     private String paymentId;
-    private String clientSecret;
-    private String stripePaymentId;
+//    private String clientSecret;
+//    private String stripePaymentId;
+    private String sessionId;
+
 }

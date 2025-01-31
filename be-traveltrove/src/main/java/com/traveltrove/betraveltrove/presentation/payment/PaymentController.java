@@ -30,9 +30,29 @@ public class PaymentController {
     public Mono<PaymentResponseModel> createCheckoutSession(@RequestBody PaymentRequestModel paymentRequest) {
         Stripe.apiKey = stripeSecretKey;
 
+        // Validate the request
+        if (paymentRequest.getAmount() == null || paymentRequest.getAmount() <= 0) {
+            return Mono.error(new IllegalArgumentException("Amount must be a positive value."));
+        }
+        if (paymentRequest.getCurrency() == null || paymentRequest.getCurrency().isEmpty()) {
+            return Mono.error(new IllegalArgumentException("Currency is required."));
+        }
+        if (paymentRequest.getPackageId() == null || paymentRequest.getPackageId().isEmpty()) {
+            return Mono.error(new IllegalArgumentException("Package ID is required."));
+        }
+        if (paymentRequest.getSuccessUrl() == null || paymentRequest.getSuccessUrl().isEmpty()) {
+            return Mono.error(new IllegalArgumentException("Success URL is required."));
+        }
+        if (paymentRequest.getCancelUrl() == null || paymentRequest.getCancelUrl().isEmpty()) {
+            return Mono.error(new IllegalArgumentException("Cancel URL is required."));
+        }
+
         try {
             // Log the incoming request
-            log.info("Received request to create checkout session: {}", paymentRequest);
+            log.info("Creating Stripe Checkout Session for package: {}", paymentRequest.getPackageId());
+            log.info("Amount: {} {}", paymentRequest.getAmount(), paymentRequest.getCurrency());
+            log.info("Success URL: {}", paymentRequest.getSuccessUrl());
+            log.info("Cancel URL: {}", paymentRequest.getCancelUrl());
 
             // Create Stripe Checkout Session parameters
             SessionCreateParams.LineItem.PriceData.ProductData productData = SessionCreateParams.LineItem.PriceData.ProductData.builder()
@@ -57,7 +77,9 @@ public class PaymentController {
                     .setCancelUrl(paymentRequest.getCancelUrl())
                     .addLineItem(lineItem)
                     .setPaymentIntentData(SessionCreateParams.PaymentIntentData.builder()
-                            .build()) // Add this to ensure Payment Intent is created
+                            .build())
+                    .putMetadata("packageId", paymentRequest.getPackageId()) // Add metadata
+                    .putMetadata("userId", "123") // Example: Add user ID
                     .build();
 
             // Create the Stripe session
@@ -66,31 +88,21 @@ public class PaymentController {
             // Log the entire session for debugging
             log.info("Stripe Session created successfully: {}", session);
 
-            // Retrieve the Payment Intent ID - using the correct method
-            String stripePaymentId = session.getPaymentIntent();
-            log.info("Stripe PaymentIntent ID: {}", stripePaymentId);
-
-            if (stripePaymentId == null) {
-                log.warn("Payment Intent ID is null. This might indicate an issue with the Stripe session creation.");
-                // You might want to throw an exception here or handle it differently
-            }
-
             // Call the service layer to save the payment details
-            return paymentService.createPayment(paymentRequest, stripePaymentId)
+            return paymentService.createPayment(paymentRequest, session.getId()) // Pass sessionId instead of stripePaymentId
                     .map(payment -> {
                         log.info("Payment saved successfully: {}", payment);
-                        return PaymentModelUtil.toPaymentResponseModel(payment, session.getId());
+                        return PaymentModelUtil.toPaymentResponseModel(payment, session.getId()); // Pass sessionId
                     });
 
         } catch (StripeException e) {
-            // Log detailed Stripe exception information
             log.error("Stripe API error while creating a session. Status: {}, Code: {}, Message: {}",
                     e.getStatusCode(), e.getCode(), e.getMessage());
-            return Mono.error(new RuntimeException("Failed to create Stripe session", e));
+            return Mono.error(new RuntimeException("Failed to create Stripe session: " + e.getMessage(), e));
         } catch (Exception e) {
-            // Log general exceptions
             log.error("Unexpected error while creating Stripe checkout session: {}", e.getMessage(), e);
             return Mono.error(new RuntimeException("An unexpected error occurred", e));
         }
     }
+
 }
