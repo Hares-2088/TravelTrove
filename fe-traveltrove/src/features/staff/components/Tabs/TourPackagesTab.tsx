@@ -130,6 +130,10 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 try {
                     //generate a new package status model and put a new status
                     await updatePackageStatus(pkg.packageId, PackageStatus.COMPLETED);
+                    //fetch all the packages again
+                    await fetchPackages();
+
+                    console.log('updating the status !!!!!!!!!!!!!!!!!')
                 } catch (error) {
                     console.error(`Error updating status for package ${pkg.packageId}:`, error);
                 }
@@ -384,7 +388,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 return;
             }
 
-            console.log(`📢 Updating packageId=${pkg.packageId} to newStatus=${newStatus}`);
+            console.log(`📢 handleUpdate method : Updating packageId=${pkg.packageId} to newStatus=${newStatus} from=${pkg.status}`);
 
             await updatePackageStatus(pkg.packageId, newStatus);
             await fetchPackages(); // Refresh the list
@@ -596,17 +600,19 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 >
                                     {t("Edit Package")}
                                 </Button>
-                                <Button
-                                    variant="outline-danger"
-                                    className="ms-2"
-                                    onClick={() => {
-                                        setSelectedPackage(pkg);
-                                        setModalType("cancel");
-                                        setShowModal(true);
-                                    }}
-                                >
-                                    {t("Cancel Package")}
-                                </Button>
+                                {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
+                                    <Button
+                                        variant="outline-danger"
+                                        className="ms-2"
+                                        onClick={() => {
+                                            setSelectedPackage(pkg);
+                                            setModalType("cancel");
+                                            setShowModal(true);
+                                        }}
+                                    >
+                                        {t("Cancel Package")}
+                                    </Button>
+                                )}
                                 <Button
                                     variant="outline-secondary"
                                     className="ms-2"
@@ -619,18 +625,19 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     onClick={() => handleViewAllReviews(pkg.packageId)}>
                                     {t("View All Reviews")}
                                 </Button>
-                                <Button
-                                    variant="outline-secondary"
-                                    className="ms-2"
-                                    onClick={() => {
-                                        setSelectedPackage(pkg);
-                                        setNewStatus(null);
-                                        setStatusModalVisible(true);
-                                    }}
-                                    disabled={pkg.status === PackageStatus.CANCELLED || pkg.status === PackageStatus.COMPLETED}
-                                >
-                                    {t("Change Status")}
-                                </Button>
+                                {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
+                                    <Button
+                                        variant="outline-secondary"
+                                        className="ms-2"
+                                        onClick={() => {
+                                            setSelectedPackage(pkg);
+                                            setNewStatus(null);
+                                            setStatusModalVisible(true);
+                                        }}
+                                    >
+                                        {t("Change Status")}
+                                    </Button>
+                                )}
                             </td>
                         </tr>
                     ))}

@@ -1543,8 +1543,8 @@ public class DatabaseLoader {
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
                         .name("New York Adventure Package")
                         .description("Experience the thrill of New York City with a complete package including flights and guided tours.")
-                        .startDate(LocalDate.of(2024, 5, 15))
-                        .endDate(LocalDate.of(2024, 5, 22))
+                        .startDate(LocalDate.of(2026, 5, 15))
+                        .endDate(LocalDate.of(2027, 5, 22))
                         .airportId("d1e91f6c-723e-43b9-812f-2f3d3bfb4081")
                         .tourId("7f54a45d-8c1d-432f-a5c8-1f93b89bfe29")
                         .priceSingle(1800.0)
@@ -1554,6 +1554,7 @@ public class DatabaseLoader {
                         .availableSeats(50)
                         .status(PackageStatus.UPCOMING)
                         .build(),
+
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
                         .id(null)
