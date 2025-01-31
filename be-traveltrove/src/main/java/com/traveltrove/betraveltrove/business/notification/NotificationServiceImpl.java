@@ -70,10 +70,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Mono<Void> sendPostTourReviewEmail(String to, String userName, String packageTitle, String destination, String startDate, String endDate, String reviewLink) {
+    public Mono<Void> sendPostTourReviewEmail(String to, String userName, String packageTitle, String description, String startDate, String endDate, String reviewLink) {
         return Mono.fromCallable(() -> {
             String subject = "Share Your Experience with " + packageTitle;
-            String htmlContent = loadHtmlTemplate("post-trip-review-email.html", userName, packageTitle, destination, startDate, endDate, reviewLink);
+            String htmlContent = loadHtmlTemplate("post-trip-review-email.html", userName, packageTitle, description, startDate, endDate, reviewLink);
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);

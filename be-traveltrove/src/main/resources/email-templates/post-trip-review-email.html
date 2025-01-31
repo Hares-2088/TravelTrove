@@ -5,7 +5,7 @@
 
         <!-- Header Section -->
         <div style="background-color: #000000; color: #ffffff; padding: 20px; text-align: center;">
-            <h1 style="margin: 0; font-size: 24px;">We Value Your Feedback!</h1>
+            <h1 style="margin: 0; font-size: 24px;">Share Your Travel Experience!</h1>
         </div>
 
         <!-- Body Section -->
@@ -13,28 +13,50 @@
             <p style="font-size: 18px; margin: 0 0 20px;">Hi {{arg0}},</p>
 
             <p style="margin: 0 0 20px;">
-                We hope you had a wonderful experience on your recent trip with us! Your journey on
-                <strong>{{arg1}}</strong> to <strong>{{arg2}}</strong> started on <strong>{{arg3}}</strong> and ended on <strong>{{arg4}}</strong>.
+                We hope you had a fantastic time on your recent trip with us! We'd love to hear your thoughts.
             </p>
 
-            <p style="margin: 0 0 20px;">
-                Your feedback means the world to us. It helps us improve and ensures we continue to provide
-                unforgettable experiences for our travelers.
-            </p>
+            <!-- Package Details Table -->
+            <div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-radius: 10px;">
+                <h3 style="text-align: center; margin: 0 0 20px; color: #000; font-size: 20px; font-weight: 600;">Your Trip Details</h3>
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0; font-size: 16px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+                    <tr>
+                        <td style="padding: 15px; font-weight: 600; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;">Package Name:</td>
+                        <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">{{arg1}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 15px; font-weight: 600; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;">Description:</td>
+                        <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">{{arg2}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 15px; font-weight: 600; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;">Start Date:</td>
+                        <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">{{arg3}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 15px; font-weight: 600; background-color: #fafafa;">End Date:</td>
+                        <td style="padding: 15px;">{{arg4}}</td>
+                    </tr>
+                </table>
+            </div>
 
             <p style="margin: 0 0 20px;">
-                Would you take a moment to share your thoughts about your trip?
+                Your feedback is invaluable to us! It helps us improve and ensures we continue providing exceptional travel experiences.
+                We’d love to hear about your trip and any highlights you’d like to share.
+            </p>
+
+            <p style="margin: 0 0 20px; text-align: center; font-size: 18px; font-weight: bold;">
+                Please take a moment to leave us a review!
             </p>
 
             <!-- Review Button -->
             <div style="text-align: center; margin: 20px 0;">
-                <a href="{{arg5}}" style="background-color: #000000; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-size: 18px; font-weight: bold;">
+                <a href="{{arg5}}" style="background-color: #000000; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-size: 18px; font-weight: bold; display: inline-block; transition: background-color 0.3s ease;">
                     Leave a Review
                 </a>
             </div>
 
-            <p style="margin: 0;">Thank you for choosing Travel Trove!</p>
-            <p style="margin: 0; font-weight: bold;">Safe travels,</p>
+            <p style="margin: 0;">Thank you for choosing Travel Trove. We hope to see you on another journey soon!</p>
+            <p style="margin: 0; font-weight: bold;">Best wishes,</p>
             <p style="margin: 0; font-weight: bold;">The Travel Trove Team</p>
         </div>
     </div>

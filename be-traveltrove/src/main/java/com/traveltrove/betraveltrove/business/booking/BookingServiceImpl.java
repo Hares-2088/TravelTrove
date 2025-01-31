@@ -339,8 +339,12 @@ public class BookingServiceImpl implements BookingService {
             return;
         }
 
+        /* Uncomment after demo
         Duration delayDuration = parseDelay(emailReviewDelay);
         Instant sendTime = tourPackage.getEndDate().atStartOfDay().toInstant(ZoneOffset.UTC).plus(delayDuration);
+        */
+
+        Instant sendTime = Instant.now().plusSeconds(5);
 
         if (sendTime.isAfter(Instant.now())) {
             taskScheduler.schedule(() -> {
