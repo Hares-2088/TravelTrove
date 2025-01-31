@@ -13,7 +13,7 @@ public interface PackageService {
 
     Mono<PackageResponseModel> createPackage(Mono<PackageRequestModel> packageRequestModel);
 
-    Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel);
+    Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel, String notificationMessage);
 
     Mono<PackageResponseModel> deletePackage(String packageId);
 
