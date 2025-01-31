@@ -4,9 +4,11 @@ import com.traveltrove.betraveltrove.business.airport.AirportService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
+import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestStatus;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.PackageEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
@@ -24,6 +26,8 @@ public class PackageServiceImpl implements PackageService {
     private final TourService tourService;
 
     private final AirportService airportService;
+
+    private PackageStatus packageStatus;
 
     public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService) {
         this.packageRepository = packageRepository;
@@ -64,9 +68,37 @@ public class PackageServiceImpl implements PackageService {
                         .flatMap(tuple -> {
                             Package pk = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());
                             pk.setAvailableSeats(pk.getTotalSeats());
+                            pk.setStatus(PackageStatus.UPCOMING);
                             return packageRepository.save(pk)
                                     .map(PackageEntityModelUtil::toPackageResponseModel);
                         }));
+    }
+
+    @Override
+    public Mono<PackageResponseModel> updatePackageStatus(String packageId, PackageRequestStatus newStatus) {
+        if (newStatus == null || newStatus.getStatus() == null) {
+            log.error("❌ Received null status for packageId={}", packageId);
+            return Mono.error(new IllegalArgumentException("Package status cannot be null"));
+        }
+
+        log.info("📢 Service: Updating package status for packageId={}, requested newStatus={}", packageId, newStatus.getStatus());
+
+        return packageRepository.findPackageByPackageId(packageId)
+                .switchIfEmpty(Mono.error(new NotFoundException("🚨 Package not found: " + packageId)))
+                .doOnSuccess(pkg -> log.info("✅ Found package in DB: packageId={}, currentStatus={}", packageId, pkg.getStatus())) // ✅ Log before checking conditions
+                .flatMap(pkg -> {
+                    if (pkg.getStatus() == PackageStatus.CANCELLED || pkg.getStatus() == PackageStatus.COMPLETED) {
+                        log.error("🚫 Cannot update packageId={} because it is in state {}", packageId, pkg.getStatus());
+                        return Mono.error(new IllegalStateException("Cannot update a package that is " + pkg.getStatus()));
+                    }
+
+                    log.info("🔄 Changing status of packageId={} from {} to {}", packageId, pkg.getStatus(), newStatus.getStatus());
+                    pkg.setStatus(newStatus.getStatus());
+
+                    return packageRepository.save(pkg)
+                            .doOnSuccess(updatedPkg -> log.info("✅ Package status successfully updated in DB: packageId={}, newStatus={}", packageId, updatedPkg.getStatus()))
+                            .map(PackageEntityModelUtil::toPackageResponseModel);
+                });
     }
 
     @Override
@@ -113,6 +145,11 @@ public class PackageServiceImpl implements PackageService {
                         return Mono.error(new IllegalArgumentException("Quantity of seats decreased cannot be less than 0"));
                     }
                     pk.setAvailableSeats(pk.getAvailableSeats() - quantity);
+
+                    // if the available seats is 0, then set the package status to SOLD_OUT
+                    if (pk.getAvailableSeats() == 0) {
+                        pk.setStatus(PackageStatus.SOLD_OUT);
+                    }
                     return packageRepository.save(pk)
                             .map(PackageEntityModelUtil::toPackageResponseModel);
                 });
@@ -129,6 +166,11 @@ public class PackageServiceImpl implements PackageService {
                         return Mono.error(new IllegalArgumentException("Quantity of seats increased cannot be less than 0"));
                     }
                     pk.setAvailableSeats(pk.getAvailableSeats() + quantity);
+
+                    // if the available seats was 0, and we are increasing the available seats, and the status was sold_out then set the package status to booking_open
+                    if (pk.getAvailableSeats() > 0 && pk.getStatus() == PackageStatus.SOLD_OUT) {
+                        pk.setStatus(PackageStatus.BOOKING_OPEN);
+                    }
                     return packageRepository.save(pk)
                             .map(PackageEntityModelUtil::toPackageResponseModel);
                 });

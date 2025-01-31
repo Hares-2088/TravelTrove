@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Button, Table, Modal, Form } from "react-bootstrap";
+import React, { useEffect, useState, useRef } from "react";
+import { Button, Table, Modal, Form, Toast, ToastContainer } from "react-bootstrap"; // Import Toast components
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import { usePackagesApi } from "../../../packages/api/packages.api";
@@ -7,42 +7,45 @@ import { useAirportsApi } from "../../../airports/api/airports.api"; // Import t
 import {
     PackageRequestModel,
     PackageResponseModel,
+    PackageStatus
 } from "../../../packages/models/package.model";
 import { AirportResponseModel } from "../../../airports/models/airports.model"; // Import the airport model
 import { FaFilter } from "react-icons/fa"; // Import the filter icon
 import { Review } from "../../../tours/models/Review";
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { useReviewsApi } from "../../../reviews/api/review.api";
+import { stat } from "fs";
 
 
 interface TourPackagesTabProps {
     tourId: string;
 }
 
+
 const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const { t } = useTranslation();
     const navigate = useNavigate(); // Initialize useNavigate
-    const { getAllPackages, addPackage, updatePackage, deletePackage, getPackageStatus } = usePackagesApi();
+    const { getAllPackages, addPackage, updatePackage, updatePackageStatus } = usePackagesApi(); // Destructure updatePackageStatus
     const { getAllAirports } = useAirportsApi(); // Use the airports API hook
-    const { getReviewsByPackage, addReview, getAverageRating} = useReviewsApi(); // Use the reviews API hook
+    const { getReviewsByPackage, addReview, getAverageRating } = useReviewsApi(); // Use the reviews API hook
     const [packages, setPackages] = useState<PackageResponseModel[]>([]);
     const [airports, setAirports] = useState<AirportResponseModel[]>([]); // State for airports
     const [showModal, setShowModal] = useState(false);
-    const [modalType, setModalType] = useState<"create" | "update" | "delete" | "view" | "review" | "viewReviews">(
+    const [modalType, setModalType] = useState<"create" | "update" | "cancel" | "view" | "review" | "viewReviews">(
         "create"
     );
     const [showReviewList, setShowReviewList] = useState(false);
 
     const [selectedPackage, setSelectedPackage] =
         useState<PackageResponseModel | null>(null);
-        const [reviews, setReviews] = useState<Review[]>([]);  // Assuming Review is the type for reviews
-        const [averageRating, setAverageRating] = useState<number>(0);
-        const [reviewForm, setReviewForm] = useState({
-            rating: 0,
-            comment: "",
-        });
-        const [reviewData, setReviewData] = useState<{reviewerName: string; description: string; rating: number }>({ reviewerName: "", description: "", rating: 0 });
-        const [reviewErrors, setReviewErrors] = useState<{ reviewerName: boolean; description?: boolean; rating?: boolean }>({ reviewerName: false, description: false, rating: false });
+    const [reviews, setReviews] = useState<Review[]>([]);  // Assuming Review is the type for reviews
+    const [averageRating, setAverageRating] = useState<number>(0);
+    const [reviewForm, setReviewForm] = useState({
+        rating: 0,
+        comment: "",
+    });
+    const [reviewData, setReviewData] = useState<{ reviewerName: string; description: string; rating: number }>({ reviewerName: "", description: "", rating: 0 });
+    const [reviewErrors, setReviewErrors] = useState<{ reviewerName: boolean; description?: boolean; rating?: boolean }>({ reviewerName: false, description: false, rating: false });
     const [formData, setFormData] = useState<PackageRequestModel>({
         airportId: "",
         tourId: tourId,
@@ -75,9 +78,12 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [showFilters, setShowFilters] = useState(false); // State to toggle filter visibility
 
+    const [statusModalVisible, setStatusModalVisible] = useState(false);
+    const [newStatus, setNewStatus] = useState<PackageStatus | null>(null);
+    const [showToast, setShowToast] = useState(false);
+    const dailyIntervalRef = useRef<NodeJS.Timeout | null>(null); // Declare useRef outside useEffect
+    const midnightTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Store timeout reference
 
-    
-    
 
     const getStars = (
         rating: number,
@@ -115,29 +121,92 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         return stars;
     };
 
-    
+    // Function to check and update package status
+    const checkAndUpdatePackageStatus = async (packages: PackageResponseModel[]) => {
+        const currentDate = new Date();
+
+        for (const pkg of packages) {
+            if (new Date(pkg.endDate) < currentDate && pkg.status !== PackageStatus.COMPLETED) {
+                try {
+                    //generate a new package status model and put a new status
+                    await updatePackageStatus(pkg.packageId, PackageStatus.COMPLETED);
+                    //fetch all the packages again
+                    await fetchPackages();
+
+                    console.log('updating the status !!!!!!!!!!!!!!!!!')
+                } catch (error) {
+                    console.error(`Error updating status for package ${pkg.packageId}:`, error);
+                }
+            }
+        }
+    };
+
+    // Fetch packages and check their status
+    const fetchAndCheckPackages = async () => {
+        const fetchedPackages = await fetchPackages();
+        setPackages(fetchedPackages);
+        await checkAndUpdatePackageStatus(fetchedPackages);
+    };
+
+    useEffect(() => {
+        // Run check immediately on mount
+        fetchAndCheckPackages();
+        fetchAirports();
+
+        // Calculate the delay until the next midnight check
+        const now = new Date();
+        const nextMidnight = new Date(now);
+        nextMidnight.setHours(24, 0, 0, 0); // Set time to exactly 00:00 next day
+        const timeUntilMidnight = nextMidnight.getTime() - now.getTime();
+
+        // Clear any existing timeout before setting a new one
+        if (midnightTimeoutRef.current) {
+            clearTimeout(midnightTimeoutRef.current);
+        }
+
+        // Set a timeout to run the check at midnight
+        midnightTimeoutRef.current = setTimeout(() => {
+            fetchAndCheckPackages();
+
+            // Clear any existing interval before setting a new one
+            if (dailyIntervalRef.current) {
+                clearInterval(dailyIntervalRef.current);
+            }
+
+            // Set an interval to run every 24 hours after midnight
+            dailyIntervalRef.current = setInterval(fetchAndCheckPackages, 24 * 60 * 60 * 1000);
+        }, timeUntilMidnight);
+
+        // Cleanup both timeout and interval on component unmount or dependency change
+        return () => {
+            if (midnightTimeoutRef.current) {
+                clearTimeout(midnightTimeoutRef.current);
+            }
+            if (dailyIntervalRef.current) {
+                clearInterval(dailyIntervalRef.current);
+            }
+        };
+    }, [tourId]); // Re-run only when tourId changes
+
     useEffect(() => {
         if (selectedPackage) {
             fetchReviews(selectedPackage.packageId);
         }
     }, [selectedPackage]);
-    
-    
-    useEffect(() => {
-        fetchPackages();
-        fetchAirports(); // Fetch airports when the component mounts
-    }, [tourId]);
 
     useEffect(() => {
         applyFilters();
     }, [filterName, filterStatus, filterDate, sortField, sortOrder, packages]);
 
-    const fetchPackages = async () => {
+
+    const fetchPackages = async (): Promise<PackageResponseModel[]> => {
         try {
             const data = await getAllPackages({ tourId });
             setPackages(data);
+            return data;
         } catch (error) {
             console.error("Error fetching packages:", error);
+            return [];
         }
     };
 
@@ -149,8 +218,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             console.error("Error fetching reviews:", error);
         }
     };
-    
-
 
     const fetchAirports = async () => {
         try {
@@ -191,15 +258,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         }
     };
 
-    const handleDelete = async () => {
-        try {
-            if (selectedPackage) {
-                await deletePackage(selectedPackage.packageId);
-                setShowModal(false);
-                await fetchPackages();
-            }
-        } catch (error) {
-            console.error("Error deleting package:", error);
+    const handleCancelPackage = async () => {
+        if (selectedPackage) {
+            await handleUpdateStatus(selectedPackage, PackageStatus.CANCELLED);
+            setShowModal(false);
+            setShowToast(true); // Show toast notification
         }
     };
 
@@ -220,7 +283,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
 
         // Filter by status
         if (filterStatus) {
-            filtered = filtered.filter((pkg) => pkg.status === filterStatus);
+            filtered = filtered.filter((pkg) => pkg.status?.toString() === filterStatus);
         }
 
         // Filter by date
@@ -229,36 +292,34 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 pkg.startDate.includes(filterDate?.toISOString().split('T')[0])
             );
         }
-    
+
         // Sort packages
         if (sortField) {
-          filtered = filtered.sort((a, b) => {
-            const aValue = sortField === "price" ? a.priceSingle : new Date(a.startDate).getTime();
-            const bValue = sortField === "price" ? b.priceSingle : new Date(b.startDate).getTime();
-            return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
-          });
+            filtered = filtered.sort((a, b) => {
+                const aValue = sortField === "price" ? a.priceSingle : new Date(a.startDate).getTime();
+                const bValue = sortField === "price" ? b.priceSingle : new Date(b.startDate).getTime();
+                return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+            });
         }
-    
+
         setFilteredPackages(filtered);
-      };
+    };
 
 
-      const handleResetFilters = () => {
+    const handleResetFilters = () => {
         setFilterName("");
         setFilterStatus("");
         setFilterDate(null);
         setSortField(null);
         setSortOrder("asc");
     };
-      
+
 
     const handleStarClick = (newRating: number) => {
         setReviewData({ ...reviewData, rating: newRating });
     };
-    
-    
 
-    
+
     const handleAddReview = (pkgId: string) => {
         setSelectedPackage(packages.find((pkg) => pkg.packageId === pkgId) || null);
         setModalType("review");
@@ -268,52 +329,50 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
 
     const handleReviewSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-    
+
         // Initialize errors
         const errors: { reviewerName: boolean; description: boolean; rating: boolean } = {
             reviewerName: !reviewData.reviewerName,
             description: !reviewData.description,
             rating: reviewData.rating < 1 || reviewData.rating > 5,
         };
-    
+
         // Check if there are any errors
         if (errors.reviewerName || errors.description || errors.rating) {
             setReviewErrors(errors);
         } else {
             // Update the reviews state with the new review
-            const newReview: Review = { 
-                reviewId: Date.now().toString(), 
-                packageId: selectedPackage?.packageId || "", 
+            const newReview: Review = {
+                reviewId: Date.now().toString(),
+                packageId: selectedPackage?.packageId || "",
                 reviewerName: reviewData.reviewerName, // Replace with actual reviewer name if available
-                review: reviewData.description, 
-                date: new Date().toISOString(), 
+                review: reviewData.description,
+                date: new Date().toISOString(),
                 rating: reviewData.rating
             };
             const updatedReviews = [...reviews, newReview];
             setReviews(updatedReviews);
-    
+
             // Recalculate the average rating
             const totalRating = updatedReviews.reduce((acc, review) => acc + review.rating, 0);
             const newAverage = totalRating / updatedReviews.length;
             setAverageRating(newAverage);
-    
+
             // Clear the form fields after submission
             setReviewData({ reviewerName: "", description: "", rating: 0 });
             setReviewErrors({ reviewerName: false, description: false, rating: false });
             setShowModal(false);
         }
     };
-    
-    
+
+
     const handleViewAllReviews = (pkgId: string) => {
         const selected = packages.find((pkg) => pkg.packageId === pkgId);
         console.log("Selected package:", selected); // Debugging
         setSelectedPackage(selected || null);
         setShowReviewList(true);
     };
-    
-    
-        
+
 
     const calculateAverageRating = (pkgId: string) => {
         const pkgReviews = reviews.filter(review => review.packageId === pkgId);
@@ -322,12 +381,40 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         return (total / pkgReviews.length).toFixed(1);
     };
 
+    const handleUpdateStatus = async (pkg: PackageResponseModel, newStatus: PackageStatus) => {
+        try {
+            if (!newStatus) {
+                console.error("❌ Cannot update package status: newStatus is undefined or null");
+                return;
+            }
+
+            console.log(`📢 handleUpdate method : Updating packageId=${pkg.packageId} to newStatus=${newStatus} from=${pkg.status}`);
+
+            await updatePackageStatus(pkg.packageId, newStatus);
+            await fetchPackages(); // Refresh the list
+
+            console.log(`✅ Package status updated successfully for ${pkg.packageId}`);
+        } catch (error) {
+            console.error(`❌ Error updating package status for ${pkg.packageId}:`, error);
+        }
+    };
+
+
+    const handleStatusChange = async () => {
+        if (selectedPackage && newStatus) {
+            await handleUpdateStatus(selectedPackage, newStatus);
+            setStatusModalVisible(false);
+        }
+    };
+
+    const isStartDateEditable = selectedPackage?.status !== PackageStatus.BOOKING_OPEN;
+
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
 
-            
-            <Button
+
+                <Button
                     variant="primary"
                     onClick={() => {
                         setModalType("create");
@@ -449,8 +536,8 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     </Button>
                 </div>
             )}
-            
-            
+
+
             <Table bordered hover responsive className="rounded">
                 <thead className="bg-light">
                     <tr>
@@ -509,20 +596,23 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                         });
                                         setShowModal(true);
                                     }}
+                                    disabled={pkg.status === PackageStatus.CANCELLED || pkg.status === PackageStatus.COMPLETED} // Disable if status is CANCELLED
                                 >
                                     {t("Edit Package")}
                                 </Button>
-                                <Button
-                                    variant="outline-danger"
-                                    className="ms-2"
-                                    onClick={() => {
-                                        setSelectedPackage(pkg);
-                                        setModalType("delete");
-                                        setShowModal(true);
-                                    }}
-                                >
-                                    {t("Delete Package")}
-                                </Button>
+                                {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
+                                    <Button
+                                        variant="outline-danger"
+                                        className="ms-2"
+                                        onClick={() => {
+                                            setSelectedPackage(pkg);
+                                            setModalType("cancel");
+                                            setShowModal(true);
+                                        }}
+                                    >
+                                        {t("Cancel Package")}
+                                    </Button>
+                                )}
                                 <Button
                                     variant="outline-secondary"
                                     className="ms-2"
@@ -530,37 +620,50 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 >
                                     {t("View Bookings")}
                                 </Button>
-                                <Button variant="outline-secondary" 
-                                className="ms-2"
-                                onClick={() => handleViewAllReviews(pkg.packageId)}>
+                                <Button variant="outline-secondary"
+                                    className="ms-2"
+                                    onClick={() => handleViewAllReviews(pkg.packageId)}>
                                     {t("View All Reviews")}
                                 </Button>
+                                {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
+                                    <Button
+                                        variant="outline-secondary"
+                                        className="ms-2"
+                                        onClick={() => {
+                                            setSelectedPackage(pkg);
+                                            setNewStatus(null);
+                                            setStatusModalVisible(true);
+                                        }}
+                                    >
+                                        {t("Change Status")}
+                                    </Button>
+                                )}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </Table>
-        
+
 
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {modalType === "create"
                             ? t("Create Package")
-                            :modalType === "review"
-                            ? t("Add Review")
-                            : modalType === "update"
-                                ? t("Edit Package")
-                                : modalType === "delete"
-                                    ? t("Delete Package")
-                                    : modalType === "view"
-                                    ? t("View Package")
-                                    : t("View Reviews")}
+                            : modalType === "review"
+                                ? t("Add Review")
+                                : modalType === "update"
+                                    ? t("Edit Package")
+                                    : modalType === "cancel"
+                                        ? t("Cancel Package")
+                                        : modalType === "view"
+                                            ? t("View Package")
+                                            : t("View Reviews")}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {modalType === "delete" ? (
-                        <p>{t("areYouSureDelete")}</p>
+                    {modalType === "cancel" ? (
+                        <p>{t("Are you sure you want to cancel this package? This action cannot be undone.")}</p>
                     ) : modalType === "view" ? (
                         <div>
                             <p><strong>{t("packageName")}:</strong> {selectedPackage?.name}</p>
@@ -572,7 +675,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             <p><strong>{t("priceTriple")}:</strong> {selectedPackage?.priceTriple}</p>
                             <p><strong>{("availableSeats")}:</strong> {selectedPackage?.availableSeats}</p>
                             <p><strong>{("totalSeats")}:</strong> {selectedPackage?.totalSeats}</p>
-                            <p><strong>{("packageStatus")}:</strong> {selectedPackage && getPackageStatus(selectedPackage)}</p>
+                            <p><strong>{("packageStatus")}:</strong> {selectedPackage?.status}</p>
                         </div>
                     ) : modalType === "review" ? (
                         <Form onSubmit={handleReviewSubmit}>
@@ -608,8 +711,8 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                            <Form.Label>{t("Rating")}</Form.Label>
-                            <div>{getStars(reviewData.rating, handleStarClick)}</div> 
+                                <Form.Label>{t("Rating")}</Form.Label>
+                                <div>{getStars(reviewData.rating, handleStarClick)}</div>
                                 <Form.Control.Feedback type="invalid">
                                     {t("Rating Required")}
                                 </Form.Control.Feedback>
@@ -623,7 +726,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 </Button>
                             </Modal.Footer>
                         </Form>
-                       ) : (
+                    ) : (
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
@@ -665,6 +768,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                         setFormData({ ...formData, startDate: e.target.value })
                                     }
                                     isInvalid={formErrors.startDate || formErrors.dateOrder}
+                                    disabled={!isStartDateEditable} // Disable if booking status is BOOKING_OPEN
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {formErrors.startDate ? t("startDateRequired") : t("startDateBeforeEndDate")}
@@ -764,17 +868,58 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                         </Form>
                     )}
                 </Modal.Body>
-                {modalType === "delete" && (
+                {modalType === "cancel" && (
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setShowModal(false)}>
-                            {t("cancel")}
+                            {t("Cancel")}
                         </Button>
-                        <Button variant="danger" onClick={handleDelete}>
-                            {t("confirm")}
+                        <Button variant="danger" onClick={handleCancelPackage}>
+                            {t("Confirm")}
                         </Button>
                     </Modal.Footer>
                 )}
             </Modal>
+
+            <Modal show={statusModalVisible} onHide={() => setStatusModalVisible(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{t("Change Package Status")}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group>
+                        <Form.Label>{t("Select New Status")}</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={newStatus || ""}
+                            onChange={(e) => {
+                                const selectedValue = e.target.value as PackageStatus;
+                                setNewStatus(selectedValue);
+                            }}
+                        >
+                            <option value="">{t("Select Status")}</option>
+                            <option value={PackageStatus.BOOKING_OPEN}>{t("Booking Open")}</option>
+                            <option value={PackageStatus.BOOKING_CLOSED}>{t("Booking Closed")}</option>
+                            <option value={PackageStatus.COMPLETED}>{t("Completed")}</option>
+                        </Form.Control>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setStatusModalVisible(false)}>
+                        {t("Cancel")}
+                    </Button>
+                    <Button variant="primary" onClick={handleStatusChange} disabled={!newStatus}>
+                        {t("Change Status")}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <ToastContainer position="top-end" className="p-3">
+                <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide>
+                    <Toast.Header>
+                        <strong className="me-auto">{t("Notification")}</strong>
+                    </Toast.Header>
+                    <Toast.Body>{t("Package has been canceled successfully.")}</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </div>
     );
 };

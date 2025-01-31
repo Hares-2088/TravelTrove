@@ -162,6 +162,23 @@ public class BookingServiceImpl implements BookingService {
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
+    @Override
+    public Mono<BookingResponseModel> confirmBookingPayment(String bookingId) {
+        return bookingRepository.findBookingByBookingId(bookingId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
+                .flatMap(booking -> {
+                    if (booking.getStatus() == BookingStatus.BOOKING_CONFIRMED) {
+                        return Mono.error(new SameStatusException("Booking is already confirmed."));
+                    }
+                    booking.setStatus(BookingStatus.BOOKING_CONFIRMED);
+
+                    // Decrease available seats
+                    return packageService.decreaseAvailableSeats(booking.getPackageId(), booking.getTravelerIds().size())
+                            .then(bookingRepository.save(booking));
+                })
+                .map(BookingEntityModelUtil::toBookingResponseModel);
+    }
+
     // methods for validation -> userExists, packageExists, isValidStatus
     Mono<Void> userExistsReactive(String userId) {
         return userService.syncUserWithAuth0(userId)

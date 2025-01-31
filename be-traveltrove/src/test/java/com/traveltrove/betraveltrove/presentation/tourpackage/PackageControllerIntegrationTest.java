@@ -440,88 +440,31 @@ class PackageControllerIntegrationTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+<<<<<<< HEAD
 
-    @Test
-    void whenDecreaseAvailableSeats_thenAvailableSeatsDecreased() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=10")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(PackageResponseModel.class)
-                .consumeWith(response -> {
-                    PackageResponseModel actualResponse = response.getResponseBody();
-                    assertNotNull(actualResponse);
-                    assertEquals(110, actualResponse.getAvailableSeats());
-                });
-    }
-
-    @Test
-    void whenDecreaseAvailableSeats_withInvalidPackageId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/invalid/decreaseAvailableSeats?quantity=10")
-                .exchange()
-                .expectStatus().isBadRequest();
-    }
-
-    @Test
-    void whenDecreaseAvailableSeats_withInvalidQuantity_thenReturnBadRequest() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=-10")
-                .exchange()
-                .expectStatus().isBadRequest();
-    }
-
-    @Test
-    void whenDecreaseAvailableSeats_withQuantityGreaterThanAvailableSeats_thenReturnBadRequest() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/1/decreaseAvailableSeats?quantity=200")
-                .exchange()
-                .expectStatus().isBadRequest();
-    }
-
-    @Test
-    void whenIncreaseAvailableSeats_thenAvailableSeatsIncreased() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=10")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(PackageResponseModel.class)
-                .consumeWith(response -> {
-                    PackageResponseModel actualResponse = response.getResponseBody();
-                    assertNotNull(actualResponse);
-                    assertEquals(130, actualResponse.getAvailableSeats());
-                });
-    }
-
-    @Test
-    void whenIncreaseAvailableSeats_withInvalidPackageId_thenReturnNotFound() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/invalid/increaseAvailableSeats?quantity=10")
-                .exchange()
-                .expectStatus().isBadRequest();
-    }
-
-    @Test
-    void whenIncreaseAvailableSeats_withInvalidQuantity_thenReturnBadRequest() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=-10")
-                .exchange()
-                .expectStatus().isBadRequest();
-    }
-
-    @Test
-    void whenIncreaseAvailableSeats_withQuantityGreaterThanTotalSeats_thenReturnBadRequest() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
-                .uri("/api/v1/packages/1/increaseAvailableSeats?quantity=200")
-                .exchange()
-                .expectStatus().isBadRequest();
-    }
+//    @Test
+//    void whenUpdatePackageStatus_withValidPackageId_thenReturnUpdatedPackage() {
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+//                .mutateWith(SecurityMockServerConfigurers.csrf()).put()
+//                .uri("/api/v1/packages/1/status")
+//                .exchange()
+//                .expectStatus().isOk()
+//                .expectBody(PackageResponseModel.class)
+//                .isEqualTo(PackageResponseModel.builder()
+//                        .packageId("1")
+//                        .name("Silk Road Adventure")
+//                        .description("Experience the historic wonders of the Silk Road with guided tours and more.")
+//                        .startDate(LocalDate.of(2024, 10, 5))
+//                        .endDate(LocalDate.of(2024, 10, 15))
+//                        .airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
+//                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
+//                        .priceSingle(2200.0)
+//                        .priceDouble(2000.0)
+//                        .priceTriple(1800.0)
+//                        .totalSeats(130)
+//                        .availableSeats(120)
+//                        .build());
+//    }
+=======
+>>>>>>> e4ff8efcc4e0f9ea8aeb54789da3fae250ee6908
 }

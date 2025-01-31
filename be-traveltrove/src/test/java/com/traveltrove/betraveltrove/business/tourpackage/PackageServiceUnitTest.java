@@ -7,9 +7,11 @@ import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
+import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestStatus;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
@@ -537,6 +539,74 @@ class PackageServiceUnitTest {
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
+                .verify();
+    }
+
+    @Test
+    void whenUpdatePackageStatusToCancelPackage_withExistingId_thenReturnUpdatedPackage() {
+        String packageId = "1";
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.just(package1));
+
+        when(packageRepository.save(any(Package.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0))); // Mock the save
+
+        Mono<PackageResponseModel> result = packageService.updatePackageStatus(packageId, PackageRequestStatus.builder().status(PackageStatus.CANCELLED).build());
+
+        StepVerifier.create(result)
+                .assertNext(packageResponseModel -> {
+                    assertEquals("1", packageResponseModel.getPackageId()); // Ensure the original packageId is retained
+                    assertEquals(PackageStatus.CANCELLED, packageResponseModel.getStatus());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void whenUpdatePackageStatusToCancelPackage_withNonExistingId_thenReturnNotFound() {
+        String packageId = "NonExistingId";
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.empty());
+
+        Mono<PackageResponseModel> result = packageService.updatePackageStatus(packageId, PackageRequestStatus.builder().status(PackageStatus.CANCELLED).build());
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
+                .verify();
+    }
+
+    @Test
+    void whenUpdatePackageStatusToCancelPackage_withNullStatus_thenReturnBadRequest() {
+        String packageId = "1";
+
+        Mono<PackageResponseModel> result = packageService.updatePackageStatus(packageId, PackageRequestStatus.builder().status(null).build());
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof IllegalArgumentException)
+                .verify();
+    }
+
+    @Test
+    void whenUpdatePackageStatusToBookingOpenFromStatusCancelled_thenReturnIllegalStateException() {
+        String packageId = "1";
+
+        // Ensure the package starts as CANCELLED
+        package1.setStatus(PackageStatus.CANCELLED);
+
+        when(packageRepository.findPackageByPackageId(packageId))
+                .thenReturn(Mono.just(package1));
+
+        // ❌ Ensure that `packageRepository.save` should NEVER be called
+        verify(packageRepository, never()).save(any(Package.class));
+
+        Mono<PackageResponseModel> result = packageService.updatePackageStatus(
+                packageId, PackageRequestStatus.builder().status(PackageStatus.BOOKING_OPEN).build()
+        );
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof IllegalStateException &&
+                        throwable.getMessage().equals("Cannot update a package that is CANCELLED"))
                 .verify();
     }
 

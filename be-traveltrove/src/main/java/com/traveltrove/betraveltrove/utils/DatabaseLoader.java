@@ -22,6 +22,7 @@ import com.traveltrove.betraveltrove.dataaccess.tour.TourEvent;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourEventRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.dataaccess.traveler.Traveler;
 import com.traveltrove.betraveltrove.dataaccess.traveler.TravelerRepository;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
@@ -1542,8 +1543,8 @@ public class DatabaseLoader {
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
                         .name("New York Adventure Package")
                         .description("Experience the thrill of New York City with a complete package including flights and guided tours.")
-                        .startDate(LocalDate.of(2024, 5, 15))
-                        .endDate(LocalDate.of(2024, 5, 22))
+                        .startDate(LocalDate.of(2026, 5, 15))
+                        .endDate(LocalDate.of(2027, 5, 22))
                         .airportId("d1e91f6c-723e-43b9-812f-2f3d3bfb4081")
                         .tourId("7f54a45d-8c1d-432f-a5c8-1f93b89bfe29")
                         .priceSingle(1800.0)
@@ -1551,7 +1552,9 @@ public class DatabaseLoader {
                         .priceTriple(1400.0)
                         .totalSeats(130)
                         .availableSeats(50)
+                        .status(PackageStatus.UPCOMING)
                         .build(),
+
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
                         .id(null)
@@ -1567,6 +1570,7 @@ public class DatabaseLoader {
                         .priceTriple(1100.0)
                         .totalSeats(125)
                         .availableSeats(10)
+                        .status(PackageStatus.UPCOMING)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1582,6 +1586,7 @@ public class DatabaseLoader {
                         .priceDouble(2000.0)
                         .priceTriple(1800.0)
                         .totalSeats(120)
+                        .status(PackageStatus.UPCOMING)
                         .availableSeats(0)
                         .build(),
 
@@ -1599,6 +1604,7 @@ public class DatabaseLoader {
                         .priceTriple(1400.0)
                         .totalSeats(135)
                         .availableSeats(0)
+                        .status(PackageStatus.UPCOMING)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1615,6 +1621,7 @@ public class DatabaseLoader {
                         .priceTriple(1500.0)
                         .totalSeats(130)
                         .availableSeats(100)
+                        .status(PackageStatus.UPCOMING)
                         .build()
         );
 
@@ -1770,7 +1777,7 @@ public class DatabaseLoader {
                     .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b177")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
-                    .status(BookingStatus.BOOKING_FINALIZED)
+                    .status(BookingStatus.BOOKING_CONFIRMED)
                     .bookingDate(LocalDate.now().minusMonths(6))
                     .totalPrice(1300.0)
                     .build(),
@@ -1779,7 +1786,7 @@ public class DatabaseLoader {
                     .bookingId("032931cf-57d3-4278-b0db-8762731a7aa2")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
-                    .status(BookingStatus.BOOKING_FINALIZED)
+                    .status(BookingStatus.BOOKING_CONFIRMED)
                     .bookingDate(LocalDate.now().minusWeeks(4))
                     .totalPrice(2000.0)
                     .build(),
@@ -1806,7 +1813,7 @@ public class DatabaseLoader {
                     .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b844")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("9d3f8b7e-a6c1-4f42-b6d8-7a9b4e2d5cf3")
-                    .status(BookingStatus.BOOKING_FINALIZED)
+                    .status(BookingStatus.BOOKING_CONFIRMED)
                     .bookingDate(LocalDate.now().minusYears(1))
                     .totalPrice(2200.0)
                     .build(),
@@ -1815,7 +1822,7 @@ public class DatabaseLoader {
                     .bookingId("b46bab5b-0358-4ed0-8136-f064e3ca6d08")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
-                    .status(BookingStatus.BOOKING_FINALIZED)
+                    .status(BookingStatus.BOOKING_CONFIRMED)
                     .bookingDate(LocalDate.now().minusMonths(5))
                     .totalPrice(1800.0)
                     .build(),
@@ -1842,7 +1849,7 @@ public class DatabaseLoader {
                     .bookingId("98183e89-c6cb-415a-8fb3-ddbc3d327fc7")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
-                    .status(BookingStatus.BOOKING_FINALIZED)
+                    .status(BookingStatus.BOOKING_CONFIRMED)
                     .bookingDate(LocalDate.now().minusYears(1).minusMonths(2))
                     .totalPrice(2000.0)
                     .build(),
@@ -1888,7 +1895,7 @@ public class DatabaseLoader {
                         .bookingId("98183e89-c6cb-415a-8fb3-ddbc3d327fc7")
                         .userId("auth0|675f4b619a80612ce548e068")
                         .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
-                        .status(BookingStatus.BOOKING_FINALIZED)
+                        .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now())
                         .totalPrice(1700.0)
                         .build(),
@@ -1898,7 +1905,7 @@ public class DatabaseLoader {
                         .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b177")
                         .userId("auth0|675f4b7ae184fd643a8ed902")
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
-                        .status(BookingStatus.BOOKING_FINALIZED)
+                        .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(3))
                         .totalPrice(1600.0)
                         .build(),
@@ -1953,7 +1960,7 @@ public class DatabaseLoader {
                         .bookingId("032931cf-57d3-4278-b0db-8762731a7aa2")
                         .userId("auth0|675f4b9d9a80612ce548e069")
                         .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
-                        .status(BookingStatus.BOOKING_FINALIZED)
+                        .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusWeeks(6))
                         .totalPrice(2000.0)
                         .build(),
@@ -1962,7 +1969,7 @@ public class DatabaseLoader {
                         .bookingId("206fa0ba-4803-4730-a7ab-70e6f3cf5826")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
-                        .status(BookingStatus.BOOKING_FINALIZED)
+                        .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(3))
                         .totalPrice(1600.0)
                         .build(),
@@ -1998,7 +2005,7 @@ public class DatabaseLoader {
                         .bookingId("11ecc760-10d0-4713-a9ee-0aed88f38f32")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
-                        .status(BookingStatus.BOOKING_FINALIZED)
+                        .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now())
                         .totalPrice(1700.0)
                         .build(),
@@ -2025,7 +2032,7 @@ public class DatabaseLoader {
                         .bookingId("1b02a876-9714-48ff-ace3-3035222e256c")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
-                        .status(BookingStatus.BOOKING_FINALIZED)
+                        .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().plusMonths(1))
                         .totalPrice(1900.0)
                         .build(),
@@ -2034,7 +2041,7 @@ public class DatabaseLoader {
                         .bookingId("dc04ebc7-82c3-4b89-a33b-cfd3c16d2420")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
                         .packageId("9b5e2c1a-6f7d-4b9e-b8a7-d3f2b1c9a4e5")
-                        .status(BookingStatus.BOOKING_FINALIZED)
+                        .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().plusMonths(2))
                         .totalPrice(1500.0)
                         .build(),
