@@ -4,7 +4,6 @@ import BookingForm from "../../features/bookings/components/BookingForm";
 import { useAxiosInstance } from "../../shared/axios/useAxiosInstance";
 import { loadStripe } from "@stripe/stripe-js";
 
-// Initialize Stripe outside of the component
 const stripePromise = loadStripe(
   process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || ""
 );
@@ -14,26 +13,30 @@ const BookingFormPage: React.FC = () => {
   const location = useLocation();
   const pkg = location.state?.package;
 
-  // Use your custom Axios instance that attaches the Auth0 token
   const axiosInstance = useAxiosInstance();
+  
 
   const createCheckoutSession = async () => {
     try {
-      // 1) Call your backend to create a Stripe Checkout Session
+      if (!pkg) {
+        setError("No package selected.");
+        return;
+      }
+
+      // Convert price to cents because Stripe said so.
+      const amountInCents = Math.round(pkg.priceSingle * 100);
+
       const response = await axiosInstance.post("payments/create-checkout-session", {
-        amount: 1000, // e.g. pkg.price * 100
-        currency: "usd",
-        packageId: 123, // e.g. pkg.id
-        successUrl: "https://github.com/",
-        cancelUrl: "https://google.com/",
+        amount: amountInCents,
+        currency: "usd", 
+        packageId: pkg.packageId, 
+        successUrl: "https://youtube.com",
+        cancelUrl: "https://github.com",
       });
 
-      // 2) Immediately redirect to Stripe's checkout page
       const { sessionId } = response.data;
       const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error("Stripe failed to load");
-      }
+      if (!stripe) throw new Error("Stripe failed to load");
 
       // Use the Stripe.js SDK to redirect
       const { error: stripeError } = await stripe.redirectToCheckout({
@@ -42,7 +45,7 @@ const BookingFormPage: React.FC = () => {
 
       if (stripeError) {
         console.error("Stripe Checkout error:", stripeError);
-        // setError(stripeError.message);
+        setError(stripeError.message || "An unknown error occurred.");
       }
     } catch (err) {
       console.error("Error creating checkout session:", err);
@@ -53,9 +56,8 @@ const BookingFormPage: React.FC = () => {
   return (
     <div>
       <h1>Booking Form</h1>
-      <BookingForm pkg={pkg} />
+      <BookingForm pkg={pkg} /> 
 
-      {/* Single button to create the session and auto-redirect */}
       <button onClick={createCheckoutSession}>Proceed to Payment</button>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
