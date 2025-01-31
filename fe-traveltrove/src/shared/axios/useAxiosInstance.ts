@@ -16,7 +16,6 @@ export const useAxiosInstance = (): AxiosInstance => {
     try {
       const token = await getAccessTokenSilently();
       if (token) {
-        console.log(token)
         config.headers.Authorization = `Bearer ${token}`;
       } else {
         console.warn("No JWT token found.");
