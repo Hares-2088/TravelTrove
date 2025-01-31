@@ -6,6 +6,7 @@ hide footbox
 
 actor Customer #F5F5DC
 participant "Travel Management System" as TMS #FFFFFF
+participant "Gmail SMTP Server" as SMTP #FFFFFF
 
 Customer -> TMS : Browse Tour Packages
 TMS -> Customer : Tour Packages Data (e.g., Destination, Price, Dates, Availability)
@@ -24,11 +25,20 @@ opt CUST3 - Book a Tour Package
 
     group include [CUST5 - Pay for a Tour]
     end
+
+    TMS -> SMTP : Schedule Post-Trip Review Request Email
+    SMTP -> Customer : Post-Trip Review Request Email
+    opt CUST8 - Leave a Review
+        Customer -> TMS : Submit Review for the Tour Package
+        TMS -> Customer : Confirmation of Review Submission
+    end
 end
+
+
 
 opt CUST6 - Subscribe to Notifications
     Customer -> TMS : Subscribe for Notifications
-    TMS -> Customer : Subscription Data (e.g., Subscription Status))
+    TMS -> Customer : Subscription Data (e.g., Subscription Status)
 end
 
 @enduml
