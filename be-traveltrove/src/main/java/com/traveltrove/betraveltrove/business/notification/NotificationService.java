@@ -11,4 +11,5 @@ public interface NotificationService {
     Mono<Void> sendCustomEmail(String to, String subject, String message);
     Mono<NotificationResponseModel> getNotificationByNotificationId(String notificationId);
     Mono<Void> deleteNotificationByNotificationId(String notificationId);
+    Mono<Void> sendPostTourReviewEmail(String to, String userName, String packageTitle, String destination, String startDate, String endDate, String reviewLink);
 }

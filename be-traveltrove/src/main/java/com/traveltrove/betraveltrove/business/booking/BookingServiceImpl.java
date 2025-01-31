@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.business.booking;
 
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
 import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import com.traveltrove.betraveltrove.business.user.UserService;
@@ -8,6 +9,7 @@ import com.traveltrove.betraveltrove.dataaccess.booking.BookingRepository;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
 import com.traveltrove.betraveltrove.presentation.booking.BookingRequestModel;
 import com.traveltrove.betraveltrove.presentation.booking.BookingResponseModel;
+import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
@@ -17,8 +19,10 @@ import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusException;
 import com.traveltrove.betraveltrove.utils.exceptions.NoTravelerException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,11 +31,14 @@ import reactor.util.function.Tuple3;
 import reactor.util.function.Tuple4;
 import reactor.util.function.Tuples;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -39,13 +46,11 @@ public class BookingServiceImpl implements BookingService {
     private final PackageService packageService;
     private final UserService userService;
     private final TravelerService travelerService;
+    private final NotificationService notificationService;
+    private final TaskScheduler taskScheduler;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, PackageService packageService, UserService userService, TravelerService travelerService) {
-        this.bookingRepository = bookingRepository;
-        this.packageService = packageService;
-        this.userService = userService;
-        this.travelerService = travelerService;
-    }
+    @Value("${EMAIL_REVIEW_DELAY}")
+    private String emailReviewDelay;
 
     @Override
     public Flux<BookingResponseModel> getBookings() {
@@ -135,7 +140,15 @@ public class BookingServiceImpl implements BookingService {
                 ))
 
                 // 6) Save the booking in Mongo and convert to response
-                .flatMap(bookingRepository::save)
+                .flatMap(booking -> bookingRepository.save(booking)
+                        .flatMap(savedBooking ->
+                                packageService.getPackageByPackageId(savedBooking.getPackageId())
+                                        .flatMap(tourPackage -> {
+                                            schedulePostTripEmail(savedBooking, tourPackage);
+                                            return Mono.just(savedBooking);
+                                        })
+                        )
+                )
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
@@ -318,5 +331,44 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return Mono.empty();
+    }
+
+    private void schedulePostTripEmail(Booking booking, PackageResponseModel tourPackage) {
+        if (tourPackage.getEndDate() == null) {
+            log.warn("Skipping review email scheduling: Package {} has no end date.", tourPackage.getPackageId());
+            return;
+        }
+
+        Duration delayDuration = parseDelay(emailReviewDelay);
+        Instant sendTime = tourPackage.getEndDate().atStartOfDay().toInstant(ZoneOffset.UTC).plus(delayDuration);
+
+        if (sendTime.isAfter(Instant.now())) {
+            taskScheduler.schedule(() -> {
+                userService.getUser(booking.getUserId()).flatMap(user ->
+                        notificationService.sendPostTourReviewEmail(
+                                user.getEmail(),
+                                user.getFirstName(),
+                                tourPackage.getName(),
+                                tourPackage.getDescription(),
+                                tourPackage.getStartDate().toString(),
+                                tourPackage.getEndDate().toString(),
+                                "http://localhost:3000"
+                        )
+                ).subscribe();
+            }, sendTime);
+
+            log.info("Scheduled post-tour review email for booking {} at {}", booking.getBookingId(), sendTime);
+        } else {
+            log.warn("Skipping review email scheduling: Package {} end date has already passed.", tourPackage.getPackageId());
+        }
+    }
+
+    private Duration parseDelay(String delay) {
+        return switch (delay.toLowerCase()) {
+            case "30s" -> Duration.ofSeconds(30);
+            case "24h", "1d" -> Duration.ofDays(1);
+            default -> Duration.ofHours(24);
+
+        };
     }
 }

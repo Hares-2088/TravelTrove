@@ -2,15 +2,39 @@
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
 <div style="width: 100%; padding: 20px; box-sizing: border-box;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+
         <!-- Header Section -->
         <div style="background-color: #000000; color: #ffffff; padding: 20px; text-align: center;">
-            <h1 style="margin: 0; font-size: 24px;">We Value Your Feedback</h1>
+            <h1 style="margin: 0; font-size: 24px;">We Value Your Feedback!</h1>
         </div>
+
         <!-- Body Section -->
         <div style="padding: 30px; color: #333; line-height: 1.6;">
-            <p style="font-size: 18px; margin: 0 0 20px;">Hi there,</p>
-            <p style="margin: 0 0 20px;">Thank you for traveling with us! We would love to hear about your experience. Your feedback helps us improve and serve you better.</p>
-            <p style="margin: 0;">Best regards,</p>
+            <p style="font-size: 18px; margin: 0 0 20px;">Hi {{arg0}},</p>
+
+            <p style="margin: 0 0 20px;">
+                We hope you had a wonderful experience on your recent trip with us! Your journey on
+                <strong>{{arg1}}</strong> to <strong>{{arg2}}</strong> started on <strong>{{arg3}}</strong> and ended on <strong>{{arg4}}</strong>.
+            </p>
+
+            <p style="margin: 0 0 20px;">
+                Your feedback means the world to us. It helps us improve and ensures we continue to provide
+                unforgettable experiences for our travelers.
+            </p>
+
+            <p style="margin: 0 0 20px;">
+                Would you take a moment to share your thoughts about your trip?
+            </p>
+
+            <!-- Review Button -->
+            <div style="text-align: center; margin: 20px 0;">
+                <a href="{{arg5}}" style="background-color: #000000; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-size: 18px; font-weight: bold;">
+                    Leave a Review
+                </a>
+            </div>
+
+            <p style="margin: 0;">Thank you for choosing Travel Trove!</p>
+            <p style="margin: 0; font-weight: bold;">Safe travels,</p>
             <p style="margin: 0; font-weight: bold;">The Travel Trove Team</p>
         </div>
     </div>

@@ -70,6 +70,24 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public Mono<Void> sendPostTourReviewEmail(String to, String userName, String packageTitle, String destination, String startDate, String endDate, String reviewLink) {
+        return Mono.fromCallable(() -> {
+            String subject = "Share Your Experience with " + packageTitle;
+            String htmlContent = loadHtmlTemplate("post-trip-review-email.html", userName, packageTitle, destination, startDate, endDate, reviewLink);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            helper.setFrom("traveltrove.notifications@gmail.com");
+
+            mailSender.send(message);
+            return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
+        }).flatMap(notificationRepository::save).then();
+    }
+
+    @Override
     public Flux<NotificationResponseModel> getAllNotifications() {
         return notificationRepository.findAll()
                 .map(notification -> NotificationResponseModel.builder()
