@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
@@ -27,12 +28,15 @@ public class PackageServiceImpl implements PackageService {
 
     private final AirportService airportService;
 
+    private final NotificationService notificationService;
+
     private PackageStatus packageStatus;
 
-    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService) {
+    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService) {
         this.packageRepository = packageRepository;
         this.tourService = tourService;
         this.airportService = airportService;
+        this.notificationService = notificationService;
     }
 
     @Override
