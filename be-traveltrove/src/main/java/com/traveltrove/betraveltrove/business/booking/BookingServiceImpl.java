@@ -52,6 +52,9 @@ public class BookingServiceImpl implements BookingService {
     @Value("${EMAIL_REVIEW_DELAY}")
     private String emailReviewDelay;
 
+    @Value("${frontend.domain}")
+    private String baseUrl;
+
     @Override
     public Flux<BookingResponseModel> getBookings() {
         return bookingRepository.findAll()
@@ -356,7 +359,7 @@ public class BookingServiceImpl implements BookingService {
                                 tourPackage.getDescription(),
                                 tourPackage.getStartDate().toString(),
                                 tourPackage.getEndDate().toString(),
-                                "http://localhost:3000"
+                                baseUrl
                         )
                 ).subscribe();
             }, sendTime);
