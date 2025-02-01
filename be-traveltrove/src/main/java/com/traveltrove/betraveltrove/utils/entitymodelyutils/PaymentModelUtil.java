@@ -31,8 +31,11 @@ public class PaymentModelUtil {
     public static PaymentResponseModel toPaymentResponseModelWithoutSession(Payment payment) {
         PaymentResponseModel paymentResponseModel = new PaymentResponseModel();
         BeanUtils.copyProperties(payment, paymentResponseModel);
+        paymentResponseModel.setPaymentId(payment.getPaymentId());
+        paymentResponseModel.setAmount(payment.getAmount() / 100); // Scale amount back
 
         return paymentResponseModel;
+
 
     }
 

@@ -8,7 +8,7 @@ const PaymentCancel: React.FC = () => {
     <div>
       <h1>❌ Payment Canceled</h1>
       <p>Your payment was not completed.</p>
-      <button onClick={() => navigate("/bookings")}>Try Again</button>
+      <button onClick={() => navigate("/tours")}>Try Again</button>
     </div>
   );
 };

@@ -14,6 +14,6 @@ public class PaymentResponseModel {
     private String sessionId;
 
     private Long amount; // Payment amount in cents
-    private String currency; // Currency code (e.g., "usd")
-    private String status; // Payment status (e.g., "created", "succeeded", "failed")
+    private String currency; // Currency code ("usd")
+    private String status; // Payment status ("created", "succeeded", "failed")
 }
