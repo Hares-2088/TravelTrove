@@ -8,6 +8,8 @@ import reactor.core.publisher.Mono;
 
 public interface BookingService {
 
+    Mono<Boolean> packageExistsReactive(String packageId);
+
     // Retrieve bookings based on different criteria
     Flux<BookingResponseModel> getBookings();
     Flux<BookingResponseModel> getBookingsByUserId(String userId);

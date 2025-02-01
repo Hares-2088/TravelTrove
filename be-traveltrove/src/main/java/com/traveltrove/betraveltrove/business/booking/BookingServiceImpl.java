@@ -1,6 +1,6 @@
 package com.traveltrove.betraveltrove.business.booking;
 
-import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.business.tourpackage.PackageServiceHelper;
 import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.booking.Booking;
@@ -28,7 +28,6 @@ import reactor.util.function.Tuple4;
 import reactor.util.function.Tuples;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -36,15 +35,25 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
 
-    private final PackageService packageService;
     private final UserService userService;
     private final TravelerService travelerService;
+    private PackageServiceHelper packageServiceHelper;  // Avoid circular dependency
 
-    public BookingServiceImpl(BookingRepository bookingRepository, PackageService packageService, UserService userService, TravelerService travelerService) {
+    @Autowired
+    public BookingServiceImpl(BookingRepository bookingRepository, UserService userService, TravelerService travelerService) {
         this.bookingRepository = bookingRepository;
-        this.packageService = packageService;
         this.userService = userService;
         this.travelerService = travelerService;
+    }
+
+    @Autowired
+    public void setPackageServiceHelper(PackageServiceHelper packageServiceHelper) {
+        this.packageServiceHelper = packageServiceHelper;
+    }
+
+    @Override
+    public Mono<Boolean> packageExistsReactive(String packageId) {
+        return packageServiceHelper.packageExistsReactive(packageId);
     }
 
     @Override
@@ -167,12 +176,6 @@ public class BookingServiceImpl implements BookingService {
         return userService.syncUserWithAuth0(userId)
                 .hasElement()
                 .flatMap(exists -> exists ? Mono.empty() : Mono.error(new NotFoundException("User not found with ID: " + userId)));
-    }
-
-    Mono<Void> packageExistsReactive(String packageId) {
-        return packageService.getPackageByPackageId(packageId)
-                .hasElement()
-                .flatMap(exists -> exists ? Mono.empty() : Mono.error(new NotFoundException("Package not found with ID: " + packageId)));
     }
 
     private boolean isValidStatus(BookingStatus status) {
