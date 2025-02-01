@@ -18,7 +18,9 @@ import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.SubscriptionResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.PackageEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import org.springframework.context.annotation.Lazy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -26,7 +28,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
-public class PackageServiceImpl implements PackageService {
+public class PackageServiceImpl implements PackageService, PackageServiceHelper {
 
     private final PackageRepository packageRepository;
 
@@ -34,27 +36,38 @@ public class PackageServiceImpl implements PackageService {
 
     private final AirportService airportService;
 
-    private final BookingService bookingService;
+    private final UserService userService;
 
     private final NotificationService notificationService;
 
     private final SubscriptionService subscriptionService;
 
-    private final UserService userService;
-
     @Value("${frontend.domain}")
     private String baseUrl;
 
+    private BookingService bookingService;  // Avoid circular dependency with BookingService
+
     private PackageStatus packageStatus;
 
-    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, BookingService bookingService, NotificationService notificationService, SubscriptionService subscriptionService, UserService userService) {
+    @Autowired
+    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, UserService userService, NotificationService notificationService, SubscriptionService subscriptionService) {
         this.packageRepository = packageRepository;
         this.tourService = tourService;
         this.airportService = airportService;
-        this.bookingService = bookingService;
+        this.userService = userService;
         this.notificationService = notificationService;
         this.subscriptionService = subscriptionService;
-        this.userService = userService;
+    }
+
+    // Avoid circular dependency with BookingService
+    @Autowired
+    public void setBookingService(@Lazy BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
+
+    @Override
+    public Mono<Boolean> packageExistsReactive(String packageId) {
+        return packageRepository.existsByPackageId(packageId);
     }
 
     @Override
