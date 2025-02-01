@@ -70,7 +70,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Mono<Void> sendPostTourReviewEmail(String to, String userName, String packageTitle, String description, String startDate, String endDate, String reviewLink) {
+    public Mono<Void> sendPostTourReviewEmail(String to, String userName, String packageTitle,
+                                              String description, String startDate, String endDate, String reviewLink) {
         return Mono.fromCallable(() -> {
             String subject = "Share Your Experience with " + packageTitle;
             String htmlContent = loadHtmlTemplate("post-trip-review-email.html", userName, packageTitle, description, startDate, endDate, reviewLink);
@@ -83,6 +84,29 @@ public class NotificationServiceImpl implements NotificationService {
             helper.setFrom("traveltrove.notifications@gmail.com");
 
             mailSender.send(message);
+            return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
+        }).flatMap(notificationRepository::save).then();
+    }
+
+    @Override
+    public Mono<Void> sendLimitedSpotsEmail(String to, String userName, String packageName,
+                                            String description, String startDate, String endDate,
+                                            String price, String availableSeats, String bookingLink) {
+        return Mono.fromCallable(() -> {
+            String subject = "🚨 Limited Seats Remaining for " + packageName + "!";
+
+            String htmlContent = loadHtmlTemplate("limited-spots-email.html",
+                    userName, packageName, availableSeats, description, startDate, endDate, price, bookingLink);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            helper.setFrom("traveltrove.notifications@gmail.com");
+
+            mailSender.send(message);
+
             return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
         }).flatMap(notificationRepository::save).then();
     }

@@ -1,7 +1,9 @@
 package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
+import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
@@ -10,9 +12,11 @@ import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestStatus;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
+import com.traveltrove.betraveltrove.presentation.tourpackage.SubscriptionResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.PackageEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,12 +31,24 @@ public class PackageServiceImpl implements PackageService {
 
     private final AirportService airportService;
 
+    private final NotificationService notificationService;
+
+    private final SubscriptionService subscriptionService;
+
+    private final UserService userService;
+
+    @Value("${frontend.domain}")
+    private String baseUrl;
+
     private PackageStatus packageStatus;
 
-    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService) {
+    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, SubscriptionService subscriptionService, UserService userService) {
         this.packageRepository = packageRepository;
         this.tourService = tourService;
         this.airportService = airportService;
+        this.notificationService = notificationService;
+        this.subscriptionService = subscriptionService;
+        this.userService = userService;
     }
 
     @Override
@@ -134,23 +150,52 @@ public class PackageServiceImpl implements PackageService {
                         .thenReturn(PackageEntityModelUtil.toPackageResponseModel(pk)));
     }
 
+    private Mono<Void> notifySubscribersOfLimitedSpots(Package pkg) {
+        return subscriptionService.getUsersSubscribedToPackage(pkg.getPackageId())
+                .flatMap(subscription -> userService.getUser(subscription.getUserId())
+                        .flatMap(user -> {
+                            String bookingLink = baseUrl + "/packages/" + pkg.getPackageId();
+
+                            return notificationService.sendLimitedSpotsEmail(
+                                    user.getEmail(),
+                                    user.getFirstName(),
+                                    pkg.getName(),
+                                    pkg.getDescription(),
+                                    pkg.getStartDate().toString(),
+                                    pkg.getEndDate().toString(),
+                                    String.valueOf(pkg.getPriceSingle()),
+                                    String.valueOf(pkg.getAvailableSeats()),
+                                    bookingLink
+                            );
+                        })
+                ).then();
+    }
+
     @Override
     public Mono<PackageResponseModel> decreaseAvailableSeats(String packageId, Integer quantity) {
         return packageRepository.findPackageByPackageId(packageId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
-                .flatMap(pk -> {
-                    if (pk.getAvailableSeats() < quantity) {
+                .flatMap(pkg -> {
+                    if (pkg.getAvailableSeats() < quantity) {
                         return Mono.error(new IllegalArgumentException("Not enough available seats to decrease by " + quantity));
                     } else if (quantity < 0) {
                         return Mono.error(new IllegalArgumentException("Quantity of seats decreased cannot be less than 0"));
                     }
-                    pk.setAvailableSeats(pk.getAvailableSeats() - quantity);
 
-                    // if the available seats is 0, then set the package status to SOLD_OUT
-                    if (pk.getAvailableSeats() == 0) {
-                        pk.setStatus(PackageStatus.SOLD_OUT);
+                    pkg.setAvailableSeats(pkg.getAvailableSeats() - quantity);
+
+                    Mono<Void> notificationMono = Mono.empty();
+                    if (pkg.getAvailableSeats() < 10) {
+                        notificationMono = notifySubscribersOfLimitedSpots(pkg);
                     }
-                    return packageRepository.save(pk)
+
+                    // If available seats hit 0, mark package as SOLD_OUT
+                    if (pkg.getAvailableSeats() == 0) {
+                        pkg.setStatus(PackageStatus.SOLD_OUT);
+                    }
+
+                    return packageRepository.save(pkg)
+                            .flatMap(notificationMono::thenReturn)
                             .map(PackageEntityModelUtil::toPackageResponseModel);
                 });
     }
