@@ -36,6 +36,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     );
     const [showReviewList, setShowReviewList] = useState(false);
 
+    const [notificationMessage, setNotificationMessage] = useState("");
     const [selectedPackage, setSelectedPackage] =
         useState<PackageResponseModel | null>(null);
     const [reviews, setReviews] = useState<Review[]>([]);  // Assuming Review is the type for reviews
@@ -67,6 +68,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         airportId: false,
         dateOrder: false,
         totalSeats: false,
+        notificationMessage: false,
     });
     const [filteredPackages, setFilteredPackages] = useState<PackageResponseModel[]>([]);
 
@@ -238,6 +240,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             airportId: !formData.airportId,
             dateOrder: new Date(formData.startDate) >= new Date(formData.endDate),
             totalSeats: formData.totalSeats === null,
+            notificationMessage: !notificationMessage,
         };
         setFormErrors(errors);
 
@@ -249,7 +252,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             if (modalType === "create") {
                 await addPackage(formData);
             } else if (modalType === "update" && selectedPackage) {
-                await updatePackage(selectedPackage.packageId, formData);
+                await updatePackage(selectedPackage.packageId, formData, notificationMessage);
             }
             setShowModal(false);
             await fetchPackages();
@@ -439,6 +442,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             airportId: false,
                             dateOrder: false,
                             totalSeats: false,
+                            notificationMessage: false,
                         });
                         setShowModal(true);
                     }}
@@ -593,6 +597,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                             airportId: false,
                                             dateOrder: false,
                                             totalSeats: false,
+                                            notificationMessage: false,
                                         });
                                         setShowModal(true);
                                     }}
@@ -855,6 +860,21 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {("totalSeatsRequired")}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>{t("notificationMessage")}</Form.Label>
+                                <Form.Control
+                                    required
+                                    type="text"
+                                    value="Hello,\n\nA package you booked has been updated. Please check the details and let us know if you have any questions.\n\nThank you.\n\nThe Travel Team"
+                                    onChange={(e) =>
+                                        setNotificationMessage(e.target.value)
+                                    }
+                                    isInvalid={formErrors.notificationMessage}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {t("packageNameRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Modal.Footer>
