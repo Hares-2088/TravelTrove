@@ -44,6 +44,7 @@ class PackageServiceUnitTest {
     @Mock
     private TourService tourService;
 
+    String sampleNotificationMessage = "A sample notification message";
 
     PackageResponseModel packageResponseModel1 = PackageResponseModel.builder()
             .packageId("1")
@@ -363,7 +364,7 @@ class PackageServiceUnitTest {
         when(packageRepository.findPackageByPackageId(packageId))
                 .thenReturn(Mono.empty());
 
-        Mono<PackageResponseModel> result = packageService.updatePackage(packageId, Mono.just(packageRequestModel));
+        Mono<PackageResponseModel> result = packageService.updatePackage(packageId, Mono.just(packageRequestModel), sampleNotificationMessage);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
@@ -399,7 +400,7 @@ class PackageServiceUnitTest {
                         .airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
                         .build()));
 
-        Mono<PackageResponseModel> result = packageService.updatePackage(packageId, Mono.just(packageRequestModel));
+        Mono<PackageResponseModel> result = packageService.updatePackage(packageId, Mono.just(packageRequestModel), sampleNotificationMessage);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
@@ -432,7 +433,7 @@ class PackageServiceUnitTest {
         when(airportService.getAirportById(packageRequestModel.getAirportId()))
                 .thenReturn(Mono.empty());
 
-        Mono<PackageResponseModel> result = packageService.updatePackage(packageId, Mono.just(packageRequestModel));
+        Mono<PackageResponseModel> result = packageService.updatePackage(packageId, Mono.just(packageRequestModel), sampleNotificationMessage);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException)

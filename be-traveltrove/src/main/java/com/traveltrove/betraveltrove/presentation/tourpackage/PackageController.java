@@ -42,9 +42,10 @@ public class PackageController {
     }
 
     @PutMapping(value = "/{packageId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<PackageResponseModel>> updatePackage(@PathVariable String packageId, @RequestBody Mono<PackageRequestModel> packageRequestModel) {
+    public Mono<ResponseEntity<PackageResponseModel>> updatePackage(@PathVariable String packageId, @RequestBody Mono<PackageRequestModel> packageRequestModel,
+                                                                    @RequestParam (required = false) String notificationMessage) {
         log.info("Updating package with package ID: {}", packageId);
-        return packageService.updatePackage(packageId, packageRequestModel)
+        return packageService.updatePackage(packageId, packageRequestModel, notificationMessage)
                 .map(ResponseEntity::ok)
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }

@@ -2,6 +2,8 @@ package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
 import com.traveltrove.betraveltrove.business.notification.NotificationService;
+import com.traveltrove.betraveltrove.business.booking.BookingService;
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
@@ -12,6 +14,7 @@ import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestStatus;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
+import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.SubscriptionResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.PackageEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
@@ -31,6 +34,8 @@ public class PackageServiceImpl implements PackageService {
 
     private final AirportService airportService;
 
+    private final BookingService bookingService;
+
     private final NotificationService notificationService;
 
     private final SubscriptionService subscriptionService;
@@ -42,10 +47,11 @@ public class PackageServiceImpl implements PackageService {
 
     private PackageStatus packageStatus;
 
-    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, SubscriptionService subscriptionService, UserService userService) {
+    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, BookingService bookingService, NotificationService notificationService, SubscriptionService subscriptionService, UserService userService) {
         this.packageRepository = packageRepository;
         this.tourService = tourService;
         this.airportService = airportService;
+        this.bookingService = bookingService;
         this.notificationService = notificationService;
         this.subscriptionService = subscriptionService;
         this.userService = userService;
@@ -118,7 +124,11 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel) {
+    public Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel, String notificationMessage) {
+        final String finalNotificationMessage = (notificationMessage == null || notificationMessage.isEmpty()) ?
+                "Hello, \n\nA package you have booked has been updated. Please visit our website to see the details of the changes. \n\nSincerely,\n\nDar El Salam's Management"
+                : notificationMessage;
+
         return packageRepository.findPackageByPackageId(packageId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
                 .flatMap(existingPackage -> packageRequestModel
@@ -126,13 +136,19 @@ public class PackageServiceImpl implements PackageService {
                             validatePackageRequestModel(requestModel);
                             return Mono.zip(getTour(requestModel.getTourId()), getAirport(requestModel.getAirportId()))
                                     .flatMap(tuple -> {
-                                        Package updatedPackage = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
+                                        Package updatedPackage = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());
+                                        updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
                                         updatedPackage.setPackageId(existingPackage.getPackageId()); // Retain the original packageId
                                         updatedPackage.setAvailableSeats(existingPackage.getAvailableSeats()); // Retain the available seats
                                         if (updatedPackage.getAvailableSeats() > existingPackage.getTotalSeats()) {
                                             return Mono.error(new IllegalArgumentException("Available seats cannot exceed total seats"));
                                         }
-                                        return packageRepository.save(updatedPackage)
+                                        return bookingService.getBookingsByPackageId(packageId)
+                                                .flatMap(booking -> userService.getUser(booking.getUserId())
+                                                        .flatMap(user -> notificationService.sendCustomEmail(user.getEmail(), "Travel Trove Notice: " + updatedPackage.getName() +
+                                                                " Package Update", finalNotificationMessage))
+                                                )
+                                                .then(packageRepository.save(updatedPackage))
                                                 .map(PackageEntityModelUtil::toPackageResponseModel);
                                     });
                         }));
