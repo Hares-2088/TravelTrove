@@ -28,6 +28,14 @@ public class PaymentModelUtil {
                 .build();
     }
 
+    public static PaymentResponseModel toPaymentResponseModelWithoutSession(Payment payment) {
+        PaymentResponseModel paymentResponseModel = new PaymentResponseModel();
+        BeanUtils.copyProperties(payment, paymentResponseModel);
+
+        return paymentResponseModel;
+
+    }
+
     private static String generateUUIDString() {
         return java.util.UUID.randomUUID().toString();
     }

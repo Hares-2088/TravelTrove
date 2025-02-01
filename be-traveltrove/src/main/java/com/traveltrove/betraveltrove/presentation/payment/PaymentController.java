@@ -1,9 +1,12 @@
 package com.traveltrove.betraveltrove.presentation.payment;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
+import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
@@ -14,9 +17,13 @@ import com.traveltrove.betraveltrove.utils.entitymodelyutils.PaymentModelUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/payments")
@@ -102,34 +109,87 @@ public class PaymentController {
     }
 
     @PostMapping("/webhook")
-    public Mono<ResponseEntity<String>> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
+    public Mono<ResponseEntity<String>> handleStripeWebhook(
+            @RequestBody String payload,
+            @RequestHeader("Stripe-Signature") String sigHeader) {
+
+        // Log the incoming payload and signature for debugging.
+        log.info("Received webhook payload: {}", payload);
+        log.info("Received webhook signature header: {}", sigHeader);
+
         Event event;
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+            log.info("Webhook signature verified successfully. Event ID: {} Type: {}",
+                    event.getId(), event.getType());
         } catch (SignatureVerificationException e) {
+            log.error("Signature verification failed. Payload: {}, Error: {}", payload, e.getMessage());
             return Mono.just(ResponseEntity.badRequest().body("Invalid signature"));
         }
-        log.info("Handling Stripe event: {}", event.getType());
 
+        // Process based on event type.
         switch (event.getType()) {
             case "checkout.session.completed":
-                Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
-                if (session != null) {
+                log.info("Processing 'checkout.session.completed' event. Event ID: {}", event.getId());
+                // First try using Stripe's deserializer.
+                Optional<StripeObject> sessionOpt = event.getDataObjectDeserializer().getObject();
+                if (sessionOpt.isPresent() && sessionOpt.get() instanceof Session) {
+                    Session session = (Session) sessionOpt.get();
                     String bookingId = session.getMetadata().get("bookingId");
+                    log.info("Extracted booking ID from deserialized session: {}", bookingId);
                     return bookingService.confirmBookingPayment(bookingId)
+                            .doOnSuccess(result -> log.info("Booking confirmed successfully for booking ID: {}", bookingId))
+                            .doOnError(error -> log.error("Error confirming booking for booking ID: {}. Error: {}", bookingId, error.getMessage()))
                             .thenReturn(ResponseEntity.ok("Booking confirmed!"));
+                } else {
+                    log.warn("Stripe deserializer did not yield a Session object. Falling back to manual JSON parsing.");
+                    // Use Jackson ObjectMapper to parse the payload manually.
+                    try {
+                        // Create an ObjectMapper instance (inject or create as needed)
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        JsonNode rootNode = objectMapper.readTree(payload);
+                        JsonNode dataNode = rootNode.path("data");
+                        JsonNode objectNode = dataNode.path("object");
+                        JsonNode metadataNode = objectNode.path("metadata");
+                        String bookingId = metadataNode.path("bookingId").asText(null);
+
+                        if (bookingId == null || bookingId.isEmpty()) {
+                            log.error("Booking ID not found in metadata.");
+                            return Mono.just(ResponseEntity.badRequest().body("Missing booking ID"));
+                        }
+
+                        log.info("Manually extracted booking ID: {}", bookingId);
+                        return bookingService.confirmBookingPayment(bookingId)
+                                .doOnSuccess(result -> log.info("Booking confirmed successfully for booking ID: {}", bookingId))
+                                .doOnError(error -> log.error("Error confirming booking for booking ID: {}. Error: {}", bookingId, error.getMessage()))
+                                .thenReturn(ResponseEntity.ok("Booking confirmed!"));
+
+                    } catch (Exception ex) {
+                        log.error("Error parsing webhook payload manually: {}", ex.getMessage(), ex);
+                        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing webhook payload"));
+                    }
                 }
-                break;
+
             case "payment_intent.succeeded":
-                // Handle successful payment
+                log.info("Processing 'payment_intent.succeeded' event. Event ID: {}", event.getId());
+                // Insert additional processing for successful payment if required.
                 break;
+
             case "payment_intent.payment_failed":
-                // Handle failed payment
+                log.info("Processing 'payment_intent.payment_failed' event. Event ID: {}", event.getId());
+                // Insert additional processing for failed payments if required.
                 break;
+
             default:
-                // Log unhandled event types
-                log.info("Unhandled event type: {}", event.getType());
+                log.info("Unhandled event type received: {}. Event ID: {}", event.getType(), event.getId());
         }
+
+        log.info("Webhook processing complete for event ID: {}", event.getId());
         return Mono.just(ResponseEntity.ok("Event received but not handled"));
+    }
+    @GetMapping()
+    public Flux<PaymentResponseModel> getPayments() {
+        log.info("Fetching all payments");
+        return paymentService.getAllPayments();
     }
 }

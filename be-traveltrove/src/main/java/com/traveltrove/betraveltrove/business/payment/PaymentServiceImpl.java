@@ -5,10 +5,13 @@ import com.traveltrove.betraveltrove.dataaccess.payment.PaymentRepository;
 import com.traveltrove.betraveltrove.presentation.payment.PaymentRequestModel;
 import com.traveltrove.betraveltrove.presentation.payment.PaymentResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.PaymentModelUtil;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -37,5 +40,17 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Mono<Void> deletePayment(String paymentId) {
         return paymentRepository.deleteById(paymentId).then();
+    }
+
+    @Override
+    public Mono<Payment> getPaymentByPaymentId(String paymentId) {
+        return null;
+    }
+
+    @Override
+    public Flux<PaymentResponseModel> getAllPayments() {
+        return paymentRepository.findAll()
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("No payments found"))))
+                .map(PaymentModelUtil::toPaymentResponseModelWithoutSession);
     }
 }
