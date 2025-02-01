@@ -46,9 +46,9 @@ public class BookingServiceImpl implements BookingService {
 
     private final UserService userService;
     private final TravelerService travelerService;
+    private PackageServiceHelper packageServiceHelper;  // Avoid circular dependency
     private final NotificationService notificationService;
     private final TaskScheduler taskScheduler;
-    private PackageServiceHelper packageServiceHelper;  // Avoid circular dependency
 
     @Value("${EMAIL_REVIEW_DELAY}")
     private String emailReviewDelay;
