@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.business.booking;
 
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
 import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import com.traveltrove.betraveltrove.business.user.UserService;
@@ -8,6 +9,7 @@ import com.traveltrove.betraveltrove.dataaccess.booking.BookingRepository;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
 import com.traveltrove.betraveltrove.presentation.booking.BookingRequestModel;
 import com.traveltrove.betraveltrove.presentation.booking.BookingResponseModel;
+import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
@@ -17,8 +19,10 @@ import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusException;
 import com.traveltrove.betraveltrove.utils.exceptions.NoTravelerException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,11 +31,14 @@ import reactor.util.function.Tuple3;
 import reactor.util.function.Tuple4;
 import reactor.util.function.Tuples;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -39,13 +46,14 @@ public class BookingServiceImpl implements BookingService {
     private final PackageService packageService;
     private final UserService userService;
     private final TravelerService travelerService;
+    private final NotificationService notificationService;
+    private final TaskScheduler taskScheduler;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, PackageService packageService, UserService userService, TravelerService travelerService) {
-        this.bookingRepository = bookingRepository;
-        this.packageService = packageService;
-        this.userService = userService;
-        this.travelerService = travelerService;
-    }
+    @Value("${EMAIL_REVIEW_DELAY}")
+    private String emailReviewDelay;
+
+    @Value("${frontend.domain}")
+    private String baseUrl;
 
     @Override
     public Flux<BookingResponseModel> getBookings() {
@@ -99,6 +107,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Mono<BookingResponseModel> createBooking(BookingRequestModel bookingRequestModel) {
+        log.info("🔄 Starting booking creation for userId={} and packageId={}", bookingRequestModel.getUserId(), bookingRequestModel.getPackageId());
+
         return Mono.just(bookingRequestModel)
                 // Convert request model to entity
                 .map(BookingEntityModelUtil::toBookingEntity)
@@ -115,10 +125,10 @@ public class BookingServiceImpl implements BookingService {
                                 .thenReturn(tuple)
                 )
 
-                // 3) Gather existing traveler details
+                // 4) Gather existing traveler details
                 .flatMap(tuple -> gatherExistingTravelerDetails(tuple.getT1(), tuple.getT2()))
 
-                // 4) Compare travelers in the request with existing travelers & create new ones if needed
+                // 5) Compare travelers in the request with existing travelers & create new ones if needed
                 .flatMap(tuple -> compareTravelersAndCreateNew(
                         tuple.getT1(),
                         tuple.getT2(),
@@ -126,7 +136,7 @@ public class BookingServiceImpl implements BookingService {
                         bookingRequestModel
                 ))
 
-                // 5) Update the user’s traveler IDs to include any newly created travelers
+                // 6) Update the user’s traveler IDs to include any newly created travelers
                 .flatMap(tuple -> updateUserTravelerIds(
                         tuple.getT1(),
                         tuple.getT2(),
@@ -134,11 +144,29 @@ public class BookingServiceImpl implements BookingService {
                         tuple.getT4()
                 ))
 
-                // 6) Save the booking in Mongo and convert to response
-                .flatMap(bookingRepository::save)
+                // 7) Decrease available seats before saving the booking
+                .flatMap(booking -> {
+                    log.info("📉 Attempting to decrease available seats for packageId={} (Seats to decrease: {})",
+                            booking.getPackageId(), booking.getTravelerIds().size());
+
+                    // Will need to move the decreaseAvailableSeats logic in confirmBooking when payment is set up
+                    return packageService.decreaseAvailableSeats(booking.getPackageId(), booking.getTravelerIds().size())
+                            .doOnSuccess(updatedPackage -> log.info("✅ Successfully decreased available seats for packageId={}", booking.getPackageId()))
+                            .doOnError(error -> log.error("❌ Error decreasing seats for packageId={}: {}", booking.getPackageId(), error.getMessage()))
+                            .then(bookingRepository.save(booking))
+                            .flatMap(savedBooking ->
+                                    packageService.getPackageByPackageId(savedBooking.getPackageId())
+                                            .flatMap(tourPackage -> {
+                                                schedulePostTripEmail(savedBooking, tourPackage);
+                                                return Mono.just(savedBooking);
+                                            })
+                            )
+                            .doOnSuccess(savedBooking -> log.info("✅ Booking successfully created: bookingId={}, userId={}, packageId={}",
+                                    savedBooking.getBookingId(), savedBooking.getUserId(), savedBooking.getPackageId()))
+                            .doOnError(error -> log.error("❌ Failed to save booking: error={}", error.getMessage()));
+                })
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
-
 
     @Override
     public Mono<BookingResponseModel> updateBookingStatus(String bookingId, BookingStatus newStatus) {
@@ -173,10 +201,11 @@ public class BookingServiceImpl implements BookingService {
                     booking.setStatus(BookingStatus.BOOKING_CONFIRMED);
 
                     // Decrease available seats
+                    // Not used for now, need to use this when payment is set up!
                     return packageService.decreaseAvailableSeats(booking.getPackageId(), booking.getTravelerIds().size())
-                            .then(bookingRepository.save(booking));
-                })
-                .map(BookingEntityModelUtil::toBookingResponseModel);
+                            .then(bookingRepository.save(booking))
+                            .map(BookingEntityModelUtil::toBookingResponseModel);
+                });
     }
 
     // methods for validation -> userExists, packageExists, isValidStatus
@@ -318,5 +347,48 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return Mono.empty();
+    }
+
+    private void schedulePostTripEmail(Booking booking, PackageResponseModel tourPackage) {
+        if (tourPackage.getEndDate() == null) {
+            log.warn("Skipping review email scheduling: Package {} has no end date.", tourPackage.getPackageId());
+            return;
+        }
+
+        /* Uncomment after demo
+        Duration delayDuration = parseDelay(emailReviewDelay);
+        Instant sendTime = tourPackage.getEndDate().atStartOfDay().toInstant(ZoneOffset.UTC).plus(delayDuration);
+        */
+
+        Instant sendTime = Instant.now().plusSeconds(5);
+
+        if (sendTime.isAfter(Instant.now())) {
+            taskScheduler.schedule(() -> {
+                userService.getUser(booking.getUserId()).flatMap(user ->
+                        notificationService.sendPostTourReviewEmail(
+                                user.getEmail(),
+                                user.getFirstName(),
+                                tourPackage.getName(),
+                                tourPackage.getDescription(),
+                                tourPackage.getStartDate().toString(),
+                                tourPackage.getEndDate().toString(),
+                                baseUrl
+                        )
+                ).subscribe();
+            }, sendTime);
+
+            log.info("Scheduled post-tour review email for booking {} at {}", booking.getBookingId(), sendTime);
+        } else {
+            log.warn("Skipping review email scheduling: Package {} end date has already passed.", tourPackage.getPackageId());
+        }
+    }
+
+    private Duration parseDelay(String delay) {
+        return switch (delay.toLowerCase()) {
+            case "30s" -> Duration.ofSeconds(30);
+            case "24h", "1d" -> Duration.ofDays(1);
+            default -> Duration.ofHours(24);
+
+        };
     }
 }
