@@ -28,8 +28,8 @@ public class PackageRequestModel {
     private Integer totalSeats;
     private String packageImageUrl;
 
-    /*
-    private Integer availableSeats; //commented out because it will be managed by the system
-     */
+
+   // private Integer availableSeats; //commented out because it will be managed by the system
+
 
 }

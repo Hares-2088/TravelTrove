@@ -24,7 +24,7 @@ export interface PackageResponseModel {
     priceSingle: number;
     priceDouble: number;
     priceTriple: number;
-    //availableSeats: number;
+    availableSeats: number;
     totalSeats: number;
     status: PackageStatus;
     packageImageUrl?: string;

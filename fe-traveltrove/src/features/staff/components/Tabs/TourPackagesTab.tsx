@@ -87,22 +87,36 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const [showToast, setShowToast] = useState(false);
     const dailyIntervalRef = useRef<NodeJS.Timeout | null>(null); // Declare useRef outside useEffect
     const midnightTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Store timeout reference
+    const [loading, setLoading] = useState<{ [key: string]: boolean }>({}); // Store loading state per package
 
-
-    const sendLowSeatNotification = async (packageId: string) => {
-        try {
-            const response = await axios.post('/api/v1/notifications', {
-                to: 'admin@example.com',
-                subject: `Package ${packageId} is low on seats`,
-                messageContent: `The package ${packageId} has low seats and needs attention.`,
-            });
-            console.log('Notification sent:', response.data);
-        } catch (error) {
-            console.error('Error sending notification:', error);
-        }
-    };
 
     
+
+    const handleUpdateSeats = (packageId: string, quantity: number) => {
+        setLoading((prev) => ({ ...prev, [packageId]: true })); // Set loading to true for the specific package
+    
+        // Find the package and update the available seats
+        setPackages((prevPackages) => {
+          const updatedPackages = prevPackages.map((pkg) => {
+            if (pkg.packageId === packageId) {
+              const updatedPackage = { ...pkg, availableSeats: pkg.availableSeats - quantity };
+              
+              // If available seats are <= 10, trigger a toast warning
+              if (updatedPackage.availableSeats <= 10) {
+                toast.warning(`Warning: Only ${updatedPackage.availableSeats} seats left!`);
+              }
+              
+              return updatedPackage;
+            }
+            return pkg;
+          });
+    
+          return updatedPackages;
+        });
+    
+        setLoading((prev) => ({ ...prev, [packageId]: false })); // Set loading to false after update
+        toast.success("Seats updated successfully!");
+      };
 
     const getStars = (
         rating: number,
@@ -644,6 +658,12 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     onClick={() => handleViewAllReviews(pkg.packageId)}>
                                     {t("View All Reviews")}
                                 </Button>
+                                <Button variant="outline-secondary"
+                                    className="ms-2"
+                                    onClick={() => handleUpdateSeats(pkg.packageId, 1)} // Example: Decrease by 1
+                        >
+                            {loading ? "Decrease Seats" : "Decrease Seats"}
+                        </Button>
                                 {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
                                     <Button
                                         variant="outline-secondary"
