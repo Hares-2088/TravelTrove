@@ -23,7 +23,7 @@ const BookingFormPage: React.FC = () => {
 
       // Calculate total price: price per traveler * number of travelers (converted to cents)
       const amountInCents = Math.round(pkg.priceSingle * numberOfTravelers * 100);
-      const feBaseURL = "http://localhost:3000"
+      const feBaseURL = "https://sea-lion-app-36zpz.ondigitalocean.app";
       // Send the bookingId along with other details to the payments endpoint
       const response = await axiosInstance.post("payments/create-checkout-session", {
         amount: amountInCents,
