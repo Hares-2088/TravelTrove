@@ -1,4 +1,5 @@
 export interface PackageRequestModel {
+   // availableSeats: string | number | string[] | undefined;
     airportId: string;
     tourId: string;
     name: string;

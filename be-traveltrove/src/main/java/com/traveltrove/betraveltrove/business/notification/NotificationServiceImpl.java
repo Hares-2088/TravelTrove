@@ -75,14 +75,12 @@ public class NotificationServiceImpl implements NotificationService {
         return Mono.fromCallable(() -> {
             String subject = "Share Your Experience with " + packageTitle;
             String htmlContent = loadHtmlTemplate("post-trip-review-email.html", userName, packageTitle, description, startDate, endDate, reviewLink);
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
             helper.setFrom("traveltrove.notifications@gmail.com");
-
             mailSender.send(message);
             return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
         }).flatMap(notificationRepository::save).then();
@@ -142,6 +140,37 @@ public class NotificationServiceImpl implements NotificationService {
                 .switchIfEmpty(Mono.error(new NotFoundException("Notification not found with ID: " + notificationId)))
                 .flatMap(notificationRepository::delete);
     }
+
+    @Override
+    public Mono<Void> sendAdminEmail(String to, String packageName, String packageId, String availableSeats,
+                                     String description, String startDate, String endDate, String price) {
+
+        return Mono.fromCallable(() -> {
+                    // Build email content
+                    String subject = "🚨 Low Quantity of Available Seats for " + packageName + " (" + packageId + ")!";
+                    String htmlContent = loadHtmlTemplate("admin-resource-alert-email.html",
+                            packageName, packageId, availableSeats, description, startDate, endDate, price);
+
+                    // Create MimeMessage
+                    MimeMessage message = mailSender.createMimeMessage();
+                    MimeMessageHelper helper = new MimeMessageHelper(message, true);
+                    helper.setTo(to);
+                    helper.setSubject(subject);
+                    helper.setText(htmlContent, true);  // Set the email content
+                    helper.setFrom("traveltrove.notifications@gmail.com");  // Your sender email
+
+
+                    // Send email
+                    mailSender.send(message);  // This will throw an exception if it fails
+
+                    // Return a notification to be saved (optional, depending on your implementation)
+                    return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
+                })
+                .flatMap(notificationRepository::save)  // Save notification if needed (optional)
+                .then();  // Return Mono<Void> as expected
+    }
+
+
 
     private String loadHtmlTemplate(String templateName, String... templateArgs) {
         ClassPathResource resource = new ClassPathResource("email-templates/" + templateName);

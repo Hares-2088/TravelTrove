@@ -7,12 +7,13 @@ import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
+import com.traveltrove.betraveltrove.dataaccess.user.User;
+import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestStatus;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
-import com.traveltrove.betraveltrove.presentation.tourpackage.SubscriptionResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.PackageEntityModelUtil;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import javax.annotation.PostConstruct;
 
 @Service
 @Slf4j
@@ -32,6 +35,7 @@ public class PackageServiceImpl implements PackageService {
     private final AirportService airportService;
 
     private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     private final SubscriptionService subscriptionService;
 
@@ -42,11 +46,12 @@ public class PackageServiceImpl implements PackageService {
 
     private PackageStatus packageStatus;
 
-    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, SubscriptionService subscriptionService, UserService userService) {
+    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, UserRepository userRepository, SubscriptionService subscriptionService, UserService userService) {
         this.packageRepository = packageRepository;
         this.tourService = tourService;
         this.airportService = airportService;
         this.notificationService = notificationService;
+        this.userRepository = userRepository;
         this.subscriptionService = subscriptionService;
         this.userService = userService;
     }
@@ -150,6 +155,46 @@ public class PackageServiceImpl implements PackageService {
                         .thenReturn(PackageEntityModelUtil.toPackageResponseModel(pk)));
     }
 
+    @Override
+    public Mono<PackageResponseModel> decreaseAvailableSeats(String packageId, Integer quantity) {
+        return packageRepository.findPackageByPackageId(packageId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
+                .flatMap(pkg -> {
+                    if (pkg.getAvailableSeats() < quantity) {
+                        return Mono.error(new IllegalArgumentException("Not enough available seats to decrease by " + quantity));
+                    } else if (quantity < 0) {
+                        return Mono.error(new IllegalArgumentException("Quantity of seats decreased cannot be less than 0"));
+                    }
+
+                    // Update available seats
+                    pkg.setAvailableSeats(pkg.getAvailableSeats() - quantity);
+
+                    Mono<Void> notificationMono = Mono.empty();
+
+                    if (pkg.getAvailableSeats() < 10) {
+                        notificationMono = notifySubscribersOfLimitedSpots(pkg);
+                    }
+                    if (pkg.getAvailableSeats() <= 10) {
+                        notificationMono = notifyAdminsForLowSeats(pkg); // Notify admins if seats <= 10
+                    }
+
+                    if (pkg.getAvailableSeats() == 0) {
+                        pkg.setStatus(PackageStatus.SOLD_OUT);
+                    }
+
+                    return packageRepository.save(pkg)
+                            .flatMap(savedPackage -> {
+                                // If available seats are <= 5, send notification to admins
+                                if (savedPackage.getAvailableSeats() <= 5) {
+                                    return notifyAdminsForLowSeats(savedPackage)
+                                            .thenReturn(PackageEntityModelUtil.toPackageResponseModel(savedPackage));
+                                }
+                                return Mono.just(PackageEntityModelUtil.toPackageResponseModel(savedPackage));
+                            });
+                });
+
+    }
+
     private Mono<Void> notifySubscribersOfLimitedSpots(Package pkg) {
         return subscriptionService.getUsersSubscribedToPackage(pkg.getPackageId())
                 .flatMap(subscription -> userService.getUser(subscription.getUserId())
@@ -171,34 +216,51 @@ public class PackageServiceImpl implements PackageService {
                 ).then();
     }
 
-    @Override
-    public Mono<PackageResponseModel> decreaseAvailableSeats(String packageId, Integer quantity) {
-        return packageRepository.findPackageByPackageId(packageId)
-                .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
-                .flatMap(pkg -> {
-                    if (pkg.getAvailableSeats() < quantity) {
-                        return Mono.error(new IllegalArgumentException("Not enough available seats to decrease by " + quantity));
-                    } else if (quantity < 0) {
-                        return Mono.error(new IllegalArgumentException("Quantity of seats decreased cannot be less than 0"));
-                    }
+    @PostConstruct
+    public void checkLowSeatPackagesAtStartup() {
+        log.info("Checking for low seat packages at startup...");
 
-                    pkg.setAvailableSeats(pkg.getAvailableSeats() - quantity);
-
-                    Mono<Void> notificationMono = Mono.empty();
-                    if (pkg.getAvailableSeats() < 10) {
-                        notificationMono = notifySubscribersOfLimitedSpots(pkg);
-                    }
-
-                    // If available seats hit 0, mark package as SOLD_OUT
-                    if (pkg.getAvailableSeats() == 0) {
-                        pkg.setStatus(PackageStatus.SOLD_OUT);
-                    }
-
-                    return packageRepository.save(pkg)
-                            .flatMap(notificationMono::thenReturn)
-                            .map(PackageEntityModelUtil::toPackageResponseModel);
-                });
+        packageRepository.findAll()  // Assuming a method to fetch all packages
+                .filter(pkg -> pkg.getAvailableSeats() <= 5)
+                .doOnNext(pkg -> {
+                    log.info("Found low seat package: {}", pkg.getName());
+                    // Trigger email notification for each package with low seats
+                    notifyAdminsForLowSeats(pkg).subscribe();  // Use subscribe to trigger the notification asynchronously
+                })
+                .subscribe();  // Start the process
     }
+
+
+    private Mono<Void> notifyAdminsForLowSeats(Package pkg) {
+        log.info("Checking if admin email needs to be sent for package: {}", pkg.getName());
+
+        return userService.getAllUsers()  // Assuming userService.getAllUsers() returns all users
+                .filter(user -> user.getRoles().contains("Admin"))  // Filter only users with the 'Admin' role
+                .flatMap(user -> {
+                    log.info("Found admin user: {}. Sending low seat notification.", user.getEmail());
+
+                    String subject = "🚨 Low Quantity of Available Seats for Package: " + pkg.getName();
+                    String message = "The package '" + pkg.getName() + "' (ID: " + pkg.getPackageId() + ") has only " +
+                            pkg.getAvailableSeats() + " seats left. Please review the package details.";
+
+
+                    return notificationService.sendAdminEmail(
+                            user.getEmail(),
+                            pkg.getName(),
+                            pkg.getPackageId(),
+                            String.valueOf(pkg.getAvailableSeats()),
+                            pkg.getDescription(),
+                            pkg.getStartDate().toString(),
+                            pkg.getEndDate().toString(),
+                            String.valueOf(pkg.getPriceSingle())
+                    );
+                })
+                .doOnTerminate(() -> log.info("Email process completed"))
+                .then();
+    }
+
+
+
 
     @Override
     public Mono<PackageResponseModel> increaseAvailableSeats(String packageId, Integer quantity) {
