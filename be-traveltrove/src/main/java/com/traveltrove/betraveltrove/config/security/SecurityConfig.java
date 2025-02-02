@@ -40,8 +40,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF
                 .authorizeExchange(authz -> {
                     log.info("Configuring endpoint permissions...");
-                    authz.matchers(ServerWebExchangeMatchers
-                            .pathMatchers("**")).authenticated()
+                    authz
+                            .pathMatchers("/api/v1/payments/webhook").permitAll()
+                            .pathMatchers("**").authenticated() // Require authentication for all other endpoints
                             .anyExchange().permitAll();
                     log.info("Finished configuring endpoint permissions.");
                 })

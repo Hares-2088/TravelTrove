@@ -76,4 +76,6 @@ public class BookingController {
     public Mono<Void> deleteBooking(@PathVariable String bookingId) {
         return bookingService.deleteBooking(bookingId).then();
     }
+
+
 }
