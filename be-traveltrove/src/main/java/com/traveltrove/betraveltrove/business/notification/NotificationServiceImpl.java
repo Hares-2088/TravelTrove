@@ -142,14 +142,14 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Mono<Void> sendAdminEmail(String to, String packageName, String packageId, String availableSeats,
-                                     String description, String startDate, String endDate, String price) {
+    public Mono<Void> sendAdminEmail(String to, String name, String packageId, String availableSeats,
+                                     String description, String startDate, String endDate, String priceSingle) {
 
         return Mono.fromCallable(() -> {
                     // Build email content
-                    String subject = "🚨 Low Quantity of Available Seats for " + packageName + " (" + packageId + ")!";
+                    String subject = "🚨 Low Quantity of Available Seats for " + name + " (" + packageId + ")!";
                     String htmlContent = loadHtmlTemplate("admin-resource-alert-email.html",
-                            packageName, packageId, availableSeats, description, startDate, endDate, price);
+                            name, packageId, availableSeats, description, startDate, endDate, priceSingle);
 
                     // Create MimeMessage
                     MimeMessage message = mailSender.createMimeMessage();

@@ -5,9 +5,11 @@ import com.traveltrove.betraveltrove.dataaccess.notification.NotificationReposit
 import com.traveltrove.betraveltrove.presentation.notification.NotificationResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,6 +20,7 @@ import jakarta.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -157,4 +160,45 @@ class NotificationServiceUnitTest {
                 .expectErrorMatches(throwable -> throwable instanceof RuntimeException && throwable.getMessage().contains("Notification not found"))
                 .verify();
     }
+
+
+    @Test
+    void sendAdminEmail_ShouldSendEmailAndSaveNotification() throws Exception {
+        // Given test data
+        String to = "admin@example.com";
+        String packageName = "New York Adventure Package";
+        String packageId = "4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d";
+        String availableSeats = "3";
+        String description = "Experience the thrill of New York City.";
+        String startDate = "2026-05-15";
+        String endDate = "2027-05-22";
+        String priceSingle = "1800";
+
+        // Expected email subject
+        String expectedSubject = "🚨 Low Quantity of Available Seats for " + packageName + " (" + packageId + ")!";
+
+        // Mock email sending (do nothing)
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        // Mock repository save (simulate successful save)
+        when(notificationRepository.save(any(Notification.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+
+        // When
+        StepVerifier.create(notificationService.sendAdminEmail(to, packageName, packageId, availableSeats, description, startDate, endDate, priceSingle))
+                .expectComplete()  // Expect Mono<Void> to complete successfully
+                .verify();
+
+        // Then - Verify email sending
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+
+        // Then - Verify notification saved
+        ArgumentCaptor<Notification> notificationCaptor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationRepository, times(1)).save(notificationCaptor.capture());
+
+        Notification savedNotification = notificationCaptor.getValue();
+        assertEquals(expectedSubject, savedNotification.getSubject());
+    }
+
+
 }

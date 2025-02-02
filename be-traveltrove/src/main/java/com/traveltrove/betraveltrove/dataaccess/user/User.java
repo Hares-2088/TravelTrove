@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -28,5 +29,6 @@ public class User {
     private String travelerId;
 
     private List<String> travelerIds;
+
 }
 
