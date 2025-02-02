@@ -2,7 +2,9 @@ package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
 import com.traveltrove.betraveltrove.business.booking.BookingService;
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
+import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.airport.Airport;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
@@ -15,6 +17,7 @@ import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestMode
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestStatus;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,9 +36,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PackageServiceUnitTest {
 
-    @InjectMocks
-    private PackageServiceImpl packageService;
-
     @Mock
     private PackageRepository packageRepository;
 
@@ -47,6 +47,18 @@ class PackageServiceUnitTest {
 
     @Mock
     private BookingService bookingService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private SubscriptionService subscriptionService;
+
+    @InjectMocks
+    private PackageServiceImpl packageService;
 
     String sampleNotificationMessage = "A sample notification message";
 
@@ -94,6 +106,11 @@ class PackageServiceUnitTest {
         .totalSeats(130)
         .availableSeats(130)
         .build();
+
+    @BeforeEach
+    void setUp() {
+        packageService.setBookingService(bookingService);
+    }
 
     @Test
     void whenGetPackageByPackageId_withExistingId_thenReturnPackage() {
@@ -353,49 +370,33 @@ class PackageServiceUnitTest {
     void whenUpdatePackage_withExistingId_thenReturnUpdatedPackage() {
         String packageId = "1";
         PackageRequestModel packageRequestModel = PackageRequestModel.builder()
+                .tourId("tourId")
+                .airportId("airportId")
                 .name("Silk Road Adventure")
                 .description("A sample package description")
                 .startDate(LocalDate.of(2024, 10, 5))
                 .endDate(LocalDate.of(2024, 10, 15))
-                .airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634")
-                .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
                 .priceSingle(2200.0)
                 .priceDouble(2000.0)
                 .priceTriple(1800.0)
                 .totalSeats(130)
                 .build();
 
-        Package package1 = Package.builder()
-                .packageId("1")
-                .name("Old Package Name")
-                .description("Old Description")
-                .startDate(LocalDate.of(2024, 1, 1))
-                .endDate(LocalDate.of(2024, 1, 10))
-                .airportId("old-airport-id")
-                .tourId("old-tour-id")
-                .priceSingle(1000.0)
-                .priceDouble(900.0)
-                .priceTriple(800.0)
+        Package existingPackage = Package.builder()
+                .id("existingId")
+                .packageId(packageId)
+                .availableSeats(100)
                 .totalSeats(130)
-                .availableSeats(130) // Initialize availableSeats
+                .status(PackageStatus.UPCOMING)
                 .build();
 
-        when(packageRepository.findPackageByPackageId(packageId))
-                .thenReturn(Mono.just(package1));
+        when(packageRepository.findPackageByPackageId(packageId)).thenReturn(Mono.just(existingPackage));
+        when(tourService.getTourByTourId(packageRequestModel.getTourId())).thenReturn(Mono.just(new TourResponseModel("tourId", "Tour Name", "Tour Description", "Tour Image URL")));
+        when(airportService.getAirportById(packageRequestModel.getAirportId())).thenReturn(Mono.just(new AirportResponseModel("airportId", "Airport Name", "City ID")));
+        when(bookingService.getBookingsByPackageId(packageId)).thenReturn(Flux.empty());
+        when(packageRepository.save(any(Package.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
-        when(tourService.getTourByTourId(packageRequestModel.getTourId()))
-                .thenReturn(Mono.just(TourResponseModel.builder().tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2").build()));
-
-        when(airportService.getAirportById(packageRequestModel.getAirportId()))
-                .thenReturn(Mono.just(AirportResponseModel.builder().airportId("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634").build()));
-
-        when(bookingService.getBookingsByPackageId(packageId))
-                .thenReturn(Flux.just());
-
-        when(packageRepository.save(any(Package.class)))
-                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-
-        Mono<PackageResponseModel> result = packageService.updatePackage(packageId, Mono.just(packageRequestModel), sampleNotificationMessage);
+        Mono<PackageResponseModel> result = packageService.updatePackage(packageId, Mono.just(packageRequestModel), "Notification message");
 
         StepVerifier.create(result)
                 .assertNext(packageResponseModel -> {
@@ -404,8 +405,8 @@ class PackageServiceUnitTest {
                     assertEquals("A sample package description", packageResponseModel.getDescription());
                     assertEquals(LocalDate.of(2024, 10, 5), packageResponseModel.getStartDate());
                     assertEquals(LocalDate.of(2024, 10, 15), packageResponseModel.getEndDate());
-                    assertEquals("ea1f7a4e-2db7-4812-9e8f-dc4b5a1e7634", packageResponseModel.getAirportId());
-                    assertEquals("6a237fda-4924-4c73-a6df-73c1e0c37af2", packageResponseModel.getTourId());
+                    assertEquals("airportId", packageResponseModel.getAirportId());
+                    assertEquals("tourId", packageResponseModel.getTourId());
                     assertEquals(2200.0, packageResponseModel.getPriceSingle());
                     assertEquals(2000.0, packageResponseModel.getPriceDouble());
                     assertEquals(1800.0, packageResponseModel.getPriceTriple());

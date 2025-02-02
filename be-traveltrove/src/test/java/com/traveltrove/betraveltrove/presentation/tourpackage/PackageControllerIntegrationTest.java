@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.presentation.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
+import com.traveltrove.betraveltrove.business.booking.BookingService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageServiceImpl;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
@@ -28,7 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static reactor.core.publisher.Mono.when;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.data.mongodb.port=0"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"spring.data.mongodb.port=0"})
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -45,6 +46,9 @@ class PackageControllerIntegrationTest {
 
     @MockitoBean
     private TourService tourService;
+
+    @MockitoBean
+    private BookingService bookingService;
 
     private final Package package1 = Package.builder()
             .packageId("1")
@@ -440,7 +444,6 @@ class PackageControllerIntegrationTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
-<<<<<<< HEAD
 
 //    @Test
 //    void whenUpdatePackageStatus_withValidPackageId_thenReturnUpdatedPackage() {
@@ -465,6 +468,4 @@ class PackageControllerIntegrationTest {
 //                        .availableSeats(120)
 //                        .build());
 //    }
-=======
->>>>>>> e4ff8efcc4e0f9ea8aeb54789da3fae250ee6908
 }
