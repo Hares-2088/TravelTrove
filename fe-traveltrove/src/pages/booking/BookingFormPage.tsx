@@ -50,21 +50,18 @@ const BookingFormPage: React.FC = () => {
       }
     } catch (err) {
       console.error("Error creating checkout session:", err);
-      setError("Failed to create checkout session. Please try again.");
+      setError("You already have a booking. Please contact us if this was a mistake.");
     }
   };
 
   const handleBookingSubmit = async (bookingRequest: any) => {
     try {
-      //  Pre-create the booking record with status PAYMENT_PENDING.
-      //  This call should return a bookingId.
+     
       const bookingResponse = await axiosInstance.post("bookings", bookingRequest);
       const bookingId = bookingResponse.data.bookingId;
 
-      // Determine the number of travelers.
       const numberOfTravelers = bookingRequest.travelers.length;
 
-      // Create the payment session using the pre-created booking's ID.
       await createCheckoutSession(bookingRequest, numberOfTravelers, bookingId);
     } catch (error) {
       console.error("Error during booking process:", error);
