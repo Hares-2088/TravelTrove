@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import { useTourEventsApi } from "../../../tourEvents/api/tourevent.api";
+import { useTourEventsApi } from "../../../tourevents/api/tourevent.api";
 import { useEventsApi } from "../../../events/api/events.api";
 import { useHotelsApi } from "../../../hotels/api/hotels.api";
 import { useTranslation } from 'react-i18next';
