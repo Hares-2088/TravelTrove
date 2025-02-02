@@ -23,6 +23,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -169,13 +171,13 @@ public class PackageServiceImpl implements PackageService {
                     // Update available seats
                     pkg.setAvailableSeats(pkg.getAvailableSeats() - quantity);
 
-                    Mono<Void> notificationMono = Mono.empty();
+                    List<Mono<Void>> notificationMonos = new ArrayList<>();
 
                     if (pkg.getAvailableSeats() < 10) {
-                        notificationMono = notifySubscribersOfLimitedSpots(pkg);
+                        notificationMonos.add(notifySubscribersOfLimitedSpots(pkg));
                     }
                     if (pkg.getAvailableSeats() <= 10) {
-                        notificationMono = notifyAdminsForLowSeats(pkg); // Notify admins if seats <= 10
+                        notificationMonos.add(notifyAdminsForLowSeats(pkg)); // Notify admins if seats <= 10
                     }
 
                     if (pkg.getAvailableSeats() == 0) {
@@ -183,17 +185,11 @@ public class PackageServiceImpl implements PackageService {
                     }
 
                     return packageRepository.save(pkg)
-                            .flatMap(savedPackage -> {
-                                // If available seats are <= 5, send notification to admins
-                                if (savedPackage.getAvailableSeats() <= 5) {
-                                    return notifyAdminsForLowSeats(savedPackage)
-                                            .thenReturn(PackageEntityModelUtil.toPackageResponseModel(savedPackage));
-                                }
-                                return Mono.just(PackageEntityModelUtil.toPackageResponseModel(savedPackage));
-                            });
+                            .flatMap(savedPackage -> Mono.when(notificationMonos)
+                                    .thenReturn(PackageEntityModelUtil.toPackageResponseModel(savedPackage)));
                 });
-
     }
+
 
     private Mono<Void> notifySubscribersOfLimitedSpots(Package pkg) {
         return subscriptionService.getUsersSubscribedToPackage(pkg.getPackageId())
