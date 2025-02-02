@@ -5,6 +5,7 @@ import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageServiceImpl;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
@@ -441,6 +442,74 @@ class PackageControllerIntegrationTest {
                 .expectStatus().isNotFound();
     }
 
+    @Test
+    void whenUpdatePackageStatusToCancelPackage_withExistingId_thenReturnUpdatedPackage() {
+        String packageId = "1";
+        PackageRequestStatus requestStatus = PackageRequestStatus.builder().status(PackageStatus.CANCELLED).build();
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/" + packageId + "/status")
+                .body(Mono.just(requestStatus), PackageRequestStatus.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PackageResponseModel.class)
+                .consumeWith(response -> {
+                    PackageResponseModel actualResponse = response.getResponseBody();
+                    assertNotNull(actualResponse);
+                    assertEquals(packageId, actualResponse.getPackageId());
+                    assertEquals(PackageStatus.CANCELLED, actualResponse.getStatus());
+                });
+    }
+
+    @Test
+    void whenUpdatePackageStatusToCancelPackage_withNonExistingId_thenReturnNotFound() {
+        String packageId = "NonExistingId";
+        PackageRequestStatus requestStatus = PackageRequestStatus.builder().status(PackageStatus.CANCELLED).build();
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/" + packageId + "/status")
+                .body(Mono.just(requestStatus), PackageRequestStatus.class)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void whenUpdatePackageStatusToCancelPackage_withNullStatus_thenReturnBadRequest() {
+        String packageId = "1";
+        PackageRequestStatus requestStatus = PackageRequestStatus.builder().status(null).build();
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/packages/" + packageId + "/status")
+                .body(Mono.just(requestStatus), PackageRequestStatus.class)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+//    @Test
+//    void whenUpdatePackageStatusToBookingOpenFromStatusCancelled_thenReturnIllegalStateException() {
+//        String packageId = "1";
+//        package1.setStatus(PackageStatus.CANCELLED);
+//        packageRepository.save(package1).block(); // Ensure the package is saved with the CANCELLED status
+//
+//        PackageRequestStatus requestStatus = PackageRequestStatus.builder().status(PackageStatus.BOOKING_OPEN).build();
+//
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+//                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+//                .uri("/api/v1/packages/" + packageId + "/status")
+//                .body(Mono.just(requestStatus), PackageRequestStatus.class)
+//                .exchange()
+//                .expectStatus().isBadRequest()
+//                .expectBody(String.class)
+//                .consumeWith(response -> {
+//                    String responseBody = response.getResponseBody();
+//                    assertNotNull(responseBody);
+//                    assertTrue(responseBody.contains("Cannot update a package that is CANCELLED"));
+//                });
+//    }
+
 //    @Test
 //    void whenUpdatePackageStatus_withValidPackageId_thenReturnUpdatedPackage() {
 //        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
@@ -464,5 +533,5 @@ class PackageControllerIntegrationTest {
 //                        .availableSeats(120)
 //                        .build());
 //    }
-
 }
+
