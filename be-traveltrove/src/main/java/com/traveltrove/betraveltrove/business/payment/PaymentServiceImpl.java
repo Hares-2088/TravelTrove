@@ -38,13 +38,9 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Mono<Void> deletePayment(String paymentId) {
-        return paymentRepository.deleteById(paymentId).then();
-    }
-
-    @Override
-    public Mono<Payment> getPaymentByPaymentId(String paymentId) {
-        return null;
+    public Mono<PaymentResponseModel> getPaymentByPaymentId(String paymentId) {
+        return paymentRepository.findByPaymentId(paymentId)
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Payment not found"))));
     }
 
     @Override
@@ -53,4 +49,11 @@ public class PaymentServiceImpl implements PaymentService {
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("No payments found"))))
                 .map(PaymentModelUtil::toPaymentResponseModelWithoutSession);
     }
+
+//    @Override
+//    public Mono<Void> deletePayment(String paymentId) {
+//
+//        return paymentRepository.delete(paymentId)
+//                .doOnSuccess(deleted -> log.info("Deleted Payment Entity: {}", deleted));
+//    }
 }

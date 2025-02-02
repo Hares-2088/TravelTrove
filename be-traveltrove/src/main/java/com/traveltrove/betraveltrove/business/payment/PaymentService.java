@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 public interface PaymentService {
     Mono<Payment> createPayment(PaymentRequestModel paymentRequestModel, String stripePayementId);
     Mono<PaymentResponseModel> updatePayment(String paymentId, String status);
-    Mono<Void> deletePayment(String paymentId);
-    Mono<Payment> getPaymentByPaymentId(String paymentId);
+//    Mono<Void> deletePayment(String paymentId);
+    Mono<PaymentResponseModel> getPaymentByPaymentId(String paymentId);
     Flux<PaymentResponseModel> getAllPayments();
 }

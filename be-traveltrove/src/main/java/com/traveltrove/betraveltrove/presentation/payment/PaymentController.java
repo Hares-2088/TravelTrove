@@ -53,4 +53,19 @@ public class PaymentController {
         log.info("Getting all payments");
         return paymentService.getAllPayments();
     }
+    @GetMapping("/{paymentId}")
+    public Mono<ResponseEntity<PaymentResponseModel>> getPaymentByPaymentId(@PathVariable String paymentId) {
+        log.info("Getting payment by paymentId: {}", paymentId);
+        return paymentService.getPaymentByPaymentId(paymentId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+//    @DeleteMapping("/{paymentId}")
+//    public Mono<ResponseEntity<Void>> deletePayment(@PathVariable String paymentId) {
+//        log.info("Deleting payment by paymentId: {}", paymentId);
+//        return paymentService.deletePayment(paymentId)
+//                .map(ResponseEntity::ok)
+//                .defaultIfEmpty(ResponseEntity.notFound().build());
+//    }
 }
