@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeExchange(authz -> {
                     log.info("Configuring endpoint permissions...");
                     authz
-                            .pathMatchers("/api/v1/payments/webhook").permitAll() // Allow unauthenticated access to the webhook endpoint
+                            .pathMatchers("/api/v1/payments/webhook").permitAll()
                             .pathMatchers("**").authenticated() // Require authentication for all other endpoints
                             .anyExchange().permitAll();
                     log.info("Finished configuring endpoint permissions.");

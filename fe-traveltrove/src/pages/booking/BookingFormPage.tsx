@@ -56,15 +56,15 @@ const BookingFormPage: React.FC = () => {
 
   const handleBookingSubmit = async (bookingRequest: any) => {
     try {
-      // 1. Pre-create the booking record with status PAYMENT_PENDING.
-      //    This call should return a bookingId.
+      //  Pre-create the booking record with status PAYMENT_PENDING.
+      //  This call should return a bookingId.
       const bookingResponse = await axiosInstance.post("bookings", bookingRequest);
       const bookingId = bookingResponse.data.bookingId;
 
-      // 2. Determine the number of travelers.
+      // Determine the number of travelers.
       const numberOfTravelers = bookingRequest.travelers.length;
 
-      // 3. Create the payment session using the pre-created booking's ID.
+      // Create the payment session using the pre-created booking's ID.
       await createCheckoutSession(bookingRequest, numberOfTravelers, bookingId);
     } catch (error) {
       console.error("Error during booking process:", error);
