@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PaymentResponseModel {
     private String paymentId;
-//    private String clientSecret;
-//    private String stripePaymentId;
     private String sessionId;
 
+    private Long amount; // Payment amount in cents
+    private String currency; // Currency code (e.g., "usd")
+    private String status; // Payment status (e.g., "created", "succeeded", "failed")
 }

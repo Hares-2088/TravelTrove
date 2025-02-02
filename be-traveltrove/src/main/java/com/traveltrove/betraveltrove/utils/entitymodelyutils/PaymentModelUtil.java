@@ -11,10 +11,9 @@ public class PaymentModelUtil {
 
     public static PaymentResponseModel toPaymentResponseModel(Payment payment, String sessionId) {
         PaymentResponseModel paymentResponseModel = new PaymentResponseModel();
-        BeanUtils.copyProperties(payment, paymentResponseModel); // Copy common properties
-//        paymentResponseModel.setStripePaymentId(payment.getStripePaymentId()); // Set Stripe Payment ID
-        paymentResponseModel.setPaymentId(payment.getPaymentId()); // Set internal Payment ID
-        paymentResponseModel.setSessionId(sessionId); // Set Stripe Checkout Session ID
+        BeanUtils.copyProperties(payment, paymentResponseModel);
+        paymentResponseModel.setPaymentId(payment.getPaymentId());
+        paymentResponseModel.setSessionId(sessionId);
         return paymentResponseModel;
     }
 
@@ -24,8 +23,8 @@ public class PaymentModelUtil {
                 .stripePaymentId(stripePaymentId)
                 .amount(request.getAmount())
                 .currency(request.getCurrency())
-                .status("created")  // Initial status
-                .paymentDate(LocalDateTime.now())
+                .status("created")
+                .paymentDate(java.time.LocalDateTime.now())
                 .build();
     }
 
