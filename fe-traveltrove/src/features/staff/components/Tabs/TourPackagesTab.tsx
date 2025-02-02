@@ -68,7 +68,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         airportId: false,
         dateOrder: false,
         totalSeats: false,
-        notificationMessage: false,
     });
     const [filteredPackages, setFilteredPackages] = useState<PackageResponseModel[]>([]);
 
@@ -240,7 +239,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             airportId: !formData.airportId,
             dateOrder: new Date(formData.startDate) >= new Date(formData.endDate),
             totalSeats: formData.totalSeats === null,
-            notificationMessage: !notificationMessage,
         };
         setFormErrors(errors);
 
@@ -442,7 +440,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             airportId: false,
                             dateOrder: false,
                             totalSeats: false,
-                            notificationMessage: false,
                         });
                         setShowModal(true);
                     }}
@@ -597,7 +594,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                             airportId: false,
                                             dateOrder: false,
                                             totalSeats: false,
-                                            notificationMessage: false,
                                         });
                                         setShowModal(true);
                                     }}
@@ -863,20 +859,21 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("notificationMessage")}</Form.Label>
-                                <Form.Control
-                                    required
-                                    type="text"
-                                    value="Hello,\n\nA package you booked has been updated. Please check the details and let us know if you have any questions.\n\nThank you.\n\nThe Travel Team"
-                                    onChange={(e) =>
-                                        setNotificationMessage(e.target.value)
-                                    }
-                                    isInvalid={formErrors.notificationMessage}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {t("packageNameRequired")}
-                                </Form.Control.Feedback>
-                            </Form.Group>
+                                {modalType === 'update' && (
+                                    <>
+                                        <Form.Label>{t("notificationMessage")}</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            rows={5}
+                                            value={notificationMessage}
+                                            onChange={(e) => setNotificationMessage(e.target.value)}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {t("packageNameRequired")}
+                                        </Form.Control.Feedback>
+                                    </>
+                                )}
+                                </Form.Group>
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={() => setShowModal(false)}>
                                     {t("cancel")}

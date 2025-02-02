@@ -22,6 +22,7 @@ import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,6 @@ import java.util.*;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -49,17 +49,22 @@ public class BookingServiceImpl implements BookingService {
     private PackageServiceHelper packageServiceHelper;  // Avoid circular dependency
     private final NotificationService notificationService;
     private final TaskScheduler taskScheduler;
+    private final PackageService packageService;
 
     @Value("${EMAIL_REVIEW_DELAY}")
     private String emailReviewDelay;
 
     @Value("${frontend.domain}")
     private String baseUrl;
+
     @Autowired
-    public BookingServiceImpl(BookingRepository bookingRepository, UserService userService, TravelerService travelerService) {
+    public BookingServiceImpl(BookingRepository bookingRepository, UserService userService, TravelerService travelerService, NotificationService notificationService, TaskScheduler taskScheduler, PackageService packageService) {
         this.bookingRepository = bookingRepository;
         this.userService = userService;
         this.travelerService = travelerService;
+        this.notificationService = notificationService;
+        this.taskScheduler = taskScheduler;
+        this.packageService = packageService;
     }
 
     @Autowired
