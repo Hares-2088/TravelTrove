@@ -146,12 +146,9 @@ public class BookingServiceImpl implements BookingService {
                     booking.setStatus(BookingStatus.PAYMENT_PENDING);
                     return Mono.just(booking);
                 })
-
-
                 // 6) Save the booking in Mongo and convert to response
                 .flatMap(bookingRepository::save)
                 .map(BookingEntityModelUtil::toBookingResponseModel);
-
     }
 
     @Override
