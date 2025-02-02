@@ -1551,8 +1551,8 @@ public class DatabaseLoader {
                         .priceDouble(1600.0)
                         .priceTriple(1400.0)
                         .totalSeats(130)
-                        .availableSeats(50)
-                        .status(PackageStatus.UPCOMING)
+                        .availableSeats(3)
+                        .status(PackageStatus.BOOKING_OPEN)
                         .build(),
 
 
