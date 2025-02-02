@@ -15,12 +15,15 @@ export enum AppRoutes {
   Bookings = '/bookings',
   UserManagementPage = '/usermanagement',
   UsersDetail = '/users/:userId',
+  PaymentSuccessPage = '/payment-success',
   Callback = '/callback',
+
 
   // Error Routes
   Unauthorized = '/unauthorized',
   Forbidden = '/forbidden',
   RequestTimeout = '/request-timeout',
   InternalServerError = '/internal-server-error',
-  ServiceUnavailable = '/service-unavailable'
+  ServiceUnavailable = '/service-unavailable',
+  PaymentCancel = '/payment-cancelled'
 }

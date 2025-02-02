@@ -440,7 +440,6 @@ class PackageControllerIntegrationTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
-<<<<<<< HEAD
 
 //    @Test
 //    void whenUpdatePackageStatus_withValidPackageId_thenReturnUpdatedPackage() {
@@ -465,6 +464,5 @@ class PackageControllerIntegrationTest {
 //                        .availableSeats(120)
 //                        .build());
 //    }
-=======
->>>>>>> e4ff8efcc4e0f9ea8aeb54789da3fae250ee6908
+
 }

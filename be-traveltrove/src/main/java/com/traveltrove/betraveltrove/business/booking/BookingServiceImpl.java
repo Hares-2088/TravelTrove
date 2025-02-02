@@ -107,8 +107,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Mono<BookingResponseModel> createBooking(BookingRequestModel bookingRequestModel) {
-        log.info("🔄 Starting booking creation for userId={} and packageId={}", bookingRequestModel.getUserId(), bookingRequestModel.getPackageId());
-
         return Mono.just(bookingRequestModel)
                 // Convert request model to entity
                 .map(BookingEntityModelUtil::toBookingEntity)
@@ -125,10 +123,10 @@ public class BookingServiceImpl implements BookingService {
                                 .thenReturn(tuple)
                 )
 
-                // 4) Gather existing traveler details
+                // 3) Gather existing traveler details
                 .flatMap(tuple -> gatherExistingTravelerDetails(tuple.getT1(), tuple.getT2()))
 
-                // 5) Compare travelers in the request with existing travelers & create new ones if needed
+                // 4) Compare travelers in the request with existing travelers & create new ones if needed
                 .flatMap(tuple -> compareTravelersAndCreateNew(
                         tuple.getT1(),
                         tuple.getT2(),
@@ -136,7 +134,7 @@ public class BookingServiceImpl implements BookingService {
                         bookingRequestModel
                 ))
 
-                // 6) Update the user’s traveler IDs to include any newly created travelers
+                // 5) Update the user’s traveler IDs to include any newly created travelers
                 .flatMap(tuple -> updateUserTravelerIds(
                         tuple.getT1(),
                         tuple.getT2(),
@@ -144,27 +142,12 @@ public class BookingServiceImpl implements BookingService {
                         tuple.getT4()
                 ))
 
-                // 7) Decrease available seats before saving the booking
                 .flatMap(booking -> {
-                    log.info("📉 Attempting to decrease available seats for packageId={} (Seats to decrease: {})",
-                            booking.getPackageId(), booking.getTravelerIds().size());
-
-                    // Will need to move the decreaseAvailableSeats logic in confirmBooking when payment is set up
-                    return packageService.decreaseAvailableSeats(booking.getPackageId(), booking.getTravelerIds().size())
-                            .doOnSuccess(updatedPackage -> log.info("✅ Successfully decreased available seats for packageId={}", booking.getPackageId()))
-                            .doOnError(error -> log.error("❌ Error decreasing seats for packageId={}: {}", booking.getPackageId(), error.getMessage()))
-                            .then(bookingRepository.save(booking))
-                            .flatMap(savedBooking ->
-                                    packageService.getPackageByPackageId(savedBooking.getPackageId())
-                                            .flatMap(tourPackage -> {
-                                                schedulePostTripEmail(savedBooking, tourPackage);
-                                                return Mono.just(savedBooking);
-                                            })
-                            )
-                            .doOnSuccess(savedBooking -> log.info("✅ Booking successfully created: bookingId={}, userId={}, packageId={}",
-                                    savedBooking.getBookingId(), savedBooking.getUserId(), savedBooking.getPackageId()))
-                            .doOnError(error -> log.error("❌ Failed to save booking: error={}", error.getMessage()));
+                    booking.setStatus(BookingStatus.PAYMENT_PENDING);
+                    return Mono.just(booking);
                 })
+                // 6) Save the booking in Mongo and convert to response
+                .flatMap(bookingRepository::save)
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
