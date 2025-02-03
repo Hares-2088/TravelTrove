@@ -17,6 +17,7 @@ export enum AppRoutes {
   UsersDetail = '/users/:userId',
   PaymentSuccessPage = '/payment-success',
   Callback = '/callback',
+  ContactUs = '/contact-us',
 
 
   // Error Routes

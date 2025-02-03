@@ -201,4 +201,30 @@ class NotificationControllerIntegrationTest {
                 .exchange()
                 .expectStatus().isForbidden();
     }
+
+    @Test
+    void whenSendContactUsEmail_thenReturnSuccessMessage() {
+
+        NotificationContactUsRequestModel requestModel = NotificationContactUsRequestModel.builder()
+                .to("traveltrove.notifications@gmail.com")
+                .firstName("John")
+                .lastName("Doe")
+                .email("johndoe@example.com")
+                .subject("Inquiry about trip packages")
+                .messageContent("I would like more details about the trip packages you offer.")
+                .build();
+
+        webTestClient
+                .mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf())
+                .post()
+                .uri("/api/v1/notifications/contact-us")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestModel)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class)
+                .value(response -> assertEquals("Contact Us email sent successfully.", response));
+    }
+
 }
