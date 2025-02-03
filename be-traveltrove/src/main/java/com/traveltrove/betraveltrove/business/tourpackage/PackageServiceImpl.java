@@ -140,7 +140,7 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel) {
+    public Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel, String notificationDetails) {
         return packageRepository.findPackageByPackageId(packageId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
                 .flatMap(existingPackage -> packageRequestModel
@@ -148,14 +148,29 @@ public class PackageServiceImpl implements PackageService {
                             validatePackageRequestModel(requestModel);
                             return Mono.zip(getTour(requestModel.getTourId()), getAirport(requestModel.getAirportId()))
                                     .flatMap(tuple -> {
-                                        Package updatedPackage = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
+                                        Package updatedPackage = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());
+                                        updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
                                         updatedPackage.setPackageId(existingPackage.getPackageId()); // Retain the original packageId
                                         updatedPackage.setAvailableSeats(existingPackage.getAvailableSeats()); // Retain the available seats
                                         if (updatedPackage.getAvailableSeats() > existingPackage.getTotalSeats()) {
                                             return Mono.error(new IllegalArgumentException("Available seats cannot exceed total seats"));
                                         }
                                         return packageRepository.save(updatedPackage)
-                                                .map(PackageEntityModelUtil::toPackageResponseModel);
+                                                .flatMap(savedPackage -> {
+                                                    // Fetch all subscriptions for the package
+                                                    return subscriptionService.getUsersSubscribedToPackage(packageId)
+                                                            .flatMap(subscription -> userService.getUser(subscription.getUserId())
+                                                                    .flatMap(user -> {
+                                                                        // Send custom update email to each user
+                                                                        return notificationService.sendCustomUpdateEmail(
+                                                                                user.getEmail(),
+                                                                                notificationDetails,
+                                                                                user.getFirstName(),
+                                                                                savedPackage
+                                                                        );
+                                                                    })
+                                                            ).then(Mono.just(PackageEntityModelUtil.toPackageResponseModel(savedPackage)));
+                                                });
                                     });
                         }));
     }
