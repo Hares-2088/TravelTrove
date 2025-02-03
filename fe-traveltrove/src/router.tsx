@@ -14,11 +14,12 @@ import InternalServerErrorPage from "./pages/errors/InternalServerErrorPage";
 import RequestTimeoutPage from "./pages/errors/RequestTimeoutPage";
 import ForbiddenPage from "./pages/errors/ForbiddenPage";
 import Bookings from "./features/staff/components/Pages/Bookings";
-import ProfileCreatePage from "./pages/user/ProfileCreatePage.tsx"; // Import the Bookings component
+import ProfileCreatePage from "./pages/user/ProfileCreatePage";
 import PackageDetailsPage from "./pages/packages/PackageDetailsPage";
 import BookingFormPage from "./pages/booking/BookingFormPage";
-import UserManagementPage from "./pages/staff/UserManagementPage.tsx";
-import UsersDetail from "./features/users/components/UsersDetail.tsx";
+import UserManagementPage from "./pages/staff/UserManagementPage";
+import UsersDetail from "./features/users/components/UsersDetail";
+import ContactUsPage from "./pages/ContactUsPage";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.Home,
         element: <HomePage />,
+      },
+      {
+        path: AppRoutes.ContactUs,
+        element: <ContactUsPage />,
       },
       {
         path: AppRoutes.ToursPage,

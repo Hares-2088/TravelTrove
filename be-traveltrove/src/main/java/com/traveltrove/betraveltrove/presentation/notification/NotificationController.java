@@ -56,4 +56,23 @@ public class NotificationController {
         log.info("Fetching all notifications");
         return notificationService.getAllNotifications();
     }
+
+    @PostMapping(value = "/contact-us", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<String>> sendContactUsEmail(@RequestBody NotificationContactUsRequestModel request) {
+        log.info("Received Contact Us email request from: {}", request.getEmail());
+
+        return notificationService.sendContactUsEmail(
+                        "traveltrove.notifications@gmail.com",
+                        request.getFirstName(),
+                        request.getLastName(),
+                        request.getEmail(),
+                        request.getSubject(),
+                        request.getMessageContent()
+                ).then(Mono.just(ResponseEntity.ok("Contact Us email sent successfully.")))
+                .onErrorResume(ex -> {
+                    log.error("Failed to send Contact Us email. Error: {}", ex.getMessage());
+                    return Mono.just(ResponseEntity.status(500).body("Failed to send Contact Us email: " + ex.getMessage()));
+                });
+    }
+
 }

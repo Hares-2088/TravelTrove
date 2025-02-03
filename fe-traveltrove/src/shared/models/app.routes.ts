@@ -16,6 +16,7 @@ export enum AppRoutes {
   UserManagementPage = '/usermanagement',
   UsersDetail = '/users/:userId',
   Callback = '/callback',
+  ContactUs = '/contact-us',
 
   // Error Routes
   Unauthorized = '/unauthorized',

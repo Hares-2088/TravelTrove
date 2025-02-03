@@ -17,4 +17,5 @@ public interface NotificationService {
     Mono<Void> sendLimitedSpotsEmail(String to, String userName, String packageName,
                                      String description, String startDate, String endDate,
                                      String price, String availableSeats, String bookingLink);
+    Mono<Void> sendContactUsEmail(String to, String firstName, String lastName, String email, String subject, String message);
 }
