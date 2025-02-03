@@ -1,13 +1,14 @@
 package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
+import com.traveltrove.betraveltrove.business.booking.BookingService;
 import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.business.user.UserService;
+import com.traveltrove.betraveltrove.dataaccess.booking.BookingRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
-import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
@@ -41,6 +42,10 @@ public class PackageServiceImpl implements PackageService {
 
     private final SubscriptionService subscriptionService;
 
+    private final BookingService bookingService;
+
+    private final BookingRepository bookingRepository;
+
     private final UserService userService;
 
     @Value("${frontend.domain}")
@@ -48,13 +53,15 @@ public class PackageServiceImpl implements PackageService {
 
     private PackageStatus packageStatus;
 
-    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, UserRepository userRepository, SubscriptionService subscriptionService, UserService userService) {
+    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, UserRepository userRepository, SubscriptionService subscriptionService, BookingService bookingService, BookingRepository bookingRepository, UserService userService) {
         this.packageRepository = packageRepository;
         this.tourService = tourService;
         this.airportService = airportService;
         this.notificationService = notificationService;
         this.userRepository = userRepository;
         this.subscriptionService = subscriptionService;
+        this.bookingService = bookingService;
+        this.bookingRepository = bookingRepository;
         this.userService = userService;
     }
 
@@ -120,7 +127,14 @@ public class PackageServiceImpl implements PackageService {
 
                     return packageRepository.save(pkg)
                             .doOnSuccess(updatedPkg -> log.info("✅ Package status successfully updated in DB: packageId={}, newStatus={}", packageId, updatedPkg.getStatus()))
-                            .map(PackageEntityModelUtil::toPackageResponseModel);
+                            .flatMap(updatedPkg -> {
+                                // If the package is cancelled, send email notifications
+                                if (newStatus.getStatus() == PackageStatus.CANCELLED) {
+                                    return notifyCustomersOfCancellation(updatedPkg)
+                                            .thenReturn(PackageEntityModelUtil.toPackageResponseModel(updatedPkg));
+                                }
+                                return Mono.just(PackageEntityModelUtil.toPackageResponseModel(updatedPkg));
+                            });
                 });
     }
 
@@ -253,6 +267,26 @@ public class PackageServiceImpl implements PackageService {
                 })
                 .doOnTerminate(() -> log.info("Email process completed"))
                 .then();
+    }
+
+
+    private Mono<Void> notifyCustomersOfCancellation(Package pkg) {
+        return bookingRepository.findBookingsByPackageId(pkg.getId())
+                .flatMap(booking -> userRepository.findById(booking.getUserId())
+                        .flatMap(user -> {
+                            log.info("📧 Sending cancellation email to: {}", user.getEmail());
+                            return notificationService.sendCustomerCancellationEmail(
+                                    user.getEmail(),
+                                    user.getFirstName(),
+                                    user.getLastName(),
+                                    pkg.getName(),
+                                    pkg.getDescription(),
+                                    pkg.getStartDate().toString(),
+                                    pkg.getEndDate().toString(),
+                                    pkg.getPriceSingle().toString()
+                            );
+                        })
+                ).then();
     }
 
 

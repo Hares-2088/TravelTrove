@@ -76,3 +76,4 @@ test("pay for package cancelled", async ({ page }) => {
     await expect(page.getByRole('heading')).toContainText('❌ Payment Canceled');
     await page.close();
   });
+
