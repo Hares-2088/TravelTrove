@@ -21,6 +21,7 @@ import UserManagementPage from "./pages/staff/UserManagementPage.tsx";
 import UsersDetail from "./features/users/components/UsersDetail.tsx";
 import PaymentSuccessPage from "./pages/booking/PaymentSuccessPage.tsx";
 import PaymentCancel from "./pages/booking/PaymentCancel.tsx";
+import ContactUsPage from "./pages/ContactUsPage";
 
 const router = createBrowserRouter([
   {
