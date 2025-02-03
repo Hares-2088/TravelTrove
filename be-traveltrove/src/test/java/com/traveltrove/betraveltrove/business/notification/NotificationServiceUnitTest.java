@@ -248,9 +248,9 @@ class NotificationServiceUnitTest {
 
         StepVerifier.create(notificationService.sendLimitedSpotsEmail(to, userName, packageName, description, startDate, endDate, price, availableSeats, bookingLink))
                 .verifyComplete();
-          
+
         verify(mailSender, times(1)).send(any(MimeMessage.class));
-          
+    }
     @Test
     void sendPostTourReviewEmail_ShouldSendEmail() {
 

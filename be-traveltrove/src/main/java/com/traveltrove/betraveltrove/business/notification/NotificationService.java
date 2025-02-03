@@ -1,5 +1,6 @@
 package com.traveltrove.betraveltrove.business.notification;
 
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.presentation.notification.NotificationResponseModel;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -23,4 +24,6 @@ public interface NotificationService {
 
     Mono<Void> sendCustomerCancellationEmail(String to, String firstName, String lastName, String name, String description,
                                  String startDate, String endDate, String priceSingle);
+
+    Mono<Void> sendCustomUpdateEmail(String to, String messageContent, String userName, Package packageDetails);
 }

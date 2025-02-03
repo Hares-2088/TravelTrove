@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.business.notification;
 
 import com.traveltrove.betraveltrove.dataaccess.notification.Notification;
 import com.traveltrove.betraveltrove.dataaccess.notification.NotificationRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.presentation.notification.NotificationResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import jakarta.mail.internet.MimeMessage;
@@ -128,6 +129,8 @@ public class NotificationServiceImpl implements NotificationService {
         }).then();
     }
 
+
+
     @Override
     public Flux<NotificationResponseModel> getAllNotifications() {
         return notificationRepository.findAll()
@@ -210,6 +213,27 @@ public class NotificationServiceImpl implements NotificationService {
         }).flatMap(notificationRepository::save).then();
     }
 
+    @Override
+    public Mono<Void> sendCustomUpdateEmail(String to, String messageContent, String userName, Package packageDetails) {
+        return Mono.fromCallable(() -> {
+            String subject = "🚨 Tour Package Update Notice for " + packageDetails.getName() + "!";
+
+            String htmlContent = loadHtmlTemplate("custom-package-update-email.html",
+                    userName, packageDetails.getName(), packageDetails.getDescription(), packageDetails.getStartDate().toString(),
+                    packageDetails.getEndDate().toString(), packageDetails.getPriceSingle().toString(), messageContent);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            helper.setFrom("traveltrove.notifications@gmail.com");
+
+            mailSender.send(message);
+
+            return null;
+        }).then();
+    }
 
     private String loadHtmlTemplate(String templateName, String... templateArgs) {
         ClassPathResource resource = new ClassPathResource("email-templates/" + templateName);
