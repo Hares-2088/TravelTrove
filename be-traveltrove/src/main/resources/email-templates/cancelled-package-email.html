@@ -4,28 +4,26 @@
 <div style="width: 100%; padding: 20px; box-sizing: border-box;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
 
-        <!-- Header Section -->
         <div style="background-color: #d9534f; color: #ffffff; padding: 20px; text-align: center;">
-            <h1 style="margin: 0; font-size: 24px;">🚨 Limited Seats Remaining!</h1>
+            <h1 style="margin: 0; font-size: 24px;">🚨 Package Cancellation Notification</h1>
         </div>
 
         <!-- Body Section -->
         <div style="padding: 30px; color: #333; line-height: 1.6;">
-            <p style="font-size: 18px; margin: 0 0 20px;">Dear {{arg0}},</p>
+            <p style="font-size: 18px; margin: 0 0 20px;">Dear {{arg0}} {{arg1}},</p>
 
             <p style="margin: 0 0 20px;">
-                The package you subscribed to, "<strong>{{arg1}}</strong>," is filling up fast! There are only
-                <span style="color: #d9534f; font-weight: bold; font-size: 18px;">{{arg2}}</span> seats left.
-                Secure your spot before it's too late!
+                We regret to inform you that the package "<strong>{{arg2}}</strong>" has been cancelled.
+                Please find the details of your booking below.
             </p>
 
             <!-- Package Details Table -->
             <div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-radius: 10px;">
-                <h3 style="text-align: center; margin: 0 0 20px; color: #000; font-size: 20px; font-weight: 600;">📍 Trip Details</h3>
+                <h3 style="text-align: center; margin: 0 0 20px; color: #000; font-size: 20px; font-weight: 600;">📍 Package Details</h3>
                 <table style="width: 100%; border-collapse: separate; border-spacing: 0; font-size: 16px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
                     <tr>
                         <td style="padding: 15px; font-weight: 600; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;">Package Name:</td>
-                        <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">{{arg1}}</td>
+                        <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">{{arg2}}</td>
                     </tr>
                     <tr>
                         <td style="padding: 15px; font-weight: 600; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;">Description:</td>
@@ -47,22 +45,21 @@
             </div>
 
             <p style="margin: 0 0 20px; text-align: center; font-size: 18px; font-weight: bold;">
-                Don’t miss out! Secure your spot today!
+                We apologize for any inconvenience caused.
             </p>
 
-            <!-- Booking Button -->
+            <!-- Action Button -->
             <div style="text-align: center; margin: 20px 0;">
-                <a href="{{arg7}}" style="background-color: #d9534f; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-size: 18px; font-weight: bold; display: inline-block; transition: background-color 0.3s ease;">
-                    🛒 Book Now
+                <a href="{{arg8}}" style="background-color: #d9534f; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-size: 18px; font-weight: bold; display: inline-block; transition: background-color 0.3s ease;">
+                    Review Package Details
                 </a>
             </div>
 
-            <p style="margin: 0;">Thank you for choosing Travel Trove. We look forward to your journey!</p>
-            <p style="margin: 0; font-weight: bold;">Best wishes,</p>
+            <p style="margin: 0;">Thank you for using Travel Trove!</p>
+            <p style="margin: 0; font-weight: bold;">Best regards,</p>
             <p style="margin: 0; font-weight: bold;">The Travel Trove Team</p>
         </div>
     </div>
 </div>
 </body>
 </html>
-

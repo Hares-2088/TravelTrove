@@ -171,6 +171,26 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
 
+    public Mono<Void> sendCustomerCancellationEmail(String to, String firstName, String lastName, String name,
+                                                    String description,
+                                        String startDate, String endDate, String priceSingle) {
+        return Mono.fromCallable(() -> {
+            String subject = "🚨 Package Cancellation Notification for " + name;
+            String htmlContent = loadHtmlTemplate("cancelled-package-email.html", firstName, lastName, name, description, startDate, endDate, priceSingle);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);  // Set the email content
+            helper.setFrom("traveltrove.notifications@gmail.com");  // Sender email address
+
+            mailSender.send(message);  // Send email
+
+            return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
+        }).flatMap(notificationRepository::save).then();
+    }
+
 
     private String loadHtmlTemplate(String templateName, String... templateArgs) {
         ClassPathResource resource = new ClassPathResource("email-templates/" + templateName);
@@ -193,3 +213,8 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 }
+
+
+
+
+

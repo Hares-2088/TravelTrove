@@ -201,4 +201,33 @@ class NotificationServiceUnitTest {
     }
 
 
+    @Test
+    void sendCustomerCancellationEmail_shouldSendEmailAndSaveNotification() {
+        // Arrange
+        String to = "customer@example.com";
+        String firstName = "John";
+        String lastName = "Doe";
+        String name = "New York Adventure Package";
+        String description = "Experience the thrill of New York City!";
+        String startDate = "2026-05-15";
+        String endDate = "2027-05-22";
+        String priceSingle = "1800.00";
+
+        // Mocking the save to NotificationRepository
+        Notification notification = new Notification(UUID.randomUUID().toString(), to, "Package Cancellation Notification for New York Adventure Package", "<html>...</html>");
+        when(notificationRepository.save(any(Notification.class))).thenReturn(Mono.just(notification));
+
+        // Act
+        Mono<Void> result = notificationService.sendCustomerCancellationEmail(to, firstName, lastName, name, description, startDate, endDate, priceSingle);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectComplete()  // Expect completion of the Mono
+                .verify();
+
+        // Verify email sending logic
+        verify(mailSender, times(1)).send(mimeMessage);
+        verify(notificationRepository, times(1)).save(any(Notification.class));  // Verifying notification was saved
+    }
+
 }

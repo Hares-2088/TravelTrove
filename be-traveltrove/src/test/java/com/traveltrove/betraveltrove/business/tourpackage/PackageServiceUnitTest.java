@@ -1,13 +1,17 @@
 package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
+import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.airport.Airport;
+import com.traveltrove.betraveltrove.dataaccess.booking.Booking;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.tour.TourRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
+import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageRequestModel;
@@ -23,7 +27,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +45,12 @@ class PackageServiceUnitTest {
 
     @Mock
     private PackageRepository packageRepository;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private NotificationService notificationService;
 
     @Mock
     private AirportService airportService;
@@ -609,5 +623,7 @@ class PackageServiceUnitTest {
                         throwable.getMessage().equals("Cannot update a package that is CANCELLED"))
                 .verify();
     }
+
+
 
 }
