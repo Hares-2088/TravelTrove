@@ -82,8 +82,9 @@ public class NotificationServiceImpl implements NotificationService {
             helper.setText(htmlContent, true);
             helper.setFrom("traveltrove.notifications@gmail.com");
             mailSender.send(message);
-            return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
-        }).flatMap(notificationRepository::save).then();
+
+            return null;
+        }).then();
     }
 
     @Override
@@ -105,8 +106,26 @@ public class NotificationServiceImpl implements NotificationService {
 
             mailSender.send(message);
 
-            return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
-        }).flatMap(notificationRepository::save).then();
+            return null;
+        }).then();
+    }
+
+    @Override
+    public Mono<Void> sendContactUsEmail(String to, String firstName, String lastName, String email, String subject, String message) {
+        return Mono.fromCallable(() -> {
+            String htmlContent = loadHtmlTemplate("contact-us-email.html", firstName, lastName, email, subject, message);
+
+            MimeMessage mailMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mailMessage, true);
+            helper.setTo(to);
+            helper.setSubject("New Contact Us Submission: " + subject);
+            helper.setText(htmlContent, true);
+            helper.setFrom("traveltrove.notifications@gmail.com");
+
+            mailSender.send(mailMessage);
+
+            return null;
+        }).then();
     }
 
     @Override
