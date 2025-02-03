@@ -270,6 +270,9 @@ public class BookingServiceUnitTest {
                                 .build()
                 ));
 
+        when(subscriptionService.subscribeUserToPackage(anyString(), anyString()))
+                .thenReturn(Mono.just(new SubscriptionResponseModel()));
+
         // 3f) bookingRepository => must not already exist
         when(bookingRepository.findBookingByPackageIdAndUserId(packageId, userId))
                 .thenReturn(Mono.empty());
