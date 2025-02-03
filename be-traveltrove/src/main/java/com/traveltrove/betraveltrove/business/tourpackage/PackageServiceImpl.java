@@ -19,6 +19,7 @@ import com.traveltrove.betraveltrove.utils.entitymodelyutils.PackageEntityModelU
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -51,7 +52,7 @@ public class PackageServiceImpl implements PackageService {
 
     private PackageStatus packageStatus;
 
-    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, UserRepository userRepository, SubscriptionService subscriptionService, BookingService bookingService, BookingRepository bookingRepository, UserService userService) {
+    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, UserRepository userRepository, SubscriptionService subscriptionService, @Lazy BookingService bookingService, BookingRepository bookingRepository, UserService userService) {
         this.packageRepository = packageRepository;
         this.tourService = tourService;
         this.airportService = airportService;
