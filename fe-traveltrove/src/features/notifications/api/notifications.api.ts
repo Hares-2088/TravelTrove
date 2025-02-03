@@ -1,4 +1,8 @@
-import { NotificationRequestModel, NotificationResponseModel } from '../models/notification.model';
+import {
+    NotificationContactusRequestModel,
+    NotificationRequestModel,
+    NotificationResponseModel
+} from '../models/notification.model';
 import { useAxiosInstance } from '../../../shared/axios/useAxiosInstance';
 
 // Notification API Hook
@@ -44,6 +48,12 @@ export const useNotificationsApi = () => {
         return response.data;
     };
 
+    // Send a Contact Us Notification
+    const sendContactUsNotification = async (notification: NotificationContactusRequestModel): Promise<string> => {
+        const response = await axiosInstance.post<string>('/notifications/contact-us', notification);
+        return response.data;
+    }
+
     // Delete a Notification
     const deleteNotification = async (notificationId: string): Promise<void> => {
         await axiosInstance.delete(`/notifications/${notificationId}`);
@@ -53,6 +63,7 @@ export const useNotificationsApi = () => {
         getAllNotifications,
         getNotificationById,
         sendCustomNotification,
+        sendContactUsNotification,
         deleteNotification,
     };
 };
