@@ -46,6 +46,20 @@ public class SubscriptionServiceUnitTest {
     }
 
     @Test
+    void whenUserAlreadySubscribed_thenReturnError() {
+        String userId = "user123";
+        String packageId = "package123";
+
+        when(subscriptionRepository.existsByUserIdAndPackageId(userId, packageId))
+                .thenReturn(Mono.just(true));
+
+        StepVerifier.create(subscriptionService.subscribeUserToPackage(userId, packageId))
+                .expectErrorMatches(error -> error instanceof IllegalArgumentException &&
+                        error.getMessage().equals("User is already subscribed."))
+                .verify();
+    }
+
+    @Test
     void whenUnsubscribeUser_thenComplete() {
         String userId = "user123";
         String packageId = "package123";
