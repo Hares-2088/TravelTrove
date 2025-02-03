@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.business.booking;
 
 import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.business.tourpackage.SubscriptionService;
 import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.booking.Booking;
@@ -48,6 +49,7 @@ public class BookingServiceImpl implements BookingService {
     private final TravelerService travelerService;
     private final NotificationService notificationService;
     private final TaskScheduler taskScheduler;
+    private final SubscriptionService subscriptionService;
 
     @Value("${EMAIL_REVIEW_DELAY}")
     private String emailReviewDelay;
@@ -173,7 +175,6 @@ public class BookingServiceImpl implements BookingService {
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
-    @Override
     public Mono<BookingResponseModel> confirmBookingPayment(String bookingId) {
         log.info("🔄 Confirming payment for bookingId={}", bookingId);
 
@@ -196,6 +197,10 @@ public class BookingServiceImpl implements BookingService {
                                                 schedulePostTripEmail(savedBooking, tourPackage);
                                                 return Mono.just(savedBooking);
                                             })
+                            )
+                            .flatMap(savedBooking ->
+                                    subscriptionService.subscribeUserToPackage(savedBooking.getUserId(), savedBooking.getPackageId())
+                                            .thenReturn(savedBooking)
                             )
                             .doOnSuccess(savedBooking -> log.info("✅ Booking payment confirmed: bookingId={}, userId={}, packageId={}",
                                     savedBooking.getBookingId(), savedBooking.getUserId(), savedBooking.getPackageId()))

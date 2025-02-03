@@ -1,6 +1,7 @@
 package com.traveltrove.betraveltrove.business.booking;
 
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.business.tourpackage.SubscriptionService;
 import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.booking.Booking;
@@ -11,6 +12,7 @@ import com.traveltrove.betraveltrove.presentation.booking.BookingRequestModel;
 import com.traveltrove.betraveltrove.presentation.booking.BookingResponseModel;
 import com.traveltrove.betraveltrove.presentation.booking.BookingStatusUpdateRequest;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
+import com.traveltrove.betraveltrove.presentation.tourpackage.SubscriptionResponseModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
@@ -22,18 +24,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.scheduling.TaskScheduler;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceUnitTest {
@@ -52,6 +55,12 @@ public class BookingServiceUnitTest {
 
     @Mock
     private TravelerService travelerService;
+
+    @Mock
+    private SubscriptionService subscriptionService;
+
+    @Mock
+    private TaskScheduler taskScheduler;
 
     private final String bookingId1 = "a0fca78b-54e6-4428-8ec3-8a42ac0dfd4e";
     private final String bookingId2 = "b1fdf006-b0c1-49fe-98ed-21f816ad524e";
@@ -656,5 +665,117 @@ public class BookingServiceUnitTest {
                 })
                 .verifyComplete();
     }
+
+    @Test
+    public void whenConfirmBookingPayment_withValidBookingId_thenConfirmPaymentAndSubscribeUser() {
+        // Given
+        String bookingId = "bookingId123";
+        String userId = "userId123";
+        String packageId = "packageId123";
+        List<String> travelerIds = List.of("traveler1", "traveler2");
+
+        Booking booking = Booking.builder()
+                .bookingId(bookingId)
+                .userId(userId)
+                .packageId(packageId)
+                .travelerIds(travelerIds)
+                .status(BookingStatus.PAYMENT_PENDING)
+                .build();
+
+        Booking confirmedBooking = Booking.builder()
+                .bookingId(bookingId)
+                .userId(userId)
+                .packageId(packageId)
+                .travelerIds(travelerIds)
+                .status(BookingStatus.BOOKING_CONFIRMED)
+                .build();
+
+        PackageResponseModel packageResponseModel = PackageResponseModel.builder()
+                .packageId(packageId)
+                .build();
+
+        // Mock repository and service calls
+        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(booking));
+        when(packageService.decreaseAvailableSeats(packageId, travelerIds.size())).thenReturn(Mono.just(packageResponseModel));
+        when(bookingRepository.save(any(Booking.class))).thenReturn(Mono.just(confirmedBooking));
+        when(subscriptionService.subscribeUserToPackage(userId, packageId)).thenReturn(Mono.just(new SubscriptionResponseModel()));
+        when(packageService.getPackageByPackageId(packageId)).thenReturn(Mono.just(packageResponseModel));
+
+        // When
+        StepVerifier.create(bookingService.confirmBookingPayment(bookingId))
+                .expectNextMatches(bookingResponse -> bookingResponse.getStatus() == BookingStatus.BOOKING_CONFIRMED)
+                .verifyComplete();
+
+        // Verify that the user is subscribed to the package
+        verify(subscriptionService).subscribeUserToPackage(userId, packageId);
+    }
+
+    @Test
+    public void whenConfirmBookingPayment_withInvalidBookingId_thenReturnNotFound() {
+        // Given
+        String invalidBookingId = "invalidBookingId123";
+
+        // Mock repository to return Mono.empty() for the invalid booking ID
+        when(bookingRepository.findBookingByBookingId(invalidBookingId)).thenReturn(Mono.empty());
+
+        // When
+        StepVerifier.create(bookingService.confirmBookingPayment(invalidBookingId))
+                .expectErrorMatches(error -> error instanceof NotFoundException &&
+                        error.getMessage().equals("Booking not found with ID: " + invalidBookingId))
+                .verify();
+    }
+
+    @Test
+    public void whenConfirmBookingPayment_withAlreadyConfirmedBooking_thenReturnSameStatusException() {
+        // Given
+        String bookingId = "bookingId123";
+        String userId = "userId123";
+        String packageId = "packageId123";
+        List<String> travelerIds = List.of("traveler1", "traveler2");
+
+        Booking confirmedBooking = Booking.builder()
+                .bookingId(bookingId)
+                .userId(userId)
+                .packageId(packageId)
+                .travelerIds(travelerIds)
+                .status(BookingStatus.BOOKING_CONFIRMED)
+                .build();
+
+        // Mock repository to return the already confirmed booking
+        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(confirmedBooking));
+
+        // When
+        StepVerifier.create(bookingService.confirmBookingPayment(bookingId))
+                .expectErrorMatches(error -> error instanceof SameStatusException &&
+                        error.getMessage().equals("Booking is already confirmed."))
+                .verify();
+    }
+
+//    @Test
+//    public void whenConfirmBookingPayment_withPackageServiceError_thenReturnError() {
+//        // Given
+//        String bookingId = "bookingId123";
+//        String userId = "userId123";
+//        String packageId = "packageId123";
+//        List<String> travelerIds = List.of("traveler1", "traveler2");
+//
+//        Booking booking = Booking.builder()
+//                .bookingId(bookingId)
+//                .userId(userId)
+//                .packageId(packageId)
+//                .travelerIds(travelerIds)
+//                .status(BookingStatus.PAYMENT_PENDING)
+//                .build();
+//
+//        // Mock repository and service calls
+//        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(booking));
+//        when(packageService.decreaseAvailableSeats(packageId, travelerIds.size())).thenReturn(Mono.error(new RuntimeException("Package service error")));
+//
+//        // When
+//        StepVerifier.create(bookingService.confirmBookingPayment(bookingId))
+//                .expectErrorMatches(error -> error instanceof RuntimeException &&
+//                        error.getMessage().equals("Package service error"))
+//                .verify();
+//    }
 
 }
