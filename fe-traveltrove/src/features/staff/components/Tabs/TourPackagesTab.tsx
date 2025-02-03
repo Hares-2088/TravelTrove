@@ -282,6 +282,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 await addPackage(formData);
             } else if (modalType === "update" && selectedPackage) {
                 await updatePackage(selectedPackage.packageId, formData, notificationMessage);
+                toast.success("Package changes recorded successfully!");
             }
             setShowModal(false);
             await fetchPackages();
@@ -879,20 +880,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 </Form.Control>
                                 <Form.Control.Feedback type="invalid">
                                     {t("airportRequired")}
-                                </Form.Control.Feedback>
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>{("totalSeats")}</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    value={formData.totalSeats}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, totalSeats: +e.target.value })
-                                    }
-                                    isInvalid={formErrors.totalSeats}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {("totalSeatsRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">

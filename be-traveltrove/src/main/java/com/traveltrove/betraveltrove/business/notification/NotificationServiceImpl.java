@@ -218,7 +218,7 @@ public class NotificationServiceImpl implements NotificationService {
         return Mono.fromCallable(() -> {
             String subject = "🚨 Tour Package Update Notice for " + packageDetails.getName() + "!";
 
-            String htmlContent = loadHtmlTemplate("custom-update-email.html",
+            String htmlContent = loadHtmlTemplate("custom-package-update-email.html",
                     userName, packageDetails.getName(), packageDetails.getDescription(), packageDetails.getStartDate().toString(),
                     packageDetails.getEndDate().toString(), packageDetails.getPriceSingle().toString(), messageContent);
 
