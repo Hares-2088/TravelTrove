@@ -64,6 +64,8 @@ public class PackageServiceImpl implements PackageService {
         this.userService = userService;
     }
 
+
+
     @Override
     public Flux<PackageResponseModel> getAllPackages(String tourId) {
         if (tourId == null) {
@@ -276,7 +278,7 @@ public class PackageServiceImpl implements PackageService {
 
 
     private Mono<Void> notifyCustomersOfCancellation(Package pkg) {
-        return bookingRepository.findBookingsByPackageId(pkg.getId())
+        return bookingRepository.findBookingsByPackageId(pkg.getPackageId())
                 .flatMap(booking -> userRepository.findById(booking.getUserId())
                         .flatMap(user -> {
                             log.info("📧 Sending cancellation email to: {}", user.getEmail());
