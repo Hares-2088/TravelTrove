@@ -17,10 +17,10 @@ import Bookings from "./features/staff/components/Pages/Bookings";
 import ProfileCreatePage from "./pages/user/ProfileCreatePage";
 import PackageDetailsPage from "./pages/packages/PackageDetailsPage";
 import BookingFormPage from "./pages/booking/BookingFormPage";
-import UserManagementPage from "./pages/staff/UserManagementPage.tsx";
-import UsersDetail from "./features/users/components/UsersDetail.tsx";
-import PaymentSuccessPage from "./pages/booking/PaymentSuccessPage.tsx";
-import PaymentCancel from "./pages/booking/PaymentCancel.tsx";
+import UserManagementPage from "./pages/staff/UserManagementPage";
+import UsersDetail from "./features/users/components/UsersDetail";
+import PaymentSuccessPage from "./pages/booking/PaymentSuccessPage";
+import PaymentCancel from "./pages/booking/PaymentCancel";
 import ContactUsPage from "./pages/ContactUsPage";
 
 const router = createBrowserRouter([
