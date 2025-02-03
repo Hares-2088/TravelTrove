@@ -230,4 +230,24 @@ class NotificationServiceUnitTest {
         verify(notificationRepository, times(1)).save(any(Notification.class));  // Verifying notification was saved
     }
 
+    @Test
+    void sendContactUsEmail_ShouldSendEmail() {
+
+        String to = "traveltrove.notifications@gmail.com";
+        String firstName = "John";
+        String lastName = "Doe";
+        String email = "johndoe@example.com";
+        String subject = "Inquiry about trip packages";
+        String message = "I would like more details about the trip packages you offer.";
+
+        String expectedSubject = "New Contact Us Submission: " + subject;
+
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        StepVerifier.create(notificationService.sendContactUsEmail(to, firstName, lastName, email, subject, message))
+                .verifyComplete();
+
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+    }
+
 }
