@@ -61,6 +61,9 @@ const NavBar: React.FC = () => {
             <Nav.Link href={AppRoutes.ToursPage} className="px-3">
               {t("trips")}
             </Nav.Link>
+            <Nav.Link href={AppRoutes.ContactUs} className="px-3">
+              {t("contactus")}
+            </Nav.Link>
           </Nav>
 
           <Nav className="align-items-center">

@@ -248,9 +248,49 @@ class NotificationServiceUnitTest {
 
         StepVerifier.create(notificationService.sendLimitedSpotsEmail(to, userName, packageName, description, startDate, endDate, price, availableSeats, bookingLink))
                 .verifyComplete();
+          
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+          
+    @Test
+    void sendPostTourReviewEmail_ShouldSendEmail() {
+
+        String to = "customer@example.com";
+        String userName = "John Doe";
+        String packageTitle = "Paris Getaway";
+        String description = "A wonderful trip to Paris";
+        String startDate = "2025-06-01";
+        String endDate = "2025-06-10";
+        String reviewLink = "https://review.example.com";
+
+        String expectedSubject = "Share Your Experience with " + packageTitle;
+
+
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        StepVerifier.create(notificationService.sendPostTourReviewEmail(to, userName, packageTitle, description, startDate, endDate, reviewLink))
+              .verifyComplete();
+          
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+    }
+  
+    @Test
+    void sendContactUsEmail_ShouldSendEmail() {
+
+        String to = "traveltrove.notifications@gmail.com";
+        String firstName = "John";
+        String lastName = "Doe";
+        String email = "johndoe@example.com";
+        String subject = "Inquiry about trip packages";
+        String message = "I would like more details about the trip packages you offer.";
+
+        String expectedSubject = "New Contact Us Submission: " + subject;
+
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        StepVerifier.create(notificationService.sendContactUsEmail(to, firstName, lastName, email, subject, message))
+                .verifyComplete();
 
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
-
 
 }

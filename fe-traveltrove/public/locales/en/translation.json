@@ -135,7 +135,9 @@
     "createNotification": "Create Notification",
     "toRequired": "To is required.",
     "subjectRequired": "Subject is required.",
-    "messageRequired": "Message is required."
+    "messageRequired": "Message is required.",
+
+    "contactus": "Contact Us"
         
 }
     
