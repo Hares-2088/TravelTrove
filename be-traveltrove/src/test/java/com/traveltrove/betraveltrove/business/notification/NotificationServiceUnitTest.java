@@ -230,4 +230,27 @@ class NotificationServiceUnitTest {
         verify(notificationRepository, times(1)).save(any(Notification.class));  // Verifying notification was saved
     }
 
+    @Test
+    void sendPostTourReviewEmail_ShouldSendEmail() {
+
+        String to = "customer@example.com";
+        String userName = "John Doe";
+        String packageTitle = "Paris Getaway";
+        String description = "A wonderful trip to Paris";
+        String startDate = "2025-06-01";
+        String endDate = "2025-06-10";
+        String reviewLink = "https://review.example.com";
+
+        String expectedSubject = "Share Your Experience with " + packageTitle;
+
+
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        StepVerifier.create(notificationService.sendPostTourReviewEmail(to, userName, packageTitle, description, startDate, endDate, reviewLink))
+                .verifyComplete();
+
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+    }
+
+
 }
