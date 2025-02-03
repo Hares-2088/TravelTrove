@@ -231,6 +231,27 @@ class NotificationServiceUnitTest {
     }
 
     @Test
+    void sendLimitedSpotsEmail_ShouldSendEmail() {
+        String to = "customer@example.com";
+        String userName = "John Doe";
+        String packageName = "Bali Adventure";
+        String description = "Enjoy the tropical paradise of Bali.";
+        String startDate = "2025-07-01";
+        String endDate = "2025-07-10";
+        String price = "2500.00";
+        String availableSeats = "5";
+        String bookingLink = "https://booknow.example.com";
+
+        String expectedSubject = "🚨 Limited Seats Remaining for " + packageName + "!";
+
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        StepVerifier.create(notificationService.sendLimitedSpotsEmail(to, userName, packageName, description, startDate, endDate, price, availableSeats, bookingLink))
+                .verifyComplete();
+          
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+          
+    @Test
     void sendPostTourReviewEmail_ShouldSendEmail() {
 
         String to = "customer@example.com";
