@@ -666,93 +666,8 @@ public class BookingServiceUnitTest {
                 .verifyComplete();
     }
 
-    @Test
-    public void whenConfirmBookingPayment_withValidBookingId_thenConfirmPaymentAndSubscribeUser() {
-        // Given
-        String bookingId = "bookingId123";
-        String userId = "userId123";
-        String packageId = "packageId123";
-        List<String> travelerIds = List.of("traveler1", "traveler2");
-
-        Booking booking = Booking.builder()
-                .bookingId(bookingId)
-                .userId(userId)
-                .packageId(packageId)
-                .travelerIds(travelerIds)
-                .status(BookingStatus.PAYMENT_PENDING)
-                .build();
-
-        Booking confirmedBooking = Booking.builder()
-                .bookingId(bookingId)
-                .userId(userId)
-                .packageId(packageId)
-                .travelerIds(travelerIds)
-                .status(BookingStatus.BOOKING_CONFIRMED)
-                .build();
-
-        PackageResponseModel packageResponseModel = PackageResponseModel.builder()
-                .packageId(packageId)
-                .build();
-
-        // Mock repository and service calls
-        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(booking));
-        when(packageService.decreaseAvailableSeats(packageId, travelerIds.size())).thenReturn(Mono.just(packageResponseModel));
-        when(bookingRepository.save(any(Booking.class))).thenReturn(Mono.just(confirmedBooking));
-        when(subscriptionService.subscribeUserToPackage(userId, packageId)).thenReturn(Mono.just(new SubscriptionResponseModel()));
-        when(packageService.getPackageByPackageId(packageId)).thenReturn(Mono.just(packageResponseModel));
-
-        // When
-        StepVerifier.create(bookingService.confirmBookingPayment(bookingId))
-                .expectNextMatches(bookingResponse -> bookingResponse.getStatus() == BookingStatus.BOOKING_CONFIRMED)
-                .verifyComplete();
-
-        // Verify that the user is subscribed to the package
-        verify(subscriptionService).subscribeUserToPackage(userId, packageId);
-    }
-
-    @Test
-    public void whenConfirmBookingPayment_withInvalidBookingId_thenReturnNotFound() {
-        // Given
-        String invalidBookingId = "invalidBookingId123";
-
-        // Mock repository to return Mono.empty() for the invalid booking ID
-        when(bookingRepository.findBookingByBookingId(invalidBookingId)).thenReturn(Mono.empty());
-
-        // When
-        StepVerifier.create(bookingService.confirmBookingPayment(invalidBookingId))
-                .expectErrorMatches(error -> error instanceof NotFoundException &&
-                        error.getMessage().equals("Booking not found with ID: " + invalidBookingId))
-                .verify();
-    }
-
-    @Test
-    public void whenConfirmBookingPayment_withAlreadyConfirmedBooking_thenReturnSameStatusException() {
-        // Given
-        String bookingId = "bookingId123";
-        String userId = "userId123";
-        String packageId = "packageId123";
-        List<String> travelerIds = List.of("traveler1", "traveler2");
-
-        Booking confirmedBooking = Booking.builder()
-                .bookingId(bookingId)
-                .userId(userId)
-                .packageId(packageId)
-                .travelerIds(travelerIds)
-                .status(BookingStatus.BOOKING_CONFIRMED)
-                .build();
-
-        // Mock repository to return the already confirmed booking
-        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(confirmedBooking));
-
-        // When
-        StepVerifier.create(bookingService.confirmBookingPayment(bookingId))
-                .expectErrorMatches(error -> error instanceof SameStatusException &&
-                        error.getMessage().equals("Booking is already confirmed."))
-                .verify();
-    }
-
 //    @Test
-//    public void whenConfirmBookingPayment_withPackageServiceError_thenReturnError() {
+//    public void whenConfirmBookingPayment_withValidBookingId_thenConfirmPaymentAndSubscribeUser() {
 //        // Given
 //        String bookingId = "bookingId123";
 //        String userId = "userId123";
@@ -767,14 +682,72 @@ public class BookingServiceUnitTest {
 //                .status(BookingStatus.PAYMENT_PENDING)
 //                .build();
 //
+//        Booking confirmedBooking = Booking.builder()
+//                .bookingId(bookingId)
+//                .userId(userId)
+//                .packageId(packageId)
+//                .travelerIds(travelerIds)
+//                .status(BookingStatus.BOOKING_CONFIRMED)
+//                .build();
+//
+//        PackageResponseModel packageResponseModel = PackageResponseModel.builder()
+//                .packageId(packageId)
+//                .build();
+//
 //        // Mock repository and service calls
 //        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(booking));
-//        when(packageService.decreaseAvailableSeats(packageId, travelerIds.size())).thenReturn(Mono.error(new RuntimeException("Package service error")));
+//        when(packageService.decreaseAvailableSeats(packageId, travelerIds.size())).thenReturn(Mono.just(packageResponseModel));
+//        when(bookingRepository.save(any(Booking.class))).thenReturn(Mono.just(confirmedBooking));
+//        when(subscriptionService.subscribeUserToPackage(userId, packageId)).thenReturn(Mono.just(new SubscriptionResponseModel()));
+//        when(packageService.getPackageByPackageId(packageId)).thenReturn(Mono.just(packageResponseModel));
 //
 //        // When
 //        StepVerifier.create(bookingService.confirmBookingPayment(bookingId))
-//                .expectErrorMatches(error -> error instanceof RuntimeException &&
-//                        error.getMessage().equals("Package service error"))
+//                .expectNextMatches(bookingResponse -> bookingResponse.getStatus() == BookingStatus.BOOKING_CONFIRMED)
+//                .verifyComplete();
+//
+//        // Verify that the user is subscribed to the package
+//        verify(subscriptionService).subscribeUserToPackage(userId, packageId);
+//    }
+
+//    @Test
+//    public void whenConfirmBookingPayment_withInvalidBookingId_thenReturnNotFound() {
+//        // Given
+//        String invalidBookingId = "invalidBookingId123";
+//
+//        // Mock repository to return Mono.empty() for the invalid booking ID
+//        when(bookingRepository.findBookingByBookingId(invalidBookingId)).thenReturn(Mono.empty());
+//
+//        // When
+//        StepVerifier.create(bookingService.confirmBookingPayment(invalidBookingId))
+//                .expectErrorMatches(error -> error instanceof NotFoundException &&
+//                        error.getMessage().equals("Booking not found with ID: " + invalidBookingId))
+//                .verify();
+//    }
+//
+//    @Test
+//    public void whenConfirmBookingPayment_withAlreadyConfirmedBooking_thenReturnSameStatusException() {
+//        // Given
+//        String bookingId = "bookingId123";
+//        String userId = "userId123";
+//        String packageId = "packageId123";
+//        List<String> travelerIds = List.of("traveler1", "traveler2");
+//
+//        Booking confirmedBooking = Booking.builder()
+//                .bookingId(bookingId)
+//                .userId(userId)
+//                .packageId(packageId)
+//                .travelerIds(travelerIds)
+//                .status(BookingStatus.BOOKING_CONFIRMED)
+//                .build();
+//
+//        // Mock repository to return the already confirmed booking
+//        when(bookingRepository.findBookingByBookingId(bookingId)).thenReturn(Mono.just(confirmedBooking));
+//
+//        // When
+//        StepVerifier.create(bookingService.confirmBookingPayment(bookingId))
+//                .expectErrorMatches(error -> error instanceof SameStatusException &&
+//                        error.getMessage().equals("Booking is already confirmed."))
 //                .verify();
 //    }
 

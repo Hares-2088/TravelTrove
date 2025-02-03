@@ -150,6 +150,10 @@ public class BookingServiceImpl implements BookingService {
                 })
                 // 6) Save the booking in Mongo and convert to response
                 .flatMap(bookingRepository::save)
+                .flatMap(savedBooking ->
+                        subscriptionService.subscribeUserToPackage(savedBooking.getUserId(), savedBooking.getPackageId())
+                                .thenReturn(savedBooking)
+                )
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
@@ -198,10 +202,10 @@ public class BookingServiceImpl implements BookingService {
                                                 return Mono.just(savedBooking);
                                             })
                             )
-                            .flatMap(savedBooking ->
-                                    subscriptionService.subscribeUserToPackage(savedBooking.getUserId(), savedBooking.getPackageId())
-                                            .thenReturn(savedBooking)
-                            )
+//                            .flatMap(savedBooking ->
+//                                    subscriptionService.subscribeUserToPackage(savedBooking.getUserId(), savedBooking.getPackageId())
+//                                            .thenReturn(savedBooking)
+//                            )
                             .doOnSuccess(savedBooking -> log.info("✅ Booking payment confirmed: bookingId={}, userId={}, packageId={}",
                                     savedBooking.getBookingId(), savedBooking.getUserId(), savedBooking.getPackageId()))
                             .doOnError(error -> log.error("❌ Failed to confirm booking payment: error={}", error.getMessage()));
