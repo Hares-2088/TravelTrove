@@ -5,9 +5,11 @@ import com.traveltrove.betraveltrove.dataaccess.notification.NotificationReposit
 import com.traveltrove.betraveltrove.presentation.notification.NotificationResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,6 +20,7 @@ import jakarta.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -157,4 +160,137 @@ class NotificationServiceUnitTest {
                 .expectErrorMatches(throwable -> throwable instanceof RuntimeException && throwable.getMessage().contains("Notification not found"))
                 .verify();
     }
+
+
+    @Test
+    void sendAdminEmail_ShouldSendEmailAndSaveNotification() throws Exception {
+        // Given test data
+        String to = "admin@example.com";
+        String packageName = "New York Adventure Package";
+        String packageId = "4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d";
+        String availableSeats = "3";
+        String description = "Experience the thrill of New York City.";
+        String startDate = "2026-05-15";
+        String endDate = "2027-05-22";
+        String priceSingle = "1800";
+
+        // Expected email subject
+        String expectedSubject = "🚨 Low Quantity of Available Seats for " + packageName + " (" + packageId + ")!";
+
+        // Mock email sending (do nothing)
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        // Mock repository save (simulate successful save)
+        when(notificationRepository.save(any(Notification.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+
+        // When
+        StepVerifier.create(notificationService.sendAdminEmail(to, packageName, packageId, availableSeats, description, startDate, endDate, priceSingle))
+                .expectComplete()  // Expect Mono<Void> to complete successfully
+                .verify();
+
+        // Then - Verify email sending
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+
+        // Then - Verify notification saved
+        ArgumentCaptor<Notification> notificationCaptor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationRepository, times(1)).save(notificationCaptor.capture());
+
+        Notification savedNotification = notificationCaptor.getValue();
+        assertEquals(expectedSubject, savedNotification.getSubject());
+    }
+
+
+    @Test
+    void sendCustomerCancellationEmail_shouldSendEmailAndSaveNotification() {
+        // Arrange
+        String to = "customer@example.com";
+        String firstName = "John";
+        String lastName = "Doe";
+        String name = "New York Adventure Package";
+        String description = "Experience the thrill of New York City!";
+        String startDate = "2026-05-15";
+        String endDate = "2027-05-22";
+        String priceSingle = "1800.00";
+
+        // Mocking the save to NotificationRepository
+        Notification notification = new Notification(UUID.randomUUID().toString(), to, "Package Cancellation Notification for New York Adventure Package", "<html>...</html>");
+        when(notificationRepository.save(any(Notification.class))).thenReturn(Mono.just(notification));
+
+        // Act
+        Mono<Void> result = notificationService.sendCustomerCancellationEmail(to, firstName, lastName, name, description, startDate, endDate, priceSingle);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectComplete()  // Expect completion of the Mono
+                .verify();
+
+        // Verify email sending logic
+        verify(mailSender, times(1)).send(mimeMessage);
+        verify(notificationRepository, times(1)).save(any(Notification.class));  // Verifying notification was saved
+    }
+
+    @Test
+    void sendLimitedSpotsEmail_ShouldSendEmail() {
+        String to = "customer@example.com";
+        String userName = "John Doe";
+        String packageName = "Bali Adventure";
+        String description = "Enjoy the tropical paradise of Bali.";
+        String startDate = "2025-07-01";
+        String endDate = "2025-07-10";
+        String price = "2500.00";
+        String availableSeats = "5";
+        String bookingLink = "https://booknow.example.com";
+
+        String expectedSubject = "🚨 Limited Seats Remaining for " + packageName + "!";
+
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        StepVerifier.create(notificationService.sendLimitedSpotsEmail(to, userName, packageName, description, startDate, endDate, price, availableSeats, bookingLink))
+                .verifyComplete();
+
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+    }
+    @Test
+    void sendPostTourReviewEmail_ShouldSendEmail() {
+
+        String to = "customer@example.com";
+        String userName = "John Doe";
+        String packageTitle = "Paris Getaway";
+        String description = "A wonderful trip to Paris";
+        String startDate = "2025-06-01";
+        String endDate = "2025-06-10";
+        String reviewLink = "https://review.example.com";
+
+        String expectedSubject = "Share Your Experience with " + packageTitle;
+
+
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        StepVerifier.create(notificationService.sendPostTourReviewEmail(to, userName, packageTitle, description, startDate, endDate, reviewLink))
+              .verifyComplete();
+          
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+    }
+  
+    @Test
+    void sendContactUsEmail_ShouldSendEmail() {
+
+        String to = "traveltrove.notifications@gmail.com";
+        String firstName = "John";
+        String lastName = "Doe";
+        String email = "johndoe@example.com";
+        String subject = "Inquiry about trip packages";
+        String message = "I would like more details about the trip packages you offer.";
+
+        String expectedSubject = "New Contact Us Submission: " + subject;
+
+        doNothing().when(mailSender).send(any(MimeMessage.class));
+
+        StepVerifier.create(notificationService.sendContactUsEmail(to, firstName, lastName, email, subject, message))
+                .verifyComplete();
+
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
+    }
+
 }

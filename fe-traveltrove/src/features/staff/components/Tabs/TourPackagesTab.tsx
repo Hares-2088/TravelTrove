@@ -18,8 +18,7 @@ import { stat } from "fs";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
+import './TourPackagesTab.css';
 
 interface TourPackagesTabProps {
     tourId: string;
@@ -89,7 +88,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const midnightTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Store timeout reference
     const [loading, setLoading] = useState<{ [key: string]: boolean }>({}); // Store loading state per package
 
-
+    const [notificationMessage, setNotificationMessage] = useState<string>("");
     
 
     const handleUpdateSeats = (packageId: string, quantity: number) => {
@@ -282,7 +281,8 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             if (modalType === "create") {
                 await addPackage(formData);
             } else if (modalType === "update" && selectedPackage) {
-                await updatePackage(selectedPackage.packageId, formData);
+                await updatePackage(selectedPackage.packageId, formData, notificationMessage);
+                toast.success("Package changes recorded successfully!");
             }
             setShowModal(false);
             await fetchPackages();
@@ -883,7 +883,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{("totalSeats")}</Form.Label>
+                                <Form.Label>{t("totalSeats")}</Form.Label>
                                 <Form.Control
                                     type="number"
                                     value={formData.totalSeats}
@@ -893,9 +893,21 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     isInvalid={formErrors.totalSeats}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {("totalSeatsRequired")}
+                                    {t("totalSeatsRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
+                            {modalType === "update" && (
+                                <Form.Group className="mb-3">
+                                    <Form.Label>{t("notificationMessage")}</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={3}
+                                        value={notificationMessage}
+                                        onChange={(e) => setNotificationMessage(e.target.value)}
+                                        className="notification-textarea"
+                                    />
+                                </Form.Group>
+                            )}
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={() => setShowModal(false)}>
                                     {t("cancel")}

@@ -1,22 +1,34 @@
 package com.traveltrove.betraveltrove.business.payment;
 
+import com.traveltrove.betraveltrove.business.booking.BookingService;
+import com.traveltrove.betraveltrove.business.notification.NotificationService;
+import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.business.user.UserService;
+import com.traveltrove.betraveltrove.dataaccess.notification.NotificationRepository;
 import com.traveltrove.betraveltrove.dataaccess.payment.Payment;
 import com.traveltrove.betraveltrove.dataaccess.payment.PaymentRepository;
+import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.presentation.payment.PaymentRequestModel;
 import com.traveltrove.betraveltrove.presentation.payment.PaymentResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
+import jakarta.mail.internet.MimeMessage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.javamail.JavaMailSender;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDate;
+import java.util.Set;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PaymentServiceUnitTest {
@@ -26,6 +38,7 @@ public class PaymentServiceUnitTest {
 
     @InjectMocks
     private PaymentServiceImpl paymentService;
+
 
 
     @Test
@@ -143,5 +156,8 @@ public class PaymentServiceUnitTest {
         StepVerifier.create(result)
                 .verifyComplete();
     }
+
+
+
 
 }

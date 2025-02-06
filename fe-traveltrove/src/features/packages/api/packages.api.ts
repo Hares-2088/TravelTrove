@@ -49,9 +49,13 @@ export const usePackagesApi = () => {
     // Update an Existing Package
     const updatePackage = async (
         packageId: string,
-        pkg: PackageRequestModel
+        pkg: PackageRequestModel,
+        notificationDetails?: string
     ): Promise<PackageResponseModel> => {
-        const response = await axiosInstance.put<PackageResponseModel>(`/packages/${packageId}`, pkg);
+        const url = notificationDetails 
+            ? `/packages/${packageId}?notificationDetails=${encodeURIComponent(notificationDetails)}` 
+            : `/packages/${packageId}`;
+        const response = await axiosInstance.put<PackageResponseModel>(url, pkg);
         return response.data;
     };
 

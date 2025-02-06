@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.business.booking;
 
 import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.business.tourpackage.SubscriptionService;
 import com.traveltrove.betraveltrove.business.traveler.TravelerService;
 import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.booking.Booking;
@@ -48,6 +49,7 @@ public class BookingServiceImpl implements BookingService {
     private final TravelerService travelerService;
     private final NotificationService notificationService;
     private final TaskScheduler taskScheduler;
+    private final SubscriptionService subscriptionService;
 
     @Value("${EMAIL_REVIEW_DELAY}")
     private String emailReviewDelay;
@@ -148,6 +150,10 @@ public class BookingServiceImpl implements BookingService {
                 })
                 // 6) Save the booking in Mongo and convert to response
                 .flatMap(bookingRepository::save)
+                .flatMap(savedBooking ->
+                        subscriptionService.subscribeUserToPackage(savedBooking.getUserId(), savedBooking.getPackageId())
+                                .thenReturn(savedBooking)
+                )
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
@@ -173,8 +179,9 @@ public class BookingServiceImpl implements BookingService {
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
-    @Override
     public Mono<BookingResponseModel> confirmBookingPayment(String bookingId) {
+        log.info("🔄 Confirming payment for bookingId={}", bookingId);
+
         return bookingRepository.findBookingByBookingId(bookingId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
                 .flatMap(booking -> {
@@ -183,12 +190,27 @@ public class BookingServiceImpl implements BookingService {
                     }
                     booking.setStatus(BookingStatus.BOOKING_CONFIRMED);
 
-                    // Decrease available seats
-                    // Not used for now, need to use this when payment is set up!
                     return packageService.decreaseAvailableSeats(booking.getPackageId(), booking.getTravelerIds().size())
+                            .doOnSuccess(updatedPackage -> log.info("✅ Successfully decreased available seats for packageId={}", booking.getPackageId()))
+                            .doOnError(error -> log.error("❌ Error decreasing seats for packageId={}: {}", booking.getPackageId(), error.getMessage()))
                             .then(bookingRepository.save(booking))
-                            .map(BookingEntityModelUtil::toBookingResponseModel);
-                });
+                            .flatMap(savedBooking ->
+                                    packageService.getPackageByPackageId(savedBooking.getPackageId())
+                                            .flatMap(tourPackage -> {
+                                                log.info("📧 Scheduling post-trip email for bookingId={}, packageId={}", savedBooking.getBookingId(), tourPackage.getPackageId());
+                                                schedulePostTripEmail(savedBooking, tourPackage);
+                                                return Mono.just(savedBooking);
+                                            })
+                            )
+//                            .flatMap(savedBooking ->
+//                                    subscriptionService.subscribeUserToPackage(savedBooking.getUserId(), savedBooking.getPackageId())
+//                                            .thenReturn(savedBooking)
+//                            )
+                            .doOnSuccess(savedBooking -> log.info("✅ Booking payment confirmed: bookingId={}, userId={}, packageId={}",
+                                    savedBooking.getBookingId(), savedBooking.getUserId(), savedBooking.getPackageId()))
+                            .doOnError(error -> log.error("❌ Failed to confirm booking payment: error={}", error.getMessage()));
+                })
+                .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 
     // methods for validation -> userExists, packageExists, isValidStatus

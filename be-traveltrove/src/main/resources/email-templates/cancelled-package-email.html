@@ -5,17 +5,16 @@
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
 
         <div style="background-color: #d9534f; color: #ffffff; padding: 20px; text-align: center;">
-            <h1 style="margin: 0; font-size: 24px;">🚨 Low Quantity of Available Seats for Package</h1>
+            <h1 style="margin: 0; font-size: 24px;">🚨 Package Cancellation Notification</h1>
         </div>
 
         <!-- Body Section -->
         <div style="padding: 30px; color: #333; line-height: 1.6;">
-            <p style="font-size: 18px; margin: 0 0 20px;">Dear Admin,</p>
+            <p style="font-size: 18px; margin: 0 0 20px;">Dear {{arg0}} {{arg1}},</p>
 
             <p style="margin: 0 0 20px;">
-                The package "<strong>{{arg0}}</strong>" (ID: {{arg1}}) is filling up fast! There are only
-                <span style="color: #d9534f; font-weight: bold; font-size: 18px;">{{arg2}}</span> seats left.
-                Please review the package details.
+                We regret to inform you that the package "<strong>{{arg2}}</strong>" has been cancelled.
+                Please find the details of your booking below.
             </p>
 
             <!-- Package Details Table -->
@@ -24,14 +23,6 @@
                 <table style="width: 100%; border-collapse: separate; border-spacing: 0; font-size: 16px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
                     <tr>
                         <td style="padding: 15px; font-weight: 600; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;">Package Name:</td>
-                        <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">{{arg0}}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 15px; font-weight: 600; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;">Package ID:</td>
-                        <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">{{arg1}}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 15px; font-weight: 600; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;">Seats Left:</td>
                         <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">{{arg2}}</td>
                     </tr>
                     <tr>
@@ -54,17 +45,17 @@
             </div>
 
             <p style="margin: 0 0 20px; text-align: center; font-size: 18px; font-weight: bold;">
-                Please take action as soon as possible!
+                We apologize for any inconvenience caused.
             </p>
 
             <!-- Action Button -->
             <div style="text-align: center; margin: 20px 0;">
-                <a href="{{arg7}}" style="background-color: #d9534f; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-size: 18px; font-weight: bold; display: inline-block; transition: background-color 0.3s ease;">
-                    Review Package
+                <a href="{{arg8}}" style="background-color: #d9534f; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-size: 18px; font-weight: bold; display: inline-block; transition: background-color 0.3s ease;">
+                    Review Package Details
                 </a>
             </div>
 
-            <p style="margin: 0;">Thank you for managing the Travel Trove system!</p>
+            <p style="margin: 0;">Thank you for using Travel Trove!</p>
             <p style="margin: 0; font-weight: bold;">Best regards,</p>
             <p style="margin: 0; font-weight: bold;">The Travel Trove Team</p>
         </div>

@@ -134,8 +134,9 @@
     "createNotification": "Créer une notification",
     "toRequired": "Le champ 'À' est requis.",
     "subjectRequired": "Le sujet est requis.",
-    "messageRequired": "Le message est requis."
+    "messageRequired": "Le message est requis.",
 
+    "contactus": "Contactez-nous"
 
 }
   

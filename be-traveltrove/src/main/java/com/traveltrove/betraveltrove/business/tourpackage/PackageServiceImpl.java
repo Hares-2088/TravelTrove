@@ -1,13 +1,14 @@
 package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.business.airport.AirportService;
+import com.traveltrove.betraveltrove.business.booking.BookingService;
 import com.traveltrove.betraveltrove.business.notification.NotificationService;
 import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.business.user.UserService;
+import com.traveltrove.betraveltrove.dataaccess.booking.BookingRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageRepository;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
-import com.traveltrove.betraveltrove.dataaccess.user.User;
 import com.traveltrove.betraveltrove.dataaccess.user.UserRepository;
 import com.traveltrove.betraveltrove.presentation.airport.AirportResponseModel;
 import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
@@ -18,11 +19,14 @@ import com.traveltrove.betraveltrove.utils.entitymodelyutils.PackageEntityModelU
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -39,6 +43,10 @@ public class PackageServiceImpl implements PackageService {
 
     private final SubscriptionService subscriptionService;
 
+    private final BookingService bookingService;
+
+    private final BookingRepository bookingRepository;
+
     private final UserService userService;
 
     @Value("${frontend.domain}")
@@ -46,15 +54,19 @@ public class PackageServiceImpl implements PackageService {
 
     private PackageStatus packageStatus;
 
-    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, UserRepository userRepository, SubscriptionService subscriptionService, UserService userService) {
+    public PackageServiceImpl(PackageRepository packageRepository, TourService tourService, AirportService airportService, NotificationService notificationService, UserRepository userRepository, SubscriptionService subscriptionService, @Lazy BookingService bookingService, BookingRepository bookingRepository, UserService userService) {
         this.packageRepository = packageRepository;
         this.tourService = tourService;
         this.airportService = airportService;
         this.notificationService = notificationService;
         this.userRepository = userRepository;
         this.subscriptionService = subscriptionService;
+        this.bookingService = bookingService;
+        this.bookingRepository = bookingRepository;
         this.userService = userService;
     }
+
+
 
     @Override
     public Flux<PackageResponseModel> getAllPackages(String tourId) {
@@ -117,13 +129,20 @@ public class PackageServiceImpl implements PackageService {
                     pkg.setStatus(newStatus.getStatus());
 
                     return packageRepository.save(pkg)
-                            .doOnSuccess(updatedPkg -> log.info("Package status successfully updated in DB: packageId={}, newStatus={}", packageId, updatedPkg.getStatus()))
-                            .map(PackageEntityModelUtil::toPackageResponseModel);
+                            .doOnSuccess(updatedPkg -> log.info("✅ Package status successfully updated in DB: packageId={}, newStatus={}", packageId, updatedPkg.getStatus()))
+                            .flatMap(updatedPkg -> {
+                                // If the package is cancelled, send email notifications
+                                if (newStatus.getStatus() == PackageStatus.CANCELLED) {
+                                    return notifyCustomersOfCancellation(updatedPkg)
+                                            .thenReturn(PackageEntityModelUtil.toPackageResponseModel(updatedPkg));
+                                }
+                                return Mono.just(PackageEntityModelUtil.toPackageResponseModel(updatedPkg));
+                            });
                 });
     }
 
     @Override
-    public Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel) {
+    public Mono<PackageResponseModel> updatePackage(String packageId, Mono<PackageRequestModel> packageRequestModel, String notificationDetails) {
         return packageRepository.findPackageByPackageId(packageId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Package not found: " + packageId)))
                 .flatMap(existingPackage -> packageRequestModel
@@ -131,14 +150,29 @@ public class PackageServiceImpl implements PackageService {
                             validatePackageRequestModel(requestModel);
                             return Mono.zip(getTour(requestModel.getTourId()), getAirport(requestModel.getAirportId()))
                                     .flatMap(tuple -> {
-                                        Package updatedPackage = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
+                                        Package updatedPackage = PackageEntityModelUtil.toPackage(requestModel, tuple.getT1(), tuple.getT2());
+                                        updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
                                         updatedPackage.setPackageId(existingPackage.getPackageId()); // Retain the original packageId
                                         updatedPackage.setAvailableSeats(existingPackage.getAvailableSeats()); // Retain the available seats
                                         if (updatedPackage.getAvailableSeats() > existingPackage.getTotalSeats()) {
                                             return Mono.error(new IllegalArgumentException("Available seats cannot exceed total seats"));
                                         }
                                         return packageRepository.save(updatedPackage)
-                                                .map(PackageEntityModelUtil::toPackageResponseModel);
+                                                .flatMap(savedPackage -> {
+                                                    // Fetch all subscriptions for the package
+                                                    return subscriptionService.getUsersSubscribedToPackage(packageId)
+                                                            .flatMap(subscription -> userService.getUser(subscription.getUserId())
+                                                                    .flatMap(user -> {
+                                                                        // Send custom update email to each user
+                                                                        return notificationService.sendCustomUpdateEmail(
+                                                                                user.getEmail(),
+                                                                                notificationDetails,
+                                                                                user.getFirstName(),
+                                                                                savedPackage
+                                                                        );
+                                                                    })
+                                                            ).then(Mono.just(PackageEntityModelUtil.toPackageResponseModel(savedPackage)));
+                                                });
                                     });
                         }));
     }
@@ -169,13 +203,13 @@ public class PackageServiceImpl implements PackageService {
                     // Update available seats
                     pkg.setAvailableSeats(pkg.getAvailableSeats() - quantity);
 
-                    Mono<Void> notificationMono = Mono.empty();
+                    List<Mono<Void>> notificationMonos = new ArrayList<>();
 
                     if (pkg.getAvailableSeats() < 10) {
-                        notificationMono = notifySubscribersOfLimitedSpots(pkg);
+                        notificationMonos.add(notifySubscribersOfLimitedSpots(pkg));
                     }
                     if (pkg.getAvailableSeats() <= 10) {
-                        notificationMono = notifyAdminsForLowSeats(pkg); // Notify admins if seats <= 10
+                        notificationMonos.add(notifyAdminsForLowSeats(pkg)); // Notify admins if seats <= 10
                     }
 
                     if (pkg.getAvailableSeats() == 0) {
@@ -183,17 +217,11 @@ public class PackageServiceImpl implements PackageService {
                     }
 
                     return packageRepository.save(pkg)
-                            .flatMap(savedPackage -> {
-                                // If available seats are <= 5, send notification to admins
-                                if (savedPackage.getAvailableSeats() <= 5) {
-                                    return notifyAdminsForLowSeats(savedPackage)
-                                            .thenReturn(PackageEntityModelUtil.toPackageResponseModel(savedPackage));
-                                }
-                                return Mono.just(PackageEntityModelUtil.toPackageResponseModel(savedPackage));
-                            });
+                            .flatMap(savedPackage -> Mono.when(notificationMonos)
+                                    .thenReturn(PackageEntityModelUtil.toPackageResponseModel(savedPackage)));
                 });
-
     }
+
 
     private Mono<Void> notifySubscribersOfLimitedSpots(Package pkg) {
         return subscriptionService.getUsersSubscribedToPackage(pkg.getPackageId())
@@ -257,6 +285,26 @@ public class PackageServiceImpl implements PackageService {
                 })
                 .doOnTerminate(() -> log.info("Email process completed"))
                 .then();
+    }
+
+
+    private Mono<Void> notifyCustomersOfCancellation(Package pkg) {
+        return bookingRepository.findBookingsByPackageId(pkg.getPackageId())
+                .flatMap(booking -> userRepository.findById(booking.getUserId())
+                        .flatMap(user -> {
+                            log.info("📧 Sending cancellation email to: {}", user.getEmail());
+                            return notificationService.sendCustomerCancellationEmail(
+                                    user.getEmail(),
+                                    user.getFirstName(),
+                                    user.getLastName(),
+                                    pkg.getName(),
+                                    pkg.getDescription(),
+                                    pkg.getStartDate().toString(),
+                                    pkg.getEndDate().toString(),
+                                    pkg.getPriceSingle().toString()
+                            );
+                        })
+                ).then();
     }
 
 

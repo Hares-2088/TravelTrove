@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.business.notification;
 
 import com.traveltrove.betraveltrove.dataaccess.notification.Notification;
 import com.traveltrove.betraveltrove.dataaccess.notification.NotificationRepository;
+import com.traveltrove.betraveltrove.dataaccess.tourpackage.Package;
 import com.traveltrove.betraveltrove.presentation.notification.NotificationResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import jakarta.mail.internet.MimeMessage;
@@ -82,8 +83,9 @@ public class NotificationServiceImpl implements NotificationService {
             helper.setText(htmlContent, true);
             helper.setFrom("traveltrove.notifications@gmail.com");
             mailSender.send(message);
-            return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
-        }).flatMap(notificationRepository::save).then();
+
+            return null;
+        }).then();
     }
 
     @Override
@@ -105,9 +107,29 @@ public class NotificationServiceImpl implements NotificationService {
 
             mailSender.send(message);
 
-            return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
-        }).flatMap(notificationRepository::save).then();
+            return null;
+        }).then();
     }
+
+    @Override
+    public Mono<Void> sendContactUsEmail(String to, String firstName, String lastName, String email, String subject, String message) {
+        return Mono.fromCallable(() -> {
+            String htmlContent = loadHtmlTemplate("contact-us-email.html", firstName, lastName, email, subject, message);
+
+            MimeMessage mailMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mailMessage, true);
+            helper.setTo(to);
+            helper.setSubject("New Contact Us Submission: " + subject);
+            helper.setText(htmlContent, true);
+            helper.setFrom("traveltrove.notifications@gmail.com");
+
+            mailSender.send(mailMessage);
+
+            return null;
+        }).then();
+    }
+
+
 
     @Override
     public Flux<NotificationResponseModel> getAllNotifications() {
@@ -142,14 +164,14 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Mono<Void> sendAdminEmail(String to, String packageName, String packageId, String availableSeats,
-                                     String description, String startDate, String endDate, String price) {
+    public Mono<Void> sendAdminEmail(String to, String name, String packageId, String availableSeats,
+                                     String description, String startDate, String endDate, String priceSingle) {
 
         return Mono.fromCallable(() -> {
                     // Build email content
-                    String subject = "🚨 Low Quantity of Available Seats for " + packageName + " (" + packageId + ")!";
+                    String subject = "🚨 Low Quantity of Available Seats for " + name + " (" + packageId + ")!";
                     String htmlContent = loadHtmlTemplate("admin-resource-alert-email.html",
-                            packageName, packageId, availableSeats, description, startDate, endDate, price);
+                            name, packageId, availableSeats, description, startDate, endDate, priceSingle);
 
                     // Create MimeMessage
                     MimeMessage message = mailSender.createMimeMessage();
@@ -171,6 +193,47 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
 
+    public Mono<Void> sendCustomerCancellationEmail(String to, String firstName, String lastName, String name,
+                                                    String description,
+                                        String startDate, String endDate, String priceSingle) {
+        return Mono.fromCallable(() -> {
+            String subject = "🚨 Package Cancellation Notification for " + name;
+            String htmlContent = loadHtmlTemplate("cancelled-package-email.html", firstName, lastName, name, description, startDate, endDate, priceSingle);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);  // Set the email content
+            helper.setFrom("traveltrove.notifications@gmail.com");  // Sender email address
+
+            mailSender.send(message);  // Send email
+
+            return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
+        }).flatMap(notificationRepository::save).then();
+    }
+
+    @Override
+    public Mono<Void> sendCustomUpdateEmail(String to, String messageContent, String userName, Package packageDetails) {
+        return Mono.fromCallable(() -> {
+            String subject = "🚨 Tour Package Update Notice for " + packageDetails.getName() + "!";
+
+            String htmlContent = loadHtmlTemplate("custom-package-update-email.html",
+                    userName, packageDetails.getName(), packageDetails.getDescription(), packageDetails.getStartDate().toString(),
+                    packageDetails.getEndDate().toString(), packageDetails.getPriceSingle().toString(), messageContent);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            helper.setFrom("traveltrove.notifications@gmail.com");
+
+            mailSender.send(message);
+
+            return null;
+        }).then();
+    }
 
     private String loadHtmlTemplate(String templateName, String... templateArgs) {
         ClassPathResource resource = new ClassPathResource("email-templates/" + templateName);
@@ -193,3 +256,8 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 }
+
+
+
+
+
