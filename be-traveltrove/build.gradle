@@ -67,6 +67,8 @@ dependencies {
 	implementation 'software.amazon.awssdk:auth:2.20.47' // AWS Auth SDK
 	implementation 'javax.annotation:javax.annotation-api:1.3.2' // For Javax Annotations
 	implementation 'com.auth0:java-jwt:4.4.0'
+
+	implementation 'com.stripe:stripe-java:24.1.0' // Stripe SDK
 }
 
 jacocoTestReport {

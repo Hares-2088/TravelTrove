@@ -1552,7 +1552,7 @@ public class DatabaseLoader {
                         .priceTriple(1400.0)
                         .totalSeats(130)
                         .availableSeats(50)
-                        .status(PackageStatus.UPCOMING)
+                        .status(PackageStatus.BOOKING_OPEN)
                         .build(),
 
 
@@ -1570,7 +1570,7 @@ public class DatabaseLoader {
                         .priceTriple(1100.0)
                         .totalSeats(125)
                         .availableSeats(10)
-                        .status(PackageStatus.UPCOMING)
+                        .status(PackageStatus.BOOKING_OPEN)
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
