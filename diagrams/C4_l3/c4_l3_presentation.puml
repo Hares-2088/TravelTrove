@@ -73,7 +73,7 @@ Container_Boundary(spa, "Web Application (React)") {
         Component(AirportManagementFeature, "Airport Management Feature", "React Module", "Manages airport data", $tags = "feature", $sprite="react")
         Component(UserManagementFeature, "User Management Feature", "React Module", "Manages user data", $tags = "feature", $sprite="react")
         Component(HotelsManagementFeature, "Hotels Management Feature", "React Module", "Manages hotel data", $tags = "feature", $sprite="react")
-        Component(AddTourPackageFeature, "Add Tour Package Feature", "React Module", "Allows admins to add new tour packages", $tags = "feature", $sprite="react")
+        Component(AddTourPackageFeature, "Manage Tour Package Feature", "React Module", "Allows admins to add new tour packages", $tags = "feature", $sprite="react")
 
         Component(EmployeeListPage, "Employee List Page", "React Component", "Displays the list of employees for admin", $tags = "page", $sprite="react")
         Component(EmployeeDetailsPage, "Employee Details Page", "React Component", "Shows detailed information of an employee for admin", $tags = "page", $sprite="react")
@@ -85,9 +85,11 @@ Container_Boundary(spa, "Web Application (React)") {
         Component(ReportsPage, "Reports Page", "React Component", "Displays reporting tools for admin", $tags = "page", $sprite="react")
         Component(GenerateReportFeature, "Generate Report Feature", "React Module", "Generates reports based on criteria", $tags = "feature", $sprite="react")
 
-    Component(TravelerPage, "Traveler Page", "React Component", "Displays traveler profiles and details", $tags = "page", $sprite="react")
+        Component(TravelerPage, "Traveler Page", "React Component", "Displays traveler profiles and details", $tags = "page", $sprite="react")
         Component(AddTravelerFeature, "Add Traveler Feature", "React Module", "Allows users to manage traveler information", $tags = "feature", $sprite="react")
 
+        Component(ManageBookingsPage, "Manage Bookings Page", "React Component", "Displays and manages bookings for admin", $tags = "page", $sprite="react")
+        Component(ManageBookingsFeature, "Manage Bookings Feature", "React Module", "Handles booking management operations", $tags = "feature", $sprite="react")
     }
 
     ' Employee-specific pages and features
@@ -131,7 +133,6 @@ Rel(UserContext, CustomNotificationPage, "Provides user context to")
 Rel(UserContext, ReviewPage, "Provides user context to")
 
 Rel(UserContext, HomePage, "Provides user context to")
-
 
 Rel(ToursFeature, AxiosInstance, "Fetches data using", "HTTP")
 Rel(BookingFeature, AxiosInstance, "Submits booking data via", "HTTP")
@@ -179,7 +180,7 @@ Rel(AdminDashboardPage, HotelsManagementFeature, "Uses")
 Rel(AdminDashboardPage, AirportManagementFeature, "Uses")
 Rel(AdminDashboardPage, UserManagementFeature, "Uses")
 Rel(AdminDashboardPage, AddTourPackageFeature, "Uses")
-
+Rel(AdminDashboardPage, ManageBookingsFeature, "Uses")
 
 Rel(EmployeeListPage, ManageEmployeeAccountsFeature, "Uses")
 Rel(EmployeeDetailsPage, ManageEmployeeAccountsFeature, "Uses")
@@ -197,7 +198,6 @@ Rel(EmployeeDashboardPage, UserManagementFeature, "Uses")
 Rel(EmployeeDashboardPage, AddTourPackageFeature, "Uses")
 Rel(EmployeeDashboardPage, ModifyTourPackageFeature, "Uses")
 Rel(EmployeeDashboardPage, CustomEmailNotificationFeature, "Uses")
-
 
 Rel(CustomNotificationPage, CustomEmailNotificationFeature, "Uses")
 Rel(TourManagementPage, AddTourPackageFeature, "Uses")

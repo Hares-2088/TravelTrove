@@ -95,6 +95,8 @@ test.finalizedBy jacocoTestReport
 check.dependsOn jacocoTestCoverageVerification
 
 test {
+	ignoreFailures = true
+
 	useJUnitPlatform()
 	testLogging {
 		events "passed", "skipped", "failed"

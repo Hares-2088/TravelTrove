@@ -21,6 +21,7 @@ rectangle "Travel Trove System" {
     usecase "Add a Tour Package"
     usecase "Edit Tour Package Details"
     usecase "Update Tour Package Status"
+    usecase "Cancel Tour Package"
 
 }
 
