@@ -23,16 +23,16 @@ const BookingFormPage: React.FC = () => {
 
       // Calculate total price: price per traveler * number of travelers (converted to cents)
       const amountInCents = Math.round(pkg.priceSingle * numberOfTravelers * 100);
-      const feBaseURL = "https://sea-lion-app-36zpz.ondigitalocean.app";
+
       // Send the bookingId along with other details to the payments endpoint
       const response = await axiosInstance.post("payments/create-checkout-session", {
         amount: amountInCents,
         currency: "usd",
         packageId: pkg.packageId,
-        successUrl: `${feBaseURL}/payment-success`, 
-        cancelUrl: `${feBaseURL}/payment-cancelled`,   
-        bookingId: bookingId,               
-        travelers: bookingRequest.travelers, 
+        successUrl: "https://youtube.com",
+        cancelUrl: "https://github.com",
+        bookingId: bookingId,
+        travelers: bookingRequest.travelers,
       });
 
       const { sessionId } = response.data;
@@ -50,18 +50,21 @@ const BookingFormPage: React.FC = () => {
       }
     } catch (err) {
       console.error("Error creating checkout session:", err);
-      setError("You already have a booking. Please contact us if this was a mistake.");
+      setError("Failed to create checkout session. Please try again.");
     }
   };
 
   const handleBookingSubmit = async (bookingRequest: any) => {
     try {
-     
+      // 1. Pre-create the booking record with status PAYMENT_PENDING.
+      //    This call should return a bookingId.
       const bookingResponse = await axiosInstance.post("bookings", bookingRequest);
       const bookingId = bookingResponse.data.bookingId;
 
+      // 2. Determine the number of travelers.
       const numberOfTravelers = bookingRequest.travelers.length;
 
+      // 3. Create the payment session using the pre-created booking's ID.
       await createCheckoutSession(bookingRequest, numberOfTravelers, bookingId);
     } catch (error) {
       console.error("Error during booking process:", error);
@@ -73,8 +76,8 @@ const BookingFormPage: React.FC = () => {
     <div>
       <h1>Booking Form</h1>
       <BookingForm pkg={pkg} onSubmit={handleBookingSubmit} />
-      {confirmationMessage && <p style={{ color: "green" }}>{confirmationMessage}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {confirmationMessage && <p className="confirmation-message">{confirmationMessage}</p>}
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 };

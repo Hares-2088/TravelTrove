@@ -47,32 +47,34 @@ public class UserServiceImpl implements UserService {
                                                 .doOnError(error -> log.error("Failed to assign 'Customer' role to User ID: {}", auth0UserId, error))
                                                 .then(auth0Service.getUserById(auth0UserId)
                                                         .doOnSuccess(updatedAuth0User -> log.info("Updated Auth0 User Details After Role Assignment: {}", updatedAuth0User))
-                                                        .flatMap(updatedAuth0User ->
-                                                                userRepository.save(
-                                                                        User.builder()
-                                                                                .userId(auth0UserId)
-                                                                                .email(updatedAuth0User.getEmail())
-                                                                                .firstName(updatedAuth0User.getFirstName())
-                                                                                .lastName(updatedAuth0User.getLastName())
-                                                                                .roles(updatedAuth0User.getRoles())
-                                                                                .permissions(updatedAuth0User.getPermissions())
-                                                                                .travelerId(UUID.randomUUID().toString())
-                                                                                .build()
-                                                                )
-                                                                        .doOnSuccess(user -> {
-                                                                            log.info("User successfully created in MongoDB: {}", user);
+                                                        .flatMap(updatedAuth0User -> {
+                                                            String travelerId = UUID.randomUUID().toString();
+                                                            return userRepository.save(
+                                                                    User.builder()
+                                                                            .userId(auth0UserId)
+                                                                            .email(updatedAuth0User.getEmail())
+                                                                            .firstName(updatedAuth0User.getFirstName())
+                                                                            .lastName(updatedAuth0User.getLastName())
+                                                                            .roles(updatedAuth0User.getRoles())
+                                                                            .permissions(updatedAuth0User.getPermissions())
+                                                                            .travelerId(travelerId)
+                                                                            .travelerIds(List.of(travelerId))
+                                                                            .build()
+                                                            )
+                                                                    .doOnSuccess(user -> {
+                                                                        log.info("User successfully created in MongoDB: {}", user);
 
-                                                                            String templateName = "welcome-email.html";
-                                                                            String editProfileLink = String.format("%s/profile/create", baseUrl);
-                                                                            notificationService.sendEmail(
-                                                                                    user.getEmail(),
-                                                                                    "Welcome to Travel Trove!",
-                                                                                    templateName,
-                                                                                    user.getFirstName(),
-                                                                                    editProfileLink
-                                                                            );
-                                                                        })
-                                                        )
+                                                                        String templateName = "welcome-email.html";
+                                                                        String editProfileLink = String.format("%s/profile/create", baseUrl);
+                                                                        notificationService.sendEmail(
+                                                                                user.getEmail(),
+                                                                                "Welcome to Travel Trove!",
+                                                                                templateName,
+                                                                                user.getFirstName(),
+                                                                                editProfileLink
+                                                                        );
+                                                                    });
+                                                        })
                                                 )
                                 )
                 )
