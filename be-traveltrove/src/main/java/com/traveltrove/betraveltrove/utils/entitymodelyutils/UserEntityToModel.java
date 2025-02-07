@@ -15,6 +15,7 @@ public class UserEntityToModel {
         model.setRoles(user.getRoles());
         model.setPermissions(user.getPermissions());
         model.setTravelerId(user.getTravelerId());
+        model.setTravelerIds(user.getTravelerIds());
         return model;
     }
 }

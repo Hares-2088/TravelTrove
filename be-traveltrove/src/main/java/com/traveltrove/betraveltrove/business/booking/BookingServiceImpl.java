@@ -109,24 +109,29 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Mono<BookingResponseModel> createBooking(BookingRequestModel bookingRequestModel) {
+        log.info("Creating booking for userId={} and packageId={}", bookingRequestModel.getUserId(), bookingRequestModel.getPackageId());
         return Mono.just(bookingRequestModel)
                 // Convert request model to entity
                 .map(BookingEntityModelUtil::toBookingEntity)
 
                 // 1) Validate user/package and check if booking already exists
                 .flatMap(this::validateUserAndPackage)
+                .doOnNext(booking -> log.info("Validated user and package for bookingId={}", booking.getBookingId()))
 
                 // 2) Fetch the user from Auth0 (ensuring user exists)
                 .flatMap(this::fetchUserFromAuth0)
+                .doOnNext(tuple -> log.info("Fetched user from Auth0 for userId={}", tuple.getT2().getUserId()))
 
                 // 3) Ensure at least one traveler is present
                 .flatMap(tuple ->
                         ensureAtLeastOneTravelerPresent(bookingRequestModel, tuple.getT2())
                                 .thenReturn(tuple)
                 )
+                .doOnNext(tuple -> log.info("Ensured at least one traveler is present for userId={}", tuple.getT2().getUserId()))
 
                 // 3) Gather existing traveler details
                 .flatMap(tuple -> gatherExistingTravelerDetails(tuple.getT1(), tuple.getT2()))
+                .doOnNext(tuple -> log.info("Gathered existing traveler details for userId={}", tuple.getT2().getUserId()))
 
                 // 4) Compare travelers in the request with existing travelers & create new ones if needed
                 .flatMap(tuple -> compareTravelersAndCreateNew(
@@ -135,6 +140,7 @@ public class BookingServiceImpl implements BookingService {
                         tuple.getT3(),
                         bookingRequestModel
                 ))
+                .doOnNext(tuple -> log.info("Compared travelers and created new ones if needed for userId={}", tuple.getT2().getUserId()))
 
                 // 5) Update the user’s traveler IDs to include any newly created travelers
                 .flatMap(tuple -> updateUserTravelerIds(
@@ -143,17 +149,24 @@ public class BookingServiceImpl implements BookingService {
                         tuple.getT3(),
                         tuple.getT4()
                 ))
+                .doOnNext(booking -> log.info("Updated user traveler IDs for bookingId={}", booking.getBookingId()))
 
                 .flatMap(booking -> {
                     booking.setStatus(BookingStatus.PAYMENT_PENDING);
                     return Mono.just(booking);
                 })
+                .doOnNext(booking -> log.info("Set booking status to PAYMENT_PENDING for bookingId={}", booking.getBookingId()))
+
                 // 6) Save the booking in Mongo and convert to response
                 .flatMap(bookingRepository::save)
+                .doOnNext(savedBooking -> log.info("Saved booking in Mongo for bookingId={}", savedBooking.getBookingId()))
+
                 .flatMap(savedBooking ->
                         subscriptionService.subscribeUserToPackage(savedBooking.getUserId(), savedBooking.getPackageId())
                                 .thenReturn(savedBooking)
                 )
+                .doOnNext(savedBooking -> log.info("Subscribed user to package for bookingId={}", savedBooking.getBookingId()))
+
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
 

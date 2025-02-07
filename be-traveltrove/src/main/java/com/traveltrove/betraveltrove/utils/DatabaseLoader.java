@@ -1391,6 +1391,19 @@ public class DatabaseLoader {
         List<Traveler> sampleTravelers = List.of(
                 Traveler.builder()
                         .id(null)
+                        .travelerId("c69fa655-d480-48e4-8b66-0d54c1b2b46d")
+                        .firstName("amelia")
+                        .lastName("clark")
+                        .email("ameliaclark@email.com")
+                        .addressLine1("123 Main St")
+                        .addressLine2("321 Main st")
+                        .city("New York")
+                        .state("NY")
+                        .countryId("ad633b50-83d4-41f3-866a-26452bdd6f33")
+                        .seq(1)
+                        .build(),
+                Traveler.builder()
+                        .id(null)
                         .travelerId("d1e91f6c-723e-43b9-812f-2f3d3bfb4081")
                         .firstName("Adem")
                         .lastName("Bessam")
@@ -1651,6 +1664,7 @@ public class DatabaseLoader {
                         .roles(List.of("admin"))
                         .permissions(null)
                         .travelerId("c69fa655-d480-48e4-8b66-0d54c1b2b46d")
+                        .travelerIds(List.of("c69fa655-d480-48e4-8b66-0d54c1b2b46d"))
                         .build(),
                 User.builder()
                         .id(null)
@@ -1661,6 +1675,7 @@ public class DatabaseLoader {
                         .roles(List.of("admin"))
                         .permissions(null)
                         .travelerId("b3904b84-9cd3-46ca-bcf3-f2206411a842")
+                        .travelerIds(List.of("b3904b84-9cd3-46ca-bcf3-f2206411a842"))
                         .build(),
 
                 // Employees
@@ -1673,6 +1688,7 @@ public class DatabaseLoader {
                         .roles(List.of("employee"))
                         .permissions(null)
                         .travelerId("9e96ca09-1048-4e7e-b246-51ddfd556e14")
+                        .travelerIds(List.of("9e96ca09-1048-4e7e-b246-51ddfd556e14"))
                         .build(),
                 User.builder()
                         .id(null)
@@ -1683,6 +1699,7 @@ public class DatabaseLoader {
                         .roles(List.of("employee"))
                         .permissions(null)
                         .travelerId("2c2cfa3d-de07-42e8-930a-4e63ad39a2b1")
+                        .travelerIds(List.of("2c2cfa3d-de07-42e8-930a-4e63ad39a2b1"))
                         .build(),
                 User.builder()
                         .id(null)
@@ -1693,6 +1710,7 @@ public class DatabaseLoader {
                         .roles(List.of("employee"))
                         .permissions(null)
                         .travelerId("2a75f97e-f77b-468c-83cd-c9340283a125")
+                        .travelerIds(List.of("2a75f97e-f77b-468c-83cd-c9340283a125"))
                         .build(),
 
                 // Customers
@@ -1705,6 +1723,7 @@ public class DatabaseLoader {
                         .roles(List.of("customer"))
                         .permissions(null)
                         .travelerId("ec1c67c8-af60-4956-a84a-fa569897a065")
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
                 User.builder()
                         .id(null)
@@ -1715,6 +1734,7 @@ public class DatabaseLoader {
                         .roles(List.of("customer"))
                         .permissions(null)
                         .travelerId("7491755b-1904-4432-96f6-d7c14d3d1532")
+                        .travelerIds(List.of("7491755b-1904-4432-96f6-d7c14d3d1532"))
                         .build(),
                 User.builder()
                         .id(null)
@@ -1725,6 +1745,7 @@ public class DatabaseLoader {
                         .roles(List.of("customer"))
                         .permissions(null)
                         .travelerId("fd96c9f3-1429-4a32-b8f1-033fdd4aa0eb")
+                        .travelerIds(List.of("fd96c9f3-1429-4a32-b8f1-033fdd4aa0eb"))
                         .build(),
                 User.builder()
                         .id(null)
@@ -1735,6 +1756,7 @@ public class DatabaseLoader {
                         .roles(List.of("customer"))
                         .permissions(null)
                         .travelerId("565ac69b-5022-42d7-89f4-e031f67da710")
+                        .travelerIds(List.of("565ac69b-5022-42d7-89f4-e031f67da710"))
                         .build(),
                 User.builder()
                         .id(null)
@@ -1745,6 +1767,7 @@ public class DatabaseLoader {
                         .roles(List.of("customer"))
                         .permissions(null)
                         .travelerId("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31")
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build()
         );
 

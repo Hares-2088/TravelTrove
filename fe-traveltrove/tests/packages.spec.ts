@@ -177,7 +177,7 @@ test("create new package and change it to completed and make sure it is irrivers
     await page.getByLabel('Email address').press('Tab');
     await page.goto('http://localhost:3000/home');
     await page.getByRole('button', { name: 'Sign in' }).click();
-    await page.goto('chrome-error://chromewebdata/');('Tab');
+    await page.goto('chrome-error://chromewebdata/'); ('Tab');
     await page.getByLabel('Password').fill('Admin@123');
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     await page.getByRole('link', { name: 'Dashboard' }).click();

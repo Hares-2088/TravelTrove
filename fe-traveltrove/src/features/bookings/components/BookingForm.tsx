@@ -7,9 +7,10 @@ import {
   TravelerResponseModel,
 } from "../../travelers/model/traveler.model";
 import { BookingStatus } from "../../bookings/models/bookings.model";
+import "./BookingForm.css"; // Import the CSS file
 
 interface BookingFormProps {
-  pkg: any; 
+  pkg: any;
   onSubmit: (bookingRequest: any) => void;
 }
 
@@ -20,17 +21,34 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
   const [travelers, setTravelers] = useState<TravelerResponseModel[]>([]);
   const [selectedTravelers, setSelectedTravelers] = useState<TravelerResponseModel[]>([]);
   const [newTravelers, setNewTravelers] = useState<TravelerRequestModel[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Fetch travelers when the component mounts
     const fetchTravelers = async () => {
-      if (user?.sub) {
-        const userResponseModel = await syncUser(user.sub);
-        const travelerIds = userResponseModel.travelerIds || [];
-        const travelers = await Promise.all(
-          travelerIds.map((travelerId: string) => getTravelerById(travelerId))
-        );
-        setTravelers(travelers);
+      try {
+        if (user?.sub) {
+          const userResponseModel = await syncUser(user.sub);
+          const travelerIds = userResponseModel.travelerIds || [];
+          console.log("travelerIds", travelerIds);
+          const travelers = await Promise.all(
+            travelerIds.map(async (travelerId: string) => {
+              try {
+                const traveler = await getTravelerById(travelerId);
+                return traveler;
+              } catch (error) {
+                console.error(`Failed to fetch traveler with ID ${travelerId}`, error);
+                return null;
+              }
+            })
+          );
+          const validTravelers = travelers.filter((traveler) => traveler !== null);
+          setTravelers(validTravelers);
+          console.log("Fetched Travelers:", validTravelers);
+        }
+      } catch (error) {
+        console.error("Failed to fetch travelers", error);
+        setError("Failed to fetch travelers. Please try again.");
       }
     };
     fetchTravelers();
@@ -40,6 +58,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
     const existingTraveler = travelers.find((t) => t.travelerId === travelerId);
     if (existingTraveler) {
       setSelectedTravelers([...selectedTravelers, existingTraveler]);
+      console.log("Selected Travelers:", [...selectedTravelers, existingTraveler]);
     }
   };
 
@@ -69,7 +88,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
 
   const handleSubmit = () => {
     if (!user?.sub) {
-      console.error("User ID is missing");
+      setError("User ID is missing");
       return;
     }
 
@@ -82,13 +101,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       travelers: [...selectedTravelers, ...newTravelers],
     };
 
+    console.log("Booking Request:", bookingRequest);
     onSubmit(bookingRequest);
   };
 
   return (
-    <div>
+    <div className="booking-form">
       <h2>Booking for: {pkg.name}</h2>
-      <select onChange={(e) => handleTravelerSelect(e.target.value)}>
+      <select onChange={(e) => handleTravelerSelect(e.target.value)} className="traveler-select">
         <option value="">Select Traveler</option>
         {travelers.map((traveler) => (
           <option key={traveler.travelerId} value={traveler.travelerId}>
@@ -97,49 +117,55 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
         ))}
       </select>
       {selectedTravelers.map((traveler) => (
-        <div key={traveler.travelerId}>
-          <p>
-            {traveler.firstName} {traveler.lastName}
-          </p>
-          <p>{traveler.email}</p>
+        <div key={traveler.travelerId} className="traveler-info">
+          <p><strong>First Name:</strong> {traveler.firstName}</p>
+          <p><strong>Last Name:</strong> {traveler.lastName}</p>
+          <p><strong>Email:</strong> {traveler.email}</p>
+          <p><strong>Address Line 1:</strong> {traveler.addressLine1}</p>
         </div>
       ))}
       {newTravelers.map((traveler, index) => (
-        <div key={index}>
+        <div key={index} className="new-traveler">
           <input
             type="text"
             placeholder="First Name"
             value={traveler.firstName}
             onChange={(e) => handleTravelerChange(index, "firstName", e.target.value)}
+            className="traveler-input"
           />
           <input
             type="text"
             placeholder="Last Name"
             value={traveler.lastName}
             onChange={(e) => handleTravelerChange(index, "lastName", e.target.value)}
+            className="traveler-input"
           />
           <input
             type="email"
             placeholder="Email"
             value={traveler.email}
             onChange={(e) => handleTravelerChange(index, "email", e.target.value)}
+            className="traveler-input"
           />
           <input
             type="text"
             placeholder="Address Line 1"
             value={traveler.addressLine1}
             onChange={(e) => handleTravelerChange(index, "addressLine1", e.target.value)}
+            className="traveler-input"
           />
           <input
             type="text"
             placeholder="Address Line 2"
             value={traveler.addressLine2}
             onChange={(e) => handleTravelerChange(index, "addressLine2", e.target.value)}
+            className="traveler-input"
           />
         </div>
       ))}
-      <button onClick={handleAddTraveler}>Add Traveler</button>
-      <button onClick={handleSubmit}>Confirm Booking</button>
+      <button onClick={handleAddTraveler} className="add-traveler-button">Add Traveler</button>
+      {error && <p className="error-message">{error}</p>}
+      <button onClick={handleSubmit} className="submit-button">Confirm Booking</button>
     </div>
   );
 };
