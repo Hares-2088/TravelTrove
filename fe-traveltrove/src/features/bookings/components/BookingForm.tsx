@@ -7,6 +7,8 @@ import {
   TravelerResponseModel,
 } from "../../travelers/model/traveler.model";
 import { BookingStatus } from "../../bookings/models/bookings.model";
+import { useNavigate } from "react-router-dom";
+
 import "./BookingForm.css"; // Import the CSS file
 import {
   FaUserPlus,
@@ -14,6 +16,7 @@ import {
   FaTrash,
   FaExclamationTriangle,
 } from "react-icons/fa";
+import { AppRoutes } from "../../../shared/models/app.routes";
 
 interface BookingFormProps {
   pkg: any;
@@ -31,6 +34,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
   const [newTravelers, setNewTravelers] = useState<TravelerRequestModel[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{ [key: number]: string[] }>({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch travelers when the component mounts
@@ -69,9 +73,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
   };
 
   const handleRemoveSelectedTraveler = (travelerId: string) => {
-    setSelectedTravelers(
-      selectedTravelers.filter((t) => t.travelerId !== travelerId)
-    );
+    const updatedTravelers = selectedTravelers.filter((t) => t.travelerId !== travelerId);
+    setSelectedTravelers(updatedTravelers);
+    if (updatedTravelers.length === 0 && newTravelers.length === 0) {
+      setError(null);
+    }
   };
 
 
@@ -93,10 +99,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
   };
 
   const handleRemoveNewTraveler = (index: number) => {
-    setNewTravelers(newTravelers.filter((_, i) => i !== index));
+    const updatedNewTravelers = newTravelers.filter((_, i) => i !== index);
+    setNewTravelers(updatedNewTravelers);
     const updatedErrors = { ...formErrors };
     delete updatedErrors[index];
     setFormErrors(updatedErrors);
+    if (Object.keys(updatedErrors).length === 0) {
+      setError(null);
+    }
   };
   const handleTravelerChange = (
     index: number,
@@ -124,7 +134,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       if (!traveler.countryId.trim())
         travelerErrors.push("Country is required.");
       if (!traveler.addressLine1.trim())
-        travelerErrors.push("Addressline 1 is required.");
+        travelerErrors.push("Address Line 1 is required.");
 
       if (travelerErrors.length > 0) {
         errors[index] = travelerErrors;
@@ -360,20 +370,35 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       ))}
 
       {/* Add Traveler Button */}
-      <button
-        className="btn btn-outline-primary w-100 my-3"
-        onClick={handleAddTraveler}
-      >
-        <FaUserPlus /> Add Traveler
-      </button>
+      {travelers.length > 0 && (
+        <button
+          className="btn btn-outline-primary w-100 my-3"
+          onClick={handleAddTraveler}
+        >
+          <FaUserPlus /> Add Traveler
+        </button>
+      )}
 
       {/* Error Message */}
       {error && <div className="alert alert-danger">{error}</div>}
 
       {/* Submit Button */}
-      <button className="btn btn-primary w-100" onClick={handleSubmit}>
-        <FaCheckCircle /> Confirm Booking
-      </button>
+      {selectedTravelers.length > 0 || newTravelers.length > 0 ? (
+        <button className="btn btn-primary w-100" onClick={handleSubmit}>
+          <FaCheckCircle /> Confirm Booking
+        </button>
+      ) : travelers.length === 0 ? (
+        <button
+          className="btn btn-warning w-100"
+          onClick={() => navigate(AppRoutes.ProfileCreatePage)}
+        >
+          <FaExclamationTriangle /> Create Traveler Profile before booking
+        </button>
+      ) : (
+        <button className="btn btn-secondary w-100" disabled>
+          <FaExclamationTriangle /> Select or Add a Traveler to Confirm Booking
+        </button>
+      )}
     </div>
   );
 };
