@@ -73,7 +73,7 @@ export const useBookingsApi = () => {
   ): Promise<BookingResponseModel> => {
     const response = await axiosInstance.patch<BookingResponseModel>(
       `/bookings/${bookingId}`,
-      { status }
+      { status } // Ensure the request body is correctly structured
     );
     return response.data;
   };

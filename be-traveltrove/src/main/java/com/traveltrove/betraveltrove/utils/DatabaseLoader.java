@@ -1791,13 +1791,13 @@ public class DatabaseLoader {
                     .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda29")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
+                    .status(BookingStatus.PAYMENT_PENDING)
                     .bookingDate(LocalDate.now().minusMonths(1))
                     .totalPrice(1600.0)
                     .build(),
 
             Booking.builder()
-                    .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b177")
+                    .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b172")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
                     .status(BookingStatus.BOOKING_CONFIRMED)
@@ -1833,7 +1833,7 @@ public class DatabaseLoader {
                     .build(),
 
             Booking.builder()
-                    .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b844")
+                    .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b845")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("9d3f8b7e-a6c1-4f42-b6d8-7a9b4e2d5cf3")
                     .status(BookingStatus.BOOKING_CONFIRMED)
@@ -1879,7 +1879,7 @@ public class DatabaseLoader {
 
         // user:  675f4b619a80612ce548e068
                 Booking.builder()
-                        .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b844")
+                        .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b843")
                         .userId("auth0|675f4b619a80612ce548e068")
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
                         .status(BookingStatus.BOOKING_CONFIRMED)
@@ -1925,7 +1925,7 @@ public class DatabaseLoader {
                 // user: 675f4b7ae184fd643a8ed902
 
                 Booking.builder()
-                        .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b177")
+                        .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b175")
                         .userId("auth0|675f4b7ae184fd643a8ed902")
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
                         .status(BookingStatus.BOOKING_CONFIRMED)
@@ -1962,7 +1962,7 @@ public class DatabaseLoader {
 
                 //user: 675f4b9d9a80612ce548e069
                 Booking.builder()
-                        .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda29")
+                        .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda23")
                         .userId("auth0|675f4b9d9a80612ce548e069")
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
                         .status(BookingStatus.BOOKING_CONFIRMED)
