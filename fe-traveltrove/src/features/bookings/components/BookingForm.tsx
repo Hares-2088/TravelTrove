@@ -30,25 +30,21 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
         if (user?.sub) {
           const userResponseModel = await syncUser(user.sub);
           const travelerIds = userResponseModel.travelerIds || [];
-          console.log("travelerIds", travelerIds);
           const travelers = await Promise.all(
             travelerIds.map(async (travelerId: string) => {
               try {
                 const traveler = await getTravelerById(travelerId);
                 return traveler;
               } catch (error) {
-                console.error(`Failed to fetch traveler with ID ${travelerId}`, error);
                 return null;
               }
             })
           );
           const validTravelers = travelers.filter((traveler) => traveler !== null);
           setTravelers(validTravelers);
-          console.log("Fetched Travelers:", validTravelers);
         }
       } catch (error) {
         console.error("Failed to fetch travelers", error);
-        setError("Failed to fetch travelers. Please try again.");
       }
     };
     fetchTravelers();
@@ -58,7 +54,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
     const existingTraveler = travelers.find((t) => t.travelerId === travelerId);
     if (existingTraveler) {
       setSelectedTravelers([...selectedTravelers, existingTraveler]);
-      console.log("Selected Travelers:", [...selectedTravelers, existingTraveler]);
     }
   };
 

@@ -3,6 +3,7 @@ import { Button, Table, Modal, Form, Card } from "react-bootstrap"; // Import Ca
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { useBookingsApi } from "../../../bookings/api/bookings.api";
+import { useUsersApi } from "../../../users/api/users.api"; // Import useUsersApi
 import {
   BookingRequestModel,
   BookingResponseModel,
@@ -15,12 +16,11 @@ const Bookings: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const packageId = searchParams.get("packageId");
-  const { getAllBookings, updateBookingStatus } = useBookingsApi(); // Removed deleteBooking
+  const { getAllBookings, updateBookingStatus } = useBookingsApi();
+  const { getUserById } = useUsersApi(); // Get user by ID
   const [bookings, setBookings] = useState<BookingResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "view">(
-    "create"
-  );
+  const [modalType, setModalType] = useState<"updateStatus" | "view">("updateStatus");
   const [selectedBooking, setSelectedBooking] =
     useState<BookingResponseModel | null>(null);
   const [formData, setFormData] = useState<BookingRequestModel>({
@@ -37,6 +37,7 @@ const Bookings: React.FC = () => {
     status: false,
     bookingDate: false,
   });
+  const [userNames, setUserNames] = useState<{ [key: string]: string }>({}); // State for user names
 
   useEffect(() => {
     fetchBookings();
@@ -45,6 +46,13 @@ const Bookings: React.FC = () => {
   const fetchBookings = async () => {
     try {
       const data = await getAllBookings({ packageId: packageId || undefined });
+      const userIds = data.map((booking) => booking.userId);
+      const userNamesData = await Promise.all(userIds.map((id) => getUserById(id)));
+      const userNamesMap = userNamesData.reduce((acc, user) => {
+        acc[user.userId] = user.firstName + " " + user.lastName; // Assuming firstName and lastName exist
+        return acc;
+      }, {} as { [key: string]: string });
+      setUserNames(userNamesMap);
       setBookings(data);
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -65,7 +73,7 @@ const Bookings: React.FC = () => {
     }
 
     try {
-      if (modalType === "update" && selectedBooking) {
+      if (modalType === "updateStatus" && selectedBooking) {
         await updateBookingStatus(selectedBooking.bookingId, formData.status);
       }
       setShowModal(false);
@@ -104,7 +112,7 @@ const Bookings: React.FC = () => {
               <Table bordered hover responsive className="rounded custom-table">
                 <thead className="bg-light">
                   <tr>
-                    <th>{t("User ID")}</th>
+                    <th>{t("User Name")}</th> {/* Change to User Name */}
                     <th>{t("Total Price")}</th>
                     <th>{t("Status")}</th>
                     <th>{t("Booking Date")}</th>
@@ -114,35 +122,37 @@ const Bookings: React.FC = () => {
                 <tbody>
                   {bookings.map((booking) => (
                     <tr key={booking.bookingId}>
-                      <td>{booking.userId}</td>
+                      <td>{userNames[booking.userId]}</td> {/* Display user name */}
                       <td>{booking.totalPrice}</td>
                       <td>{t(booking.status)}</td>
                       <td>{booking.bookingDate}</td>
                       <td>
-                        <Button
-                          variant="outline-primary"
-                          onClick={() => {
-                            setSelectedBooking(booking);
-                            setModalType("update");
-                            setFormData({
-                              userId: booking.userId,
-                              packageId: booking.packageId,
-                              totalPrice: booking.totalPrice,
-                              status: booking.status,
-                              bookingDate: booking.bookingDate,
-                              travelers: [],
-                            });
-                            setFormErrors({
-                              userId: false,
-                              totalPrice: false,
-                              status: false,
-                              bookingDate: false,
-                            });
-                            setShowModal(true);
-                          }}
-                        >
-                          {t("Edit Booking")}
-                        </Button>
+                        {booking.status !== BookingStatus.BOOKING_FAILED && booking.status !== BookingStatus.REFUNDED && (
+                          <Button
+                            variant="outline-primary"
+                            onClick={() => {
+                              setSelectedBooking(booking);
+                              setModalType("updateStatus");
+                              setFormData({
+                                userId: booking.userId,
+                                packageId: booking.packageId,
+                                totalPrice: booking.totalPrice,
+                                status: booking.status,
+                                bookingDate: booking.bookingDate,
+                                travelers: [],
+                              });
+                              setFormErrors({
+                                userId: false,
+                                totalPrice: false,
+                                status: false,
+                                bookingDate: false,
+                              });
+                              setShowModal(true);
+                            }}
+                          >
+                            {t("Update Status")}
+                          </Button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -158,14 +168,14 @@ const Bookings: React.FC = () => {
           >
             <Modal.Header closeButton>
               <Modal.Title>
-                {modalType === "update" ? t("Edit Booking") : t("View Booking")}
+                {modalType === "updateStatus" ? t("Update Booking Status") : t("View Booking")}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {modalType === "view" ? (
                 <div>
                   <p>
-                    <strong>{t("User ID")}:</strong> {selectedBooking?.userId}
+                    <strong>{t("User Name")}:</strong> {userNames[selectedBooking?.userId || ""]}
                   </p>
                   <p>
                     <strong>{t("Total Price")}:</strong>{" "}
@@ -183,38 +193,6 @@ const Bookings: React.FC = () => {
               ) : (
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3">
-                    <Form.Label>{t("User ID")}</Form.Label>
-                    <Form.Control
-                      required
-                      type="text"
-                      value={formData.userId}
-                      onChange={(e) =>
-                        setFormData({ ...formData, userId: e.target.value })
-                      }
-                      isInvalid={formErrors.userId}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {t("User ID is required")}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>{t("Total Price")}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={formData.totalPrice}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          totalPrice: +e.target.value,
-                        })
-                      }
-                      isInvalid={formErrors.totalPrice}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {t("Total Price is required")}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
                     <Form.Label>{t("Status")}</Form.Label>
                     <Form.Control
                       as="select"
@@ -227,31 +205,29 @@ const Bookings: React.FC = () => {
                       }
                       isInvalid={formErrors.status}
                     >
-                      {Object.values(BookingStatus).map((status) => (
-                        <option key={status} value={status}>
-                          {t(status)}
-                        </option>
-                      ))}
+                      {/* Always show the current status as the placeholder */}
+                      <option value={selectedBooking?.status} disabled>
+                        {t(selectedBooking?.status || "Select Status")}
+                      </option>
+
+                      {/* If status is COMPLETED, only allow REFUNDED */}
+                      {selectedBooking?.status === BookingStatus.BOOKING_CONFIRMED ? (
+                        <option value={BookingStatus.REFUNDED}>{t(BookingStatus.REFUNDED)}</option>
+                      ) : (
+                        Object.values(BookingStatus)
+                          .filter((status) =>
+                            status !== BookingStatus.REFUNDED &&
+                            !(selectedBooking?.status === BookingStatus.PAYMENT_ATTEMPT2_PENDING && status === BookingStatus.PAYMENT_PENDING)
+                          )
+                          .map((status) => (
+                            <option key={status} value={status}>
+                              {t(status)}
+                            </option>
+                          ))
+                      )}
                     </Form.Control>
                     <Form.Control.Feedback type="invalid">
                       {t("Status is required")}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>{t("Booking Date")}</Form.Label>
-                    <Form.Control
-                      type="date"
-                      value={formData.bookingDate}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          bookingDate: e.target.value,
-                        })
-                      }
-                      isInvalid={formErrors.bookingDate}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {t("Booking Date is required")}
                     </Form.Control.Feedback>
                   </Form.Group>
                   <Modal.Footer>

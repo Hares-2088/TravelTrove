@@ -4,18 +4,15 @@
 TourSelection -down-> PaymentPending : proceedToPayment()
 
 PaymentPending -right-> BookingConfirmed : paymentConfirmed()
-PaymentPending -left-> PaymentFailed : paymentFailed()
+PaymentPending -down-> RetryPayment1 : paymentFailed()
 
-PaymentFailed -down-> RetryPayment1 : retryPayment(1st Attempt)
 RetryPayment1 -up-> PaymentPending : attemptPayment()
+RetryPayment1 -down-> RetryPayment2 : paymentFailed()
 
-RetryPayment1 -down-> RetryPayment2 : retryPayment(2nd Attempt)
 RetryPayment2 -up-> PaymentPending : attemptPayment()
-
 RetryPayment2 -down-> BookingFailed : maxRetriesReached()
 
 BookingFailed --> [*]
 BookingConfirmed --> [*]
-
 
 @enduml
