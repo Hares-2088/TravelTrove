@@ -73,11 +73,25 @@ const BookingFormPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Booking Form</h1>
-      <BookingForm pkg={pkg} onSubmit={handleBookingSubmit} />
-      {confirmationMessage && <p className="confirmation-message">{confirmationMessage}</p>}
-      {error && <p className="error-message">{error}</p>}
+    <div className="container min-vh-100 d-flex align-items-center justify-content-center">
+      <div className="row w-100 shadow-lg p-4 m-1 bg-white rounded">
+        {pkg && (
+          <div className="col-md-6 p-3">
+            <h2 className="text-primary">{pkg.name}</h2>
+            <p className="text-muted fst-italic">{pkg.description}</p>
+            <p><strong>📅 Dates:</strong> {pkg.startDate} - {pkg.endDate}</p>
+            <p><strong>💲 Price:</strong> ${pkg.priceSingle}</p>
+            <p><strong>🎟 Seats:</strong> {pkg.availableSeats} available</p>
+            <p className={`fw-bold ${pkg.status === 'BOOKING_OPEN' ? 'text-success' : 'text-danger'}`}>📌 Status: {pkg.status.replace('_', ' ')}</p>
+          </div>
+        )}
+        <div className="col-md-6 p-3 border-start">
+          <h3 className="text-center">Booking Form</h3>
+          <BookingForm pkg={pkg} onSubmit={handleBookingSubmit} />
+          {confirmationMessage && <p className="mt-4 text-success text-center fw-bold">{confirmationMessage}</p>}
+          {error && <p className="mt-4 text-danger text-center fw-bold">{error}</p>}
+        </div>
+      </div>
     </div>
   );
 };

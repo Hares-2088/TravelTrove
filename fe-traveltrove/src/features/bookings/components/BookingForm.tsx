@@ -8,6 +8,12 @@ import {
 } from "../../travelers/model/traveler.model";
 import { BookingStatus } from "../../bookings/models/bookings.model";
 import "./BookingForm.css"; // Import the CSS file
+import {
+  FaUserPlus,
+  FaCheckCircle,
+  FaTrash,
+  FaExclamationTriangle,
+} from "react-icons/fa";
 
 interface BookingFormProps {
   pkg: any;
@@ -19,9 +25,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
   const { syncUser } = useUsersApi();
   const { getTravelerById } = useTravelersApi();
   const [travelers, setTravelers] = useState<TravelerResponseModel[]>([]);
-  const [selectedTravelers, setSelectedTravelers] = useState<TravelerResponseModel[]>([]);
+  const [selectedTravelers, setSelectedTravelers] = useState<
+    TravelerResponseModel[]
+  >([]);
   const [newTravelers, setNewTravelers] = useState<TravelerRequestModel[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<{ [key: number]: string[] }>({});
 
   useEffect(() => {
     // Fetch travelers when the component mounts
@@ -40,7 +49,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
               }
             })
           );
-          const validTravelers = travelers.filter((traveler) => traveler !== null);
+          const validTravelers = travelers.filter(
+            (traveler) => traveler !== null
+          );
           setTravelers(validTravelers);
         }
       } catch (error) {
@@ -56,6 +67,13 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       setSelectedTravelers([...selectedTravelers, existingTraveler]);
     }
   };
+
+  const handleRemoveSelectedTraveler = (travelerId: string) => {
+    setSelectedTravelers(
+      selectedTravelers.filter((t) => t.travelerId !== travelerId)
+    );
+  };
+
 
   const handleAddTraveler = () => {
     setNewTravelers([
@@ -74,23 +92,64 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
     ]);
   };
 
-  const handleTravelerChange = (index: number, field: string, value: string) => {
+  const handleRemoveNewTraveler = (index: number) => {
+    setNewTravelers(newTravelers.filter((_, i) => i !== index));
+    const updatedErrors = { ...formErrors };
+    delete updatedErrors[index];
+    setFormErrors(updatedErrors);
+  };
+  const handleTravelerChange = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
     const updatedTravelers = newTravelers.map((traveler, i) =>
       i === index ? { ...traveler, [field]: value } : traveler
     );
     setNewTravelers(updatedTravelers);
   };
+  const validateForm = () => {
+    let errors: { [key: number]: string[] } = {};
+
+    newTravelers.forEach((traveler, index) => {
+      let travelerErrors: string[] = [];
+
+      if (!traveler.firstName.trim())
+        travelerErrors.push("First name is required.");
+      if (!traveler.lastName.trim())
+        travelerErrors.push("Last name is required.");
+      if (!traveler.email.trim()) travelerErrors.push("Email is required.");
+      if (!traveler.city.trim()) travelerErrors.push("City is required.");
+      if (!traveler.state.trim()) travelerErrors.push("State is required.");
+      if (!traveler.countryId.trim())
+        travelerErrors.push("Country is required.");
+      if (!traveler.addressLine1.trim())
+        travelerErrors.push("Addressline 1 is required.");
+
+      if (travelerErrors.length > 0) {
+        errors[index] = travelerErrors;
+      }
+    });
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = () => {
+    if (!validateForm()) {
+      setError("Please fill in all required fields before submitting.");
+      return;
+    }
+
     if (!user?.sub) {
       setError("User ID is missing");
       return;
     }
-
     const bookingRequest = {
       userId: user.sub,
       packageId: pkg.packageId,
-      totalPrice: pkg.priceSingle * (selectedTravelers.length + newTravelers.length), // Calculate total price
+      totalPrice:
+        pkg.priceSingle * (selectedTravelers.length + newTravelers.length), // Calculate total price
       status: "PAYMENT_PENDING" as BookingStatus,
       bookingDate: new Date().toISOString(),
       travelers: [...selectedTravelers, ...newTravelers],
@@ -101,66 +160,220 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
   };
 
   return (
-    <div className="booking-form">
-      <h2>Booking for: {pkg.name}</h2>
-      <select onChange={(e) => handleTravelerSelect(e.target.value)} className="traveler-select">
-        <option value="">Select Traveler</option>
-        {travelers.map((traveler) => (
-          <option key={traveler.travelerId} value={traveler.travelerId}>
-            {traveler.firstName} {traveler.lastName}
-          </option>
-        ))}
-      </select>
-      {selectedTravelers.map((traveler) => (
-        <div key={traveler.travelerId} className="traveler-info">
-          <p><strong>First Name:</strong> {traveler.firstName}</p>
-          <p><strong>Last Name:</strong> {traveler.lastName}</p>
-          <p><strong>Email:</strong> {traveler.email}</p>
-          <p><strong>Address Line 1:</strong> {traveler.addressLine1}</p>
+    <div className="container p-4 shadow bg-white rounded">
+      {/* Package Info */}
+      <div className="alert alert-info">
+        <strong>Package:</strong> {pkg.name} <br />
+        <strong>Dates:</strong> {pkg.startDate} - {pkg.endDate}
+      </div>
+
+      {/* Existing Travelers Selection */}
+      <div className="mb-3">
+        <label className="form-label fw-bold">Select a Traveler:</label>
+        <select
+          onChange={(e) => handleTravelerSelect(e.target.value)}
+          className="form-select"
+        >
+          <option value="">Choose...</option>
+          {travelers.map((traveler) => (
+            <option key={traveler.travelerId} value={traveler.travelerId}>
+              {traveler.firstName} {traveler.lastName}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Display Selected Travelers */}
+      {selectedTravelers.length > 0 && (
+        <div className="mb-3">
+          <h5 className="fw-bold text-success">Selected Travelers:</h5>
+          {selectedTravelers.map((traveler) => (
+            <div
+              key={traveler.travelerId}
+              className="p-2 border rounded bg-light mb-2 d-flex justify-content-between align-items-center"
+            >
+              <div>
+                <strong>
+                  {traveler.firstName} {traveler.lastName}
+                </strong>
+                <p className="mb-0 text-muted">{traveler.email}</p>
+              </div>
+              <button
+                className="btn btn-danger btn-sm"
+                onClick={() =>
+                  handleRemoveSelectedTraveler(traveler.travelerId)
+                }
+              >
+                <FaTrash />
+              </button>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
+
+      {/* New Traveler Form */}
       {newTravelers.map((traveler, index) => (
-        <div key={index} className="new-traveler">
-          <input
-            type="text"
-            placeholder="First Name"
-            value={traveler.firstName}
-            onChange={(e) => handleTravelerChange(index, "firstName", e.target.value)}
-            className="traveler-input"
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={traveler.lastName}
-            onChange={(e) => handleTravelerChange(index, "lastName", e.target.value)}
-            className="traveler-input"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={traveler.email}
-            onChange={(e) => handleTravelerChange(index, "email", e.target.value)}
-            className="traveler-input"
-          />
-          <input
-            type="text"
-            placeholder="Address Line 1"
-            value={traveler.addressLine1}
-            onChange={(e) => handleTravelerChange(index, "addressLine1", e.target.value)}
-            className="traveler-input"
-          />
-          <input
-            type="text"
-            placeholder="Address Line 2"
-            value={traveler.addressLine2}
-            onChange={(e) => handleTravelerChange(index, "addressLine2", e.target.value)}
-            className="traveler-input"
-          />
+        <div key={index} className="p-3 border rounded mb-3 bg-light">
+          <h6 className="fw-bold text-secondary d-flex justify-content-between">
+            New Traveler #{index + 1}
+            <button
+              className="btn btn-sm btn-outline-danger"
+              onClick={() => handleRemoveNewTraveler(index)}
+            >
+              <FaTrash />
+            </button>
+          </h6>
+          <div className="row">
+            {/* First Name (Required) */}
+            <div className="col-md-6 mb-2">
+              <input
+                type="text"
+                className={`form-control ${
+                  formErrors[index]?.includes("First name is required.")
+                    ? "is-invalid"
+                    : ""
+                }`}
+                placeholder="First Name *"
+                value={traveler.firstName}
+                onChange={(e) =>
+                  handleTravelerChange(index, "firstName", e.target.value)
+                }
+              />
+            </div>
+
+            {/* Last Name (Required) */}
+            <div className="col-md-6 mb-2">
+              <input
+                type="text"
+                className={`form-control ${
+                  formErrors[index]?.includes("Last name is required.")
+                    ? "is-invalid"
+                    : ""
+                }`}
+                placeholder="Last Name *"
+                value={traveler.lastName}
+                onChange={(e) =>
+                  handleTravelerChange(index, "lastName", e.target.value)
+                }
+              />
+            </div>
+
+            {/* Email (Required) */}
+            <div className="col-md-6 mb-2">
+              <input
+                type="email"
+                className={`form-control ${
+                  formErrors[index]?.includes("Email is required.")
+                    ? "is-invalid"
+                    : ""
+                }`}
+                placeholder="Email *"
+                value={traveler.email}
+                onChange={(e) =>
+                  handleTravelerChange(index, "email", e.target.value)
+                }
+              />
+            </div>
+
+            {/* Address Line 1 (Required) */}
+            <div className="col-md-6 mb-2">
+              <input
+                type="text"
+                className={`form-control ${
+                  formErrors[index]?.includes("Address Line 1 is required.")
+                    ? "is-invalid"
+                    : ""
+                }`}
+                placeholder="Address Line 1 *"
+                value={traveler.addressLine1}
+                onChange={(e) =>
+                  handleTravelerChange(index, "addressLine1", e.target.value)
+                }
+              />
+            </div>
+
+            {/* Address Line 2 (Optional) */}
+            <div className="col-md-6 mb-2">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Address Line 2 (Optional)"
+                value={traveler.addressLine2}
+                onChange={(e) =>
+                  handleTravelerChange(index, "addressLine2", e.target.value)
+                }
+              />
+            </div>
+
+            {/* City (Required) */}
+            <div className="col-md-6 mb-2">
+              <input
+                type="text"
+                className={`form-control ${
+                  formErrors[index]?.includes("City is required.")
+                    ? "is-invalid"
+                    : ""
+                }`}
+                placeholder="City *"
+                value={traveler.city}
+                onChange={(e) =>
+                  handleTravelerChange(index, "city", e.target.value)
+                }
+              />
+            </div>
+
+            {/* State (Required) */}
+            <div className="col-md-6 mb-2">
+              <input
+                type="text"
+                className={`form-control ${
+                  formErrors[index]?.includes("State is required.")
+                    ? "is-invalid"
+                    : ""
+                }`}
+                placeholder="State *"
+                value={traveler.state}
+                onChange={(e) =>
+                  handleTravelerChange(index, "state", e.target.value)
+                }
+              />
+            </div>
+
+            {/* Country (Required) */}
+            <div className="col-md-6 mb-2">
+              <input
+                type="text"
+                className={`form-control ${
+                  formErrors[index]?.includes("Country is required.")
+                    ? "is-invalid"
+                    : ""
+                }`}
+                placeholder="Country *"
+                value={traveler.countryId}
+                onChange={(e) =>
+                  handleTravelerChange(index, "countryId", e.target.value)
+                }
+              />
+            </div>
+          </div>
         </div>
       ))}
-      <button onClick={handleAddTraveler} className="add-traveler-button">Add Traveler</button>
-      {error && <p className="error-message">{error}</p>}
-      <button onClick={handleSubmit} className="submit-button">Confirm Booking</button>
+
+      {/* Add Traveler Button */}
+      <button
+        className="btn btn-outline-primary w-100 my-3"
+        onClick={handleAddTraveler}
+      >
+        <FaUserPlus /> Add Traveler
+      </button>
+
+      {/* Error Message */}
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      {/* Submit Button */}
+      <button className="btn btn-primary w-100" onClick={handleSubmit}>
+        <FaCheckCircle /> Confirm Booking
+      </button>
     </div>
   );
 };
