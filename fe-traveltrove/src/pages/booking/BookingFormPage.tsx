@@ -81,7 +81,7 @@ const BookingFormPage: React.FC = () => {
             <h2 className="text-primary">{pkg.name}</h2>
             <p className="text-muted fst-italic">{pkg.description}</p>
             <p><strong>📅 Dates:</strong> {pkg.startDate} - {pkg.endDate}</p>
-            <p><strong>💲 Price:</strong> ${pkg.priceSingle}</p>
+            <p><strong>💲 Price (usd):</strong> ${pkg.priceSingle}</p>
             <p><strong>🎟 Seats:</strong> {pkg.availableSeats} available</p>
             <p className={`fw-bold ${pkg.status === 'BOOKING_OPEN' ? 'text-success' : 'text-danger'}`}>📌 Status: {pkg.status.replace('_', ' ')}</p>
           </div>
