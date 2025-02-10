@@ -13,6 +13,14 @@ import {
 import "./Bookings.css";
 import "../../../../shared/css/Scrollbar.css";
 
+const formatStatus = (status: string) => {
+  return status
+    .toLowerCase()
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 const Bookings: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -142,7 +150,7 @@ const Bookings: React.FC = () => {
               <Table bordered hover responsive className="rounded custom-table">
                 <thead className="bg-light">
                   <tr>
-                    <th>{t("User Name")}</th> {/* Change to User Name */}
+                    <th>{t("User Name")}</th>
                     <th>{t("Total Price")}</th>
                     <th>{t("Status")}</th>
                     <th>{t("Booking Date")}</th>
@@ -155,7 +163,7 @@ const Bookings: React.FC = () => {
                       <tr>
                         <td>{userNames[booking.userId]}</td> {/* Display user name */}
                         <td>{booking.totalPrice}</td>
-                        <td>{t(booking.status)}</td>
+                        <td>{formatStatus(booking.status)}</td> {/* Format status */}
                         <td>{booking.bookingDate}</td>
                         <td>
                           {booking.status !== BookingStatus.REFUNDED && (
@@ -197,18 +205,16 @@ const Bookings: React.FC = () => {
                         <td colSpan={5} className="p-0">
                           <Collapse in={openBookingId === booking.bookingId}>
                             <div className="p-3">
-                              <Row>
+                              <div className="travelers-grid">
                                 {travelers[booking.bookingId]?.map((traveler) => (
-                                  <Col key={traveler.email} md={6} className="mb-2">
-                                    <Card className="p-2">
-                                      <Card.Body>
-                                        <Card.Title>{traveler.name}</Card.Title>
-                                        <Card.Text>{traveler.email}</Card.Text>
-                                      </Card.Body>
-                                    </Card>
-                                  </Col>
+                                  <Card key={traveler.email} className="traveler-card">
+                                    <Card.Body>
+                                      <Card.Title>{traveler.name}</Card.Title>
+                                      <Card.Text>{traveler.email}</Card.Text>
+                                    </Card.Body>
+                                  </Card>
                                 ))}
-                              </Row>
+                              </div>
                             </div>
                           </Collapse>
                         </td>
@@ -242,7 +248,7 @@ const Bookings: React.FC = () => {
                   </p>
                   <p>
                     <strong>{t("Status")}:</strong>{" "}
-                    {selectedBooking?.status ? t(selectedBooking.status) : ""}
+                    {selectedBooking?.status ? formatStatus(selectedBooking.status) : ""}
                   </p>
                   <p>
                     <strong>{t("Booking Date")}:</strong>{" "}
@@ -266,12 +272,12 @@ const Bookings: React.FC = () => {
                     >
                       {/* Always show the current status as the placeholder */}
                       <option value={selectedBooking?.status} disabled>
-                        {t(selectedBooking?.status || "Select Status")}
+                        {formatStatus(selectedBooking?.status || "Select Status")}
                       </option>
 
                       {/* If status is COMPLETED, only allow REFUNDED */}
                       {selectedBooking?.status === BookingStatus.BOOKING_CONFIRMED ? (
-                        <option value={BookingStatus.REFUNDED}>{t(BookingStatus.REFUNDED)}</option>
+                        <option value={BookingStatus.REFUNDED}>{formatStatus(BookingStatus.REFUNDED)}</option>
                       ) : (
                         Object.values(BookingStatus)
                           .filter((status) =>
@@ -280,7 +286,7 @@ const Bookings: React.FC = () => {
                           )
                           .map((status) => (
                             <option key={status} value={status}>
-                              {t(status)}
+                              {formatStatus(status)}
                             </option>
                           ))
                       )}
