@@ -12,6 +12,7 @@ System_Boundary(travelAgency, "Travel System", "Allows customers to view informa
 System_Ext(GmailAPI, "Gmail API", "Sends emails to customers")
 System_Ext(Stripe, "Stripe", "Processes international payments")
 System_Ext(Auth0, "Auth0", "Handles authentication and user management")
+System_Ext(S3Bucket, "AWS S3 Bucket", "Stores trip-related images and documents")
 
 Rel(employee, travelAgency, "Manages trips and reservations", "Uses")
 Rel(customer, travelAgency, "Views trips, and makes reservations", "Uses")
@@ -24,5 +25,7 @@ Rel(customer, Auth0, "Authenticates via", "OAuth 2.0")
 Rel(employee, Auth0, "Authenticates via", "OAuth 2.0")
 Rel(admin, Auth0, "Authenticates via", "OAuth 2.0")
 Rel(travelAgency, Auth0, "Uses for authentication", "Authenticates")
+
+Rel(travelAgency, S3Bucket, "Stores and retrieves images/documents", "HTTPS")
 
 @enduml

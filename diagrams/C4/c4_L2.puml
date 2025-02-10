@@ -32,13 +32,14 @@ System_Boundary(travelAgency, "Dar El Salam Travel Agency") {
     Container(singlepage_app, "Single-Page Application", "TypeScript, React", "Main interface for interacting with the Dar El Salam system", $sprite="react")
     Container(web_app, "Web Application", "TypeScript, React", "Delivers the Static content and the Dar El Salam single page application", $sprite="java")
     Container(api_app, "API Application", "Java, Spring Boot", "Handles all business logic and integrates with external services", $sprite="java")
-    Container(database, "Mongo Database", "MongoDB", "Stores all travel agency data", $tags = "storage", $sprite="mysql")
+    Container(database, "Mongo Database", "MongoDB", "Stores all travel agency data", $tags = "storage", $sprite="mongodb")
 }
 
 ' External systems placed at the bottom with icons
 System_Ext(Stripe, "Stripe", "External service for processing payments", $sprite="stripe")
 System_Ext(GmailAPI, "Gmail API", "External service for sending emails", $sprite="google")
 System_Ext(Auth0, "Auth0", "External authentication service for user login and security", $sprite="google")
+System_Ext(S3Bucket, "AWS S3 Bucket", "Stores trip-related images and documents", $sprite="amazon")
 
 ' Relationships between Actors and Containers
 Rel(customer, singlepage_app, "Uses for viewing trips and making reservations", "HTTPS")
@@ -59,5 +60,9 @@ Rel_D(api_app, Auth0, "Uses for authentication", "OAuth 2.0/JWT")
 Rel(api_app, GmailAPI, "Sends emails via", "HTTPS")
 Rel(api_app, Stripe, "Processes payments through", "HTTPS")
 Rel_U(GmailAPI, customer, "Sends emails to", "SMTP/HTTPS")
+
+' AWS S3 Interaction
+Rel(api_app, S3Bucket, "Requests pre-signed URLs for image uploads", "HTTPS")
+Rel(singlepage_app, S3Bucket, "Uploads images/documents using pre-signed URLs", "HTTPS")
 
 @enduml
