@@ -23,14 +23,15 @@ const BookingFormPage: React.FC = () => {
 
       // Calculate total price: price per traveler * number of travelers (converted to cents)
       const amountInCents = Math.round(pkg.priceSingle * numberOfTravelers * 100);
+      const feBaseURL = "https://sea-lion-app-36zpz.ondigitalocean.app";
 
       // Send the bookingId along with other details to the payments endpoint
       const response = await axiosInstance.post("payments/create-checkout-session", {
         amount: amountInCents,
         currency: "usd",
         packageId: pkg.packageId,
-        successUrl: "https://youtube.com",
-        cancelUrl: "https://github.com",
+        successUrl: `${feBaseURL}/payment-success`, 
+        cancelUrl: `${feBaseURL}/payment-cancelled`,   
         bookingId: bookingId,
         travelers: bookingRequest.travelers,
       });
@@ -73,11 +74,25 @@ const BookingFormPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Booking Form</h1>
-      <BookingForm pkg={pkg} onSubmit={handleBookingSubmit} />
-      {confirmationMessage && <p className="confirmation-message">{confirmationMessage}</p>}
-      {error && <p className="error-message">{error}</p>}
+    <div className="container min-vh-100 d-flex align-items-center justify-content-center">
+      <div className="row w-100 shadow-lg p-4 m-1 bg-white rounded">
+        {pkg && (
+          <div className="col-md-6 p-3">
+            <h2 className="text-primary">{pkg.name}</h2>
+            <p className="text-muted fst-italic">{pkg.description}</p>
+            <p><strong>📅 Dates:</strong> {pkg.startDate} - {pkg.endDate}</p>
+            <p><strong>💲 Price (usd):</strong> ${pkg.priceSingle}</p>
+            <p><strong>🎟 Seats:</strong> {pkg.availableSeats} available</p>
+            <p className={`fw-bold ${pkg.status === 'BOOKING_OPEN' ? 'text-success' : 'text-danger'}`}>📌 Status: {pkg.status.replace('_', ' ')}</p>
+          </div>
+        )}
+        <div className="col-md-6 p-3 border-start">
+          <h3 className="text-center">Booking Form</h3>
+          <BookingForm pkg={pkg} onSubmit={handleBookingSubmit} />
+          {confirmationMessage && <p className="mt-4 text-success text-center fw-bold">{confirmationMessage}</p>}
+          {error && <p className="mt-4 text-danger text-center fw-bold">{error}</p>}
+        </div>
+      </div>
     </div>
   );
 };
