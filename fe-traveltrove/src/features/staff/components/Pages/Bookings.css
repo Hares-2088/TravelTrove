@@ -1,28 +1,155 @@
+/* Bookings.css */
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Table Styling */
 .custom-table {
     border-collapse: separate;
     border-spacing: 0 10px;
+    width: 100%;
 }
 
 .custom-table thead th {
-    background-color: #e9ecef;
-    font-weight: bold;
+    background-color: #f8f9fa;
+    font-weight: 600;
     text-align: center;
+    padding: 15px;
+    border-bottom: 2px solid #e9ecef;
 }
 
 .custom-table tbody tr {
     background-color: #ffffff;
+    transition: background-color 0.3s ease;
 }
 
 .custom-table tbody tr:hover {
-    background-color: #f1f1f1;
+    background-color: #f8f9fa;
 }
 
 .custom-table tbody td {
     padding: 15px;
     text-align: center;
     vertical-align: middle;
+    border-top: 1px solid #e9ecef;
 }
 
+/* Button Styling */
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+/* Modal Styling */
 .modal-content {
     border-radius: 15px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 15px 20px;
+}
+
+.modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 15px 20px;
+}
+
+/* Travelers List Styling */
+.travelers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+.traveler-card {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    transition: box-shadow 0.3s ease;
+}
+
+.traveler-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.traveler-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.traveler-card .card-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Scrollbar Styling */
+.dashboard-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #007bff #f8f9fa;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+    border-radius: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+
+    .custom-table thead th,
+    .custom-table tbody td {
+        padding: 10px;
+    }
+
+    .travelers-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
 }
