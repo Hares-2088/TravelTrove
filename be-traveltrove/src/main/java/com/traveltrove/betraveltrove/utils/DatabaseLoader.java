@@ -1495,9 +1495,9 @@ public class DatabaseLoader {
                         .build(),
                 Traveler.builder()
                         .id(null)
-                        .travelerId("h8e91f6c-723e-43b9-812f-2f3d3bfb4088")
+                        .travelerId("b3904b84-9cd3-46ca-bcf3-f2206411a842")
                         .firstName("Liam")
-                        .lastName("Brown")
+                        .lastName("Jones")
                         .email("liambrown@gmail.com")
                         .addressLine1("505 Spruce St")
                         .addressLine2("606 Spruce St")
@@ -1994,6 +1994,7 @@ public class DatabaseLoader {
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(3))
+                        .travelerIds(List.of("c69fa655-d480-48e4-8b66-0d54c1b2b46d", "b3904b84-9cd3-46ca-bcf3-f2206411a842"))
                         .totalPrice(1600.0)
                         .build(),
 

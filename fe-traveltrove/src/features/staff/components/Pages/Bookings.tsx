@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Modal, Form, Card } from "react-bootstrap"; // Import Card
+import { Button, Table, Modal, Form, Card, Collapse, Row, Col } from "react-bootstrap"; // Import Row and Col
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { useBookingsApi } from "../../../bookings/api/bookings.api";
 import { useUsersApi } from "../../../users/api/users.api"; // Import useUsersApi
+import { useTravelersApi } from "../../../travelers/api/traveler.api"; // Import useTravelersApi
 import {
   BookingRequestModel,
   BookingResponseModel,
@@ -18,6 +19,7 @@ const Bookings: React.FC = () => {
   const packageId = searchParams.get("packageId");
   const { getAllBookings, updateBookingStatus } = useBookingsApi();
   const { getUserById } = useUsersApi(); // Get user by ID
+  const { getTravelerById } = useTravelersApi(); // Get traveler by ID
   const [bookings, setBookings] = useState<BookingResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"updateStatus" | "view">("updateStatus");
@@ -38,6 +40,8 @@ const Bookings: React.FC = () => {
     bookingDate: false,
   });
   const [userNames, setUserNames] = useState<{ [key: string]: string }>({}); // State for user names
+  const [openBookingId, setOpenBookingId] = useState<string | null>(null); // State for toggling travelers list
+  const [travelers, setTravelers] = useState<{ [key: string]: { name: string; email: string }[] }>({}); // State for travelers
 
   useEffect(() => {
     fetchBookings();
@@ -56,6 +60,20 @@ const Bookings: React.FC = () => {
       setBookings(data);
     } catch (error) {
       console.error("Error fetching bookings:", error);
+    }
+  };
+
+  const fetchTravelers = async (travelerIds: string[]) => {
+    try {
+      const travelersData = await Promise.all(travelerIds.map((id) => getTravelerById(id)));
+      console.log("Fetched travelers:", travelersData); // Log fetched travelers
+      return travelersData.map((traveler) => ({
+        name: `${traveler.firstName} ${traveler.lastName}`,
+        email: traveler.email,
+      }));
+    } catch (error) {
+      console.error("Error fetching travelers:", error);
+      return [];
     }
   };
 
@@ -86,6 +104,18 @@ const Bookings: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSave();
+  };
+
+  const toggleTravelersList = async (bookingId: string, travelerIds: string[]) => {
+    if (openBookingId === bookingId) {
+      setOpenBookingId(null);
+    } else {
+      if (!travelers[bookingId]) {
+        const travelersData = await fetchTravelers(travelerIds);
+        setTravelers((prev) => ({ ...prev, [bookingId]: travelersData }));
+      }
+      setOpenBookingId(bookingId);
+    }
   };
 
   return (
@@ -121,40 +151,69 @@ const Bookings: React.FC = () => {
                 </thead>
                 <tbody>
                   {bookings.map((booking) => (
-                    <tr key={booking.bookingId}>
-                      <td>{userNames[booking.userId]}</td> {/* Display user name */}
-                      <td>{booking.totalPrice}</td>
-                      <td>{t(booking.status)}</td>
-                      <td>{booking.bookingDate}</td>
-                      <td>
-                        {booking.status !== BookingStatus.BOOKING_FAILED && booking.status !== BookingStatus.REFUNDED && (
+                    <React.Fragment key={booking.bookingId}>
+                      <tr>
+                        <td>{userNames[booking.userId]}</td> {/* Display user name */}
+                        <td>{booking.totalPrice}</td>
+                        <td>{t(booking.status)}</td>
+                        <td>{booking.bookingDate}</td>
+                        <td>
+                          {booking.status !== BookingStatus.REFUNDED && (
+                            <Button
+                              variant="outline-primary"
+                              onClick={() => {
+                                setSelectedBooking(booking);
+                                setModalType("updateStatus");
+                                setFormData({
+                                  userId: booking.userId,
+                                  packageId: booking.packageId,
+                                  totalPrice: booking.totalPrice,
+                                  status: booking.status,
+                                  bookingDate: booking.bookingDate,
+                                  travelers: [],
+                                });
+                                setFormErrors({
+                                  userId: false,
+                                  totalPrice: false,
+                                  status: false,
+                                  bookingDate: false,
+                                });
+                                setShowModal(true);
+                              }}
+                            >
+                              {t("Update Status")}
+                            </Button>
+                          )}
                           <Button
-                            variant="outline-primary"
-                            onClick={() => {
-                              setSelectedBooking(booking);
-                              setModalType("updateStatus");
-                              setFormData({
-                                userId: booking.userId,
-                                packageId: booking.packageId,
-                                totalPrice: booking.totalPrice,
-                                status: booking.status,
-                                bookingDate: booking.bookingDate,
-                                travelers: [],
-                              });
-                              setFormErrors({
-                                userId: false,
-                                totalPrice: false,
-                                status: false,
-                                bookingDate: false,
-                              });
-                              setShowModal(true);
-                            }}
+                            variant="outline-secondary"
+                            onClick={() => booking.travelerIds && toggleTravelersList(booking.bookingId, booking.travelerIds)}
+                            className="ml-2"
                           >
-                            {t("Update Status")}
+                            {openBookingId === booking.bookingId ? t("Hide Travelers") : t("Show Travelers")}
                           </Button>
-                        )}
-                      </td>
-                    </tr>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colSpan={5} className="p-0">
+                          <Collapse in={openBookingId === booking.bookingId}>
+                            <div className="p-3">
+                              <Row>
+                                {travelers[booking.bookingId]?.map((traveler) => (
+                                  <Col key={traveler.email} md={6} className="mb-2">
+                                    <Card className="p-2">
+                                      <Card.Body>
+                                        <Card.Title>{traveler.name}</Card.Title>
+                                        <Card.Text>{traveler.email}</Card.Text>
+                                      </Card.Body>
+                                    </Card>
+                                  </Col>
+                                ))}
+                              </Row>
+                            </div>
+                          </Collapse>
+                        </td>
+                      </tr>
+                    </React.Fragment>
                   ))}
                 </tbody>
               </Table>
