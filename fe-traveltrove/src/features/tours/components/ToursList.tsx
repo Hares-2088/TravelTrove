@@ -10,7 +10,7 @@ const ToursList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ Memoize the API call function to prevent infinite useEffect loops
+  // Memoize fetchTours to prevent unnecessary recreations
   const fetchTours = useCallback(async () => {
     try {
       console.log("📢 Fetching tour list...");
@@ -23,12 +23,20 @@ const ToursList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [getAllTours]); // ✅ Now stable across renders
+  }, []);
 
   useEffect(() => {
     console.log("🚀 useEffect triggered: Fetching tours...");
     fetchTours();
-  }, [fetchTours]);
+  }, [fetchTours]); // fetchTours is now stable due to useCallback
+
+  useEffect(() => {
+    console.log("🚀 ToursList rendered");
+  });
+
+  useEffect(() => {
+    console.log("🔄 Tours state updated:", tours);
+  }, [tours]);
 
   if (loading) return <div className="tours-list-loading">Loading...</div>;
   if (error) return <div className="tours-list-error">{error}</div>;
@@ -52,4 +60,4 @@ const ToursList: React.FC = () => {
   );
 };
 
-export default ToursList;
+export default React.memo(ToursList);
