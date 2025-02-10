@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePackagesApi } from "../api/packages.api";
 import { PackageResponseModel } from "../models/package.model";
@@ -18,22 +18,22 @@ const PackageDetails: React.FC = () => {
   const { isAuthenticated, user } = useAuth0(); // Get the authenticated user
   const navigate = useNavigate();
 
+  const fetchPackage = useCallback(async () => {
+    try {
+      const data = await getPackageById(packageId!);
+      setPkg(data);
+    } catch {
+      setError("Failed to fetch package details.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+
   useEffect(() => {
-    const fetchPackage = async () => {
-      try {
-        const data = await getPackageById(packageId!);
-        setPkg(data);
-      } catch {
-        setError("Failed to fetch package details.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchPackage();
+  }, [fetchPackage]);
 
-    if (packageId) fetchPackage();
-  }, [packageId, getPackageById]);
-
-  // Fetch subscription status when the package or user changes
   useEffect(() => {
     const fetchSubscriptionStatus = async () => {
       if (isAuthenticated && user?.sub && packageId) {

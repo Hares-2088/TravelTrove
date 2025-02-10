@@ -28,15 +28,7 @@ const ToursList: React.FC = () => {
   useEffect(() => {
     console.log("🚀 useEffect triggered: Fetching tours...");
     fetchTours();
-  }, [fetchTours]); // fetchTours is now stable due to useCallback
-
-  useEffect(() => {
-    console.log("🚀 ToursList rendered");
-  });
-
-  useEffect(() => {
-    console.log("🔄 Tours state updated:", tours);
-  }, [tours]);
+  }, [fetchTours]);
 
   if (loading) return <div className="tours-list-loading">Loading...</div>;
   if (error) return <div className="tours-list-error">{error}</div>;

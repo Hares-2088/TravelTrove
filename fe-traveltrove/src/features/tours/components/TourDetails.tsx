@@ -44,7 +44,7 @@ const TourDetails: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [tourId]); // ✅ Ensure `useEffect` runs when `tourId` changes
+  }, [tourId]);
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
