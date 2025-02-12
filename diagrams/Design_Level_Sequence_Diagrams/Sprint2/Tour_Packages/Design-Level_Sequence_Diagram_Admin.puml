@@ -11,6 +11,9 @@ participant TourPackageEntity as "<<Entity>>\nTourPackageEntity"
 participant TourPackageRepository as "<<Repository>>\nTourPackageRepository"
 participant Database as "<<Database>>"
 participant TourPackageResponseModel as "<<Model>>\nTourPackageResponseModel"
+participant SubscriptionService as "<<Service>>\nSubscriptionService"
+participant UserService as "<<Service>>\nUserService"
+participant NotificationService as "<<Service>>\nNotificationService"
 
 == Tour Package Management ==
 Admin -> ReactApplication : Access Tour Packages Page
@@ -120,6 +123,19 @@ opt Update Tour Package
     activate TourPackageResponseModel
     TourPackageResponseModel --> TourPackageService : Response ready
     deactivate TourPackageResponseModel
+
+    TourPackageService --> SubscriptionService : getUsersSubscribedToPackage(packageId)
+    activate SubscriptionService
+    SubscriptionService --> UserService : List of user emails
+    activate UserService
+    UserService --> SubscriptionService : List of user emails
+    deactivate UserService
+    SubscriptionService --> NotificationService : Send email to users
+    activate NotificationService
+    NotificationService --> SubscriptionService : Email sent
+    deactivate NotificationService
+    SubscriptionService --> TourPackageService : Email sent
+    deactivate SubscriptionService
 
     TourPackageService --> TourPackageController : TourPackageResponseModel
     deactivate TourPackageService

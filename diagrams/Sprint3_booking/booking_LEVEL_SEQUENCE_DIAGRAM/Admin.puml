@@ -82,6 +82,68 @@ deactivate BookingController
 
 BookingsPage --> Admin : Display bookings for package
 
+Admin -> PaymentsPage : Request all Payments
+PaymentsPage -> PaymentController : GET /api/v1/Payments
+activate PaymentController
+
+PaymentController -> PaymentService : getAllPayments()
+activate PaymentService
+
+PaymentService -> PaymentRepository : findAll()
+activate PaymentRepository
+
+PaymentRepository -> Database : SELECT * FROM Payments
+Database --> PaymentRepository : List of Payments
+deactivate Database
+
+PaymentRepository --> PaymentService : List of Payment entities
+deactivate PaymentRepository
+
+PaymentService -> PaymentResponseModel : Map entities to response models
+activate PaymentResponseModel
+PaymentResponseModel --> PaymentService : Response models ready
+deactivate PaymentResponseModel
+
+PaymentService --> PaymentController : List of PaymentResponseModels
+deactivate PaymentService
+
+PaymentController --> PaymentsPage : Response with all Payments
+deactivate PaymentController
+
+PaymentsPage --> Admin : Display all Payments
+
+== View Payments by Tour Package ==
+Admin -> PaymentsPage : Select a Tour Package
+PaymentsPage -> PaymentController : GET /api/v1/Payments?packageId={packageId}
+activate PaymentController
+
+PaymentController -> PaymentService : getPaymentsByPackageId(packageId)
+activate PaymentService
+
+PaymentService -> PaymentRepository : findPaymentsByPackageId(packageId)
+activate PaymentRepository
+
+PaymentRepository -> Database : SELECT * FROM Payments WHERE packageId = packageId
+Database --> PaymentRepository : List of Payments
+deactivate Database
+
+PaymentRepository --> PaymentService : List of Payment entities
+deactivate PaymentRepository
+
+PaymentService -> PaymentResponseModel : Map entities to response models
+activate PaymentResponseModel
+PaymentResponseModel --> PaymentService : Response models ready
+deactivate PaymentResponseModel
+
+PaymentService --> PaymentController : List of PaymentResponseModels
+deactivate PaymentService
+
+PaymentController --> PaymentsPage : Response with Payments for package
+deactivate PaymentController
+
+PaymentsPage --> Admin : Display Payments for package
+
+
 == Update Booking Status ==
 Admin -> BookingsPage : Select a booking to update status
 BookingsPage -> BookingController : PATCH /api/v1/bookings/{bookingId}

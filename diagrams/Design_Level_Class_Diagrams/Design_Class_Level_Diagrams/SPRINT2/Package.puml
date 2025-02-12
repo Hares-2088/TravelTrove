@@ -9,7 +9,7 @@ package "packagesubdomain" {
             + getAllPackages() : Flux<PackageResponseModel>
             + getPackageById(packageId: String) : Mono<PackageResponseModel>
             + addPackage(package: PackageRequestModel) : Mono<PackageResponseModel>
-            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
+            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel, String notificationDetails) : Mono<PackageResponseModel>
             + deletePackage(packageId: String) : Mono<Void>
             + increaseAvailableSeats(packageId: String, seats: Integer) : Mono<PackageResponseModel>
             + decreaseAvailableSeats(packageId: String, seats: Integer) : Mono<PackageResponseModel>
@@ -20,7 +20,7 @@ package "packagesubdomain" {
             + getAllPackages() : Flux<PackageResponseModel>
             + getPackageById(packageId: String) : Mono<PackageResponseModel>
             + addPackage(package: PackageRequestModel) : Mono<PackageResponseModel>
-            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
+            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel, String notificationDetails) : Mono<PackageResponseModel>
             + deletePackage(packageId: String) : Mono<Void>
             + increaseAvailableSeats(packageId: String, seats: Integer) : Mono<PackageResponseModel>
             + decreaseAvailableSeats(packageId: String, seats: Integer) : Mono<PackageResponseModel>
@@ -84,7 +84,7 @@ package "packagesubdomain" {
             + getAllPackages() : Flux<PackageResponseModel>
             + getPackageById(packageId: String) : Mono<ResponseEntity<PackageResponseModel>>
             + addPackage(packageRequestModel: PackageRequestModel) : Mono<PackageResponseModel>
-            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel) : Mono<ResponseEntity<PackageResponseModel>>
+            + updatePackage(packageId: String, packageRequestModel: PackageRequestModel, String notificationDetails) : Mono<ResponseEntity<PackageResponseModel>>
             + deletePackage(packageId: String) : Mono<Void>
             + increaseAvailableSeats(packageId: String, seats: Integer) : Mono<ResponseEntity<PackageResponseModel>>
             + decreaseAvailableSeats(packageId: String, seats: Integer) : Mono<ResponseEntity<PackageResponseModel>>

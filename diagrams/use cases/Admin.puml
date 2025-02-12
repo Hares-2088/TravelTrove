@@ -22,6 +22,7 @@ rectangle "Travel Trove System" {
     usecase "Control Permissions"
     usecase "Generate report"
     usecase "Remove a tour package"
+    usecase "View Payment History"
 
 }
 
@@ -31,6 +32,7 @@ Admin --- "Add an employee account"
 Admin -- "Manage an employee account"
 Admin -- "Generate report"
 Admin -- "Remove a tour package"
+Admin -- "View Payment History"
 
 
 @enduml
