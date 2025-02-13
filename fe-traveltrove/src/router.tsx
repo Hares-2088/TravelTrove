@@ -38,23 +38,19 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.ToursPage,
         element: (
-          <ProtectedRoute>
-            <ToursPage />
-          </ProtectedRoute>
+          <ToursPage />
         ),
       },
       {
         path: AppRoutes.TourDetailsPage,
         element: (
-          <ProtectedRoute>
-            <TourDetailsPage />
-          </ProtectedRoute>
+          <TourDetailsPage />
         ),
       },
       {
         path: AppRoutes.Dashboard,
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={["Admin", "Employee"]}>
             <DashboardPage />
           </ProtectedRoute>
         ),
@@ -62,7 +58,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.Bookings,
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={["Customer"]}>
             <Bookings />
           </ProtectedRoute>
         ),
@@ -78,7 +74,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.UserManagementPage,
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={["Admin"]}>
             <UserManagementPage />
           </ProtectedRoute>
         ),
@@ -86,7 +82,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.UsersDetail,
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={["Admin"]}>
             <UsersDetail />
           </ProtectedRoute>
         ),
@@ -94,7 +90,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.BookingFormPage,
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={["Customer"]}>
             <BookingFormPage />
           </ProtectedRoute>
         ),
@@ -102,7 +98,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.PaymentSuccessPage,
         element:(
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={["Customer"]}>
             <PaymentSuccessPage />
           </ProtectedRoute>
         )
@@ -110,7 +106,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.PaymentCancel,
         element:(
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={["Customer"]}>
             <PaymentCancel />
           </ProtectedRoute>
         )
@@ -185,3 +181,4 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
+

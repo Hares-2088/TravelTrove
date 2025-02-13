@@ -174,7 +174,8 @@ test("create new package and change it to completed and make sure it is irrivers
     await page.goto('http://localhost:3000/home');
     await page.getByRole('button', { name: 'Sign in' }).click();
     await page.getByLabel('Email address').fill('Admin@traveltrove.com');
-    await page.getByLabel('Email address').pressawait page.goto('http://localhost:3000/home');
+    await page.getByLabel('Email address').press;
+    await page.goto('http://localhost:3000/home');
     await page.getByRole('button', { name: 'Sign in' }).click();
     await page.goto('chrome-error://chromewebdata/');('Tab');
     await page.getByLabel('Password').fill('Admin@123');
@@ -243,5 +244,32 @@ test("package status when a package is booking open i can book the package", asy
     await page.getByRole('link', { name: 'Italian Culinary Retreat' }).click();
     await page.getByRole('link', { name: 'test new' }).click();
     await expect(page.getByRole('button', { name: 'Book Now' })).toBeVisible();
+    await page.close();
+});
+
+test("edit a package for a tour", async ({ page }) => {
+    await page.goto('http://localhost:3000/home');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await page.getByLabel('Email address').fill('Admin@traveltrove.com');
+    await page.getByLabel('Password').click();
+    await page.getByLabel('Password').fill('Admin@123');
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await page.waitForTimeout(10000);
+    await expect(page.getByRole('button', { name: 'admin@traveltrove.com admin@' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
+    await page.getByRole('link', { name: 'Dashboard' }).click();
+    await page.getByRole('cell', { name: 'Grand American Adventure' }).click();
+    await page.getByRole('button', { name: 'Edit Package' }).click();
+    await page.locator('input[type="text"]').click();
+    await page.locator('input[type="text"]').fill('New York Adventure Package.');
+    await page.locator('div').filter({ hasText: /^notificationMessage$/ }).getByRole('textbox').click();
+    await page.locator('div').filter({ hasText: /^notificationMessage$/ }).getByRole('textbox').fill('Name Change');
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByText('Package changes recorded')).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'New York Adventure Package.' })).toBeVisible();
+    await page.getByRole('button', { name: 'Edit Package' }).click();
+    await page.locator('input[type="text"]').click();
+    await page.locator('input[type="text"]').fill('New York Adventure Package');
+    await page.getByRole('button', { name: 'Save' }).click();
     await page.close();
 });

@@ -16,6 +16,9 @@ elfsightScript.src = "https://static.elfsight.com/platform/platform.js";
 elfsightScript.async = true;
 document.body.appendChild(elfsightScript);
 
+const observer = new ResizeObserver(() => {});
+observer.observe(document.body);
+
 const onRedirectCallback = () => {
   window.location.replace(AppRoutes.Callback);
 };
