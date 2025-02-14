@@ -21,7 +21,7 @@ public class PaymentModelUtil {
         return Payment.builder()
                 .paymentId(generateUUIDString())
                 .stripePaymentId(stripePaymentId)
-                .amount(request.getAmount())
+                .amount(request.getAmount() / 100)
                 .currency(request.getCurrency())
                 .status("created")
                 .paymentDate(java.time.LocalDateTime.now())
