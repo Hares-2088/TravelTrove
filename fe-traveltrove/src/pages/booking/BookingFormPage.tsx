@@ -67,9 +67,10 @@ const BookingFormPage: React.FC = () => {
 
       // 3. Create the payment session using the pre-created booking's ID.
       await createCheckoutSession(bookingRequest, numberOfTravelers, bookingId);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during booking process:", error);
-      setError("Failed to proceed with booking. Please try again.");
+      const errorMessage = error.response?.data?.message || "Failed to proceed with booking. Please try again.";
+      setError(errorMessage);
     }
   };
 
