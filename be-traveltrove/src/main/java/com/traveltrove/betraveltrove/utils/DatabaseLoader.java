@@ -15,6 +15,8 @@ import com.traveltrove.betraveltrove.dataaccess.hotel.Hotel;
 import com.traveltrove.betraveltrove.dataaccess.hotel.HotelRepository;
 import com.traveltrove.betraveltrove.dataaccess.notification.Notification;
 import com.traveltrove.betraveltrove.dataaccess.notification.NotificationRepository;
+import com.traveltrove.betraveltrove.dataaccess.payment.Payment;
+import com.traveltrove.betraveltrove.dataaccess.payment.PaymentRepository;
 import com.traveltrove.betraveltrove.dataaccess.review.Review;
 import com.traveltrove.betraveltrove.dataaccess.review.ReviewRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
@@ -2596,6 +2598,67 @@ public class DatabaseLoader {
                         error -> log.error("Error preloading notifications: {}", error.getMessage())
                 );
     }
+
+    //payments
+
+    private final PaymentRepository paymentRepository;
+
+    @PostConstruct
+    public void loadPayments() {
+        List<Payment> samplePayments = List.of(
+                // ✅ Payments for January 2023
+                createPayment("1a2b3c", "booking1", 10000L, "usd", LocalDateTime.of(2023, 1, 5, 14, 30), "succeeded", "stripe1"),
+                createPayment("1b2c3d", "booking2", 12000L, "usd", LocalDateTime.of(2023, 1, 25, 10, 15), "failed", "stripe2"),
+
+                // ✅ Payments for February 2023
+                createPayment("2a3b4c", "booking3", 15000L, "usd", LocalDateTime.of(2023, 2, 10, 18, 45), "created", "stripe3"),
+
+                // ✅ Payments for March 2023
+                createPayment("3a4b5c", "booking4", 20000L, "usd", LocalDateTime.of(2023, 3, 15, 9, 0), "succeeded", "stripe4"),
+
+                // ✅ Payments for April 2023
+                createPayment("4a5b6c", "booking5", 18000L, "usd", LocalDateTime.of(2023, 4, 25, 12, 0), "failed", "stripe5"),
+
+                // ✅ Payments for January 2024
+                createPayment("5a6b7c", "booking6", 25000L, "usd", LocalDateTime.of(2024, 1, 10, 8, 30), "succeeded", "stripe6"),
+
+                // ✅ Payments for February 2024
+                createPayment("6a7b8c", "booking7", 30000L, "usd", LocalDateTime.of(2024, 2, 5, 16, 0), "created", "stripe7"),
+                createPayment("7a8b9c", "booking8", 22000L, "usd", LocalDateTime.of(2024, 2, 28, 21, 30), "succeeded", "stripe8"),
+
+                // ✅ Payments for March 2024
+                createPayment("8a9b0c", "booking9", 50000L, "usd", LocalDateTime.of(2024, 3, 17, 11, 0), "succeeded", "stripe9"),
+
+                // ✅ Payments for December 2024 (end-of-year edge case)
+                createPayment("9a0b1c", "booking10", 27000L, "usd", LocalDateTime.of(2024, 12, 31, 23, 59), "failed", "stripe10"),
+
+                // ✅ Payments for January 2025 (new year edge case)
+                createPayment("0a1b2c", "booking11", 31000L, "usd", LocalDateTime.of(2025, 1, 1, 0, 1), "succeeded", "stripe11")
+        );
+
+        paymentRepository.deleteAll()
+                .thenMany(Flux.fromIterable(samplePayments))
+                .flatMap(paymentRepository::save)
+                .doOnNext(payment -> log.info("Preloaded payment: {}", payment))
+                .subscribe(
+                        success -> log.info("Payments preloaded successfully."),
+                        error -> log.error("Error preloading payments: {}", error.getMessage())
+                );
+    }
+
+    // ✅ Utility Method to Create Payments
+    private Payment createPayment(String paymentId, String bookingId, Long amount, String currency, LocalDateTime date, String status, String stripePaymentId) {
+        return Payment.builder()
+                .paymentId(paymentId)
+                .bookingId(bookingId)
+                .amount(amount)
+                .currency(currency)
+                .paymentDate(date)
+                .status(status)
+                .stripePaymentId(stripePaymentId)
+                .build();
+    }
+
 
 }
 

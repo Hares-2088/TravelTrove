@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -50,10 +52,14 @@ public class PaymentServiceImpl implements PaymentService {
                 .map(PaymentModelUtil::toPaymentResponseModelWithoutSession);
     }
 
-//    @Override
-//    public Mono<Void> deletePayment(String paymentId) {
-//
-//        return paymentRepository.delete(paymentId)
-//                .doOnSuccess(deleted -> log.info("Deleted Payment Entity: {}", deleted));
-//    }
+    @Override
+    public Flux<Payment> getPaymentsByPeriod(int year, Integer month) {
+        return paymentRepository.findAll()
+                .filter(payment -> {
+                    LocalDateTime paymentDate = payment.getPaymentDate();
+                    return (paymentDate.getYear() == year) &&
+                            (month == null || paymentDate.getMonthValue() == month);
+                });
+
+    }
 }

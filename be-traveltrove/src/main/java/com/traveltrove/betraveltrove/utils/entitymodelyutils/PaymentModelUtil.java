@@ -32,7 +32,7 @@ public class PaymentModelUtil {
         PaymentResponseModel paymentResponseModel = new PaymentResponseModel();
         BeanUtils.copyProperties(payment, paymentResponseModel);
         paymentResponseModel.setPaymentId(payment.getPaymentId());
-        paymentResponseModel.setAmount(payment.getAmount() / 100); // Scale amount back
+        paymentResponseModel.setAmount(payment.getAmount() / 100);
 
         return paymentResponseModel;
 
