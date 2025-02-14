@@ -254,18 +254,23 @@ public class BookingServiceImpl implements BookingService {
     Mono<Booking> validateUserAndPackage(Booking booking) {
         return userExistsReactive(booking.getUserId())
                 .then(packageExistsReactive(booking.getPackageId()))
-                .then(bookingRepository.findBookingByPackageIdAndUserId(
+                .then(Mono.defer(() -> bookingRepository.findBookingByPackageIdAndUserId(
                         booking.getPackageId(),
                         booking.getUserId()
-                ).hasElement())
-                .flatMap(exists -> {
-                    if (exists) {
+                )))
+                .flatMap(existingBooking -> {
+                    // If the booking is in PAYMENT_PENDING, delete it
+                    if (existingBooking.getStatus() == BookingStatus.PAYMENT_PENDING) {
+                        return bookingRepository.delete(existingBooking)
+                                .thenReturn(booking);
+                    } else {
                         return Mono.error(new InvalidStatusException(
-                                "User already has a booking for this package"
+                                "There's already an active booking for this package"
                         ));
                     }
-                    return Mono.just(booking);
-                });
+                })
+                // continue with the new booking as usual if no existing booking is found
+                .switchIfEmpty(Mono.just(booking));
     }
 
     Mono<Tuple2<Booking, UserResponseModel>> fetchUserFromAuth0(Booking booking) {
