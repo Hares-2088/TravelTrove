@@ -16,8 +16,11 @@ elfsightScript.src = "https://static.elfsight.com/platform/platform.js";
 elfsightScript.async = true;
 document.body.appendChild(elfsightScript);
 
-const observer = new ResizeObserver(() => {});
-observer.observe(document.body);
+window.addEventListener('error', (e) => {
+  if (e.message === 'ResizeObserver loop completed with undelivered notifications') {
+    e.stopImmediatePropagation();
+  }
+}, true);
 
 const onRedirectCallback = () => {
   window.location.replace(AppRoutes.Callback);

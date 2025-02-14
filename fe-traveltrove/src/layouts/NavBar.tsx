@@ -54,6 +54,7 @@ const NavBar: React.FC = () => {
 
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
+      { !isLoading && (
       <Container>
         <Navbar.Brand href={AppRoutes.Home}>
           <img
@@ -149,6 +150,7 @@ const NavBar: React.FC = () => {
           </Nav>
         </Navbar.Collapse>
       </Container>
+      )}
     </Navbar>
   );
 };
