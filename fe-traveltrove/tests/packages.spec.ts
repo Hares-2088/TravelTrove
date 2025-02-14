@@ -254,6 +254,7 @@ test("edit a package for a tour", async ({ page }) => {
     await page.getByLabel('Password').click();
     await page.getByLabel('Password').fill('Admin@123');
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await page.waitForTimeout(10000);
     await expect(page.getByRole('button', { name: 'admin@traveltrove.com admin@' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
     await page.getByRole('link', { name: 'Dashboard' }).click();

@@ -11,6 +11,7 @@ import { AppRoutes } from "../shared/models/app.routes";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useUserContext } from "../context/UserContext";
 import "./NavBar.css";
 
 const NavBar: React.FC = () => {
@@ -25,6 +26,8 @@ const NavBar: React.FC = () => {
 
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
     useAuth0();
+    
+  const { roles, handleUserLogout } = useUserContext();
 
   const handleLogin = async () => {
     await loginWithRedirect();
@@ -38,12 +41,20 @@ const NavBar: React.FC = () => {
     });
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
+    await handleUserLogout();
   };
+
+  const normalizedRoles = roles.map((role) => role.toLowerCase());
+
+  const hasRole = (role: string) => normalizedRoles.includes(role.toLowerCase());
+  const isAdmin = hasRole('admin');
+  const isEmployee = hasRole('employee');
 
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
+      { !isLoading && (
       <Container>
         <Navbar.Brand href={AppRoutes.Home}>
           <img
@@ -67,14 +78,16 @@ const NavBar: React.FC = () => {
           </Nav>
 
           <Nav className="align-items-center">
-            {isAuthenticated && (
+            {isAuthenticated && (isAdmin || isEmployee) && (
               <Nav.Link href={AppRoutes.Dashboard} className="px-3">
                 {t("dashboard")}
               </Nav.Link>
             )}
-            <Nav.Link href={AppRoutes.UserManagementPage}>
-              <i className="bi bi-people-fill" style={{ fontSize: "20px" }} />
-            </Nav.Link>
+            {isAuthenticated && isAdmin && (
+              <Nav.Link href={AppRoutes.UserManagementPage}>
+                <i className="bi bi-people-fill" style={{ fontSize: "20px" }} />
+              </Nav.Link>
+            )}
             <NavDropdown
               title={
                 <img
@@ -137,6 +150,7 @@ const NavBar: React.FC = () => {
           </Nav>
         </Navbar.Collapse>
       </Container>
+      )}
     </Navbar>
   );
 };

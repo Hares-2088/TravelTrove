@@ -9,6 +9,7 @@ interface UserContextType {
   roles: string[];
   isAuthenticated: boolean;
   isLoading: boolean;
+  handleUserLogout: () => void; // Add handleUserLogout to the context type
 }
 
 // Create the UserContext with a default value of null
@@ -29,10 +30,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Manage the `currentUser` state
   const [currentUser, setCurrentUser] = useState<any>(user);
-
-  console.log("(UserContext) User:", currentUser);
-  console.log("(UserContext) Current User Id:", currentUser?.userId);
-  console.log("(UserContext) User Id:", user?.sub);
 
   // Fetch roles when the user changes and roles are empty
   useEffect(() => {
@@ -57,17 +54,22 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
             .catch((error) => {
               console.error("Error fetching user roles:", error);
             });
+
+            
         }
       }
     }
   }, [user, user?.sub, isAuthenticated, isLoading]);
 
-  // Log roles for debugging
-  console.log("(UserContext) User Roles:", roles);
+  const handleUserLogout = async (): Promise<void> => {
+    sessionStorage.removeItem("userRoles");
+    setRoles([]); // Reset local state
+  };
+
 
   // Provide context values
   return (
-    <UserContext.Provider value={{ user, roles, isAuthenticated, isLoading }}>
+    <UserContext.Provider value={{ user, roles, isAuthenticated, isLoading, handleUserLogout }}>
       {children}
     </UserContext.Provider>
   );

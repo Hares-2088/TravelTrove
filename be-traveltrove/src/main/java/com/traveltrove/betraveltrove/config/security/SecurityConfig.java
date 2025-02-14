@@ -41,9 +41,9 @@ public class SecurityConfig {
                 .authorizeExchange(authz -> {
                     log.info("Configuring endpoint permissions...");
                     authz
+                            .pathMatchers("/api/v1/tours", "/api/v1/tours/**", "/api/v1/packages/**").permitAll() // Allow unauthenticated access
                             .pathMatchers("/api/v1/payments/webhook").permitAll()
-                            .pathMatchers("**").authenticated() // Require authentication for all other endpoints
-                            .anyExchange().permitAll();
+                            .anyExchange().authenticated();
                     log.info("Finished configuring endpoint permissions.");
                 })
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
