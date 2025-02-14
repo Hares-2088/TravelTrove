@@ -163,6 +163,11 @@ public class BookingServiceImpl implements BookingService {
 
                 .flatMap(savedBooking ->
                         subscriptionService.subscribeUserToPackage(savedBooking.getUserId(), savedBooking.getPackageId())
+                                // Don't subscribe if user is already subscribed
+                                .onErrorResume(IllegalArgumentException.class, e -> {
+                                    log.warn("User {} is already subscribed to package {}", savedBooking.getUserId(), savedBooking.getPackageId());
+                                    return Mono.empty();
+                                })
                                 .thenReturn(savedBooking)
                 )
                 .doOnNext(savedBooking -> log.info("Subscribed user to package for bookingId={}", savedBooking.getBookingId()))
