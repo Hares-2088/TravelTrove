@@ -56,9 +56,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
             });
 
             
-          console.log("(UserContext) User:", currentUser);
-          console.log("(UserContext) Current User Id:", currentUser?.userId);
-          console.log("(UserContext) User Id:", user?.sub);
         }
       }
     }
@@ -69,9 +66,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     setRoles([]); // Reset local state
   };
 
-  // Log roles for debugging
-  console.log("(UserContext) User Roles:", roles);
-  console.log("(UserContext) isAuthenticated:", isAuthenticated);
 
   // Provide context values
   return (

@@ -27,7 +27,7 @@ const NavBar: React.FC = () => {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
     useAuth0();
     
-  const { handleUserLogout } = useUserContext();
+  const { roles, handleUserLogout } = useUserContext();
 
   const handleLogin = async () => {
     await loginWithRedirect();
@@ -45,6 +45,12 @@ const NavBar: React.FC = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
     await handleUserLogout();
   };
+
+  const normalizedRoles = roles.map((role) => role.toLowerCase());
+
+  const hasRole = (role: string) => normalizedRoles.includes(role.toLowerCase());
+  const isAdmin = hasRole('admin');
+  const isEmployee = hasRole('employee');
 
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
@@ -71,14 +77,16 @@ const NavBar: React.FC = () => {
           </Nav>
 
           <Nav className="align-items-center">
-            {isAuthenticated && (
+            {isAuthenticated && (isAdmin || isEmployee) && (
               <Nav.Link href={AppRoutes.Dashboard} className="px-3">
                 {t("dashboard")}
               </Nav.Link>
             )}
-            <Nav.Link href={AppRoutes.UserManagementPage}>
-              <i className="bi bi-people-fill" style={{ fontSize: "20px" }} />
-            </Nav.Link>
+            {isAuthenticated && isAdmin && (
+              <Nav.Link href={AppRoutes.UserManagementPage}>
+                <i className="bi bi-people-fill" style={{ fontSize: "20px" }} />
+              </Nav.Link>
+            )}
             <NavDropdown
               title={
                 <img
