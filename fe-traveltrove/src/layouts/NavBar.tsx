@@ -11,6 +11,7 @@ import { AppRoutes } from "../shared/models/app.routes";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useUserContext } from "../context/UserContext";
 import "./NavBar.css";
 
 const NavBar: React.FC = () => {
@@ -25,6 +26,8 @@ const NavBar: React.FC = () => {
 
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
     useAuth0();
+    
+  const { handleUserLogout } = useUserContext();
 
   const handleLogin = async () => {
     await loginWithRedirect();
@@ -38,8 +41,9 @@ const NavBar: React.FC = () => {
     });
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
+    await handleUserLogout();
   };
 
   return (

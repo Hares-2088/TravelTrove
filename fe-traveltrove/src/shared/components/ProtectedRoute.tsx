@@ -1,4 +1,3 @@
-// ProtectedRoute.tsx
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
@@ -14,17 +13,22 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { user, roles, isAuthenticated, isLoading } = useUserContext();
 
+  // Normalize roles to lowercase for case-insensitive comparison
+  const normalizedRoles = roles.map((role) => role.toLowerCase());
+  const normalizedRequiredRoles = requiredRoles?.map((role) => role.toLowerCase());
+
+  const isRoleValid = normalizedRoles.some((role) =>
+    normalizedRequiredRoles?.includes(role)
+  );
+
+  if (isLoading) return <div>Loading...</div>;
+
   if (requiredRoles != null && requiredRoles != undefined) {
     // if no permissions were passed, allow access
-    if (
-      !isAuthenticated ||
-      !requiredRoles.some((role) => roles.includes(role))
-    ) {
+    if (!isAuthenticated || !isRoleValid) {
       return <Navigate to="/forbidden" />;
     }
   }
-
-  if (isLoading) return <div>Loading...</div>;
 
   console.log("(ProtectedRoute) user:", user);
   console.log("(ProtectedRoute) isAuthenticated:", isAuthenticated);

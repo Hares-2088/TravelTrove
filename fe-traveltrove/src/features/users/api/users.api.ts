@@ -48,7 +48,7 @@ export const useUsersApi = () => {
   const loginUser = async (userId: string): Promise<UserResponseModel> => {
     const encodedUserId = encodeURIComponent(userId);
     const response = await axiosInstance.post<UserResponseModel>(
-      `/users/${encodedUserId}/login`
+      `/users/${encodedUserId}/login`                                                                                         // Here using login
     );
     return response.data;
   };
@@ -57,7 +57,7 @@ export const useUsersApi = () => {
   const syncUser = async (userId: string): Promise<UserResponseModel> => {
     const encodedUserId = encodeURIComponent(userId);
     const response = await axiosInstance.put<UserResponseModel>(
-      `/users/${encodedUserId}/sync`
+      `/users/${encodedUserId}/sync`                                                                                         // Here using sync
     );
     return response.data;
   };
@@ -102,7 +102,7 @@ export const useUsersApi = () => {
   const updateUserRole = async (userId: string, roleIds: string[]): Promise<void> => {
     const encodedUserId = encodeURIComponent(userId);
     try {
-      await axiosInstance.post(`/users/${encodedUserId}/roles`, {
+      await axiosInstance.post(`/users/${encodedUserId}/roles`, {                                                          // Here using sync
         roles: roleIds, 
       });
     } catch (error) {
