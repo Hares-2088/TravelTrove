@@ -30,11 +30,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
   }
 
-  console.log("(ProtectedRoute) user:", user);
-  console.log("(ProtectedRoute) isAuthenticated:", isAuthenticated);
-  console.log("(ProtectedRoute) requiredRoles:", requiredRoles);
-  console.log("(ProtectedRoute) user roles:", roles);
-
   return <>{children}</>;
 };
 
