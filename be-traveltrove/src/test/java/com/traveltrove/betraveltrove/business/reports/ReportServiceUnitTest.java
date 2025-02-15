@@ -65,14 +65,12 @@ public class ReportServiceUnitTest {
         int month = 2;
         String periodType = "monthly";
 
-        // Mock behavior
         when(paymentService.getPaymentsByPeriod(year, month))
                 .thenReturn(Flux.fromIterable(samplePayments));
 
         when(csvGenerator.generateRevenueCSV(samplePayments, periodType))
                 .thenReturn(new ByteArrayInputStream("mock csv data".getBytes()));
 
-        // Execute & Verify
         StepVerifier.create(reportService.generatePaymentRevenueReport(periodType, year, month))
                 .expectNextMatches(csv -> csv.available() > 0)
                 .verifyComplete();
