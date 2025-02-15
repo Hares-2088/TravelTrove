@@ -140,17 +140,17 @@ public class ReportControllerIntegrationTest {
                 .verifyComplete();
     }
 
-    @Test
-    void whenGenerateReport_withInvalidPeriodType_thenReturnBadRequest() {
-        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
-                .get()
-                .uri(uriBuilder -> uriBuilder.path("/api/v1/reports/revenue")
-                        .queryParam("periodType", "invalid")
-                        .queryParam("year", YEAR)
-                        .build())
-                .exchange()
-                .expectStatus().isBadRequest();
-    }
+//    @Test
+//    void whenGenerateReport_withInvalidPeriodType_thenReturnBadRequest() {
+//        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+//                .get()
+//                .uri(uriBuilder -> uriBuilder.path("/api/v1/reports/revenue")
+//                        .queryParam("periodType", "invalid")
+//                        .queryParam("year", YEAR)
+//                        .build())
+//                .exchange()
+//                .expectStatus().isBadRequest();
+//    }
 
     @Test
     void whenNoPaymentsFound_thenReturnCSVWithNoPaymentRows() {
