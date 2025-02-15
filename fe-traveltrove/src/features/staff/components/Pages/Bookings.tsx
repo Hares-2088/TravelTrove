@@ -8,6 +8,7 @@ import {
   BookingResponseModel,
   BookingStatus,
 } from "../../../bookings/models/bookings.model";
+import { PaymentResponseModel } from "../../../payments/models/payments.model"; // Import PaymentResponseModel
 import "./Bookings.css";
 import "../../../../shared/css/Scrollbar.css";
 
@@ -15,7 +16,7 @@ const Bookings: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const packageId = searchParams.get("packageId");
-  const { getAllBookings, updateBookingStatus } = useBookingsApi(); // Removed deleteBooking
+  const { getAllBookings, updateBookingStatus, getPaymentByBookingId } = useBookingsApi(); // Import getPaymentByBookingId
   const [bookings, setBookings] = useState<BookingResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"create" | "update" | "view">(
@@ -37,6 +38,7 @@ const Bookings: React.FC = () => {
     status: false,
     bookingDate: false,
   });
+  const [paymentDetails, setPaymentDetails] = useState<{ [key: string]: PaymentResponseModel }>({});
 
   useEffect(() => {
     fetchBookings();
@@ -46,9 +48,23 @@ const Bookings: React.FC = () => {
     try {
       const data = await getAllBookings({ packageId: packageId || undefined });
       setBookings(data);
+      fetchPayments(data);
     } catch (error) {
       console.error("Error fetching bookings:", error);
     }
+  };
+
+  const fetchPayments = async (bookings: BookingResponseModel[]) => {
+    const paymentDetails: { [key: string]: PaymentResponseModel } = {};
+    for (const booking of bookings) {
+      try {
+        const payment = await getPaymentByBookingId(booking.bookingId);
+        paymentDetails[booking.bookingId] = payment;
+      } catch (error) {
+        console.error(`Error fetching payment for booking ${booking.bookingId}:`, error);
+      }
+    }
+    setPaymentDetails(paymentDetails);
   };
 
   const handleSave = async () => {
@@ -108,6 +124,7 @@ const Bookings: React.FC = () => {
                     <th>{t("Total Price")}</th>
                     <th>{t("Status")}</th>
                     <th>{t("Booking Date")}</th>
+                    <th>{t("revenue")}</th>
                     <th>{t("Actions")}</th>
                   </tr>
                 </thead>
@@ -118,6 +135,9 @@ const Bookings: React.FC = () => {
                       <td>{booking.totalPrice}</td>
                       <td>{t(booking.status)}</td>
                       <td>{booking.bookingDate}</td>
+                      <td>{paymentDetails[booking.bookingId]?.amount !== undefined ? `$${((paymentDetails[booking.bookingId].amount)/100).toFixed(2)}` : t('noAmount')}
+                          &nbsp;({paymentDetails[booking.bookingId]?.currency || t('noCurrency')})
+                      </td>
                       <td>
                         <Button
                           variant="outline-primary"

@@ -15,6 +15,8 @@ import com.traveltrove.betraveltrove.dataaccess.hotel.Hotel;
 import com.traveltrove.betraveltrove.dataaccess.hotel.HotelRepository;
 import com.traveltrove.betraveltrove.dataaccess.notification.Notification;
 import com.traveltrove.betraveltrove.dataaccess.notification.NotificationRepository;
+import com.traveltrove.betraveltrove.dataaccess.payment.Payment;
+import com.traveltrove.betraveltrove.dataaccess.payment.PaymentRepository;
 import com.traveltrove.betraveltrove.dataaccess.review.Review;
 import com.traveltrove.betraveltrove.dataaccess.review.ReviewRepository;
 import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
@@ -36,6 +38,7 @@ import jakarta.annotation.PostConstruct;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Currency;
 import java.util.List;
 
 @Service
@@ -2570,6 +2573,60 @@ public class DatabaseLoader {
                 .subscribe(
                         success -> log.info("Notifications preloaded successfully."),
                         error -> log.error("Error preloading notifications: {}", error.getMessage())
+                );
+    }
+
+    // Payments
+    private final PaymentRepository paymentRepository;
+
+    @PostConstruct
+    public void loadPayments() {
+        List<Payment> samplePayments = List.of(
+                Payment.builder()
+                        .paymentId("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
+                        .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda29")
+                        .paymentDate(LocalDateTime.now().minusDays(1))
+                        .amount(190000L)
+                        .status("PAYMENT_SUCCESSFUL")
+                        .stripePaymentId("sample: ch_1Jb02a876-9714-48ff-ace3-3035222e256c")
+                        .currency("USD")
+                        .build(),
+                Payment.builder()
+                        .paymentId("2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7")
+                        .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b844")
+                        .paymentDate(LocalDateTime.now().minusDays(1))
+                        .amount(150000L)
+                        .status("PAYMENT_SUCCESSFUL")
+                        .stripePaymentId("sample: ch_2dc04ebc7-82c3-4b89-a33b-cfd3c16d2420")
+                        .currency("USD")
+                        .build(),
+                Payment.builder()
+                        .paymentId("3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8")
+                        .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b177")
+                        .paymentDate(LocalDateTime.now().minusDays(1))
+                        .amount(200000L)
+                        .status("PAYMENT_SUCCESSFUL")
+                        .stripePaymentId("sample: ch_3e8f9b624-0fd8-4db7-8fdf-e28af7e652cb")
+                        .currency("USD")
+                        .build(),
+                Payment.builder()
+                        .paymentId("4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9")
+                        .bookingId("206fa0ba-4803-4730-a7ab-70e6f3cf5826")
+                        .paymentDate(LocalDateTime.now().minusDays(1))
+                        .amount(175000L)
+                        .status("PAYMENT_SUCCESSFUL")
+                        .stripePaymentId("sample: ch_4a7b8c9d5-6e7f-8a9b-0c1d2e3f4a5b")
+                        .currency("USD")
+                        .build()
+        );
+
+        paymentRepository.deleteAll()
+                .thenMany(Flux.fromIterable(samplePayments))
+                .flatMap(paymentRepository::save)
+                .doOnNext(payment -> log.info("Preloaded payment: {}", payment))
+                .subscribe(
+                        success -> log.info("Payments preloaded successfully."),
+                        error -> log.error("Error preloading payments: {}", error.getMessage())
                 );
     }
 

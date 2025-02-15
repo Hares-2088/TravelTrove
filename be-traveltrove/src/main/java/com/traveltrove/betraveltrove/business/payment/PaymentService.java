@@ -12,4 +12,6 @@ public interface PaymentService {
 //    Mono<Void> deletePayment(String paymentId);
     Mono<PaymentResponseModel> getPaymentByPaymentId(String paymentId);
     Flux<PaymentResponseModel> getAllPayments();
+    Mono<PaymentResponseModel> getPaymentByBookingId(String bookingId);
+    Mono<Long> calculateRevenueByTourId(String tourId);
 }

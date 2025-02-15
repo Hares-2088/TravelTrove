@@ -68,6 +68,12 @@ export const useToursApi = () => {
     await axiosInstance.delete(`/tours/${tourId}`);
   };
 
+  // Calculate Revenue by Tour ID
+  const calculateRevenueByTourId = async (tourId: string): Promise<number> => {
+    const response = await axiosInstance.get<number>(`/payments/revenue/${tourId}`);
+    return response.data;
+  };
+
   return {
     getAllTours,
     getTourByTourId,
@@ -75,5 +81,6 @@ export const useToursApi = () => {
     updateTour,
     updateTourImage,
     deleteTour,
+    calculateRevenueByTourId,
   };
 };

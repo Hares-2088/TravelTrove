@@ -12,7 +12,7 @@ import { toast } from "react-toastify"; // Import toast
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 const ToursTab: React.FC = () => {
-  const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour, updateTourImage } = useToursApi();
+  const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour, updateTourImage, calculateRevenueByTourId } = useToursApi();
   const { t } = useTranslation(); // For i18n translation
   const { getPresignedUrl } = useS3Upload();
 
@@ -28,6 +28,7 @@ const ToursTab: React.FC = () => {
   const [imageUploadTourId, setImageUploadTourId] = useState<string | null>(null);
   const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [revenue, setRevenue] = useState<number | null>(null);
 
   useEffect(() => {
     fetchTours();
@@ -46,6 +47,8 @@ const ToursTab: React.FC = () => {
     try {
       const tour = await getTourByTourId(tourId);
       setViewingTour(tour); // Show Tour Details View
+      const revenue = await calculateRevenueByTourId(tourId);
+      setRevenue(revenue);
     } catch (error) {
       console.error("Error fetching Tour details:", error);
     }
@@ -137,6 +140,11 @@ const ToursTab: React.FC = () => {
           <p>
             <strong>{t('tourDescription')}:</strong>{" "}
             {viewingTour.description || t('noDescriptionT')}
+          </p>
+          {/* Show revenue here */}
+          <p>
+            <strong>{t('revenue')}:</strong>{" "}
+            {revenue !== null ? `$${(revenue/100).toFixed(2)}` : t('noRevenue')}
           </p>
           <TourEventsTab tourId={viewingTour.tourId} />
           <TourPackagesTab tourId={viewingTour.tourId} />
