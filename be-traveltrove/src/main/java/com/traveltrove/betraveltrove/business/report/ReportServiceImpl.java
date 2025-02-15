@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,12 @@ public class ReportServiceImpl implements ReportService {
     public Mono<ByteArrayInputStream> generatePaymentRevenueReport(String periodType, int year, Integer month) {
         return paymentService.getPaymentsByPeriod(year, month)
                 .collectList()
-                .map(payments -> csvGenerator.generateRevenueCSV(payments, periodType));
+                .map(payments -> {
+                    try {
+                        return csvGenerator.generateRevenueCSV(payments, periodType);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 }
