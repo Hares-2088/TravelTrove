@@ -154,6 +154,7 @@ public class PackageServiceImpl implements PackageService {
                                         updatedPackage.setId(existingPackage.getId()); // Retain the DB ID
                                         updatedPackage.setPackageId(existingPackage.getPackageId()); // Retain the original packageId
                                         updatedPackage.setAvailableSeats(existingPackage.getAvailableSeats()); // Retain the available seats
+                                        updatedPackage.setStatus(existingPackage.getStatus()); // Retain the status
                                         if (updatedPackage.getAvailableSeats() > existingPackage.getTotalSeats()) {
                                             return Mono.error(new IllegalArgumentException("Available seats cannot exceed total seats"));
                                         }
