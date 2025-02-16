@@ -5,7 +5,7 @@ import { PackageResponseModel } from "../models/package.model";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSubscriptionsApi } from "../api/subscriptions.api";
 import { Container, Row, Col, Button, Spinner, Alert, Card } from "react-bootstrap";
-import { DollarSign, Calendar, Users, CheckCircle, XCircle } from "lucide-react";
+import { DollarSign, Calendar, Users } from "lucide-react";
 import "./PackageDetails.css";
 import { AppRoutes } from "../../../shared/models/app.routes";
 
@@ -29,7 +29,7 @@ const PackageDetails: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [getPackageById, packageId]);
+  }, []);
 
   useEffect(() => {
     fetchPackage();
