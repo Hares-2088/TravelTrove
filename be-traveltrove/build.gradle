@@ -50,6 +50,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'jakarta.mail:jakarta.mail-api:2.1.3'
+	implementation 'com.itextpdf:itext7-core:7.2.3'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok:1.18.28'
 

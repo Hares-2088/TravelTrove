@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.presentation.report;
 
 import com.traveltrove.betraveltrove.business.report.ReportService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -43,5 +44,41 @@ public class ReportController {
         } else {
             return String.format("revenue-report-%d.csv", year);
         }
+    }
+
+    /**
+     * Generates a monthly booking report in PDF format.
+     *
+     * @param year  The year of the report
+     * @param month The month of the report
+     * @return PDF report as a downloadable file
+     */
+    @GetMapping("/bookings/monthly/pdf")
+    public Mono<ResponseEntity<ByteArrayResource>> getMonthlyBookingReportPDF(
+            @RequestParam int year,
+            @RequestParam int month) {
+        return reportService.generateMonthlyBookingReportPDF(year, month)
+                .map(resource -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BookingReport_" + year + "_" + month + ".pdf")
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body(resource));
+    }
+
+    /**
+     * Generates a monthly booking report in CSV format.
+     *
+     * @param year  The year of the report
+     * @param month The month of the report
+     * @return CSV report as a downloadable file
+     */
+    @GetMapping("/bookings/monthly/csv")
+    public Mono<ResponseEntity<ByteArrayResource>> getMonthlyBookingReportCSV(
+            @RequestParam int year,
+            @RequestParam int month) {
+        return reportService.generateMonthlyBookingReportCSV(year, month)
+                .map(resource -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BookingReport_" + year + "_" + month + ".csv")
+                        .contentType(MediaType.parseMediaType("text/csv"))
+                        .body(resource));
     }
 }
