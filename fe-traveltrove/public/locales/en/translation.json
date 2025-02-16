@@ -130,6 +130,7 @@
   "paymentReports": "Payment Reports",
   "bookingReports": "Booking Reports",
   "selectPeriod": "Select the period and download a CSV file of payment revenue reports.",
+  "selectPeriodBooking": "Select the period and download a PDF or CSV file of booking reports.",
   "periodType": "Period Type",
   "monthly": "Monthly",
   "yearly": "Yearly",
