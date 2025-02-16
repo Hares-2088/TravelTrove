@@ -1,9 +1,11 @@
 import React from "react";
 import Accordion from "react-bootstrap/Accordion";
 import PaymentReports from "../../../features/staff/components/reports/PaymentReports";
+import BookingReports from '../../../features/staff/components/reports/BookingReports';
 import { useTranslation } from "react-i18next";
 
 const ReportsPage: React.FC = () => {
+
   const { t } = useTranslation();
 
   return (
@@ -25,7 +27,9 @@ const ReportsPage: React.FC = () => {
           {/* Booking Reports Section */}
           <Accordion.Item eventKey="1">
             <Accordion.Header>{t("bookingReports")}</Accordion.Header>
-            <Accordion.Body>BookingReports</Accordion.Body>
+            <Accordion.Body>
+                <BookingReports />
+            </Accordion.Body>
           </Accordion.Item>
 
           {/* Add more sections as needed */}

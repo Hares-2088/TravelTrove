@@ -132,5 +132,7 @@
   "yearly": "Annuel",
   "year": "Année",
   "month": "Mois",
-  "downloadReport": "Télécharger le rapport"
+  "downloadReport": "Télécharger le rapport",
+  "downloadPDF": "Télécharger le PDF",
+  "downloadCSV": "Télécharger le CSV"
 }
