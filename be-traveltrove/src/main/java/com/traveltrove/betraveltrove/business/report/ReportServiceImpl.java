@@ -6,7 +6,6 @@ import com.traveltrove.betraveltrove.business.review.ReviewService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
 import com.traveltrove.betraveltrove.presentation.booking.BookingResponseModel;
-import com.traveltrove.betraveltrove.presentation.payment.PaymentResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import com.traveltrove.betraveltrove.utils.reports.CSVGenerator;
 import com.traveltrove.betraveltrove.utils.reports.PDFGenerator;
@@ -20,6 +19,7 @@ import reactor.core.publisher.Mono;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class ReportServiceImpl implements ReportService {
 
     private final BookingService bookingService;
+    private final PaymentService paymentService;
     private final ReviewService reviewService;
     private final PackageService packageService;
     private final PDFGenerator pdfGenerator;
@@ -69,7 +70,7 @@ public class ReportServiceImpl implements ReportService {
                 .filter(booking -> isBookingInMonth(booking, startDate, endDate))
                 .collectList()
                 .flatMap(bookings -> generateReport(bookings, year, month))
-                .flatMap(csvGenerator::generateCSV);
+                .flatMap(csvGenerator::generateBookingCSV);
     }
 
     private boolean isBookingInMonth(BookingResponseModel booking, LocalDate startDate, LocalDate endDate) {
@@ -80,15 +81,13 @@ public class ReportServiceImpl implements ReportService {
         Map<String, Long> packageBookingCount = bookings.stream()
                 .collect(Collectors.groupingBy(BookingResponseModel::getPackageId, Collectors.counting()));
 
+        List<String> bookedPackageIds = new ArrayList<>(packageBookingCount.keySet());
+
         return packageService.getAllPackages(null)
+                .filter(pkg -> bookedPackageIds.contains(pkg.getPackageId()))
                 .collectList()
                 .flatMap(packages -> {
-                    List<String> packageIds = packages.stream()
-                            .map(PackageResponseModel::getPackageId)
-                            .collect(Collectors.toList());
-
-                    // Fetch reviews for each package separately and merge results
-                    return Flux.fromIterable(packageIds)
+                    return Flux.fromIterable(bookedPackageIds)
                             .flatMap(reviewService::getReviewsByPackage)
                             .collectList()
                             .map(reviews -> reportFormatter.formatReport(year, month, bookings, packageBookingCount, packages, reviews));

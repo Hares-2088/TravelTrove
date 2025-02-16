@@ -1799,7 +1799,52 @@ public class DatabaseLoader {
                     .build(),
 
             Booking.builder()
-                    .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b172")
+                    .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca343da29")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                    .status(BookingStatus.BOOKING_CONFIRMED)
+                    .bookingDate(LocalDate.now().minusMonths(1))
+                    .totalPrice(1600.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("2a4fff75-5326-4ea7-b3ca-b7eca343da29")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                    .status(BookingStatus.BOOKING_CONFIRMED)
+                    .bookingDate(LocalDate.now().minusMonths(1))
+                    .totalPrice(1600.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("124fff75-5326-4ea7-b3ca-b7eca343da29")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                    .status(BookingStatus.BOOKING_CONFIRMED)
+                    .bookingDate(LocalDate.now().minusMonths(1))
+                    .totalPrice(1600.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("sb4fff75-5326-4ea7-b3ca-b7eca343da29")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                    .status(BookingStatus.BOOKING_CONFIRMED)
+                    .bookingDate(LocalDate.now().minusMonths(1))
+                    .totalPrice(1600.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("1gdu4f75-5326-4ea7-b3ca-b7eca343da29")
+                    .userId("auth0|675f4b3c9a80612ce548e067")
+                    .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                    .status(BookingStatus.BOOKING_CONFIRMED)
+                    .bookingDate(LocalDate.now().minusMonths(1))
+                    .totalPrice(1600.0)
+                    .build(),
+
+            Booking.builder()
+                    .bookingId("42s0353a-af87-4c9d-9f49-102bf198b172")
                     .userId("auth0|675f4b3c9a80612ce548e067")
                     .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
                     .status(BookingStatus.BOOKING_CONFIRMED)
@@ -1864,7 +1909,7 @@ public class DatabaseLoader {
             Booking.builder()
                     .bookingId("d4b8979a-cd20-491d-884f-7ec52d2a2a81")
                     .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("9b5e2c1a-6f7d-4b9e-b8a7-d3f2b1c9a4e5")
+                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
                     .status(BookingStatus.BOOKING_CONFIRMED)
                     .bookingDate(LocalDate.now().minusWeeks(2))
                     .totalPrice(1500.0)
@@ -2066,7 +2111,7 @@ public class DatabaseLoader {
                 Booking.builder()
                         .bookingId("dc04ebc7-82c3-4b89-a33b-cfd3c16d2420")
                         .userId("auth0|675f4bb4e184fd643a8ed903")
-                        .packageId("9b5e2c1a-6f7d-4b9e-b8a7-d3f2b1c9a4e5")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().plusMonths(2))
                         .totalPrice(1500.0)

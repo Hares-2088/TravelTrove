@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 public class ReportFormatter {
@@ -23,31 +22,37 @@ public class ReportFormatter {
     ) {
         Map<String, Object> reportData = new HashMap<>();
 
-        reportData.put("title", "Booking Report for " + month + "/" + year);
-        reportData.put("totalBookings", bookings.size());
+        StringBuilder htmlContent = new StringBuilder();
+        htmlContent.append("<html><body>");
+        htmlContent.append("<h1>Booking Report for ").append(month).append("/").append(year).append("</h1>");
+        htmlContent.append("<p>Total Confirmed Bookings: ").append(bookings.size()).append("</p>");
+        htmlContent.append("<table border='1'><tr><th>Package</th><th>Bookings</th><th>Reviews</th><th>Average Rating</th></tr>");
 
-        Map<String, Object> packageStats = new HashMap<>();
         for (PackageResponseModel tourPackage : packages) {
             String packageId = tourPackage.getPackageId();
             long bookingCount = packageBookingCount.getOrDefault(packageId, 0L);
 
             List<ReviewResponseModel> packageReviews = reviews.stream()
                     .filter(review -> review.getPackageId().equals(packageId))
-                    .collect(Collectors.toList());
+                    .toList();
 
             double avgRating = packageReviews.stream()
                     .mapToInt(ReviewResponseModel::getRating)
                     .average()
                     .orElse(0.0);
 
-            packageStats.put(tourPackage.getName(), Map.of(
-                    "bookings", bookingCount,
-                    "reviews", packageReviews.size(),
-                    "averageRating", packageReviews.isEmpty() ? "No Reviews" : avgRating
-            ));
+            htmlContent.append("<tr>")
+                    .append("<td>").append(tourPackage.getName()).append("</td>")
+                    .append("<td>").append(bookingCount).append("</td>")
+                    .append("<td>").append(packageReviews.size()).append("</td>")
+                    .append("<td>").append(packageReviews.isEmpty() ? "No Reviews" : String.format("%.2f", avgRating)).append("</td>")
+                    .append("</tr>");
         }
 
-        reportData.put("packageStats", packageStats);
+        htmlContent.append("</table>");
+        htmlContent.append("</body></html>");
+
+        reportData.put("htmlContent", htmlContent.toString());
         return reportData;
     }
 }

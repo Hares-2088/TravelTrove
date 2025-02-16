@@ -47,7 +47,7 @@ public class CSVGenerator {
         }
     }
 
-    public Mono<ByteArrayResource> generateCSV(Map<String, Object> reportData) {
+    public Mono<ByteArrayResource> generateBookingCSV(Map<String, Object> reportData) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintWriter writer = new PrintWriter(outputStream);
