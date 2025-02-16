@@ -12,4 +12,5 @@ public interface PaymentService {
 //    Mono<Void> deletePayment(String paymentId);
     Mono<PaymentResponseModel> getPaymentByPaymentId(String paymentId);
     Flux<PaymentResponseModel> getAllPayments();
+    Flux<Payment> getPaymentsByPeriod(int year, Integer month);
 }

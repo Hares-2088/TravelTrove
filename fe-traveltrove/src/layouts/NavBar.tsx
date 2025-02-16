@@ -75,6 +75,7 @@ const NavBar: React.FC = () => {
             <Nav.Link href={AppRoutes.ContactUs} className="px-3">
               {t("contactus")}
             </Nav.Link>
+            
           </Nav>
 
           <Nav className="align-items-center">
@@ -84,10 +85,16 @@ const NavBar: React.FC = () => {
               </Nav.Link>
             )}
             {isAuthenticated && isAdmin && (
+              <Nav.Link href={AppRoutes.ReportsPage} className="px-3">
+                {t("reports")}
+              </Nav.Link>
+            )}
+            {isAuthenticated && isAdmin && (
               <Nav.Link href={AppRoutes.UserManagementPage}>
                 <i className="bi bi-people-fill" style={{ fontSize: "20px" }} />
               </Nav.Link>
             )}
+            
             <NavDropdown
               title={
                 <img

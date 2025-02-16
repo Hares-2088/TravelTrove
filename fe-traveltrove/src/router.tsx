@@ -22,6 +22,7 @@ import UsersDetail from "./features/users/components/UsersDetail";
 import PaymentSuccessPage from "./pages/booking/PaymentSuccessPage";
 import PaymentCancel from "./pages/booking/PaymentCancel";
 import ContactUsPage from "./pages/ContactUsPage";
+import ReportsPage from "./pages/staff/reports/ReportsPage";
 
 const router = createBrowserRouter([
   {
@@ -108,6 +109,14 @@ const router = createBrowserRouter([
         element:(
           <ProtectedRoute requiredRoles={["Customer"]}>
             <PaymentCancel />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: AppRoutes.ReportsPage,
+        element:(
+          <ProtectedRoute requiredRoles={["Admin"]}>
+            <ReportsPage />
           </ProtectedRoute>
         )
       },
