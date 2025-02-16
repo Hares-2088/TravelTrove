@@ -7,8 +7,11 @@ const PaymentReports: React.FC = () => {
   const { getRevenueReport } = usePaymentReportsApi();
 
   const [periodType, setPeriodType] = useState<"monthly" | "yearly">("monthly");
-  const [year, setYear] = useState<number>(2025);
-  const [month, setMonth] = useState<number>(1);
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+
+  const [year, setYear] = useState<number>(currentYear);
+  const [month, setMonth] = useState<number>(currentMonth);
   const { t } = useTranslation();
 
   const handleDownload = async () => {
