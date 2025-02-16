@@ -25,17 +25,26 @@ export const usePaymentReportsApi = () => {
 
     const url = `/reports/revenue?${queryParams.toString()}`;
 
-    // Request the CSV file as a blob
+    //  CSV file as a blob
     const response = await axiosInstance.get<Blob>(url, {
-      responseType: "blob",
-      // If your backend sets Content-Disposition with filename,
-      // you can parse it from response.headers['content-disposition'] if desired.
-    });
-
-    return response;
+        responseType: "blob",
+      });
+  
+      //  filename from the Content-Disposition header
+      const contentDisposition = response.headers["content-disposition"];
+      let filename = "revenue-report.csv"; // default filename
+  
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match?.[1]) {
+          filename = match[1]; // filename from header
+        }
+      }
+  
+      return { data: response.data, filename };
+    };
+  
+    return {
+      getRevenueReport,
+    };
   };
-
-  return {
-    getRevenueReport,
-  };
-};

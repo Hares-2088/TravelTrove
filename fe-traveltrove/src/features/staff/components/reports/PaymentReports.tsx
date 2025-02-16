@@ -9,7 +9,7 @@ const PaymentReports: React.FC = () => {
 
   // Form state
   const [periodType, setPeriodType] = useState<"monthly" | "yearly">("monthly");
-  const [year, setYear] = useState<number>(2023);
+  const [year, setYear] = useState<number>(2025);
   const [month, setMonth] = useState<number>(1);
 
   const handleDownload = async () => {
@@ -23,15 +23,12 @@ const PaymentReports: React.FC = () => {
       // Call API
       const response = await getRevenueReport(params);
 
-      // Try to get filename from "Content-Disposition" if your backend sets it
-      const disposition = response.headers["content-disposition"];
-      let filename = "revenue-report.csv";
-      if (disposition) {
-        const match = disposition.match(/filename="?([^"]+)"?/);
-        if (match?.[1]) {
-          filename = match[1];
-        }
+      // Generate filename based on periodType, year, and month
+      let filename = `revenue-report-${year}.csv`;
+      if (periodType === "monthly" && month != null) {
+        filename = `revenue-report-${year}-${String(month).padStart(2, '0')}.csv`;
       }
+
 
       // Create a URL from the Blob
       const blobUrl = window.URL.createObjectURL(response.data);
