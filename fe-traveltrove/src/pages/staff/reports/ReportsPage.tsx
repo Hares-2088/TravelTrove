@@ -1,10 +1,11 @@
-// src/components/ReportsPage/ReportsPage.tsx
 import React from "react";
 import Accordion from "react-bootstrap/Accordion";
 import PaymentReports from "../../../features/staff/components/reports/PaymentReports";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 const ReportsPage: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div
       className="d-flex justify-content-center align-items-start p-4"

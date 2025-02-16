@@ -1,40 +1,32 @@
-// src/features/staff/components/reports/PaymentReports.tsx
-
 import React, { useState } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { RevenueReportParams, usePaymentReportsApi } from "../../../reports/paymentReports/api/paymentReports.api";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 const PaymentReports: React.FC = () => {
   const { getRevenueReport } = usePaymentReportsApi();
 
-  // Form state
   const [periodType, setPeriodType] = useState<"monthly" | "yearly">("monthly");
   const [year, setYear] = useState<number>(2025);
   const [month, setMonth] = useState<number>(1);
+  const { t } = useTranslation();
 
   const handleDownload = async () => {
     try {
-      // Prepare parameters
       const params: RevenueReportParams = { periodType, year };
       if (periodType === "monthly") {
         params.month = month;
       }
 
-      // Call API
       const response = await getRevenueReport(params);
 
-      // Generate filename based on periodType, year, and month
       let filename = `revenue-report-${year}.csv`;
       if (periodType === "monthly" && month != null) {
         filename = `revenue-report-${year}-${String(month).padStart(2, '0')}.csv`;
       }
 
-
-      // Create a URL from the Blob
       const blobUrl = window.URL.createObjectURL(response.data);
 
-      // Create a hidden <a> tag to trigger download
       const link = document.createElement("a");
       link.href = blobUrl;
       link.setAttribute("download", filename);
@@ -42,7 +34,6 @@ const PaymentReports: React.FC = () => {
       link.click();
       document.body.removeChild(link);
 
-      // Revoke the object URL (cleanup)
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Error downloading revenue report:", error);

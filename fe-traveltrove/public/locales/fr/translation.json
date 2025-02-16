@@ -124,14 +124,13 @@
   "contactus": "Contactez-nous",
 
 
-
-  "paymentReports": "Payment Reports",
-  "bookingReports": "Booking Reports",
-  "selectPeriod": "Select the period and download a CSV file of payment revenue reports.",
-  "periodType": "Period Type",
-  "monthly": "Monthly",
-  "yearly": "Yearly",
-  "year": "Year",
-  "month": "Month",
-  "downloadReport": "Download Report"
+  "paymentReports": "Rapports de paiement",
+  "bookingReports": "Rapports de réservation",
+  "selectPeriod": "Sélectionnez la période et téléchargez un fichier CSV des rapports de revenus de paiement.",
+  "periodType": "Type de période",
+  "monthly": "Mensuel",
+  "yearly": "Annuel",
+  "year": "Année",
+  "month": "Mois",
+  "downloadReport": "Télécharger le rapport"
 }
