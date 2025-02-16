@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { RevenueReportParams, usePaymentReportsApi } from "../../../reports/paymentReports/api/paymentReports.api";
+import { t } from "i18next";
 
 const PaymentReports: React.FC = () => {
   const { getRevenueReport } = usePaymentReportsApi();
@@ -50,29 +51,29 @@ const PaymentReports: React.FC = () => {
 
   return (
     <div>
-      <h3>Payment Reports</h3>
-      <p>Select the period and download a CSV file of payment revenue reports.</p>
+      <h3>{t("paymentReports")}</h3>
+      <p>{t("selectPeriod")}</p>
 
       <Form>
         <Row className="mb-3">
           <Col xs={12} md={4}>
             <Form.Group controlId="periodType">
-              <Form.Label>Period Type</Form.Label>
+              <Form.Label>{t("periodType")}</Form.Label>
               <Form.Select
                 value={periodType}
                 onChange={(e) =>
                   setPeriodType(e.target.value as "monthly" | "yearly")
                 }
               >
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
+                <option value="monthly">{t("monthly")}</option>
+                <option value="yearly">{t("yearly")}</option>
               </Form.Select>
             </Form.Group>
           </Col>
 
           <Col xs={12} md={4}>
             <Form.Group controlId="year">
-              <Form.Label>Year</Form.Label>
+              <Form.Label>{t("year")}</Form.Label>
               <Form.Control
                 type="number"
                 value={year}
@@ -87,7 +88,7 @@ const PaymentReports: React.FC = () => {
           {periodType === "monthly" && (
             <Col xs={12} md={4}>
               <Form.Group controlId="month">
-                <Form.Label>Month</Form.Label>
+                <Form.Label>{t("month")}</Form.Label>
                 <Form.Control
                   type="number"
                   value={month}
@@ -101,7 +102,7 @@ const PaymentReports: React.FC = () => {
         </Row>
 
         <Button variant="primary" onClick={handleDownload}>
-          Download Report
+        {t("downloadReport")}
         </Button>
       </Form>
     </div>

@@ -2,6 +2,7 @@
 import React from "react";
 import Accordion from "react-bootstrap/Accordion";
 import PaymentReports from "../../../features/staff/components/reports/PaymentReports";
+import { t } from "i18next";
 
 const ReportsPage: React.FC = () => {
   return (
@@ -10,11 +11,11 @@ const ReportsPage: React.FC = () => {
       style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}
     >
       <div className="container my-4">
-        <h2 className="mb-4">Reports</h2>
+        <h2 className="mb-4">{t("reports")}</h2>
         <Accordion>
           {/* Payment Reports Section */}
           <Accordion.Item eventKey="0">
-            <Accordion.Header>Payment Reports</Accordion.Header>
+            <Accordion.Header>{t("paymentReports")}</Accordion.Header>
             <Accordion.Body>
               <PaymentReports />
             </Accordion.Body>
@@ -22,7 +23,7 @@ const ReportsPage: React.FC = () => {
 
           {/* Booking Reports Section */}
           <Accordion.Item eventKey="1">
-            <Accordion.Header>Booking Reports</Accordion.Header>
+            <Accordion.Header>{t("bookingReports")}</Accordion.Header>
             <Accordion.Body>BookingReports</Accordion.Body>
           </Accordion.Item>
 
