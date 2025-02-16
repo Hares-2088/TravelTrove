@@ -56,7 +56,7 @@ const TourDetails: React.FC = () => {
         <h1 className="tour-title">{tour.name}</h1>
         <p className="tour-description">{tour.description}</p>
         {tour.tourImageUrl && (
-          <img src={tour.tourImageUrl} alt={tour.name} className="tour-image" />
+          <img src={tour.tourImageUrl} alt={tour.name} className="tour-main-image" />
         )}
       </header>
 
