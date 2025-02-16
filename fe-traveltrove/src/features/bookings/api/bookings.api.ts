@@ -1,5 +1,6 @@
 import { BookingRequestModel, BookingResponseModel, BookingStatus } from "../models/bookings.model";
 import { useAxiosInstance } from "../../../shared/axios/useAxiosInstance";
+import { PaymentResponseModel } from "../../payments/models/payments.model";
 
 export const useBookingsApi = () => {
   const axiosInstance = useAxiosInstance();
@@ -83,6 +84,12 @@ export const useBookingsApi = () => {
     await axiosInstance.delete(`/bookings/${bookingId}`);
   };
 
+  // Get Payment by Booking ID
+  const getPaymentByBookingId = async (bookingId: string): Promise<PaymentResponseModel> => {
+    const response = await axiosInstance.get<PaymentResponseModel>(`/payments/booking/${bookingId}`);
+    return response.data;
+  };
+
   return {
     getAllBookings,
     getBookingById,
@@ -90,5 +97,6 @@ export const useBookingsApi = () => {
     createBooking,
     updateBookingStatus,
     deleteBooking,
+    getPaymentByBookingId,
   };
 };

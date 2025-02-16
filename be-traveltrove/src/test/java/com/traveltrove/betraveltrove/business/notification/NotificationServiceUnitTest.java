@@ -251,6 +251,7 @@ class NotificationServiceUnitTest {
 
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
+
     @Test
     void sendPostTourReviewEmail_ShouldSendEmail() {
 

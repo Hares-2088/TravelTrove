@@ -1,7 +1,15 @@
 package com.traveltrove.betraveltrove.presentation.payment;
 
+import com.traveltrove.betraveltrove.business.booking.BookingService;
+import com.traveltrove.betraveltrove.business.payment.PaymentService;
+import com.traveltrove.betraveltrove.business.tour.TourService;
+import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
 import com.traveltrove.betraveltrove.dataaccess.payment.Payment;
 import com.traveltrove.betraveltrove.dataaccess.payment.PaymentRepository;
+import com.traveltrove.betraveltrove.presentation.booking.BookingResponseModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
+import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
+import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -10,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,6 +31,7 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -35,6 +45,18 @@ public class PaymentControllerIntegrationTest {
 
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @MockitoBean
+    private PackageService packageService;
+
+    @MockitoBean
+    private TourService tourService;
+
+    @MockitoBean
+    private BookingService bookingService;
+
+    @MockitoBean
+    private PaymentService paymentService;
 
     private final String INVALID_PAYMENT_ID = "invalid-payment-id";
 
@@ -179,6 +201,87 @@ public class PaymentControllerIntegrationTest {
                 .exchange()
                 .expectStatus().isBadRequest();
     }
+
+    @Test
+    void getPaymentByBookingId_withExistingId_returnsPaymentSuccessfully() {
+        PaymentResponseModel paymentResponseModel = PaymentResponseModel.builder()
+                .paymentId("payment123")
+                .bookingId("booking123")
+                .amount(5000L)
+                .currency("usd")
+                .status("created")
+                .build();
+
+        when(paymentService.getPaymentByBookingId("booking123")).thenReturn(Mono.just(paymentResponseModel));
+
+        webTestClient.get()
+                .uri("/api/v1/payments/booking/booking123")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PaymentResponseModel.class)
+                .value(response -> {
+                    assertNotNull(response);
+                    assertEquals("payment123", response.getPaymentId());
+                    assertEquals("booking123", response.getBookingId());
+                    assertEquals(5000L, response.getAmount());
+                    assertEquals("usd", response.getCurrency());
+                    assertEquals("created", response.getStatus());
+                });
+    }
+
+    @Test
+    void getPaymentByBookingId_withNonExistingId_returnsNotFoundError() {
+        when(paymentService.getPaymentByBookingId(anyString())).thenReturn(Mono.error(new NotFoundException("Payment not found")));
+
+        Mono<PaymentResponseModel> result = paymentService.getPaymentByBookingId("invalid");
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof NotFoundException &&
+                        throwable.getMessage().equals("Payment not found"))
+                .verify();
+    }
+
+//    @Test
+//    void calculateRevenueByTourId_withExistingTourId_returnsTotalRevenue() {
+//        TourResponseModel tourResponseModel = new TourResponseModel();
+//        tourResponseModel.setTourId("tour123");
+//
+//        PackageResponseModel packageResponseModel = new PackageResponseModel();
+//        packageResponseModel.setPackageId("package123");
+//
+//        BookingResponseModel bookingResponseModel = new BookingResponseModel();
+//        bookingResponseModel.setBookingId("booking123");
+//
+//        PaymentResponseModel paymentResponseModel = PaymentResponseModel.builder()
+//                .paymentId("payment123")
+//                .bookingId("booking123")
+//                .amount(5000L)
+//                .currency("usd")
+//                .status("created")
+//                .build();
+//
+//        when(tourService.getTourByTourId("tour123")).thenReturn(Mono.just(tourResponseModel));
+//        when(packageService.getAllPackages("tour123")).thenReturn(Flux.just(packageResponseModel));
+//        when(bookingService.getBookingsByPackageId("package123")).thenReturn(Flux.just(bookingResponseModel));
+//        when(paymentRepository.findByBookingId("booking123")).thenReturn(Mono.just(paymentResponseModel));
+//
+//        Mono<Long> result = paymentService.calculateRevenueByTourId("tour123");
+//
+//        StepVerifier.create(result)
+//                .expectNext(5000L)
+//                .verifyComplete();
+//    }
+
+//    @Test
+//    void calculateRevenueByTourId_withNonExistingTourId_returnsZero() {
+//        when(tourService.getTourByTourId("invalid")).thenReturn(Mono.empty());
+//
+//        Mono<Long> result = paymentService.calculateRevenueByTourId("invalid");
+//
+//        StepVerifier.create(result)
+//                .expectNext(0L)
+//                .verifyComplete();
+//    }
 }
 
 

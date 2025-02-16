@@ -2631,8 +2631,45 @@ public class DatabaseLoader {
                 createPayment("9a0b1c", "booking10", 2700L, "usd", LocalDateTime.of(2024, 12, 31, 23, 59), "failed", "stripe10"),
 
                 // January 2025 (new year edge case)
-                createPayment("0a1b2c", "booking11", 3100L, "usd", LocalDateTime.of(2025, 1, 1, 0, 1), "succeeded", "stripe11")
-        );
+                createPayment("0a1b2c", "booking11", 3100L, "usd", LocalDateTime.of(2025, 1, 1, 0, 1), "succeeded", "stripe11"),
+
+                        Payment.builder()
+                        .paymentId("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
+                        .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda23")
+                        .paymentDate(LocalDateTime.now().minusDays(1))
+                        .amount(190000L)
+                        .status("PAYMENT_SUCCESSFUL")
+                        .stripePaymentId("sample: ch_1Jb02a876-9714-48ff-ace3-3035222e256c")
+                        .currency("USD")
+                        .build(),
+                Payment.builder()
+                        .paymentId("2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7")
+                        .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b843")
+                        .paymentDate(LocalDateTime.now().minusDays(1))
+                        .amount(150000L)
+                        .status("PAYMENT_SUCCESSFUL")
+                        .stripePaymentId("sample: ch_2dc04ebc7-82c3-4b89-a33b-cfd3c16d2420")
+                        .currency("USD")
+                        .build(),
+                Payment.builder()
+                        .paymentId("3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8")
+                        .bookingId("3ad0353a-af87-4c9d-9f49-102bf198b175")
+                        .paymentDate(LocalDateTime.now().minusDays(1))
+                        .amount(200000L)
+                        .status("PAYMENT_SUCCESSFUL")
+                        .stripePaymentId("sample: ch_3e8f9b624-0fd8-4db7-8fdf-e28af7e652cb")
+                        .currency("USD")
+                        .build(),
+                Payment.builder()
+                        .paymentId("4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9")
+                        .bookingId("206fa0ba-4803-4730-a7ab-70e6f3cf5826")
+                        .paymentDate(LocalDateTime.now().minusDays(1))
+                        .amount(175000L)
+                        .status("PAYMENT_SUCCESSFUL")
+                        .stripePaymentId("sample: ch_4a7b8c9d5-6e7f-8a9b-0c1d2e3f4a5b")
+                        .currency("USD")
+                        .build()
+                );
 
         paymentRepository.deleteAll()
                 .thenMany(Flux.fromIterable(samplePayments))
