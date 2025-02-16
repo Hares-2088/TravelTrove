@@ -1,10 +1,14 @@
-.package-details {
+.package-details-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f9f9f9;
+}
+
+.package-card {
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .package-header {
@@ -31,28 +35,25 @@
   font-size: 1rem;
   color: #444;
   margin: 10px 0;
+  display: flex;
+  align-items: center;
 }
 
 .package-info strong {
   color: #333;
+  margin-left: 5px;
 }
 
-.loading {
-  text-align: center;
-  font-size: 1.5rem;
-  color: #666;
+.package-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.error {
-  text-align: center;
-  font-size: 1.5rem;
-  color: #ff0000;
-}
-
-.book-button,
-.subscribe-button,
-.unsubscribe-button {
-  display: block;
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   padding: 10px;
   font-size: 1rem;
@@ -61,16 +62,15 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px;
   transition: background-color 0.3s ease;
 }
 
 .book-button {
-  background-color: #007bff;
+  background-color: #000;
 }
 
 .book-button:hover {
-  background-color: #0056b3;
+  background-color: #333;
 }
 
 .subscribe-button {
@@ -87,4 +87,16 @@
 
 .unsubscribe-button:hover {
   background-color: #c82333;
+}
+
+.loading-spinner {
+  display: block;
+  margin: 20px auto;
+}
+
+.error-alert,
+.info-alert {
+  text-align: center;
+  font-size: 1.5rem;
+  margin: 20px 0;
 }
