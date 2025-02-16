@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import {
   TourEventRequestModel,
   TourEventResponseModel,
-} from '../../../tourevents/model/tourevents.model';
+} from '../../../tourEvents/model/tourevents.model';
 import "../../../../shared/css/Scrollbar.css";
 
 interface EventResponseModel {

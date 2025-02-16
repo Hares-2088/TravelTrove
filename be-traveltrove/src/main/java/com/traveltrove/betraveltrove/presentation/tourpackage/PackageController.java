@@ -101,20 +101,5 @@ public class PackageController {
     }
 
 
-    @GetMapping(value = "/{packageId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<PackageResponseModel>> getPackageByPackageId(
-            @PathVariable String packageId,
-            @RequestParam(required = false) String userId) {
 
-        log.info("Fetching package by package ID: {}", packageId);
-
-        // Track the view if userId is provided
-        if (userId != null) {
-            packageViewService.trackPackageView(userId, packageId).subscribe();
-        }
-
-        return packageService.getPackageByPackageId(packageId)
-                .map(ResponseEntity::ok)
-                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
-    }
 }

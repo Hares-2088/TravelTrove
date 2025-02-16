@@ -1002,15 +1002,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     <Toast.Body>{t("Package has been canceled successfully.")}</Toast.Body>
                 </Toast>
             </ToastContainer>
-
-            <div>
-            <h2>Subscribed Packages</h2>
-            <ul>
-                {subscribedPackages.map(pkg => (
-                    <li key={pkg.packageId}>{pkg.name}</li>
-                ))}
-            </ul>
-        </div>
         </div>
     );
 };
