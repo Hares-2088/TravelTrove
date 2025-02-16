@@ -46,13 +46,6 @@ public class ReportController {
         }
     }
 
-    /**
-     * Generates a monthly booking report in PDF format.
-     *
-     * @param year  The year of the report
-     * @param month The month of the report
-     * @return PDF report as a downloadable file
-     */
     @GetMapping("/bookings/monthly/pdf")
     public Mono<ResponseEntity<ByteArrayResource>> getMonthlyBookingReportPDF(
             @RequestParam int year,
@@ -64,13 +57,6 @@ public class ReportController {
                         .body(resource));
     }
 
-    /**
-     * Generates a monthly booking report in CSV format.
-     *
-     * @param year  The year of the report
-     * @param month The month of the report
-     * @return CSV report as a downloadable file
-     */
     @GetMapping("/bookings/monthly/csv")
     public Mono<ResponseEntity<ByteArrayResource>> getMonthlyBookingReportCSV(
             @RequestParam int year,

@@ -6,7 +6,6 @@ import com.traveltrove.betraveltrove.business.review.ReviewService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
 import com.traveltrove.betraveltrove.dataaccess.booking.BookingStatus;
 import com.traveltrove.betraveltrove.presentation.booking.BookingResponseModel;
-import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import com.traveltrove.betraveltrove.utils.reports.CSVGenerator;
 import com.traveltrove.betraveltrove.utils.reports.PDFGenerator;
 import com.traveltrove.betraveltrove.utils.reports.ReportFormatter;
@@ -57,8 +56,8 @@ public class ReportServiceImpl implements ReportService {
         return bookingService.getBookingsByStatus(BookingStatus.BOOKING_CONFIRMED)
                 .filter(booking -> isBookingInMonth(booking, startDate, endDate))
                 .collectList()
-                .flatMap(bookings -> generateReport(bookings, year, month))
-                .flatMap(pdfGenerator::generatePDF);
+                .flatMap(bookings -> generateReportPDF(bookings, year, month))
+                .flatMap(pdfGenerator::generateMonthlyBookingPDF);
     }
 
     @Override
@@ -69,15 +68,15 @@ public class ReportServiceImpl implements ReportService {
         return bookingService.getBookingsByStatus(BookingStatus.BOOKING_CONFIRMED)
                 .filter(booking -> isBookingInMonth(booking, startDate, endDate))
                 .collectList()
-                .flatMap(bookings -> generateReport(bookings, year, month))
-                .flatMap(csvGenerator::generateBookingCSV);
+                .flatMap(bookings -> generateReportCSV(bookings, year, month))
+                .flatMap(csvGenerator::generateMonthlyBookingCSV);
     }
 
     private boolean isBookingInMonth(BookingResponseModel booking, LocalDate startDate, LocalDate endDate) {
         return !booking.getBookingDate().isBefore(startDate) && !booking.getBookingDate().isAfter(endDate);
     }
 
-    private Mono<Map<String, Object>> generateReport(List<BookingResponseModel> bookings, int year, int month) {
+    private Mono<Map<String, Object>> generateReportPDF(List<BookingResponseModel> bookings, int year, int month) {
         Map<String, Long> packageBookingCount = bookings.stream()
                 .collect(Collectors.groupingBy(BookingResponseModel::getPackageId, Collectors.counting()));
 
@@ -86,11 +85,24 @@ public class ReportServiceImpl implements ReportService {
         return packageService.getAllPackages(null)
                 .filter(pkg -> bookedPackageIds.contains(pkg.getPackageId()))
                 .collectList()
-                .flatMap(packages -> {
-                    return Flux.fromIterable(bookedPackageIds)
-                            .flatMap(reviewService::getReviewsByPackage)
-                            .collectList()
-                            .map(reviews -> reportFormatter.formatReport(year, month, bookings, packageBookingCount, packages, reviews));
-                });
+                .flatMap(packages -> Flux.fromIterable(bookedPackageIds)
+                        .flatMap(reviewService::getReviewsByPackage)
+                        .collectList()
+                        .map(reviews -> reportFormatter.formatMonthlyBookingReportPDF(year, month, bookings, packageBookingCount, packages, reviews)));
+    }
+
+    private Mono<Map<String, Object>> generateReportCSV(List<BookingResponseModel> bookings, int year, int month) {
+        Map<String, Long> packageBookingCount = bookings.stream()
+                .collect(Collectors.groupingBy(BookingResponseModel::getPackageId, Collectors.counting()));
+
+        List<String> bookedPackageIds = new ArrayList<>(packageBookingCount.keySet());
+
+        return packageService.getAllPackages(null)
+                .filter(pkg -> bookedPackageIds.contains(pkg.getPackageId()))
+                .collectList()
+                .flatMap(packages -> Flux.fromIterable(bookedPackageIds)
+                        .flatMap(reviewService::getReviewsByPackage)
+                        .collectList()
+                        .map(reviews -> reportFormatter.formatMonthlyBookingReportCSV(year, month, bookings, packageBookingCount, packages, reviews)));
     }
 }

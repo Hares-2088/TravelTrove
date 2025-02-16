@@ -5,14 +5,17 @@ import com.traveltrove.betraveltrove.presentation.review.ReviewResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
+
 public class ReportFormatter {
 
-    public Map<String, Object> formatReport(
+    public Map<String, Object> formatMonthlyBookingReportPDF(
             int year,
             int month,
             List<BookingResponseModel> bookings,
@@ -53,6 +56,53 @@ public class ReportFormatter {
         htmlContent.append("</body></html>");
 
         reportData.put("htmlContent", htmlContent.toString());
+        return reportData;
+        
+        
+    }
+
+    public Map<String, Object> formatMonthlyBookingReportCSV(
+            int year,
+            int month,
+            List<BookingResponseModel> bookings,
+            Map<String, Long> packageBookingCount,
+            List<PackageResponseModel> packages,
+            List<ReviewResponseModel> reviews
+    ) {
+        Map<String, Object> reportData = new HashMap<>();
+
+        reportData.put("title", "Booking Report for " + month + "/" + year);
+        reportData.put("totalBookings", bookings.size());
+
+        Map<String, Map<String, Object>> packageStats = new HashMap<>();
+
+        for (PackageResponseModel tourPackage : packages) {
+            String packageId = tourPackage.getPackageId();
+            long bookingCount = packageBookingCount.getOrDefault(packageId, 0L);
+
+            List<ReviewResponseModel> packageReviews = reviews.stream()
+                    .filter(review -> review.getPackageId().equals(packageId))
+                    .toList();
+
+            double avgRating = packageReviews.stream()
+                    .mapToInt(ReviewResponseModel::getRating)
+                    .average()
+                    .orElse(0.0);
+
+            double roundedAvgRating = BigDecimal.valueOf(avgRating)
+                    .setScale(2, RoundingMode.HALF_UP)
+                    .doubleValue();
+
+            Map<String, Object> packageData = new HashMap<>();
+            packageData.put("bookings", bookingCount);
+            packageData.put("reviews", packageReviews.size());
+            packageData.put("averageRating", roundedAvgRating);
+
+            packageStats.put(tourPackage.getName(), packageData);
+        }
+
+        reportData.put("packageStats", packageStats);
+
         return reportData;
     }
 }

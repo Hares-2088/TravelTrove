@@ -11,7 +11,7 @@ import java.util.Map;
 @Component
 public class PDFGenerator {
 
-    public Mono<ByteArrayResource> generatePDF(Map<String, Object> reportData) {
+    public Mono<ByteArrayResource> generateMonthlyBookingPDF(Map<String, Object> reportData) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             String htmlContent = (String) reportData.get("htmlContent");
             HtmlConverter.convertToPdf(htmlContent, outputStream);
