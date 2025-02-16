@@ -25,9 +25,9 @@ public class CSVGenerator {
 
             AtomicLong totalAmount = new AtomicLong(0);
             paymentList.forEach(payment -> {
-                writer.println(String.format("%s,%d,%s,%s,%s",
+                writer.println(String.format("%s,%d,%s,%s,%s            ",
                         payment.getPaymentId(),
-                        payment.getAmount() ,
+                        payment.getAmount(),
                         payment.getCurrency(),
                         payment.getStatus(),
                         payment.getPaymentDate().format(CSV_DATE_FORMATTER)
@@ -38,7 +38,7 @@ public class CSVGenerator {
             writer.println();
             writer.println("Summary,,,,");
 
-            writer.println(String.format("TOTAL,%d,USD,,", totalAmount.get()));
+            writer.println(String.format("TOTAL,%d,usd,,", totalAmount.get()));
             writer.flush();
             return new ByteArrayInputStream(out.toByteArray());
         }
