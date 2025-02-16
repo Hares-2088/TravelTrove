@@ -45,7 +45,7 @@ const BookingReports: React.FC = () => {
   return (
     <div>
       <h3>{t("bookingReports")}</h3>
-      <p>{t("selectPeriod")}</p>
+      <p>{t("selectPeriodBooking")}</p>
 
       <Form>
         <Row className="mb-3">

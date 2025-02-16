@@ -127,6 +127,7 @@
   "paymentReports": "Rapports de paiement",
   "bookingReports": "Rapports de réservation",
   "selectPeriod": "Sélectionnez la période et téléchargez un fichier CSV des rapports de revenus de paiement.",
+  "selectPeriodBooking": "Sélectionnez la période et téléchargez un fichier PDF ou CSV des rapports de réservation.",
   "periodType": "Type de période",
   "monthly": "Mensuel",
   "yearly": "Annuel",
