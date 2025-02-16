@@ -135,5 +135,7 @@
   "yearly": "Yearly",
   "year": "Year",
   "month": "Month",
-  "downloadReport": "Download Report"
+  "downloadReport": "Download Report",
+  "downloadPDF": "Download PDF",
+  "downloadCSV": "Download CSV"
 }

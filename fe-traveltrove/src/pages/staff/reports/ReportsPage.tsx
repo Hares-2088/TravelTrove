@@ -5,6 +5,7 @@ import BookingReports from '../../../features/staff/components/reports/BookingRe
 import { useTranslation } from "react-i18next";
 
 const ReportsPage: React.FC = () => {
+
   const { t } = useTranslation();
 
   return (

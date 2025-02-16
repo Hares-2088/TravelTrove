@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { BookingReportParams, useBookingReportsApi } from "../../../reports/bookingReports/api/bookingReports.api";
+import { useTranslation } from "react-i18next";
 
 const BookingReports: React.FC = () => {
   const { getMonthlyBookingReportPDF, getMonthlyBookingReportCSV } = useBookingReportsApi();
@@ -8,6 +9,8 @@ const BookingReports: React.FC = () => {
   // Form state
   const [year, setYear] = useState<number>(2025);
   const [month, setMonth] = useState<number>(1);
+
+  const { t } = useTranslation();
 
   const handleDownload = async (format: "pdf" | "csv") => {
     try {
@@ -41,14 +44,14 @@ const BookingReports: React.FC = () => {
 
   return (
     <div>
-      <h3>Booking Reports</h3>
-      <p>Select the period and download a PDF or CSV file of booking reports.</p>
+      <h3>{t("bookingReports")}</h3>
+      <p>{t("selectPeriod")}</p>
 
       <Form>
         <Row className="mb-3">
           <Col xs={12} md={6}>
             <Form.Group controlId="year">
-              <Form.Label>Year</Form.Label>
+              <Form.Label>{t("year")}</Form.Label>
               <Form.Control
                 type="number"
                 value={year}
@@ -61,7 +64,7 @@ const BookingReports: React.FC = () => {
 
           <Col xs={12} md={6}>
             <Form.Group controlId="month">
-              <Form.Label>Month</Form.Label>
+              <Form.Label>{t("month")}</Form.Label>
               <Form.Control
                 type="number"
                 value={month}
@@ -74,10 +77,10 @@ const BookingReports: React.FC = () => {
         </Row>
 
         <Button variant="primary" onClick={() => handleDownload("pdf")} className="me-2">
-          Download PDF
+          {t("downloadPDF")}
         </Button>
         <Button variant="secondary" onClick={() => handleDownload("csv")}>
-          Download CSV
+          {t("downloadCSV")}
         </Button>
       </Form>
     </div>
