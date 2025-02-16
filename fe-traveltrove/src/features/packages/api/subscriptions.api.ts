@@ -41,9 +41,36 @@ export const useSubscriptionsApi = () => {
         await axiosInstance.delete("/subscriptions/unsubscribe", { params: { userId: userId, packageId } });
     };
 
+    const getSubscribedPackages = async (userId: string): Promise<SubscriptionResponseModel[]> => {
+        const encodedUserId = encodeURIComponent(userId);
+        try {
+            const response = await axiosInstance.get(`/subscriptions/user/${encodedUserId}`);
+            
+            const lines = response.data.split('\n');
+            const subscriptions: SubscriptionResponseModel[] = [];
+    
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (trimmedLine.startsWith('data:')) {
+                    try {
+                        const subscription = JSON.parse(trimmedLine.substring(5).trim());
+                        subscriptions.push(subscription);
+                    } catch (error) {
+                        console.error("Error parsing subscription data", error);
+                    }
+                }
+            }
+            return subscriptions;
+        } catch (error) {
+            console.error("Error fetching subscribed packages", error);
+            return [];
+        }
+    };
+    
     return {
         checkSubscription,
         subscribeToPackage,
         unsubscribeFromPackage,
+        getSubscribedPackages
     };
 };

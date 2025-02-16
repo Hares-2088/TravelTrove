@@ -2,6 +2,7 @@ package com.traveltrove.betraveltrove.business.tourpackage;
 
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.Subscription;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.SubscriptionRepository;
+import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import com.traveltrove.betraveltrove.presentation.tourpackage.SubscriptionResponseModel;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.SubscriptionEntityModelUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
-
+    private final PackageService packageService;
     @Override
     public Mono<SubscriptionResponseModel> subscribeUserToPackage(String userId, String packageId) {
         return subscriptionRepository.existsByUserIdAndPackageId(userId, packageId)
@@ -55,4 +56,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return subscriptionRepository.findByPackageId(packageId)
                 .map(SubscriptionEntityModelUtil::toSubscriptionResponseModel);
     }
+
+    @Override
+    public Flux<PackageResponseModel> getSubscribedPackages(String userId) {
+        return subscriptionRepository.findByUserId(userId)
+                .flatMap(subscription -> packageService.getPackageByPackageId(subscription.getPackageId()));
+    }
+
 }
