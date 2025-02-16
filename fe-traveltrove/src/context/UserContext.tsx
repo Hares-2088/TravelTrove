@@ -1,44 +1,39 @@
-// UserContext.tsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useUsersApi } from "../features/users/api/users.api";
 
-// Define the UserContextType interface
 interface UserContextType {
   user: any;
   roles: string[];
   isAuthenticated: boolean;
   isLoading: boolean;
-  handleUserLogout: () => void; // Add handleUserLogout to the context type
+  rolesLoading: boolean; // Add rolesLoading to the context type
+  handleUserLogout: () => void;
 }
 
-// Create the UserContext with a default value of null
 const UserContext = createContext<UserContextType | null>(null);
 
-// Define the UserProvider component
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const { getUser } = useUsersApi();
 
-  // Manage the `roles` state
   const [roles, setRoles] = useState<string[]>(() => {
     const cachedRoles = sessionStorage.getItem("userRoles");
     return cachedRoles ? JSON.parse(cachedRoles) : [];
   });
 
-  // Manage the `currentUser` state
   const [currentUser, setCurrentUser] = useState<any>(user);
+  const [rolesLoading, setRolesLoading] = useState(true); // using auth0 post login triggers would be better
 
-  // Fetch roles when the user changes and roles are empty
   useEffect(() => {
     if (user && user?.sub && isAuthenticated && !isLoading) {
-      if (user.sub != currentUser?.userId || currentUser == null) {
-        // Check if user has changed or if there is no current user
+      if (user.sub !== currentUser?.userId || currentUser == null) {
         const cachedRoles = sessionStorage.getItem("userRoles");
         if (cachedRoles) {
           setRoles(JSON.parse(cachedRoles));
+          setRolesLoading(false);
         } else {
           getUser(user.sub)
             .then((userData) => {
@@ -53,9 +48,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
             })
             .catch((error) => {
               console.error("Error fetching user roles:", error);
+            })
+            .finally(() => {
+              setRolesLoading(false);
             });
-
-            
         }
       }
     }
@@ -66,16 +62,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     setRoles([]); // Reset local state
   };
 
-
-  // Provide context values
   return (
-    <UserContext.Provider value={{ user, roles, isAuthenticated, isLoading, handleUserLogout }}>
+    <UserContext.Provider value={{ user, roles, isAuthenticated, isLoading, rolesLoading, handleUserLogout }}>
       {children}
     </UserContext.Provider>
   );
 };
 
-// Custom hook for accessing the UserContext
 export const useUserContext = () => {
   const context = useContext(UserContext);
   if (!context) {
