@@ -2,14 +2,19 @@ package com.traveltrove.betraveltrove.business.payment;
 
 import com.traveltrove.betraveltrove.business.booking.BookingService;
 import com.traveltrove.betraveltrove.business.notification.NotificationService;
+import com.traveltrove.betraveltrove.business.tour.TourService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
 import com.traveltrove.betraveltrove.business.user.UserService;
 import com.traveltrove.betraveltrove.dataaccess.notification.NotificationRepository;
 import com.traveltrove.betraveltrove.dataaccess.payment.Payment;
 import com.traveltrove.betraveltrove.dataaccess.payment.PaymentRepository;
+import com.traveltrove.betraveltrove.dataaccess.tour.Tour;
 import com.traveltrove.betraveltrove.dataaccess.user.User;
+import com.traveltrove.betraveltrove.presentation.booking.BookingResponseModel;
 import com.traveltrove.betraveltrove.presentation.payment.PaymentRequestModel;
 import com.traveltrove.betraveltrove.presentation.payment.PaymentResponseModel;
+import com.traveltrove.betraveltrove.presentation.tour.TourResponseModel;
+import com.traveltrove.betraveltrove.presentation.tourpackage.PackageResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +44,14 @@ public class PaymentServiceUnitTest {
     @InjectMocks
     private PaymentServiceImpl paymentService;
 
+    @Mock
+    private BookingService bookingService;
 
+    @Mock
+    private PackageService packageService;
+
+    @Mock
+    private TourService tourService;
 
     @Test
     void createPayment_createsPaymentSuccessfully() {
@@ -157,7 +169,72 @@ public class PaymentServiceUnitTest {
                 .verifyComplete();
     }
 
+    @Test
+    void getPaymentByBookingId_withExistingId_returnsPaymentSuccessfully() {
+        PaymentResponseModel paymentResponseModel = PaymentResponseModel.builder()
+                .paymentId("payment123")
+                .bookingId("booking123")
+                .amount(5000L)
+                .currency("usd")
+                .status("created")
+                .build();
 
+        when(paymentRepository.findByBookingId("booking123")).thenReturn(Mono.just(paymentResponseModel));
+
+        Mono<PaymentResponseModel> result = paymentService.getPaymentByBookingId("booking123");
+
+        StepVerifier.create(result)
+                .expectNextMatches(response ->
+                        response.getBookingId().equals("booking123") &&
+                                response.getAmount() == 5000L &&
+                                response.getCurrency().equals("usd") &&
+                                response.getStatus().equals("created")
+                )
+                .verifyComplete();
+    }
+
+    @Test
+    void getPaymentByBookingId_withNonExistingId_returnsNotFoundError() {
+        when(paymentRepository.findByBookingId(anyString())).thenReturn(Mono.empty());
+
+        Mono<PaymentResponseModel> result = paymentService.getPaymentByBookingId("invalid");
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof NotFoundException &&
+                        throwable.getMessage().equals("Payment not found"))
+                .verify();
+    }
+
+//    @Test
+//    void calculateRevenueByTourId_withExistingTourId_returnsTotalRevenue() {
+//        TourResponseModel tourResponseModel = new TourResponseModel();
+//        tourResponseModel.setTourId("tour123");
+//
+//        PackageResponseModel packageResponseModel = new PackageResponseModel();
+//        packageResponseModel.setPackageId("package123");
+//
+//        when(tourService.getTourByTourId("tour123")).thenReturn(Mono.just(tourResponseModel));
+//        when(packageService.getAllPackages("tour123")).thenReturn(Flux.just(packageResponseModel));
+//        when(bookingService.getBookingsByPackageId("package123")).thenReturn(Flux.just(new BookingResponseModel()));
+//        when(paymentRepository.findByBookingId("booking123")).thenReturn(Mono.just(new PaymentResponseModel("payment123", "session123", "booking123", 5000L, "usd", "created")));
+//
+//        Mono<Long> result = paymentService.calculateRevenueByTourId("tour123");
+//
+//        StepVerifier.create(result)
+//                .expectNext(5000L)
+//                .verifyComplete();
+//    }
+
+    @Test
+    void calculateRevenueByTourId_withNonExistingTourId_returnsZero() {
+        when(tourService.getTourByTourId("invalid")).thenReturn(Mono.empty());
+
+        Mono<Long> result = paymentService.calculateRevenueByTourId("invalid");
+
+        StepVerifier.create(result)
+                .expectNext(0L)
+                .verifyComplete();
+    }
 
 
 }
