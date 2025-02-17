@@ -51,6 +51,7 @@ public class TourServiceImpl implements TourService {
                 .flatMap(existingTour -> {
                     existingTour.setName(tourRequestModel.getName());
                     existingTour.setDescription(tourRequestModel.getDescription());
+                    existingTour.setTourImageUrl(tourRequestModel.getTourImageUrl());
                     return tourRepository.save(existingTour);
                 })
                 .doOnSuccess(updatedTour -> log.info("Updated Tour {}: ", updatedTour))
@@ -70,7 +71,9 @@ public class TourServiceImpl implements TourService {
         return tourRepository.findTourByTourId(tourId)
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException("Tour Id not found: " + tourId))))
                 .flatMap(existingTour -> {
-                    existingTour.setTourImageUrl(tourImageUrl);
+                    // should probably create a TourImageRequestModel and use that instead of String to prevent this
+                    String cleanedTourImageUrl = tourImageUrl.replaceAll("\"", "");
+                    existingTour.setTourImageUrl(cleanedTourImageUrl);
                     return tourRepository.save(existingTour);
                 })
                 .doOnSuccess(updatedTour -> log.info("Updated tour image for {}: {}", tourId, tourImageUrl))
