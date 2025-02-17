@@ -274,10 +274,24 @@ public class DatabaseLoader {
                         .build(),
                 Tour.builder()
                         .id(null)
-                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af7")
                         .name("Chinese Silk Road Adventure")
                         .description("Travel along China’s historic Silk Road, visiting ancient cities, the Great Wall, and vibrant cultural heritage sites.")
                         .tourImageUrl("https://traveltrove-images.s3.us-east-2.amazonaws.com/google-oauth2-115284042119137530811_ff4d015a-ac9e-4b5f-a386-9ad842ff64d2_Anime-Japan-Street.png")
+                        .build(),
+                Tour.builder()
+                        .id(null)
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2") // Unique ID for Umrah tour
+                        .name("Umrah Spiritual Journey")
+                        .description("Embark on a spiritual journey to Mecca and Medina, visiting the Grand Mosque and other sacred sites.")
+                        .tourImageUrl("https://traveltrove-images.s3.us-east-2.amazonaws.com/auth0-675e3886e184fd643a8ed5aa_232fd39d-936f-405e-a366-f8dc9e1de686_Umrah.jpeg.png") // Example image URL
+                        .build(),
+                Tour.builder()
+                        .id(null)
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af3") // Unique ID for Hajj tour
+                        .name("Hajj Pilgrimage")
+                        .description("Join us for the sacred pilgrimage of Hajj, performing rituals such as Tawaf, Sa'i, and standing at Arafat.")
+                        .tourImageUrl("https://traveltrove-images.s3.us-east-2.amazonaws.com/auth0-675e3886e184fd643a8ed5aa_d3009bca-efc2-4c42-afdd-8e1e6c5e374d_hajj.jpeg.png") // Example image URL
                         .build()
         );
 
@@ -1267,6 +1281,12 @@ public class DatabaseLoader {
                         .build(),
                 Airport.builder()
                         .id(null)
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b") // Airport ID for departure
+                        .name("Leonardo da Vinci–Fiumicino Airport") // Airport name
+                        .cityId("7f15fafc-85f4-4ba5-822b-27b7ddce6c37") // City ID for Rome
+                        .build(),
+                Airport.builder()
+                        .id(null)
                         .airportId("e8f314c7-716b-4f19-a1d6-fc376b8c81ad")
                         .name("Narita International Airport")
                         .cityId("92537e75-3fc2-42af-b105-b6150395acbb")
@@ -1282,6 +1302,12 @@ public class DatabaseLoader {
                         .airportId("aa12fc4b-619e-4d8e-8563-5a09bc6f1ae1")
                         .name("Sydney Kingsford Smith Airport")
                         .cityId("f978f76c-abfc-4b25-ba32-9e1b085b5ab0")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b") // Airport ID for departure
+                        .name("Leonardo da Vinci–Fiumicino Airport") // Airport name
+                        .cityId("7f15fafc-85f4-4ba5-822b-27b7ddce6c37") // City ID for Rome
                         .build(),
                 Airport.builder()
                         .id(null)
@@ -1580,6 +1606,22 @@ public class DatabaseLoader {
                         .status(PackageStatus.BOOKING_OPEN)
                         .build(),
 
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752b") // Unique ID for Hajj package
+                        .name("Hajj Pilgrimage Package")
+                        .description("Join us for the sacred pilgrimage of Hajj with comprehensive support and guidance.")
+                        .startDate(LocalDate.of(2026, 7, 1)) // Example start date
+                        .endDate(LocalDate.of(2026, 7, 15)) // Example end date
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b") // Airport ID for departure
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af3") // Tour ID for Hajj
+                        .priceSingle(3000.0) // Price for single occupancy
+                        .priceDouble(5000.0) // Price for double occupancy
+                        .priceTriple(7000.0) // Price for triple occupancy
+                        .totalSeats(200) // Total seats available
+                        .availableSeats(200) // Initially all seats are available
+                        .status(PackageStatus.BOOKING_OPEN) // Booking status
+                        .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
                         .id(null)
@@ -1613,6 +1655,23 @@ public class DatabaseLoader {
                         .totalSeats(120)
                         .status(PackageStatus.UPCOMING)
                         .availableSeats(0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752a") // Unique ID for Umrah package
+                        .name("Umrah Spiritual Journey")
+                        .description("Embark on a spiritual journey to Mecca and Medina with our exclusive Umrah package.")
+                        .startDate(LocalDate.of(2026, 1, 10)) // Example start date
+                        .endDate(LocalDate.of(2026, 1, 20)) // Example end date
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b") // Airport ID for departure
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2") // Tour ID for Umrah
+                        .priceSingle(1500.0) // Price for single occupancy
+                        .priceDouble(2500.0) // Price for double occupancy
+                        .priceTriple(3500.0) // Price for triple occupancy
+                        .totalSeats(100) // Total seats available
+                        .availableSeats(100) // Initially all seats are available
+                        .status(PackageStatus.BOOKING_OPEN) // Booking status
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
@@ -1798,143 +1857,143 @@ public class DatabaseLoader {
     @PostConstruct
     public void loadBookings() {
         List<Booking> sampleBookings = List.of(
-        // user : auth0|675f4b3c9a80612ce548e067
-            Booking.builder()
-                    .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda29")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
-                    .status(BookingStatus.PAYMENT_PENDING)
-                    .bookingDate(LocalDate.now().minusMonths(1))
-                    .totalPrice(1600.0)
-                    .build(),
+                // user : auth0|675f4b3c9a80612ce548e067
+                Booking.builder()
+                        .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda29")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .status(BookingStatus.PAYMENT_PENDING)
+                        .bookingDate(LocalDate.now().minusMonths(1))
+                        .totalPrice(1600.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca343da29")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusMonths(1))
-                    .totalPrice(1600.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca343da29")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752d")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(1))
+                        .totalPrice(1600.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("2a4fff75-5326-4ea7-b3ca-b7eca343da29")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusMonths(1))
-                    .totalPrice(1600.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("2a4fff75-5326-4ea7-b3ca-b7eca343da29")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(1))
+                        .totalPrice(1600.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("124fff75-5326-4ea7-b3ca-b7eca343da29")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusMonths(1))
-                    .totalPrice(1600.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("124fff75-5326-4ea7-b3ca-b7eca343da29")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(1))
+                        .totalPrice(1600.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("sb4fff75-5326-4ea7-b3ca-b7eca343da29")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusMonths(1))
-                    .totalPrice(1600.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("sb4fff75-5326-4ea7-b3ca-b7eca343da29")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(1))
+                        .totalPrice(1600.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("1gdu4f75-5326-4ea7-b3ca-b7eca343da29")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusMonths(1))
-                    .totalPrice(1600.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("1gdu4f75-5326-4ea7-b3ca-b7eca343da29")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(1))
+                        .totalPrice(1600.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("42s0353a-af87-4c9d-9f49-102bf198b172")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusMonths(6))
-                    .totalPrice(1300.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("42s0353a-af87-4c9d-9f49-102bf198b172")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(6))
+                        .totalPrice(1300.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("032931cf-57d3-4278-b0db-8762731a7aa2")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusWeeks(4))
-                    .totalPrice(2000.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("032931cf-57d3-4278-b0db-8762731a7aa2")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("2d1b4a3f-4e7f-42a7-a6fb-b4a1e7d9cf14")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusWeeks(4))
+                        .totalPrice(2000.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("7ce476dc-3a8e-44ac-9904-fb3bb3d12259")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
-                    .status(BookingStatus.PAYMENT_PENDING)
-                    .bookingDate(LocalDate.now())
-                    .totalPrice(1700.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("7ce476dc-3a8e-44ac-9904-fb3bb3d12259")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("5c3b6d4e-9f42-4d1e-8ba4-df23cb19d8f4")
+                        .status(BookingStatus.PAYMENT_PENDING)
+                        .bookingDate(LocalDate.now())
+                        .totalPrice(1700.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("b8bf0325-471a-43b8-a46a-7ecdf33fed23")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusMonths(2))
-                    .totalPrice(1900.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("b8bf0325-471a-43b8-a46a-7ecdf33fed23")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("3e1a7d9b-5c4f-4a3b-a7f6-cbd4f8e2af16")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(2))
+                        .totalPrice(1900.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b845")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("9d3f8b7e-a6c1-4f42-b6d8-7a9b4e2d5cf3")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusYears(1))
-                    .totalPrice(2200.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b845")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("9d3f8b7e-a6c1-4f42-b6d8-7a9b4e2d5cf3")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusYears(1))
+                        .totalPrice(2200.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("b46bab5b-0358-4ed0-8136-f064e3ca6d08")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusMonths(5))
-                    .totalPrice(1800.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("b46bab5b-0358-4ed0-8136-f064e3ca6d08")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("8f2d7e6b-b3c4-4f9e-b72d-f9a3c8e1af25")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusMonths(5))
+                        .totalPrice(1800.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("c63430a2-6535-4c2e-8036-6d952dbe1448")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
-                    .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
-                    .bookingDate(LocalDate.now().minusDays(3))
-                    .totalPrice(2100.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("c63430a2-6535-4c2e-8036-6d952dbe1448")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("7c5f9a6b-d8e4-4f9e-a6b7-3f2c1b5e9a25")
+                        .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
+                        .bookingDate(LocalDate.now().minusDays(3))
+                        .totalPrice(2100.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("d4b8979a-cd20-491d-884f-7ec52d2a2a81")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusWeeks(2))
-                    .totalPrice(1500.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("d4b8979a-cd20-491d-884f-7ec52d2a2a81")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("8e7a6dbc-cd45-44d2-9bfb-3419a6b4fa45")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusWeeks(2))
+                        .totalPrice(1500.0)
+                        .build(),
 
-            Booking.builder()
-                    .bookingId("98183e89-c6cb-415a-8fb3-ddbc3d327fc7")
-                    .userId("auth0|675f4b3c9a80612ce548e067")
-                    .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
-                    .status(BookingStatus.BOOKING_CONFIRMED)
-                    .bookingDate(LocalDate.now().minusYears(1).minusMonths(2))
-                    .totalPrice(2000.0)
-                    .build(),
+                Booking.builder()
+                        .bookingId("98183e89-c6cb-415a-8fb3-ddbc3d327fc7")
+                        .userId("auth0|675f4b3c9a80612ce548e067")
+                        .packageId("6a4b3c1f-d7e9-4a8f-b7e2-c5a3b1d9f7c6")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.now().minusYears(1).minusMonths(2))
+                        .totalPrice(2000.0)
+                        .build(),
 
-        // user:  675f4b619a80612ce548e068
+                // user:  675f4b619a80612ce548e068
                 Booking.builder()
                         .bookingId("e5310ab5-618b-4ea0-847c-1db26b36b843")
                         .userId("auth0|675f4b619a80612ce548e068")
@@ -2555,7 +2614,7 @@ public class DatabaseLoader {
                         .rating(5)
                         .build()
 
-                );
+        );
 
         reviewRepository.deleteAll()
                 .thenMany(Flux.fromIterable(sampleReviews))
@@ -2688,7 +2747,7 @@ public class DatabaseLoader {
                 // January 2025 (new year edge case)
                 createPayment("0a1b2c", "booking11", 3100L, "usd", LocalDateTime.of(2025, 1, 1, 0, 1), "succeeded", "stripe11"),
 
-                        Payment.builder()
+                Payment.builder()
                         .paymentId("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
                         .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda23")
                         .paymentDate(LocalDateTime.now().minusDays(1))
@@ -2724,7 +2783,7 @@ public class DatabaseLoader {
                         .stripePaymentId("sample: ch_4a7b8c9d5-6e7f-8a9b-0c1d2e3f4a5b")
                         .currency("USD")
                         .build()
-                );
+        );
 
         paymentRepository.deleteAll()
                 .thenMany(Flux.fromIterable(samplePayments))
