@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { usePackagesApi } from "../api/packages.api";
 import { PackageResponseModel } from "../models/package.model";
 import { Link } from "react-router-dom";
+import { Card, Button } from "react-bootstrap";
+import "./PackageList.css";
 
 interface PackageListProps {
   tourId: string;
@@ -60,12 +62,16 @@ const PackageList: React.FC<PackageListProps> = ({ tourId }) => {
         <div>No packages available for this tour.</div>
       ) : (
         packages.map((pkg) => (
-          <div key={pkg.packageId} className="package-item">
-            <Link to={`/packages/${pkg.packageId}`}>
-              <h2>{pkg.name}</h2>
-              <p>{pkg.description}</p>
-            </Link>
-          </div>
+          <Card key={pkg.packageId} className="package-item">
+            <div className="price-tag">${pkg.priceTriple}</div>
+            <Card.Body>
+              <Card.Title>{pkg.name}</Card.Title>
+              <Card.Text>{pkg.description}</Card.Text>
+              <Link to={`/packages/${pkg.packageId}`}>
+                <Button variant="dark">View Details</Button>
+              </Link>
+            </Card.Body>
+          </Card>
         ))
       )}
     </div>

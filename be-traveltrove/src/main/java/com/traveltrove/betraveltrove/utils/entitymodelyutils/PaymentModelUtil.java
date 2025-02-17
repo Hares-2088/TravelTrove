@@ -14,6 +14,8 @@ public class PaymentModelUtil {
         BeanUtils.copyProperties(payment, paymentResponseModel);
         paymentResponseModel.setPaymentId(payment.getPaymentId());
         paymentResponseModel.setSessionId(sessionId);
+        paymentResponseModel.setBookingId(payment.getBookingId());
+
         return paymentResponseModel;
     }
 
@@ -33,6 +35,7 @@ public class PaymentModelUtil {
         BeanUtils.copyProperties(payment, paymentResponseModel);
         paymentResponseModel.setPaymentId(payment.getPaymentId());
         paymentResponseModel.setAmount(payment.getAmount() / 100);
+        paymentResponseModel.setBookingId(payment.getBookingId());
 
         return paymentResponseModel;
 

@@ -13,4 +13,6 @@ public interface PaymentService {
     Mono<PaymentResponseModel> getPaymentByPaymentId(String paymentId);
     Flux<PaymentResponseModel> getAllPayments();
     Flux<Payment> getPaymentsByPeriod(int year, Integer month);
+    Mono<PaymentResponseModel> getPaymentByBookingId(String bookingId);
+    Mono<Long> calculateRevenueByTourId(String tourId);
 }

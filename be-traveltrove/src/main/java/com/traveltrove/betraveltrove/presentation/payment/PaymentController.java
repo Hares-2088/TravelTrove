@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -61,6 +62,14 @@ public class PaymentController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @GetMapping(value = "/booking/{bookingId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<PaymentResponseModel>> getPaymentByBookingId(@PathVariable String bookingId) {
+        log.info("Getting payment by bookingId: {}", bookingId);
+        return paymentService.getPaymentByBookingId(bookingId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
 //    @DeleteMapping("/{paymentId}")
 //    public Mono<ResponseEntity<Void>> deletePayment(@PathVariable String paymentId) {
 //        log.info("Deleting payment by paymentId: {}", paymentId);
@@ -68,4 +77,12 @@ public class PaymentController {
 //                .map(ResponseEntity::ok)
 //                .defaultIfEmpty(ResponseEntity.notFound().build());
 //    }
+
+    @GetMapping("/revenue/{tourId}")
+    public Mono<ResponseEntity<Long>> calculateRevenueByTourId(@PathVariable String tourId) {
+        log.info("Calculating revenue for tourId: {}", tourId);
+        return paymentService.calculateRevenueByTourId(tourId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
 }
