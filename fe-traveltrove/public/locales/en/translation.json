@@ -5,12 +5,10 @@
   "signIn": "Sign in",
   "signUp": "Sign up",
   "reports": "Reports",
-
   "toursDB": "Tours",
   "events": "Events",
   "citiesDB": "Cities",
   "countries": "Countries",
-
   "errorFetchingCountries": "Error fetching countries:",
   "errorFetchingCities": "Error fetching cities:",
   "errorFetchingCityDetails": "Error fetching city details:",
@@ -34,7 +32,6 @@
   "cancel": "Cancel",
   "save": "Save",
   "confirm": "Confirm",
-
   "title": "Countries",
   "createC": "Create",
   "editC": "Edit",
@@ -54,7 +51,6 @@
   "saveC": "Save",
   "confirmC": "Confirm",
   "cancelC": "Cancel",
-
   "nameRequiredE": "Name is required.",
   "descriptionRequired": "Description is required.",
   "eventTitle": "Event Title",
@@ -72,26 +68,21 @@
   "city": "City",
   "eventName": "Event Name",
   "saveE": "Save",
-
-    "backToListT": "Back to List",
-    "tours": "Tours",
-    "createTour": "Create Tour",
-    "editTour": "Edit Tour",
-    "deleteTour": "Delete Tour",
-    "tourName": "Tour Name",
-    "tourDescription": "Tour Description",
-    "noDescriptionT": "No description available",
-    "areYouSureDelete": "Are you sure you want to delete this tour?",
-    "confirmT": "Confirm",
-    "saveT": "Save",
-    "cancelT": "Cancel",
-    "tourNameRequired": "Tour name is required.",
-    "tourDescriptionRequired": "Description is required.",
-    "actionsT": "Actions",
-
-
-
-
+  "backToListT": "Back to List",
+  "tours": "Tours",
+  "createTour": "Create Tour",
+  "editTour": "Edit Tour",
+  "deleteTour": "Delete Tour",
+  "tourName": "Tour Name",
+  "tourDescription": "Tour Description",
+  "noDescriptionT": "No description available",
+  "areYouSureDelete": "Are you sure you want to delete this tour?",
+  "confirmT": "Confirm",
+  "saveT": "Save",
+  "cancelT": "Cancel",
+  "tourNameRequired": "Tour name is required.",
+  "tourDescriptionRequired": "Description is required.",
+  "actionsT": "Actions",
   "header": "Tour Events",
   "createButton": "Create Tour Event",
   "editButton": "Edit",
@@ -108,7 +99,6 @@
   "invalidDesc": "Description is required.",
   "invalidEvent": "Event is required.",
   "deleteConfirmationTE": "Are you sure you want to delete this tour event?",
-
   "notificationsTitle": "Notifications",
   "backToListN": "Back to Notifications List",
   "to": "To",
@@ -124,9 +114,7 @@
   "toRequired": "To is required.",
   "subjectRequired": "Subject is required.",
   "messageRequired": "Message is required.",
-
   "contactus": "Contact Us",
-
   "paymentReports": "Payment Reports",
   "bookingReports": "Booking Reports",
   "selectPeriod": "Select the period and download a CSV file of payment revenue reports.",

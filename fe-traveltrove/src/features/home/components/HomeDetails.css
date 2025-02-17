@@ -1,30 +1,8 @@
-.home-details {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background-color: #fff5f0;
-  color: #333;
-  padding: 2rem;
-  min-height: 100vh;
-}
-
-.home-details h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.home-details p {
-  font-size: 1.2rem;
-  color: #666;
-}
-
 .hero-section {
   background-size: cover;
   background-position: center;
-  height: 500px;
+  height: 1300px;
+  /* Increased height */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,16 +12,19 @@
 }
 
 .hero-content h1 {
-  font-size: 3rem;
+  font-size: 3.5rem;
+  /* Increased font size */
   margin-bottom: 1rem;
 }
 
 .hero-content p {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  /* Increased font size */
 }
 
 .popular-destinations {
-  padding: 20px;
+  padding: 10px;
+  /* Reduced padding */
   text-align: center;
   width: 100%;
 }
@@ -55,12 +36,48 @@
 
 .carousel {
   margin: 0 auto;
-  max-width: 800px;
+  max-width: 1400px;
+  /* Increased max-width */
+  width: 100%;
+  /* Ensure it takes full width */
 }
 
 .carousel .card {
-  margin: 0 auto;
+  margin: 0 10px;
+  /* Reduced margin */
   max-width: 300px;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.carousel-control-next-icon,
+.carousel-control-prev-icon {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-control-next {
+  right: -50px;
+  /* Position outside the carousel */
+}
+
+.carousel-control-prev {
+  left: -50px;
+  /* Position outside the carousel */
+}
+
+.carousel-control-next-icon:hover,
+.carousel-control-prev-icon:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .special-packages {
@@ -77,6 +94,8 @@
   border-radius: 8px;
   overflow: hidden;
   transition: transform 0.3s ease;
+  position: relative;
+  /* Added for positioning title */
 }
 
 .package-card:hover {
@@ -85,17 +104,30 @@
 
 .package-card img {
   width: 100%;
-  height: 200px;
+  height: 350px;
+  /* Increased height */
   object-fit: cover;
 }
 
 .package-card h3 {
-  font-size: 1.5rem;
-  margin: 1rem 0;
+  font-size: 1.8rem;
+  margin: 0;
+  position: absolute;
+  /* Position title on image */
+  top: 10px;
+  /* Adjust as needed */
+  left: 10px;
+  /* Adjust as needed */
+  color: white;
+  /* Ensure title is visible */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Background for better readability */
+  padding: 5px 10px;
+  border-radius: 5px;
 }
 
 .package-card p {
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #666;
   padding: 0 1rem 1rem;
 }
@@ -111,18 +143,74 @@
   margin-bottom: 1rem;
 }
 
-html, body {
-  contain: layout;
-}
-
-.loading-spinner {
-  display: block;
-  margin: 20px auto;
-}
-
-.error-alert,
-.info-alert {
+.home-loading,
+.home-error,
+.home-info {
   text-align: center;
-  font-size: 1.5rem;
   margin: 20px 0;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .carousel .card {
+    max-width: 200px;
+  }
+
+  .carousel-image {
+    height: 300px;
+  }
+
+  .special-packages {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .package-card {
+    width: 90%;
+    margin-bottom: 20px;
+  }
+
+  .hero-section {
+    height: 800px;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-content p {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .carousel .card {
+    max-width: 150px;
+  }
+
+  .carousel-image {
+    height: 250px;
+  }
+
+  .special-packages {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .package-card {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .hero-section {
+    height: 600px;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
 }

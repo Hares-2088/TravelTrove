@@ -274,7 +274,7 @@ public class DatabaseLoader {
                         .build(),
                 Tour.builder()
                         .id(null)
-                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2")
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af7")
                         .name("Chinese Silk Road Adventure")
                         .description("Travel along China’s historic Silk Road, visiting ancient cities, the Great Wall, and vibrant cultural heritage sites.")
                         .tourImageUrl("https://traveltrove-images.s3.us-east-2.amazonaws.com/google-oauth2-115284042119137530811_ff4d015a-ac9e-4b5f-a386-9ad842ff64d2_Anime-Japan-Street.png")
@@ -284,14 +284,14 @@ public class DatabaseLoader {
                         .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2") // Unique ID for Umrah tour
                         .name("Umrah Spiritual Journey")
                         .description("Embark on a spiritual journey to Mecca and Medina, visiting the Grand Mosque and other sacred sites.")
-                        .tourImageUrl("") // Example image URL
+                        .tourImageUrl("https://traveltrove-images.s3.us-east-2.amazonaws.com/auth0-675e3886e184fd643a8ed5aa_232fd39d-936f-405e-a366-f8dc9e1de686_Umrah.jpeg.png") // Example image URL
                         .build(),
                 Tour.builder()
                         .id(null)
                         .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af3") // Unique ID for Hajj tour
                         .name("Hajj Pilgrimage")
                         .description("Join us for the sacred pilgrimage of Hajj, performing rituals such as Tawaf, Sa'i, and standing at Arafat.")
-                        .tourImageUrl("") // Example image URL
+                        .tourImageUrl("https://traveltrove-images.s3.us-east-2.amazonaws.com/auth0-675e3886e184fd643a8ed5aa_d3009bca-efc2-4c42-afdd-8e1e6c5e374d_hajj.jpeg.png") // Example image URL
                         .build()
         );
 
