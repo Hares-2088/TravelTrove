@@ -70,46 +70,48 @@ const PackageDetails: React.FC = () => {
 
   return (
     <Container className="package-details-container">
-      <Card className="package-card">
-        <Card.Body>
-          <div className="package-header">
-            <Card.Title className="package-title">{pkg.name}</Card.Title>
-            <Card.Text className="package-description">{pkg.description}</Card.Text>
-          </div>
-          <Row className="package-info">
-            <Col md={6}>
-              <p><DollarSign /> <strong>Price (Single):&nbsp;</strong> ${pkg.priceSingle}</p>
-              <p><DollarSign /> <strong>Price (Double):&nbsp;</strong> ${pkg.priceDouble}</p>
-              <p><DollarSign /> <strong>Price (Triple):&nbsp;</strong> ${pkg.priceTriple}</p>
-            </Col>
-            <Col md={6}>
-              <p><Users /> <strong>Available Seats:&nbsp;</strong> {pkg.availableSeats}</p>
-              <p><Calendar /> <strong>Start Date:&nbsp;</strong> {pkg.startDate}</p>
-              <p><Calendar /> <strong>End Date:&nbsp;</strong> {pkg.endDate}</p>
-            </Col>
-          </Row>
-          <div className="package-actions">
-            {isAuthenticated && pkg.status !== "UPCOMING" && pkg.status !== "SOLD_OUT" && (
-              <Button variant="dark" onClick={handleBook} className="action-button book-button">
-                Book Now
-              </Button>
-            )}
-            {isAuthenticated && (
-              <>
-                {isSubscribed ? (
-                  <Button variant="danger" onClick={handleUnsubscribe} className="action-button unsubscribe-button">
-                    Unsubscribe
-                  </Button>
-                ) : (
-                  <Button variant="success" onClick={handleSubscribe} className="action-button subscribe-button">
-                    Subscribe
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
-        </Card.Body>
-      </Card>
+      <div className="d-flex justify-content-center">
+        <Card className="package-card w-75">
+          <Card.Body>
+            <div className="package-header">
+              <Card.Title className="package-title">{pkg.name}</Card.Title>
+              <Card.Text className="package-description">{pkg.description}</Card.Text>
+            </div>
+            <Row className="package-info">
+              <Col md={6}>
+                <p><DollarSign /> <strong>Price (Single):&nbsp;</strong> ${pkg.priceSingle}</p>
+                <p><DollarSign /> <strong>Price (Double):&nbsp;</strong> ${pkg.priceDouble}</p>
+                <p><DollarSign /> <strong>Price (Triple):&nbsp;</strong> ${pkg.priceTriple}</p>
+              </Col>
+              <Col md={6}>
+                <p><Users /> <strong>Available Seats:&nbsp;</strong> {pkg.availableSeats}</p>
+                <p><Calendar /> <strong>Start Date:&nbsp;</strong> {pkg.startDate}</p>
+                <p><Calendar /> <strong>End Date:&nbsp;</strong> {pkg.endDate}</p>
+              </Col>
+            </Row>
+            <div className="package-actions">
+              {isAuthenticated && pkg.status !== "UPCOMING" && pkg.status !== "SOLD_OUT" && (
+                <Button variant="dark" onClick={handleBook} className="action-button book-button">
+                  Book Now
+                </Button>
+              )}
+              {isAuthenticated && (
+                <>
+                  {isSubscribed ? (
+                    <Button variant="danger" onClick={handleUnsubscribe} className="action-button unsubscribe-button">
+                      Unsubscribe
+                    </Button>
+                  ) : (
+                    <Button variant="success" onClick={handleSubscribe} className="action-button subscribe-button">
+                      Subscribe
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+          </Card.Body>
+        </Card>
+      </div>
     </Container>
   );
 };

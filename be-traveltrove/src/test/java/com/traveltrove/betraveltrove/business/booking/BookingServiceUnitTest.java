@@ -17,6 +17,7 @@ import com.traveltrove.betraveltrove.presentation.traveler.TravelerRequestModel;
 import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusException;
+import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusTransitionException;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
 import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
 import org.junit.jupiter.api.Test;
@@ -348,6 +349,60 @@ public class BookingServiceUnitTest {
         StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
                 .expectErrorMatches(error -> error instanceof SameStatusException &&
                         error.getMessage().equals("Booking is already in the status: " + BookingStatus.BOOKING_CONFIRMED))
+                .verify();
+    }
+
+    @Test
+    public void whenUpdateBookingStatus_fromBookingConfirmedToNonRefunded_thenReturnInvalidStatusTransitionException() {
+        Booking booking = new Booking("1", bookingId1, "user1", "pack1", 1200.00, BookingStatus.BOOKING_CONFIRMED, LocalDate.of(2025, 4, 4), travelerIds);
+
+        // Mock repository to return the booking with BOOKING_CONFIRMED status
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.just(booking));
+
+        BookingStatusUpdateRequest request = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.PAYMENT_PENDING) // Trying to transition to a non-REFUNDED status
+                .build();
+
+        // Execute the test
+        StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
+                .expectErrorMatches(error -> error instanceof InvalidStatusTransitionException &&
+                        error.getMessage().equals("Cannot transition from BOOKING_CONFIRMED to PAYMENT_PENDING"))
+                .verify();
+    }
+
+    @Test
+    public void whenUpdateBookingStatus_fromPaymentAttempt2PendingToPaymentPending_thenReturnInvalidStatusTransitionException() {
+        Booking booking = new Booking("1", bookingId1, "user1", "pack1", 1200.00, BookingStatus.PAYMENT_ATTEMPT2_PENDING, LocalDate.of(2025, 4, 4), travelerIds);
+
+        // Mock repository to return the booking with PAYMENT_ATTEMPT2_PENDING status
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.just(booking));
+
+        BookingStatusUpdateRequest request = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.PAYMENT_PENDING) // Trying to transition to PAYMENT_PENDING
+                .build();
+
+        // Execute the test
+        StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
+                .expectErrorMatches(error -> error instanceof InvalidStatusTransitionException &&
+                        error.getMessage().equals("Cannot transition from PAYMENT_ATTEMPT2_PENDING to PAYMENT_PENDING"))
+                .verify();
+    }
+
+    @Test
+    public void whenUpdateBookingStatus_toRefundedFromNonConfirmedStatus_thenReturnInvalidStatusTransitionException() {
+        Booking booking = new Booking("1", bookingId1, "user1", "pack1", 1200.00, BookingStatus.PAYMENT_PENDING, LocalDate.of(2025, 4, 4), travelerIds);
+
+        // Mock repository to return the booking with PAYMENT_PENDING status
+        when(bookingRepository.findBookingByBookingId(bookingId1)).thenReturn(Mono.just(booking));
+
+        BookingStatusUpdateRequest request = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.REFUNDED) // Trying to transition to REFUNDED
+                .build();
+
+        // Execute the test
+        StepVerifier.create(bookingService.updateBookingStatus(bookingId1, request.getStatus()))
+                .expectErrorMatches(error -> error instanceof InvalidStatusTransitionException &&
+                        error.getMessage().equals("Cannot transition to REFUNDED from PAYMENT_PENDING"))
                 .verify();
     }
 

@@ -88,7 +88,7 @@ class BookingControllerIntegrationTest {
             .userId("auth0|675f4bb4e184fd643a8ed909")
             .packageId("a522256a-3fef-4b27-8a77-50b173c4d6f0")
             .totalPrice(1300.00)
-            .status(BookingStatus.BOOKING_CONFIRMED)
+            .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)  // Change the status here
             .bookingDate(LocalDate.of(2025, 6,5))
             .build();
 
@@ -177,6 +177,8 @@ class BookingControllerIntegrationTest {
 
     @BeforeEach
     public void setupDB() {
+        bookingRepository.deleteAll().block(); // Ensure the database is clean before setting up
+
         Flux<Booking> setupDB = Flux.just(booking1, booking2, booking3)
                 .flatMap(bookingRepository::save);
 
@@ -394,6 +396,82 @@ class BookingControllerIntegrationTest {
 
         StepVerifier.create(bookingRepository.findBookingByBookingId(booking1.getBookingId()))
                 .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.PAYMENT_PENDING))
+                .verifyComplete();
+    }
+
+    @Test
+    void whenUpdateBookingStatus_withInvalidBookingId_thenReturnNotFound() {
+        BookingStatusUpdateRequest updateBooking = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.BOOKING_CONFIRMED)
+                .build();
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/bookings/" + INVALID_BOOKING_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateBooking)
+                .exchange()
+                .expectStatus().isNotFound();
+
+        StepVerifier.create(bookingRepository.findBookingByBookingId(INVALID_BOOKING_ID))
+                .verifyComplete();
+    }
+
+    @Test
+    void whenUpdateBookingStatus_fromBookingConfirmedToNonRefunded_thenReturnInvalidStatusTransitionException() {
+        BookingStatusUpdateRequest updateBooking = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.PAYMENT_PENDING)
+                .build();
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/bookings/" + booking2.getBookingId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateBooking)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);  // 422
+
+        StepVerifier.create(bookingRepository.findBookingByBookingId(booking2.getBookingId()))
+                .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.BOOKING_CONFIRMED))
+                .verifyComplete();
+    }
+
+    @Test
+    void whenUpdateBookingStatus_fromPaymentAttempt2PendingToPaymentPending_thenReturnInvalidStatusTransitionException() {
+        BookingStatusUpdateRequest updateBooking = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.PAYMENT_PENDING)
+                .build();
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf())
+                .patch()
+                .uri("/api/v1/bookings/" + booking3.getBookingId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateBooking)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);  // 422
+
+        StepVerifier.create(bookingRepository.findBookingByBookingId(booking3.getBookingId()))
+                .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.PAYMENT_ATTEMPT2_PENDING))
+                .verifyComplete();
+    }
+
+    @Test
+    void whenUpdateBookingStatus_toRefundedFromNonBookingConfirmed_thenReturnInvalidStatusTransitionException() {
+        BookingStatusUpdateRequest updateBooking = BookingStatusUpdateRequest.builder()
+                .status(BookingStatus.REFUNDED)
+                .build();
+
+        webTestClient.mutateWith(SecurityMockServerConfigurers.mockUser())
+                .mutateWith(SecurityMockServerConfigurers.csrf()).patch()
+                .uri("/api/v1/bookings/" + booking3.getBookingId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateBooking)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);  // 422
+
+        StepVerifier.create(bookingRepository.findBookingByBookingId(booking3.getBookingId()))
+                .expectNextMatches(booking -> booking.getStatus().equals(BookingStatus.PAYMENT_ATTEMPT2_PENDING))
                 .verifyComplete();
     }
 
