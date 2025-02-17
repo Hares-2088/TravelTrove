@@ -16,10 +16,7 @@ import com.traveltrove.betraveltrove.presentation.traveler.TravelerResponseModel
 import com.traveltrove.betraveltrove.presentation.user.UserResponseModel;
 import com.traveltrove.betraveltrove.presentation.user.UserUpdateRequest;
 import com.traveltrove.betraveltrove.utils.entitymodelyutils.BookingEntityModelUtil;
-import com.traveltrove.betraveltrove.utils.exceptions.InvalidStatusException;
-import com.traveltrove.betraveltrove.utils.exceptions.NoTravelerException;
-import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
-import com.traveltrove.betraveltrove.utils.exceptions.SameStatusException;
+import com.traveltrove.betraveltrove.utils.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -180,9 +177,29 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findBookingByBookingId(bookingId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Booking not found with ID: " + bookingId)))
                 .flatMap(booking -> {
-                    if (booking.getStatus() == newStatus) {
+                    BookingStatus currentStatus = booking.getStatus();
+
+                    // Rule 1: If the new status is the same as the current status, throw an error
+                    if (currentStatus == newStatus) {
                         return Mono.error(new SameStatusException("Booking is already in the status: " + newStatus));
                     }
+
+                    // Rule 2: If the current status is BOOKING_CONFIRMED, only allow transition to REFUNDED
+                    if (currentStatus == BookingStatus.BOOKING_CONFIRMED && newStatus != BookingStatus.REFUNDED) {
+                        return Mono.error(new InvalidStatusTransitionException("Cannot transition from BOOKING_CONFIRMED to " + newStatus));
+                    }
+
+                    // Rule 3: If the current status is PAYMENT_ATTEMPT2_PENDING, disallow transition to PAYMENT_PENDING
+                    if (currentStatus == BookingStatus.PAYMENT_ATTEMPT2_PENDING && newStatus == BookingStatus.PAYMENT_PENDING) {
+                        return Mono.error(new InvalidStatusTransitionException("Cannot transition from PAYMENT_ATTEMPT2_PENDING to PAYMENT_PENDING"));
+                    }
+
+                    // Rule 4: Disallow transition to REFUNDED unless the current status is BOOKING_CONFIRMED
+                    if (newStatus == BookingStatus.REFUNDED && currentStatus != BookingStatus.BOOKING_CONFIRMED) {
+                        return Mono.error(new InvalidStatusTransitionException("Cannot transition to REFUNDED from " + currentStatus));
+                    }
+
+                    // If all rules are satisfied, update the status
                     booking.setStatus(newStatus);
                     return bookingRepository.save(booking);
                 })
