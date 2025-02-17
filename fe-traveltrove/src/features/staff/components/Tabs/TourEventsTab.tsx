@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import { useTourEventsApi } from '../../../tourEvents/api/tourevent.api';
+import { useTourEventsApi } from '../../../tourevents/api/tourevent.api';
 import { useEventsApi } from "../../../events/api/events.api";
 import { useHotelsApi } from "../../../hotels/api/hotels.api";
 import { useTranslation } from 'react-i18next';
 import {
   TourEventRequestModel,
   TourEventResponseModel,
-} from '../../../tourEvents/model/tourevents.model';
+} from '../../../tourevents/model/tourevents.model';
 import "../../../../shared/css/Scrollbar.css";
 
 interface EventResponseModel {
@@ -101,14 +101,14 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     const isSeqDescValid = formData.seqDesc.trim() !== "";
     const isEventIdValid = formData.eventId.trim() !== "";
     const isHotelIdValid = formData.hotelId.trim() !== ""; // Validate hotelId
-  
+
     setSeqError(!isSeqValid);
     setSeqDescError(!isSeqDescValid);
     setEventIdError(!isEventIdValid);
     setHotelIdError(!isHotelIdValid); // Set error state for hotelId
-  
+
     if (!isSeqValid || !isSeqDescValid || !isEventIdValid || !isHotelIdValid) return;
-  
+
     try {
       if (modalType === "create") {
         const highestSeq = Math.max(...tourEvents.map(event => event.seq), 0); // Get highest seq number
@@ -123,7 +123,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
       console.error("Error saving tour event:", error);
     }
   };
-  
+
 
   const handleDelete = async () => {
     try {
