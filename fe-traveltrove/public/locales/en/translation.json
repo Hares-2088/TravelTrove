@@ -126,5 +126,12 @@
   "month": "Month",
   "downloadReport": "Download Report",
   "downloadPDF": "Download PDF",
-  "downloadCSV": "Download CSV"
+  "downloadCSV": "Download CSV",
+  "home.heroTitle": "Discover Your Next Adventure",
+  "home.heroSubtitle": "Explore the world with our exclusive tours",
+  "home.popularDestinations": "Popular Destinations",
+  "home.exploreNow": "Explore Now",
+  "home.noToursAvailable": "No tours available at the moment.",
+  "home.customerReviews": "Customer Reviews",
+  "error.fetchTours": "Failed to fetch tours. Please try again later."
 }

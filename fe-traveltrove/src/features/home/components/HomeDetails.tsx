@@ -36,7 +36,7 @@ const HomeDetails: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [getAllTours, getTourByTourId, t]);
+  }, [t]);
 
   useEffect(() => {
     console.log('🚀 useEffect triggered: Fetching tours...');
@@ -121,7 +121,7 @@ const HomeDetails: React.FC = () => {
               alt="Umrah"
             />
             <h3>{umrahTour.name}</h3>
-            <p>{umrahTour.description}</p>
+            <p className="tour-description">{umrahTour.description}</p>
           </Link>
         )}
         {hajjTour && (
@@ -131,7 +131,7 @@ const HomeDetails: React.FC = () => {
               alt="Hajj"
             />
             <h3>{hajjTour.name}</h3>
-            <p>{hajjTour.description}</p>
+            <p className="tour-description">{hajjTour.description}</p>
           </Link>
         )}
       </section>
