@@ -7,7 +7,6 @@ import com.traveltrove.betraveltrove.dataaccess.city.City;
 import com.traveltrove.betraveltrove.dataaccess.city.CityRepository;
 import com.traveltrove.betraveltrove.presentation.airport.AirportRequestModel;
 import com.traveltrove.betraveltrove.utils.exceptions.NotFoundException;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

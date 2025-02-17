@@ -21,7 +21,6 @@ interface UsersListProps {
     userId: string,
     updatedUser: Partial<UserResponseModel>
   ) => Promise<void>;
-  // onDeleteUser: (userId: string) => Promise<void>;
   onUpdateRole: (userId: string, roles: string[]) => Promise<void>;
 }
 

@@ -66,6 +66,12 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  const filteredUsers = users.filter(user => 
+    (selectedRole === "All Roles" || user.roles.some(role => role.toLowerCase() === selectedRole.toLowerCase())) &&
+    ((user.firstName?.toLowerCase() || "").includes(searchTerm.toLowerCase()) || 
+     (user.lastName?.toLowerCase() || "").includes(searchTerm.toLowerCase()) || 
+     (user.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()))
+  );
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="alert alert-danger">{error}</div>;
@@ -82,14 +88,10 @@ const UserManagement: React.FC = () => {
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h2 className="mb-0">User Management</h2>
-            <Button variant="primary">
-              <PersonPlus className="me-2" />
-              Add New User
-            </Button>
           </div>
 
           <Row className="mb-4 g-3">
-            <Col md={4}>
+            {/* <Col md={4}>
               <InputGroup>
                 <Form.Control
                   placeholder="Search users..."
@@ -100,7 +102,7 @@ const UserManagement: React.FC = () => {
                   <Search />
                 </Button>
               </InputGroup>
-            </Col>
+            </Col> */}
             <Col md={3}>
               <Form.Select
                 value={selectedRole}
@@ -115,16 +117,16 @@ const UserManagement: React.FC = () => {
           </Row>
 
           <UsersList
-            users={users}
+            users={filteredUsers}
             onUpdateUser={handleUpdateUser}
             onUpdateRole={handleRoleUpdate}
           />
 
           <div className="d-flex justify-content-between align-items-center mt-4">
             <div>
-              <span className="text-muted">
-                Showing {users.length} of {users.length} entries
-              </span>
+                <span className="text-muted">
+                Showing {filteredUsers.length} of {users.length} entries
+                </span>
             </div>
           </div>
         </Card.Body>

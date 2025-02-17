@@ -17,12 +17,14 @@ public class PaymentRepositoryIntegrationTest {
     private PaymentRepository paymentRepository;
 
     private final String paymentId = "33cff3cf-de6c-4f66-8f52-82f7ebf8f6d6";
+    private final String bookingId = "booking-123";
 
     @BeforeEach
     void setup() {
         Payment testPayment = Payment.builder()
                 .id("1")
                 .paymentId(paymentId)
+                .bookingId(bookingId)
                 .amount(1000L)
                 .currency("USD")
                 .status("created")
@@ -60,6 +62,26 @@ public class PaymentRepositoryIntegrationTest {
                 .verifyComplete();
     }
 
+    @Test
+    void whenFindPaymentByBookingId_withExistingId_thenReturnExistingPayment() {
+        Mono<PaymentResponseModel> foundPayment = paymentRepository.findByBookingId(bookingId);
 
+        StepVerifier.create(foundPayment)
+                .expectNextMatches(payment ->
+                        payment.getBookingId().equals(bookingId) &&
+                                payment.getAmount() == 1000L &&
+                                payment.getCurrency().equals("USD") &&
+                                payment.getStatus().equals("created")
+                )
+                .verifyComplete();
+    }
+
+    @Test
+    void whenFindPaymentByBookingId_withNonExistingId_thenReturnEmptyMono() {
+        Mono<PaymentResponseModel> foundPayment = paymentRepository.findByBookingId("INVALID_ID");
+
+        StepVerifier.create(foundPayment)
+                .verifyComplete();
+    }
 
 }

@@ -27,7 +27,7 @@ const NavBar: React.FC = () => {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
     useAuth0();
     
-  const { roles, handleUserLogout } = useUserContext();
+  const { roles, rolesLoading, handleUserLogout } = useUserContext();
 
   const handleLogin = async () => {
     await loginWithRedirect();
@@ -54,7 +54,6 @@ const NavBar: React.FC = () => {
 
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
-      { !isLoading && (
       <Container>
         <Navbar.Brand href={AppRoutes.Home}>
           <img
@@ -75,21 +74,20 @@ const NavBar: React.FC = () => {
             <Nav.Link href={AppRoutes.ContactUs} className="px-3">
               {t("contactus")}
             </Nav.Link>
-            
           </Nav>
 
           <Nav className="align-items-center">
-            {isAuthenticated && (isAdmin || isEmployee) && (
+            {isAuthenticated && !rolesLoading && (isAdmin || isEmployee) && (
               <Nav.Link href={AppRoutes.Dashboard} className="px-3">
                 {t("dashboard")}
               </Nav.Link>
             )}
-            {isAuthenticated && isAdmin && (
+            {isAuthenticated && !rolesLoading && isAdmin && (
               <Nav.Link href={AppRoutes.ReportsPage} className="px-3">
                 {t("reports")}
               </Nav.Link>
             )}
-            {isAuthenticated && isAdmin && (
+            {isAuthenticated && !rolesLoading && isAdmin && (
               <Nav.Link href={AppRoutes.UserManagementPage}>
                 <i className="bi bi-people-fill" style={{ fontSize: "20px" }} />
               </Nav.Link>
@@ -157,7 +155,6 @@ const NavBar: React.FC = () => {
           </Nav>
         </Navbar.Collapse>
       </Container>
-      )}
     </Navbar>
   );
 };

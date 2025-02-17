@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { Card, Button, Spinner, Alert } from "react-bootstrap";
 import { useToursApi } from "../api/tours.api";
 import { TourResponseModel } from "../models/Tour";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./ToursList.css";
 
 const ToursList: React.FC = () => {
@@ -10,7 +12,6 @@ const ToursList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Memoize fetchTours to prevent unnecessary recreations
   const fetchTours = useCallback(async () => {
     try {
       console.log("📢 Fetching tour list...");
@@ -30,23 +31,32 @@ const ToursList: React.FC = () => {
     fetchTours();
   }, [fetchTours]);
 
-  if (loading) return <div className="tours-list-loading">Loading...</div>;
-  if (error) return <div className="tours-list-error">{error}</div>;
-  if (tours.length === 0)
-    return <div className="tours-list-empty">No tours available.</div>;
+  // will need to properly store the image URL in the database to avoid this workaround
+  const cleanImageUrl = (url: string) => {
+    return url.replace(/^"(.*)"$/, '$1');
+  };
+
+  if (loading) return <Spinner animation="border" className="tours-list-loading" />;
+  if (error) return <Alert variant="danger" className="tours-list-error">{error}</Alert>;
+  if (tours.length === 0) return <Alert variant="info" className="tours-list-empty">No tours available.</Alert>;
 
   return (
     <div className="tours-list">
       {tours.map((tour) => (
-        <Link to={`/tours/${tour.tourId}`} key={tour.tourId} className="tour-item">
-          <div>
-            {tour.tourImageUrl && (
-              <img src={tour.tourImageUrl} alt={tour.name} className="tour-thumbnail" />
-            )}
-            <h3 className="tour-name">{tour.name}</h3>
-            <p className="tour-description">{tour.description}</p>
-          </div>
-        </Link>
+        <Card key={tour.tourId} className="tour-item">
+          {tour.tourImageUrl && (
+            <Card.Img variant="top" src={cleanImageUrl(tour.tourImageUrl)} alt={tour.name} className="tour-image" />
+          )}
+          <Card.Body className="tour-content">
+            <div>
+              <Card.Title className="tour-name">{tour.name}</Card.Title>
+              <Card.Text className="tour-description">{tour.description}</Card.Text>
+            </div>
+            <Link to={`/tours/${tour.tourId}`}>
+              <Button variant="dark">View Packages</Button>
+            </Link>
+          </Card.Body>
+        </Card>
       ))}
     </div>
   );
