@@ -21,7 +21,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const { getUser } = useUsersApi();
-  const userId = user?.sub;
   // Manage the `roles` state
   const [roles, setRoles] = useState<string[]>(() => {
     const cachedRoles = sessionStorage.getItem("userRoles");
