@@ -126,18 +126,5 @@
   "month": "Month",
   "downloadReport": "Download Report",
   "downloadPDF": "Download PDF",
-  "downloadCSV": "Download CSV",
-  "home": {
-    "heroTitle": "Explore The World",
-    "heroSubtitle": "Over 35 years of Travel Service Experience – Journey With Us",
-    "popularDestinations": "Popular Destinations",
-    "exploreNow": "Explore Now",
-    "noToursAvailable": "No tours available.",
-    "customerReviews": "Customer Reviews",
-    "umrahDescription": "Experience the spiritual journey of Umrah with our exclusive packages. Visit the holy cities of Mecca and Medina, and perform the sacred rituals.",
-    "hajjDescription": "Join us for the sacred pilgrimage of Hajj. Perform the essential rites and rituals, including Tawaf, Sa'i, and standing at Arafat.",
-    "error": {
-      "fetchTours": "Failed to fetch tours."
-    }
-  }
+  "downloadCSV": "Download CSV"
 }
