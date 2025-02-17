@@ -1,6 +1,8 @@
 package com.traveltrove.betraveltrove.presentation.user;
 
+import com.traveltrove.betraveltrove.business.engagement.PackageSuggestionService;
 import com.traveltrove.betraveltrove.business.user.UserService;
+import com.traveltrove.betraveltrove.presentation.engagement.PackageSuggestionResponseModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final PackageSuggestionService packageSuggestionService;
 
     @GetMapping("/{userId}")
     public Mono<ResponseEntity<UserResponseModel>> getUserById(@PathVariable String userId) {
@@ -72,6 +75,12 @@ public class UserController {
         return userService.updateUser(userId, userRequestModel)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(value = "/{userId}/suggestions", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<PackageSuggestionResponseModel> getUserPackageSuggestions(@PathVariable String userId) {
+        log.info("Fetching package suggestions for userId={}", userId);
+        return packageSuggestionService.getUserPackageSuggestions(userId);
     }
 
 //    @GetMapping("/auth0")

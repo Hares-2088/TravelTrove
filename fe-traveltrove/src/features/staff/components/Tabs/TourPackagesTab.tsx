@@ -19,10 +19,14 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './TourPackagesTab.css';
+import { useSubscriptionsApi } from "../../../packages/api/subscriptions.api";
+import { SubscriptionResponseModel } from "../../../packages/models/subscription.model";
+import { useUserContext } from "../../../../context/UserContext"; // Use your existing context
 
 interface TourPackagesTabProps {
     tourId: string;
 }
+
 
 
 const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
@@ -89,7 +93,34 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const [loading, setLoading] = useState<{ [key: string]: boolean }>({}); // Store loading state per package
 
     const [notificationMessage, setNotificationMessage] = useState<string>("");
-    
+    const { getSubscribedPackages } = useSubscriptionsApi();
+    const [subscribedPackages, setSubscribedPackages] = useState<PackageResponseModel[]>([]);
+    const [allPackages, setAllPackages] = useState<PackageResponseModel[]>([]);
+    const { userId, isAuthenticated, isLoading } = useUserContext();
+
+
+    useEffect(() => {
+        const fetchPackages = async () => {
+            if (isLoading || !isAuthenticated || !userId) return;
+
+            try {
+                const subscriptions = await getSubscribedPackages(userId);
+                const allPackagesData = await getAllPackages();
+
+                const subscribedPackageIds = new Set(subscriptions.map(sub => sub.packageId));
+                const subscribedData = allPackagesData.filter(pkg => subscribedPackageIds.has(pkg.packageId));
+
+                setSubscribedPackages(subscribedData);
+                setAllPackages(allPackagesData);
+            } catch (error) {
+                console.error("Error fetching packages", error);
+            }
+        };
+
+        fetchPackages();
+    }, [userId, isAuthenticated, isLoading]);
+
+
 
     const handleUpdateSeats = (packageId: string, quantity: number) => {
         setLoading((prev) => ({ ...prev, [packageId]: true })); // Set loading to true for the specific package

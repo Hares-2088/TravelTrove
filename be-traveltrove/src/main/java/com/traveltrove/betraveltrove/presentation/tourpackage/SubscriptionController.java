@@ -45,4 +45,10 @@ public class SubscriptionController {
         log.info("Fetching subscribers for package {}", packageId);
         return subscriptionService.getUsersSubscribedToPackage(packageId);
     }
+
+    @GetMapping("/user/{userId}/subscriptions")
+    public Flux<PackageResponseModel> getSubscribedPackages(@PathVariable String userId) {
+        log.info("Fetching subscribed packages for user: {}", userId);
+        return subscriptionService.getSubscribedPackages(userId);
+    }
 }

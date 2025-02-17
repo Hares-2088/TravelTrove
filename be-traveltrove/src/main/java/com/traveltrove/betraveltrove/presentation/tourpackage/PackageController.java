@@ -1,6 +1,9 @@
 package com.traveltrove.betraveltrove.presentation.tourpackage;
 
+import com.traveltrove.betraveltrove.business.engagement.EngagementService;
+import com.traveltrove.betraveltrove.business.engagement.PackageViewService;
 import com.traveltrove.betraveltrove.business.tourpackage.PackageService;
+import com.traveltrove.betraveltrove.dataaccess.engagement.Engagement;
 import com.traveltrove.betraveltrove.dataaccess.tourpackage.PackageStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +20,8 @@ import reactor.core.publisher.Mono;
 public class PackageController {
 
     private final PackageService packageService;
-
+    private final EngagementService engagementService;
+    private final PackageViewService packageViewService;
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<PackageResponseModel> getPackages(
             @RequestParam(required = false) String tourId) {
@@ -79,5 +83,23 @@ public class PackageController {
                     return Mono.just(ResponseEntity.badRequest().build());
                 });
     }
+
+    @PatchMapping("/{packageId}/engagement")
+    public Mono<ResponseEntity<Engagement>> trackEngagement(
+            @PathVariable String packageId,
+            @RequestParam String action,
+            @RequestParam(required = false) String userId) {
+
+        log.info("Tracking engagement: packageId={}, action={}, userId={}", packageId, action, userId);
+
+        return engagementService.trackEngagement(packageId, userId, action)
+                .map(ResponseEntity::ok)
+                .onErrorResume(e -> {
+                    log.error("Error tracking engagement: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.badRequest().build());
+                });
+    }
+
+
 
 }

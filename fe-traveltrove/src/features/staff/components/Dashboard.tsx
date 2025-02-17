@@ -9,6 +9,7 @@ import AirportsTab from "./Tabs/AirportsTab";
 import TravelersTab from "./Tabs/TravelersTab";
 import { useTranslation } from "react-i18next";
 import NotificationsTab from "./Tabs/NotificationsTab.tsx";
+import EngagementChart from "./Tabs/EngagementChart"; // Import the new tab
 
 
 const Dashboard: React.FC = () => {
@@ -168,6 +169,17 @@ const Dashboard: React.FC = () => {
                       Notifications
                     </Nav.Link>
                   </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link
+                      eventKey="engagement"
+                      onClick={() => setActiveTab("engagement")}
+                      className={`text-white px-3 py-2 ${activeTab === "engagement" ? "bg-secondary" : ""}`}
+                      style={{ fontWeight: activeTab === "engagement" ? "bold" : "normal", borderRadius: "10px" }}
+                    >
+                      Engagement
+                    </Nav.Link>
+                  </Nav.Item>
+
                 </Nav>
               </Col>
 
@@ -205,6 +217,9 @@ const Dashboard: React.FC = () => {
                   </Tab.Pane>
                   <Tab.Pane eventKey="notifications" style={{ height: "100%" }}>
                     <NotificationsTab />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="engagement">
+                    <EngagementChart />
                   </Tab.Pane>
                 </Tab.Content>
               </Col>
