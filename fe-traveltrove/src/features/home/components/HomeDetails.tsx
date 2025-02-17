@@ -1,61 +1,45 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Carousel, Card, Button, Spinner, Alert } from 'react-bootstrap';
-import { useToursApi } from '../../tours/api/tours.api'; // Adjust the import path
-import { TourResponseModel } from '../../tours/models/Tour'; // Adjust the import path
-import { useTranslation } from 'react-i18next';
+import { usePackagesApi } from '../../packages/api/packages.api'; // Adjust the import path
+import { PackageResponseModel } from '../../packages/models/package.model'; // Adjust the import path
 import './HomeDetails.css';
 
 const HomeDetails: React.FC = () => {
-  const { getAllTours, getTourByTourId } = useToursApi();
-  const [tours, setTours] = useState<TourResponseModel[]>([]);
-  const [umrahTour, setUmrahTour] = useState<TourResponseModel | null>(null);
-  const [hajjTour, setHajjTour] = useState<TourResponseModel | null>(null);
+  const { getAllPackages } = usePackagesApi();
+  const [umrahPackages, setUmrahPackages] = useState<PackageResponseModel[]>([]);
+  const [hajjPackages, setHajjPackages] = useState<PackageResponseModel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [index, setIndex] = useState<number>(0);
-  const { t } = useTranslation();
 
-  // Fetch tours
-  const fetchTours = useCallback(async () => {
+  // Fetch Umrah and Hajj packages by tourId
+  const fetchPackages = useCallback(async () => {
     try {
-      console.log('📢 Fetching tours...');
-      const [allTours, umrahData, hajjData] = await Promise.all([
-        getAllTours(),
-        getTourByTourId('6a237fda-4924-4c73-a6df-73c1e0c37af2'), // Umrah tourId
-        getTourByTourId('6a237fda-4924-4c73-a6df-73c1e0c37af3'), // Hajj tourId
+      console.log('📢 Fetching packages...');
+      const [umrahData, hajjData] = await Promise.all([
+        getAllPackages({ tourId: '6a237fda-4924-4c73-a6df-73c1e0c37af2' }), // Umrah tourId
+        getAllPackages({ tourId: '6a237fda-4924-4c73-a6df-73c1e0c37af3' }), // Hajj tourId
       ]);
-      const filteredTours = allTours.filter(tour => tour.tourId !== '6a237fda-4924-4c73-a6df-73c1e0c37af2' && tour.tourId !== '6a237fda-4924-4c73-a6df-73c1e0c37af3');
-      setTours(filteredTours.slice(0, 10)); // Get first 10 tours
-      setUmrahTour(umrahData);
-      setHajjTour(hajjData);
-      console.log('✅ Tours fetched successfully:', filteredTours);
+      setUmrahPackages(umrahData || []);
+      setHajjPackages(hajjData || []);
+      console.log('✅ Packages fetched successfully:', { umrahData, hajjData });
     } catch (err) {
-      console.error('❌ Failed to fetch tours:', err);
-      setError(t('error.fetchTours'));
+      console.error('❌ Failed to fetch packages:', err);
+      setError('Failed to fetch packages.');
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [getAllPackages]);
 
   useEffect(() => {
-    console.log('🚀 useEffect triggered: Fetching tours...');
-    fetchTours();
-  }, [fetchTours]);
+    console.log('🚀 useEffect triggered: Fetching packages...');
+    fetchPackages();
+  }, [fetchPackages]);
 
   // Clean image URLs if necessary
   const cleanImageUrl = (url: string) => {
     return url.replace(/^"(.*)"$/, '$1');
-  };
-
-  const getVisibleTours = () => {
-    if (window.innerWidth <= 576) {
-      return 1;
-    } else if (window.innerWidth <= 768) {
-      return 2;
-    } else {
-      return 3;
-    }
   };
 
   if (loading) return <Spinner animation="border" className="home-loading" />;
@@ -66,79 +50,74 @@ const HomeDetails: React.FC = () => {
       {/* Hero Section */}
       <section
         className="hero-section"
-        style={{ backgroundImage: 'url(https://traveltrove-images.s3.us-east-2.amazonaws.com/auth0-675e3886e184fd643a8ed5aa_cd1962fc-a3bc-4ddc-ac5d-a2606139f135_hero-image.jpg)' }}
+        style={{ backgroundImage: 'url(https://traveltrove-images.s3.us-east-2.amazonaws.com/hero-image.jpg)' }}
       >
         <div className="hero-content">
-          <h1>{t('home.heroTitle')}</h1>
-          <p>{t('home.heroSubtitle')}</p>
+          <h1>Explore The World</h1>
+          <p>Over 35 years of Travel Service Experience – Journey With Us</p>
         </div>
       </section>
 
       {/* Popular Destinations Carousel */}
       <section className="popular-destinations">
-        <h2>{t('home.popularDestinations')}</h2>
-        {tours.length > 0 ? (
-          <Carousel activeIndex={index} onSelect={(selectedIndex) => setIndex(selectedIndex)} indicators={false} nextIcon={<span aria-hidden="true" className="carousel-control-next-icon" />} prevIcon={<span aria-hidden="true" className="carousel-control-prev-icon" />}>
-            {tours.map((tour, idx) => (
-              idx % getVisibleTours() === 0 && (
-                <Carousel.Item key={tour.tourId}>
-                  <div className="d-flex justify-content-around">
-                    {tours.slice(idx, idx + getVisibleTours()).map((tour) => (
-                      <Card key={tour.tourId} className="mx-2">
-                        <Link to={`/tours/${tour.tourId}`}>
-                          <Card.Img
-                            variant="top"
-                            src={cleanImageUrl(tour.tourImageUrl || '/default-image.jpg')}
-                            alt={tour.name}
-                            className="carousel-image"
-                          />
-                        </Link>
-                        <Card.Body>
-                          <Card.Title>{tour.name}</Card.Title>
-                          <Card.Text>{tour.description}</Card.Text>
-                          <Link to={`/tours/${tour.tourId}`}>
-                            <Button variant="dark">{t('home.exploreNow')}</Button>
-                          </Link>
-                        </Card.Body>
-                      </Card>
-                    ))}
-                  </div>
-                </Carousel.Item>
-              )
+        <h2>Popular Destinations</h2>
+        {umrahPackages.length > 0 || hajjPackages.length > 0 ? (
+          <Carousel activeIndex={index} onSelect={(selectedIndex) => setIndex(selectedIndex)}>
+            {[...umrahPackages, ...hajjPackages].map((pkg) => (
+              <Carousel.Item key={pkg.packageId}>
+                <Card>
+                  <Card.Img
+                    variant="top"
+                    src={cleanImageUrl(pkg.packageImageUrl || '/default-image.jpg')}
+                    alt={pkg.name}
+                  />
+                  <Card.Body>
+                    <Card.Title>{pkg.name}</Card.Title>
+                    <Card.Text>{pkg.description}</Card.Text>
+                    <Card.Text>Single: ${pkg.priceSingle}</Card.Text>
+                    <Card.Text>Double: ${pkg.priceDouble}</Card.Text>
+                    <Link to={`/packages/${pkg.packageId}`}>
+                      <Button variant="dark">Book Now</Button>
+                    </Link>
+                  </Card.Body>
+                </Card>
+              </Carousel.Item>
             ))}
           </Carousel>
         ) : (
-          <Alert variant="info" className="home-info">{t('home.noToursAvailable')}</Alert>
+          <Alert variant="info" className="home-info">No packages available.</Alert>
         )}
       </section>
 
       {/* Umrah and Hajj Cards */}
       <section className="special-packages">
-        {umrahTour && (
-          <Link to={`/tours/${umrahTour.tourId}`} className="package-card">
-            <img
-              src={cleanImageUrl(umrahTour.tourImageUrl || 'https://traveltrove-images.s3.us-east-2.amazonaws.com/auth0-675e3886e184fd643a8ed5aa_232fd39d-936f-405e-a366-f8dc9e1de686_Umrah.jpeg.png')}
-              alt="Umrah"
-            />
-            <h3>{umrahTour.name}</h3>
-            <p>{umrahTour.description}</p>
-          </Link>
-        )}
-        {hajjTour && (
-          <Link to={`/tours/${hajjTour.tourId}`} className="package-card">
-            <img
-              src={cleanImageUrl(hajjTour.tourImageUrl || 'https://traveltrove-images.s3.us-east-2.amazonaws.com/auth0-675e3886e184fd643a8ed5aa_d3009bca-efc2-4c42-afdd-8e1e6c5e374d_hajj.jpeg.png')}
-              alt="Hajj"
-            />
-            <h3>{hajjTour.name}</h3>
-            <p>{hajjTour.description}</p>
-          </Link>
-        )}
+        <div
+          className="package-card"
+          onClick={() => console.log('Navigate to Umrah details')}
+        >
+          <img
+            src={cleanImageUrl('https://traveltrove-images.s3.us-east-2.amazonaws.com/umrah-tour.jpg')}
+            alt="Umrah"
+          />
+          <h3>Umrah</h3>
+          <p>Experience the spiritual journey of Umrah with our exclusive packages.</p>
+        </div>
+        <div
+          className="package-card"
+          onClick={() => console.log('Navigate to Hajj details')}
+        >
+          <img
+            src={cleanImageUrl('https://traveltrove-images.s3.us-east-2.amazonaws.com/hajj-tour.jpg')}
+            alt="Hajj"
+          />
+          <h3>Hajj</h3>
+          <p>Join us for the sacred pilgrimage of Hajj with comprehensive support.</p>
+        </div>
       </section>
 
       {/* Reviews Section */}
       <section className="reviews-section">
-        <h2>{t('home.customerReviews')}</h2>
+        <h2>Customer Reviews</h2>
         <div className="elfsight-app-6d3f48d9-c5ae-4dae-8574-3ea7f9eb1362" data-elfsight-app-lazy></div>
       </section>
     </div>

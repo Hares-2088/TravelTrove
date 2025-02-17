@@ -124,12 +124,16 @@
   /* Background for better readability */
   padding: 5px 10px;
   border-radius: 5px;
+  text-decoration: none;
+  /* Remove underline */
 }
 
 .package-card p {
   font-size: 1.2rem;
   color: #666;
   padding: 0 1rem 1rem;
+  text-decoration: none;
+  /* Remove underline */
 }
 
 .reviews-section {
