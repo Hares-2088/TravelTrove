@@ -278,6 +278,20 @@ public class DatabaseLoader {
                         .name("Chinese Silk Road Adventure")
                         .description("Travel along China’s historic Silk Road, visiting ancient cities, the Great Wall, and vibrant cultural heritage sites.")
                         .tourImageUrl("https://traveltrove-images.s3.us-east-2.amazonaws.com/google-oauth2-115284042119137530811_ff4d015a-ac9e-4b5f-a386-9ad842ff64d2_Anime-Japan-Street.png")
+                        .build(),
+                Tour.builder()
+                        .id(null)
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2") // Unique ID for Umrah tour
+                        .name("Umrah Spiritual Journey")
+                        .description("Embark on a spiritual journey to Mecca and Medina, visiting the Grand Mosque and other sacred sites.")
+                        .tourImageUrl("") // Example image URL
+                        .build(),
+                Tour.builder()
+                        .id(null)
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af3") // Unique ID for Hajj tour
+                        .name("Hajj Pilgrimage")
+                        .description("Join us for the sacred pilgrimage of Hajj, performing rituals such as Tawaf, Sa'i, and standing at Arafat.")
+                        .tourImageUrl("") // Example image URL
                         .build()
         );
 
@@ -1267,6 +1281,12 @@ public class DatabaseLoader {
                         .build(),
                 Airport.builder()
                         .id(null)
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b") // Airport ID for departure
+                        .name("Leonardo da Vinci–Fiumicino Airport") // Airport name
+                        .cityId("7f15fafc-85f4-4ba5-822b-27b7ddce6c37") // City ID for Rome
+                        .build(),
+                Airport.builder()
+                        .id(null)
                         .airportId("e8f314c7-716b-4f19-a1d6-fc376b8c81ad")
                         .name("Narita International Airport")
                         .cityId("92537e75-3fc2-42af-b105-b6150395acbb")
@@ -1282,6 +1302,12 @@ public class DatabaseLoader {
                         .airportId("aa12fc4b-619e-4d8e-8563-5a09bc6f1ae1")
                         .name("Sydney Kingsford Smith Airport")
                         .cityId("f978f76c-abfc-4b25-ba32-9e1b085b5ab0")
+                        .build(),
+                Airport.builder()
+                        .id(null)
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b") // Airport ID for departure
+                        .name("Leonardo da Vinci–Fiumicino Airport") // Airport name
+                        .cityId("7f15fafc-85f4-4ba5-822b-27b7ddce6c37") // City ID for Rome
                         .build(),
                 Airport.builder()
                         .id(null)
@@ -1580,6 +1606,22 @@ public class DatabaseLoader {
                         .status(PackageStatus.BOOKING_OPEN)
                         .build(),
 
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752b") // Unique ID for Hajj package
+                        .name("Hajj Pilgrimage Package")
+                        .description("Join us for the sacred pilgrimage of Hajj with comprehensive support and guidance.")
+                        .startDate(LocalDate.of(2026, 7, 1)) // Example start date
+                        .endDate(LocalDate.of(2026, 7, 15)) // Example end date
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b") // Airport ID for departure
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af3") // Tour ID for Hajj
+                        .priceSingle(3000.0) // Price for single occupancy
+                        .priceDouble(5000.0) // Price for double occupancy
+                        .priceTriple(7000.0) // Price for triple occupancy
+                        .totalSeats(200) // Total seats available
+                        .availableSeats(200) // Initially all seats are available
+                        .status(PackageStatus.BOOKING_OPEN) // Booking status
+                        .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
                         .id(null)
@@ -1613,6 +1655,23 @@ public class DatabaseLoader {
                         .totalSeats(120)
                         .status(PackageStatus.UPCOMING)
                         .availableSeats(0)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752a") // Unique ID for Umrah package
+                        .name("Umrah Spiritual Journey")
+                        .description("Embark on a spiritual journey to Mecca and Medina with our exclusive Umrah package.")
+                        .startDate(LocalDate.of(2026, 1, 10)) // Example start date
+                        .endDate(LocalDate.of(2026, 1, 20)) // Example end date
+                        .airportId("9273ecac-b84d-41e9-9d5f-28f0bd1e467b") // Airport ID for departure
+                        .tourId("6a237fda-4924-4c73-a6df-73c1e0c37af2") // Tour ID for Umrah
+                        .priceSingle(1500.0) // Price for single occupancy
+                        .priceDouble(2500.0) // Price for double occupancy
+                        .priceTriple(3500.0) // Price for triple occupancy
+                        .totalSeats(100) // Total seats available
+                        .availableSeats(100) // Initially all seats are available
+                        .status(PackageStatus.BOOKING_OPEN) // Booking status
                         .build(),
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()

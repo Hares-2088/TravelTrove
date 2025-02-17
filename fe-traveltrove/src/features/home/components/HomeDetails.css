@@ -21,6 +21,108 @@
   color: #666;
 }
 
+.hero-section {
+  background-size: cover;
+  background-position: center;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  width: 100%;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.5rem;
+}
+
+.popular-destinations {
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.popular-destinations h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.carousel {
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.carousel .card {
+  margin: 0 auto;
+  max-width: 300px;
+}
+
+.special-packages {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  width: 100%;
+}
+
+.package-card {
+  width: 45%;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.package-card:hover {
+  transform: scale(1.05);
+}
+
+.package-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.package-card h3 {
+  font-size: 1.5rem;
+  margin: 1rem 0;
+}
+
+.package-card p {
+  font-size: 1rem;
+  color: #666;
+  padding: 0 1rem 1rem;
+}
+
+.reviews-section {
+  padding: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.reviews-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
 html, body {
   contain: layout;
+}
+
+.loading-spinner {
+  display: block;
+  margin: 20px auto;
+}
+
+.error-alert,
+.info-alert {
+  text-align: center;
+  font-size: 1.5rem;
+  margin: 20px 0;
 }
