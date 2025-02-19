@@ -94,37 +94,48 @@ BookingService -> BookingRepository : findBookingByBookingId(bookingId)
 activate BookingRepository
 
 BookingRepository -> Database : SELECT * FROM bookings WHERE bookingId = bookingId
-Database --> BookingRepository : Booking found
+Database --> BookingRepository : Booking found/not found
 deactivate Database
 
-BookingRepository --> BookingService : BookingEntity
-deactivate BookingRepository
-
-alt Status is the same
-    BookingService --> BookingController : Error: SameStatusException
-    BookingController --> BookingsPage : Notify admin: "Booking already in this status"
+alt Booking Not Found
+    BookingRepository --> BookingService : Error: NotFoundException
+    deactivate BookingRepository
+    BookingService --> BookingController : Error: NotFoundException
     deactivate BookingService
-else Status is valid
-    BookingService -> BookingEntity : Update booking status
-    BookingService -> BookingRepository : save(updatedBooking)
-    activate BookingRepository
-    BookingRepository -> Database : UPDATE bookings SET status = newStatus WHERE id = bookingId
-    Database --> BookingRepository : Update successful
+    BookingController --> BookingsPage : Notify admin: "Booking not found"
+    deactivate BookingController
+    BookingsPage --> Admin : Display error: "Booking not found"
+else Booking Found
+    BookingRepository --> BookingService : BookingEntity
     deactivate BookingRepository
 
-    BookingService --> BookingResponseModel : Convert updated booking
-    activate BookingResponseModel
-    BookingResponseModel --> BookingService : Updated BookingResponseModel
-    deactivate BookingResponseModel
+    alt Status is the same
+        BookingService --> BookingController : Error: SameStatusException
+        deactivate BookingService
+        BookingController --> BookingsPage : Notify admin: "Booking already in this status"
+        deactivate BookingController
+        BookingsPage --> Admin : Display error: "Booking already in this status"
+    else Status is valid
+        BookingService -> BookingEntity : Update booking status
+        BookingService -> BookingRepository : save(updatedBooking)
+        activate BookingRepository
+        BookingRepository -> Database : UPDATE bookings SET status = newStatus WHERE id = bookingId
+        Database --> BookingRepository : Update successful
+        deactivate BookingRepository
 
-    BookingService --> BookingController : Updated booking response
-    deactivate BookingService
+        BookingService --> BookingResponseModel : Convert updated booking
+        activate BookingResponseModel
+        BookingResponseModel --> BookingService : Updated BookingResponseModel
+        deactivate BookingResponseModel
 
-    BookingController --> BookingsPage : Notify status updated
-    deactivate BookingController
+        BookingService --> BookingController : Updated booking response
+        deactivate BookingService
 
-    BookingsPage --> Admin : Booking status updated successfully
-end
+        BookingController --> BookingsPage : Notify status updated
+        deactivate BookingController
+
+        BookingsPage --> Admin : Booking status updated successfully
+    end
 
 == Remove a Customer Booking ==
 Admin -> BookingsPage : Select a booking to delete

@@ -119,16 +119,27 @@ package "bookingsubdomain" {
 
     package "dataaccesslayer" {
         class Booking {
-            + id: String
+            + id: ObjectId
             + bookingId: String
             + userId: String
             + packageId: String
-            + totalPrice: Double
-            + status: BookingStatus
-            + bookingDate: LocalDate
             + travelerIds: List<String>
+            + bookingDate: DateTime
+            + totalPrice: Decimal
         }
 
+        enum BookingStatus {
+            PAYMENT_PENDING
+            PAYMENT_ATTEMPT2_PENDING
+            PAYMENT_ATTEMPT3_PENDING
+            BOOKING_FAILED
+            PAYMENT_SUCCESS
+            BOOKING_CONFIRMED
+            BOOKING_FINALIZED
+            BOOKING_EXPIRED
+            BOOKING_CANCELLED
+            REFUNDED
+        }
         interface BookingRepository extends ReactiveMongoRepository {
             + findBookingsByPackageId(packageId: String): Flux<Booking>
             + findBookingsByUserId(userId: String): Flux<Booking>
