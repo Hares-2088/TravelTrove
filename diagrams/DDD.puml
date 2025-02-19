@@ -237,6 +237,59 @@ rectangle "TravelTrove" as BoundedContextTravelTrove #line.dashed {
         TourEvent "1" o-- "1" TourEventId
     }
 
+    Package "Engagement Sub-Domain" <<Rectangle>> #D3D3D3 {
+        AGGREGATE_ROOT(Engagement) #lightblue {
+            engagementId: String <<Unique>>
+            userId: String <<FK>>
+            packageId: String <<FK>>
+            views: Integer
+            shares: Integer
+            wishlists: Integer
+            lastInteracted: DateTime
+        }
+
+        VALUE_OBJECT(EngagementId) #Bisque {
+            id: UUID
+        }
+
+        Engagement "1" o-- "1" EngagementId
+    }
+
+    Package "Notification Sub-Domain" <<Rectangle>> #FFC0CB {
+            ENTITY(Notification) #lightblue {
+                notificationId: String <<Unique>>
+                to: String
+                subject: String
+                messageContent: String
+                sentAt: LocalDateTime
+                userId: String <<FK>> "Recipient User"
+            }
+
+            VALUE_OBJECT(NotificationId) #Bisque {
+                id: UUID
+            }
+
+            Notification "1" o-- "1" NotificationId
+        }
+
+
+        Package "Subscription Sub-Domain" <<Rectangle>> #ADD8E6 {
+                ENTITY(Subscription) #lightblue {
+                    subscriptionId: String <<Unique>>
+                    userId: String <<FK>>
+                    packageId: String <<FK>>
+                    subscribedAt: LocalDateTime
+                }
+
+                VALUE_OBJECT(SubscriptionId) #Bisque {
+                    id: UUID
+                }
+
+                Subscription "1" o-- "1" SubscriptionId
+            }
+
+
+
     ' Relationships
     User ||--o{ Booking : "1:M"
     User ||--o{ Review : "1:M"
@@ -246,6 +299,8 @@ rectangle "TravelTrove" as BoundedContextTravelTrove #line.dashed {
     Package ||--o{ Tour : "1:1"
 
     Booking ||--|| Payment : "1:1"
+User ||--o{ Engagement : "1:M"
+Package ||--o{ Engagement : "1:M"
 
     City ||--o{ Hotel : "1:M"
     City ||--o{ Airport : "1:M"
@@ -261,6 +316,13 @@ rectangle "TravelTrove" as BoundedContextTravelTrove #line.dashed {
     Traveler ||--|| Country : "1:1"
     Traveler ||--o{ Booking : "1:M"
     Traveler }o--o| User : "Optional"
+
+    User ||--o{ Subscription : "1:M"
+    Package ||--o{ Subscription : "1:M"
+
+
+    User ||--o{ Notification : "1:M"
+
 
 }
 @enduml
