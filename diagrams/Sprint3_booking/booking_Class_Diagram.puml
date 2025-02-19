@@ -52,6 +52,19 @@ package "bookingsubdomain" {
             + findBookingByBookingId(bookingId: String) : Mono<Booking>
             + findBookingByPackageIdAndUserId(packageId: String, userId: String) : Mono<Booking>
         }
+
+        enum BookingStatus {
+            PAYMENT_PENDING
+            PAYMENT_ATTEMPT2_PENDING
+            PAYMENT_ATTEMPT3_PENDING
+            BOOKING_FAILED
+            PAYMENT_SUCCESS
+            BOOKING_CONFIRMED
+            BOOKING_FINALIZED
+            BOOKING_EXPIRED
+            BOOKING_CANCELLED
+            REFUNDED
+        }
     }
 
     package "presentationlayer" {
@@ -97,21 +110,6 @@ package "bookingsubdomain" {
             + toBookingResponseModel(booking: Booking) : BookingResponseModel
             + toBookingEntity(bookingRequestModel: BookingRequestModel) : Booking
             + generateUUIDString() : String
-        }
-    }
-
-    package "enums" {
-        enum BookingStatus {
-            PAYMENT_PENDING
-            PAYMENT_ATTEMPT2_PENDING
-            PAYMENT_ATTEMPT3_PENDING
-            BOOKING_FAILED
-            PAYMENT_SUCCESS
-            BOOKING_CONFIRMED
-            BOOKING_FINALIZED
-            BOOKING_EXPIRED
-            BOOKING_CANCELLED
-            REFUNDED
         }
     }
 
