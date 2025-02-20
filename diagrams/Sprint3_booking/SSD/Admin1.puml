@@ -1,25 +1,37 @@
 @startuml
 title ADMIN - Manage Tour Package Bookings
-
 skinparam backgroundColor #F5F5DC
 hide footbox
 
 actor Admin #F5F5DC
 participant "Travel Management System" as TMS #FFFFFF
 
-Admin -> TMS : Select a Tour Package
-TMS -> Admin : Display Package Details (Destination, Price, Dates, Bookings)
+Admin -> TMS : Get Tour Packages()
+TMS --> Admin : Tour Packages
 
 opt View Bookings for Package
-    Admin -> TMS : Retrieve Bookings for Selected Package
-    TMS -> Admin : List of Bookings (User, Status, Date, Payment Info)
+    Admin -> TMS : Get Bookings (bookings/{package_id})
+    TMS --> Admin : Bookings of the selected Package
 end
 
 opt Update Booking Status
-    Admin -> TMS : Select a Booking to Update
-    TMS -> Admin : Display Current Booking Status
+    Admin -> TMS : Get booking()
+    TMS --> Admin : Booking Status Data (e.g., Booking ID, Current Status)
     Admin -> TMS : Update Booking Status (e.g., CONFIRMED, CANCELLED)
-    TMS -> Admin : Confirmation of Updated Status
+
+    alt Booking Found
+        alt Valid Status Transition
+            alt New Status != Current Status
+                TMS --> Admin : Booking Status Updated
+            else New Status == Current Status
+                TMS --> Admin : Error: Same Status
+            end
+        else Invalid Status Transition
+            TMS --> Admin : Error: Invalid Status Transition
+        end
+    else Booking Not Found
+        TMS --> Admin : Error: Booking Not Found
+    end
 end
 
 @enduml

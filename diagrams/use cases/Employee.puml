@@ -1,12 +1,11 @@
 @startuml
+scale 1
 left to right direction
 
-' Add a header with left alignment
 header
-Dar El Salam
+Dar El Salam - Employee Use Cases
 endheader
 
-' Custom skin parameters for use cases
 skinparam usecase {
     BackgroundColor lightblue
     BorderColor DarkSlateGray
@@ -17,55 +16,70 @@ actor "Dar El Salam's Employee" as Employee
 
 rectangle "Travel Trove System" {
 
-    usecase "Browse packages"
-    usecase "Add package"
-    usecase "Modify package"
-    usecase "Filter search result"
-    usecase "Custom notification"
-    usecase "Manage events"
-    usecase "Manage tours"
-    usecase "Manage countries"
-    usecase "Manage cities"
-    usecase "Manage tour events"
+    ' Package Management
+    usecase "Browse Packages"
+    usecase "Manage Packages"
+    usecase "Filter Search Result"
+    usecase "Custom Notification"
+
+    ' Event & Tour Management
+    usecase "Manage Events"
+    usecase "Manage Tours"
+    usecase "Manage Tour Events"
+
+    ' Location Management
+    usecase "Manage Countries"
+    usecase "Manage Cities"
+
+    ' Booking & Traveler Management
+    usecase "Access Package Bookings"
+    usecase "Assign a Traveler to Booking"
+    usecase "Remove a Traveler from Booking"
+    usecase "Manage Travelers"
+
+    ' Account Management
     usecase "View Account"
     usecase "Edit Account"
-    usecase "Manage hotels"
-    usecase "Manage airports"
 
-    usecase "Access package bookings"
-    usecase "Assign a Traveler to booking"
-    usecase "Remove a Traveler from booking"
-    usecase "View Travelers"
-    usecase "View Traveler Details"
-    
-    usecase "View Package Reviews"
-    usecase "View All Reviews"
-    usecase "Remove a Review"
+    ' Infrastructure Management
+    usecase "Manage Hotels"
+    usecase "Manage Airports"
+
+    ' Review Management
+    usecase "Manage Reviews"
+
 }
-Employee -- "Browse packages"
-Employee -- "Manage events"
-Employee -- "Manage tours"
-Employee -- "Manage countries"
-Employee -- "Manage cities"
-Employee -- "View Account"
-Employee -- "Manage hotels"
-Employee -- "Manage airports"
-Employee -- "Access package bookings"
-Employee -- "View All Reviews"
 
-"Browse packages" <.. "Filter search result" : <<extend>>
-"Browse packages" <.. "Add package" : <<extend>>
-"Browse packages" <.. "Modify package" : <<extend>>
-"Browse packages" <.. "View Package Reviews" : <<extend>>
-"Modify package" <.. "Custom notification" : <<extend>>
-"Modify package" <.. "Filter search result" : <<extend>>
-"Manage tours" <.. "Manage tour events" : <<extend>>
+' Relationships
+Employee -- "Browse Packages"
+Employee -- "Manage Packages"
+"Browse Packages" <.. "Filter Search Result" : <<extend>>
+"Browse Packages" <.. "Manage Packages" : <<extend>>
+"Manage Packages" <.. "Custom Notification" : <<extend>>
+"Manage Packages" <.. "Filter Search Result" : <<extend>>
+
+Employee -- "Manage Events"
+Employee -- "Manage Tours"
+"Manage Tours" <.. "Manage Tour Events" : <<extend>>
+
+Employee -- "Manage Countries"
+Employee -- "Manage Cities"
+
+Employee -- "Access Package Bookings"
+Employee -- "Assign a Traveler to Booking"
+"Access Package Bookings" <.. "Assign a Traveler to Booking" : <<extend>>
+Employee -- "Remove a Traveler from Booking"
+"Access Package Bookings" <.. "Remove a Traveler from Booking" : <<extend>>
+
+Employee -- "Manage Travelers"
+
+Employee -- "View Account"
+Employee -- "Edit Account"
 "View Account" <.. "Edit Account" : <<extend>>
-"Access package bookings" <.. "Assign a Traveler to booking" : <<extend>>
-"Access package bookings" <.. "Remove a Traveler from booking" : <<extend>>
-"Access package bookings" <.. "View Travelers" : <<extend>>
-"View Travelers" <.. "View Traveler Details" : <<extend>>
-"View All Reviews" ..> "Remove a Review" : <<extend>>
-"View Package Reviews" ..> "Remove a Review" : <<extend>>
+
+Employee -- "Manage Hotels"
+Employee -- "Manage Airports"
+
+Employee -- "Manage Reviews"
 
 @enduml
