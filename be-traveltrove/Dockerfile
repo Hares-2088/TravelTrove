@@ -1,4 +1,4 @@
-FROM gradle:7.6 AS builder
+FROM gradle:7.6-jdk17 AS builder
 WORKDIR /usr/src/app
 
 # Copy source files and build.gradle
