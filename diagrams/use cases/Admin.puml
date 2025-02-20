@@ -3,10 +3,9 @@ scale 1
 left to right direction
 
 header
-Dar El Salam
+Dar El Salam - Admin Use Cases
 endheader
 
-' Custom skin parameters for use cases
 skinparam usecase {
     BackgroundColor lightblue
     BorderColor DarkSlateGray
@@ -17,20 +16,80 @@ actor "Dar El Salam's Admin" as Admin
 
 rectangle "Travel Trove System" {
 
-    usecase "Add an employee account"
-    usecase "Manage an employee account"
+    ' User Management
+    usecase "Manage Users"
+
+    ' Employee Management
+    usecase "Manage Employees"
     usecase "Control Permissions"
-    usecase "Generate report"
-    usecase "Remove a tour package"
+
+    ' Tour Package Management
+    usecase "Manage Tour Packages"
+    usecase "Update Tour Package Status"
+
+    ' Reviews Management
+    usecase "Manage Reviews"
+
+    ' Traveler Management
+    usecase "Manage Travelers"
+
+    ' Booking Management
+    usecase "Manage Bookings"
+
+    ' Airports Management
+    usecase "Manage Airports"
+
+    ' Hotel Management
+    usecase "Manage Hotels"
+
+    ' Tour Events Management
+    usecase "Manage Tour Events"
+
+    ' Tours Management
+    usecase "Manage Tours"
+
+    ' Events Management
+    usecase "Manage Events"
+
+    ' Locations Management
+    usecase "Manage Countries"
+    usecase "Manage Cities"
+
+    ' Report Management
+    usecase "Generate Report"
 
 }
 
-"Manage an employee account" ..> "Control Permissions" : <<include>>
-Admin <|-- Employee
-Admin --- "Add an employee account"
-Admin -- "Manage an employee account"
-Admin -- "Generate report"
-Admin -- "Remove a tour package"
+' Relationships
+Admin -- "Manage Users"
 
+Admin -- "Manage Employees"
+"Manage Employees" ..> "Control Permissions" : <<include>>
+
+Admin -- "Manage Tour Packages"
+Admin -- "Update Tour Package Status"
+"Manage Tour Packages" ..> "Update Tour Package Status" : <<include>>
+
+Admin -- "Manage Reviews"
+
+Admin -- "Manage Travelers"
+
+Admin -- "Manage Bookings"
+
+Admin -- "Manage Airports"
+
+Admin -- "Manage Hotels"
+
+Admin -- "Manage Tour Events"
+
+Admin -- "Manage Tours"
+
+Admin -- "Manage Events"
+
+Admin -- "Manage Countries"
+
+Admin -- "Manage Cities"
+
+Admin -- "Generate Report"
 
 @enduml

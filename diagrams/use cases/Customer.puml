@@ -21,6 +21,7 @@ actor "Customer" as Customer
 
 rectangle "Travel Trove System" {
 
+    ' Account Management
     usecase "Sign up for an Account"
     usecase "Set up Profile"
     usecase "View Account"
@@ -28,61 +29,57 @@ rectangle "Travel Trove System" {
     usecase "View Profile"
     usecase "Modify Profile Information"
 
-    usecase "Browse packages"
-    usecase "Filter search result"
-    usecase "Subscribe to notifications"
+    ' Package Browsing & Booking
+    usecase "Browse Packages"
+    usecase "Filter Search Results"
+    usecase "Subscribe to Notifications"
+    usecase "Book a Package"
+    usecase "Pay for a Tour"
 
-    usecase "Book a package"
-    usecase "Pay for a tour"
+    ' Booking Management
+    usecase "Manage Bookings"
+    usecase "Cancel a Tour"
+    usecase "Request a Refund"
 
-    usecase "Cancel a tour"
-    usecase "Request a refund"
+    ' Traveler Management
+    usecase "Manage Travelers"
+    usecase "Assign a Traveler to Booking"
+    usecase "Remove a Traveler from Booking"
 
-    usecase "View Travelers"
-    usecase "View Traveler Details"
-    usecase "Add a Traveler"
-    usecase "Edit a Traveler"
-    usecase "Assign a Traveler to booking"
-    usecase "Remove a Traveler from booking"
-
-    usecase "Access their package bookings"
-
+    ' Reviews Management
     usecase "View Package Reviews"
     usecase "Add a Review to a Package"
-    usecase "Edit their Review"
-    usecase "Remove their Review"
+    usecase "Edit a Review"
+    usecase "Remove a Review"
 }
 
+' Relationships & Dependencies
 "Sign up for an Account" <.. "Set up Profile" : <<extend>>
 "Sign up for an Account" <.. "View Account" : <<extend>>
 "View Account" <.. "Edit Account" : <<extend>>
-"Browse packages" <.. "Book a package" : <<extend>>
-"Browse packages" <.. "Subscribe to notifications" : <<extend>>
-"Browse packages" <.. "View Package Reviews" : <<extend>>
-"Browse packages" <.. "Remove their Review" : <<extend>>
-"Book a package" <.. "Filter search result" : <<extend>>
-"Book a package" <.. "Pay for a tour" : <<include>>
-"Cancel a tour" <.. "Request a refund" : <<extend>>
-"Sign up for an Account" <.. "View Profile" : <<extend>>
 "View Profile" <.. "Modify Profile Information" : <<extend>>
 "View Profile" <.. "Set up Profile" : <<extend>>
-"Access their package bookings" <.. "View Travelers" : <<extend>>
-"Access their package bookings" <.. "View Traveler Details" : <<extend>>
-"Access their package bookings" <.. "Add a Traveler" : <<extend>>
-"Access their package bookings" <.. "Edit a Traveler" : <<extend>>
-"Access their package bookings" <.. "Remove a Traveler from booking" : <<extend>>
-"Book a package" <.. "View Travelers" : <<extend>>"
-"Book a package" <.. "View Traveler Details" : <<extend>>"
-"Book a package" <.. "Remove a Traveler from booking" : <<extend>>"
-"Book a package" <.. "Assign a Traveler to booking" : <<extend>>"
-"Book a package" <.. "View Package Reviews" : <<extend>>"
-"Book a package" <.. "Add a Review to a Package" : <<extend>>"
-"Book a package" <.. "Edit their Review" : <<extend>>"
-"Book a package" <.. "Remove their Review" : <<extend>>"
+
+"Browse Packages" <.. "Book a Package" : <<extend>>
+"Browse Packages" <.. "Subscribe to Notifications" : <<extend>>
+"Browse Packages" <.. "View Package Reviews" : <<extend>>
+"Book a Package" <.. "Filter Search Results" : <<extend>>
+"Book a Package" <.. "Pay for a Tour" : <<extend>>
+
+"Manage Bookings" <.. "Cancel a Tour" : <<extend>>
+"Manage Bookings" <.. "Request a Refund" : <<extend>>
+"Manage Bookings" <.. "Manage Travelers" : <<extend>>
+
+"Manage Travelers" <.. "Assign a Traveler to Booking" : <<extend>>
+"Manage Travelers" <.. "Remove a Traveler from Booking" : <<extend>>
+
+"Book a Package" <.. "View Package Reviews" : <<extend>>
+"Book a Package" <.. "Add a Review to a Package" : <<extend>>
+"Book a Package" <.. "Edit a Review" : <<extend>>
+"Book a Package" <.. "Remove a Review" : <<extend>>
 
 Customer -- "Sign up for an Account"
-Customer -- "Browse packages"
-Customer -- "Access their package bookings"
-Customer -- "Cancel a tour"
+Customer -- "Browse Packages"
+Customer -- "Manage Bookings"
 
 @enduml
