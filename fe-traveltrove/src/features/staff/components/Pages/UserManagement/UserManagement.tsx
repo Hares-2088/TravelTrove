@@ -91,18 +91,7 @@ const UserManagement: React.FC = () => {
           </div>
 
           <Row className="mb-4 g-3">
-            {/* <Col md={4}>
-              <InputGroup>
-                <Form.Control
-                  placeholder="Search users..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <Button variant="outline-secondary">
-                  <Search />
-                </Button>
-              </InputGroup>
-            </Col> */}
+       
             <Col md={3}>
               <Form.Select
                 value={selectedRole}

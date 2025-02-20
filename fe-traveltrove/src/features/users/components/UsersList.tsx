@@ -33,8 +33,6 @@ const UsersList: React.FC<UsersListProps> = ({
     null
   );
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
     email: "",
     roleId: "",
   });
@@ -44,8 +42,6 @@ const UsersList: React.FC<UsersListProps> = ({
   const handleEditClick = (user: UserResponseModel) => {
     setEditingUser(user);
     setFormData({
-      firstName: user.firstName,
-      lastName: user.lastName,
       email: user.email,
       roleId: user.roles[0] || "",
     });
@@ -77,8 +73,6 @@ const UsersList: React.FC<UsersListProps> = ({
     try {
       // Update user details
       await onUpdateUser(editingUser.userId, {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
         email: formData.email,
       });
 
@@ -101,7 +95,6 @@ const UsersList: React.FC<UsersListProps> = ({
       <Table hover className="align-middle">
         <thead className="table-light">
           <tr>
-            <th>Name</th>
             <th>Email</th>
             <th>Role</th>
             <th>Actions</th>
@@ -110,14 +103,6 @@ const UsersList: React.FC<UsersListProps> = ({
         <tbody>
           {users.map((user) => (
             <tr key={user.userId}>
-              <td>
-                <Link
-                  to={`/users/${user.userId}`}
-                  className="text-decoration-none"
-                >
-                  {user.firstName} {user.lastName}
-                </Link>
-              </td>
               <td>{user.email}</td>
               <td>
                 {user.roles
@@ -149,36 +134,6 @@ const UsersList: React.FC<UsersListProps> = ({
           </Modal.Header>
           <Modal.Body>
             {error && <div className="alert alert-danger mb-3">{error}</div>}
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>First Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={(e) =>
-                      handleChange(e as React.ChangeEvent<HTMLInputElement>)
-                    }
-                    readOnly
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Last Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={(e) =>
-                      handleChange(e as React.ChangeEvent<HTMLInputElement>)
-                    }
-                    readOnly
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control
