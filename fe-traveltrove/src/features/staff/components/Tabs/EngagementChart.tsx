@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { usePackagesApi } from "../../../packages/api/packages.api";
-import { PackageResponseModel, PackageStatus } from "../../../packages/models/package.model";
+import { PackageResponseModel } from "../../../packages/models/package.model";
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import { useTranslation } from "react-i18next";
 
 // Register required Chart.js components
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -10,6 +11,7 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 const EngagementChart: React.FC = () => {
     const { getAllPackages } = usePackagesApi();
     const [packageData, setPackageData] = useState<PackageResponseModel[]>([]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchPackages = async () => {
@@ -17,11 +19,11 @@ const EngagementChart: React.FC = () => {
                 const data = await getAllPackages();
                 setPackageData(data);
             } catch (error) {
-                console.error("Error fetching packages:", error);
+                console.error(t("error.fetchingPackages"), error);
             }
         };
         fetchPackages();
-    }, []);
+    }, [t]);
 
     // Extracting relevant data for the chart
     const packageNames = packageData.map(pkg => pkg.name);
@@ -33,12 +35,12 @@ const EngagementChart: React.FC = () => {
         labels: packageNames,
         datasets: [
             {
-                label: "Available Seats",
+                label: t("availableSeats"),
                 data: availableSeats,
                 backgroundColor: "rgba(75, 192, 192, 0.6)",
             },
             {
-                label: "Total Seats",
+                label: t("totalSeats"),
                 data: totalSeats,
                 backgroundColor: "rgba(255, 99, 132, 0.6)",
             }
@@ -49,17 +51,17 @@ const EngagementChart: React.FC = () => {
         responsive: true,
         plugins: {
             legend: { position: "top" as const },
-            title: { display: true, text: "Package Engagement Overview" },
+            title: { display: true, text: t("engagementOverview") },
         },
         scales: {
-            x: { title: { display: true, text: "Packages" } },
-            y: { title: { display: true, text: "Seats" } },
+            x: { title: { display: true, text: t("packages") } },
+            y: { title: { display: true, text: t("seats") } },
         },
     };
 
     return (
         <div style={{ width: "100%", height: "400px", padding: "20px" }}>
-            <h3>Engagement Overview</h3>
+            <h3>{t("engagementOverview")}</h3>
             <Bar data={chartData} options={chartOptions} />
         </div>
     );

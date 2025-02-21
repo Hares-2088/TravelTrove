@@ -139,13 +139,13 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
 
   const getEventNameById = (eventId: string) => {
     const event = events.find((e) => e.eventId === eventId);
-    return event ? event.name : "Unknown Event";
+    return event ? event.name : t("unknownEvent");
   };
 
 
   const getHotelNameById = (hotelId: string) => {
     const hotel = hotels.find((h) => h.hotelId === hotelId);
-    return hotel ? hotel.name : "Unknown Hotel";
+    return hotel ? hotel.name : t("unknownHotel");
   };
 
   return (
@@ -177,7 +177,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
               <th>{t("seqLabel")}</th>
               <th>{t("descLabel")}</th>
               <th>{t("eventLabel")}</th>
-              <th>{t("Hotel")}</th>
+              <th>{t("hotelLabel")}</th>
               <th>{t("actions")}</th>
             </tr>
           </thead>
@@ -293,7 +293,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
 
 
               <Form.Group className="mb-3">
-                <Form.Label>{t("Hotel")}</Form.Label>
+                <Form.Label>{t("hotelLabel")}</Form.Label>
                 <Form.Select
                   value={formData.hotelId}
                   onChange={(e) => {

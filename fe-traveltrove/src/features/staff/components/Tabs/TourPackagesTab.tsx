@@ -96,15 +96,15 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const { getSubscribedPackages } = useSubscriptionsApi();
     const [subscribedPackages, setSubscribedPackages] = useState<PackageResponseModel[]>([]);
     const [allPackages, setAllPackages] = useState<PackageResponseModel[]>([]);
-    const { userId, isAuthenticated, isLoading } = useUserContext();
+    const { user, isAuthenticated, isLoading } = useUserContext();
 
 
     useEffect(() => {
         const fetchPackages = async () => {
-            if (isLoading || !isAuthenticated || !userId) return;
+            if (isLoading || !isAuthenticated || !user.userId) return;
 
             try {
-                const subscriptions = await getSubscribedPackages(userId);
+                const subscriptions = await getSubscribedPackages(user.userId);
                 const allPackagesData = await getAllPackages();
 
                 const subscribedPackageIds = new Set(subscriptions.map(sub => sub.packageId));
@@ -118,35 +118,35 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
         };
 
         fetchPackages();
-    }, [userId, isAuthenticated, isLoading]);
+    }, [user.userId, isAuthenticated, isLoading]);
 
 
 
     const handleUpdateSeats = (packageId: string, quantity: number) => {
         setLoading((prev) => ({ ...prev, [packageId]: true })); // Set loading to true for the specific package
-    
+
         // Find the package and update the available seats
         setPackages((prevPackages) => {
-          const updatedPackages = prevPackages.map((pkg) => {
-            if (pkg.packageId === packageId) {
-              const updatedPackage = { ...pkg, availableSeats: pkg.availableSeats - quantity };
-              
-              // If available seats are <= 10, trigger a toast warning
-              if (updatedPackage.availableSeats <= 10) {
-                toast.warning(`Warning: Only ${updatedPackage.availableSeats} seats left!`);
-              }
-              
-              return updatedPackage;
-            }
-            return pkg;
-          });
-    
-          return updatedPackages;
+            const updatedPackages = prevPackages.map((pkg) => {
+                if (pkg.packageId === packageId) {
+                    const updatedPackage = { ...pkg, availableSeats: pkg.availableSeats - quantity };
+
+                    // If available seats are <= 10, trigger a toast warning
+                    if (updatedPackage.availableSeats <= 10) {
+                        toast.warning(`Warning: Only ${updatedPackage.availableSeats} seats left!`);
+                    }
+
+                    return updatedPackage;
+                }
+                return pkg;
+            });
+
+            return updatedPackages;
         });
-    
+
         setLoading((prev) => ({ ...prev, [packageId]: false })); // Set loading to false after update
         toast.success("Seats updated successfully!");
-      };
+    };
 
     const getStars = (
         rating: number,
@@ -158,16 +158,28 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             const isHalfStar = !isFullStar && rating > i - 1 && rating < i;
 
             stars.push(
-                <span
+                <button
                     key={i}
                     style={{
                         cursor: handleClick ? "pointer" : "default",
                         fontSize: "3rem",
                         color: "#ffc107",
+                        background: "none",
+                        border: "none",
+                        padding: 0,
                     }}
                     onClick={
                         handleClick
                             ? () => handleClick(isHalfStar ? i - 0.5 : i)
+                            : undefined
+                    }
+                    onKeyDown={
+                        handleClick
+                            ? (e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    handleClick(isHalfStar ? i - 0.5 : i);
+                                }
+                            }
                             : undefined
                     }
                 >
@@ -178,7 +190,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     ) : (
                         <FaRegStar />
                     )}
-                </span>
+                </button>
             );
         }
         return stars;
@@ -692,9 +704,9 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 <Button variant="outline-secondary"
                                     className="ms-2"
                                     onClick={() => handleUpdateSeats(pkg.packageId, 1)} // Example: Decrease by 1
-                        >
-                            {loading ? "Decrease Seats" : "Decrease Seats"}
-                        </Button>
+                                >
+                                    {loading ? "Decrease Seats" : "Decrease Seats"}
+                                </Button>
                                 {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
                                     <Button
                                         variant="outline-secondary"

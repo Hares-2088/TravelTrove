@@ -6,6 +6,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useSubscriptionsApi } from "../api/subscriptions.api";
 import { Container, Row, Col, Button, Spinner, Alert, Card } from "react-bootstrap";
 import { DollarSign, Calendar, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import "./PackageDetails.css";
 import { AppRoutes } from "../../../shared/models/app.routes";
 
@@ -19,17 +20,18 @@ const PackageDetails: React.FC = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const fetchPackage = useCallback(async () => {
     try {
       const data = await getPackageById(packageId!);
       setPkg(data);
     } catch {
-      setError("Failed to fetch package details.");
+      setError(t('error.fetchPackageDetails'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchPackage();
@@ -66,7 +68,7 @@ const PackageDetails: React.FC = () => {
 
   if (loading) return <Spinner animation="border" className="loading-spinner" />;
   if (error) return <Alert variant="danger" className="error-alert">{error}</Alert>;
-  if (!pkg) return <Alert variant="info" className="info-alert">No package details found.</Alert>;
+  if (!pkg) return <Alert variant="info" className="info-alert">{t('noPackageDetails')}</Alert>;
 
   return (
     <Container className="package-details-container">
@@ -79,31 +81,31 @@ const PackageDetails: React.FC = () => {
             </div>
             <Row className="package-info">
               <Col md={6}>
-                <p><DollarSign /> <strong>Price (Single):&nbsp;</strong> ${pkg.priceSingle}</p>
-                <p><DollarSign /> <strong>Price (Double):&nbsp;</strong> ${pkg.priceDouble}</p>
-                <p><DollarSign /> <strong>Price (Triple):&nbsp;</strong> ${pkg.priceTriple}</p>
+                <p><DollarSign /> <strong>{t('priceSingle')}:&nbsp;</strong> ${pkg.priceSingle}</p>
+                <p><DollarSign /> <strong>{t('priceDouble')}:&nbsp;</strong> ${pkg.priceDouble}</p>
+                <p><DollarSign /> <strong>{t('priceTriple')}:&nbsp;</strong> ${pkg.priceTriple}</p>
               </Col>
               <Col md={6}>
-                <p><Users /> <strong>Available Seats:&nbsp;</strong> {pkg.availableSeats}</p>
-                <p><Calendar /> <strong>Start Date:&nbsp;</strong> {pkg.startDate}</p>
-                <p><Calendar /> <strong>End Date:&nbsp;</strong> {pkg.endDate}</p>
+                <p><Users /> <strong>{t('availableSeats')}:&nbsp;</strong> {pkg.availableSeats}</p>
+                <p><Calendar /> <strong>{t('startDate')}:&nbsp;</strong> {pkg.startDate}</p>
+                <p><Calendar /> <strong>{t('endDate')}:&nbsp;</strong> {pkg.endDate}</p>
               </Col>
             </Row>
             <div className="package-actions">
               {isAuthenticated && pkg.status !== "UPCOMING" && pkg.status !== "SOLD_OUT" && (
                 <Button variant="dark" onClick={handleBook} className="action-button book-button">
-                  Book Now
+                  {t('bookNow')}
                 </Button>
               )}
               {isAuthenticated && (
                 <>
                   {isSubscribed ? (
                     <Button variant="danger" onClick={handleUnsubscribe} className="action-button unsubscribe-button">
-                      Unsubscribe
+                      {t('unsubscribe')}
                     </Button>
                   ) : (
                     <Button variant="success" onClick={handleSubscribe} className="action-button subscribe-button">
-                      Subscribe
+                      {t('subscribe')}
                     </Button>
                   )}
                 </>

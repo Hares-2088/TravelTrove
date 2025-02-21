@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import { useTranslation } from "react-i18next"; // Import i18n hook
+import { useTranslation } from "react-i18next";
 import { useEventsApi } from "../../../events/api/events.api";
 import { useCitiesApi } from "../../../cities/api/cities.api";
 import { useCountriesApi } from "../../../countries/api/countries.api";
@@ -8,12 +8,11 @@ import {
   EventResponseModel,
   EventRequestModel,
 } from "../../../events/model/events.model";
-import "../../../../shared/css/Scrollbar.css"; // Corrected import path
+import "../../../../shared/css/Scrollbar.css";
 import FilterBar from "../../../../shared/components/FilterBar";
-import { count } from "console";
 
 const EventsTab: React.FC = () => {
-  const { t } = useTranslation(); // Access i18n functions
+  const { t } = useTranslation();
   const { getAllEvents, getEventById, addEvent, updateEvent, deleteEvent } =
     useEventsApi();
   const { getAllCities } = useCitiesApi();
@@ -22,9 +21,7 @@ const EventsTab: React.FC = () => {
   const [cities, setCities] = useState<
     { id: string; name: string; countryId: string }[]
   >([]);
-  const [countries, setCountries] = useState<{ id: string; name: string }[]>(
-    []
-  );
+  const [countries, setCountries] = useState<{ id: string; name: string }[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"create" | "update" | "delete">(
     "create"
@@ -42,9 +39,7 @@ const EventsTab: React.FC = () => {
   const [viewingEvent, setViewingEvent] = useState<EventResponseModel | null>(
     null
   );
-  
 
-  //filtering variables
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
 
@@ -53,7 +48,7 @@ const EventsTab: React.FC = () => {
       const fetchedEvents = await getAllEvents();
       setEvents(fetchedEvents);
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error(t("error.fetchingEvents"), error);
     }
   };
 
@@ -68,7 +63,7 @@ const EventsTab: React.FC = () => {
         }))
       );
     } catch (error) {
-      console.error("Error fetching cities:", error);
+      console.error(t("error.fetchingCities"), error);
     }
   };
 
@@ -82,7 +77,7 @@ const EventsTab: React.FC = () => {
         }))
       );
     } catch (error) {
-      console.error("Error fetching countries:", error);
+      console.error(t("error.fetchingCountries"), error);
     }
   };
 
@@ -91,23 +86,24 @@ const EventsTab: React.FC = () => {
     fetchCities();
     fetchCountries();
   }, []);
+
   const handleViewEvent = async (eventId: string) => {
     try {
       const event = await getEventById(eventId);
       setViewingEvent(event);
     } catch (error) {
-      console.error("Error fetching event details:", error);
+      console.error(t("error.fetchingEventDetails"), error);
     }
   };
 
   const handleSave = async () => {
     try {
       if (!formData.name.trim()) {
-        alert(t("nameRequiredE")); // Using i18n for validation message
+        alert(t("nameRequiredE"));
         return;
       }
       if (!formData.description.trim()) {
-        alert(t("descriptionRequired")); // Using i18n for validation message
+        alert(t("descriptionRequired"));
         return;
       }
 
@@ -121,7 +117,7 @@ const EventsTab: React.FC = () => {
       await fetchCities();
       await fetchCountries();
     } catch (error) {
-      console.error("Error saving event:", error);
+      console.error(t("error.savingEvent"), error);
     }
   };
 
@@ -135,7 +131,7 @@ const EventsTab: React.FC = () => {
         await fetchCountries();
       }
     } catch (error) {
-      console.error("Error deleting event:", error);
+      console.error(t("error.deletingEvent"), error);
     }
   };
 
@@ -146,6 +142,7 @@ const EventsTab: React.FC = () => {
     const matchesCity = selectedCity ? event.cityId === selectedCity : true;
     return matchesCountry && matchesCity;
   });
+
   return (
     <div>
       {viewingEvent ? (
@@ -168,8 +165,7 @@ const EventsTab: React.FC = () => {
             <strong>{t("eventDescription")}:</strong> {viewingEvent.description}
           </p>
           <p>
-            <strong>{t("image")}</strong>:{" "}
-            {viewingEvent.image || t("noDescription")}
+            <strong>{t("image")}:</strong> {viewingEvent.image || t("noDescription")}
           </p>
         </div>
       ) : (
@@ -198,7 +194,7 @@ const EventsTab: React.FC = () => {
           <FilterBar
             filters={[
               {
-                label: t("select Country"),
+                label: t("selectCountryE"),
                 value: selectedCountry,
                 options: countries.map((country) => ({
                   value: country.id,
@@ -208,7 +204,7 @@ const EventsTab: React.FC = () => {
                 onClick: fetchCountries,
               },
               {
-                label: t("select City"),
+                label: t("selectCity"),
                 value: selectedCity,
                 options: cities
                   .filter(
@@ -236,7 +232,7 @@ const EventsTab: React.FC = () => {
               <thead className="bg-light">
                 <tr>
                   <th>{t("nameE")}</th>
-                  <th>{t("Actions")}</th>
+                  <th>{t("actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -290,7 +286,7 @@ const EventsTab: React.FC = () => {
                 ) : (
                   <tr>
                     <td colSpan={2} className="text-center">
-                      "No Events Found"
+                      {t("noEventsFound")}
                     </td>
                   </tr>
                 )}
@@ -304,7 +300,7 @@ const EventsTab: React.FC = () => {
         <Modal.Header closeButton>
           <Modal.Title>
             {modalType === "create"
-              ? t("createE") // Using i18n keys
+              ? t("createE")
               : modalType === "update"
               ? t("editE")
               : t("deleteE")}
@@ -312,7 +308,7 @@ const EventsTab: React.FC = () => {
         </Modal.Header>
         <Modal.Body>
           {modalType === "delete" ? (
-            <p>{t("areYouSureE")}</p> // Using i18n for confirmation
+            <p>{t("areYouSureE")}</p>
           ) : (
             <Form>
               <Form.Group className="mb-3">
@@ -399,7 +395,7 @@ const EventsTab: React.FC = () => {
             variant={modalType === "delete" ? "danger" : "primary"}
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
-            {modalType === "delete" ? "Confirm" : "Save"}
+            {modalType === "delete" ? t("confirmE") : t("saveE")}
           </Button>
         </Modal.Footer>
       </Modal>

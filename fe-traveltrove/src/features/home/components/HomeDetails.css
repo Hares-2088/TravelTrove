@@ -44,8 +44,8 @@
 
 .carousel .card {
   margin: 0 10px;
-  /* Reduced margin */
-  max-width: 300px;
+  max-width: 350px;
+
 }
 
 .carousel-image {
@@ -153,7 +153,7 @@
 /* Responsive styles */
 @media (max-width: 768px) {
   .carousel .card {
-    max-width: 200px;
+    width: 50%;
   }
 
   .carousel-image {
@@ -185,7 +185,7 @@
 
 @media (max-width: 576px) {
   .carousel .card {
-    max-width: 150px;
+    width: 75%;
   }
 
   .carousel-image {

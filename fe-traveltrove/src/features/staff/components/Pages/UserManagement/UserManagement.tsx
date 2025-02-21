@@ -4,6 +4,7 @@ import { PersonPlus, Search } from "react-bootstrap-icons";
 import { UserResponseModel } from "../../../../users/model/users.model";
 import { useUsersApi } from "../../../../users/api/users.api";
 import UsersList from "../../../../users/components/UsersList";
+import { useTranslation } from "react-i18next";
 
 const UserManagement: React.FC = () => {
   const { getAllUsers, updateUser, updateUserRole, syncUser } = useUsersApi();
@@ -12,6 +13,7 @@ const UserManagement: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("All Roles");
+  const { t } = useTranslation();
 
   const fetchAllUsers = async () => {
     try {
@@ -20,7 +22,7 @@ const UserManagement: React.FC = () => {
       setUsers(data || []);
       setError(null);
     } catch (err) {
-      setError("Failed to fetch users.");
+      setError(t("error.fetchUsers"));
     } finally {
       setLoading(false);
     }
@@ -45,7 +47,7 @@ const UserManagement: React.FC = () => {
       await updateUser(userId, userUpdateData);
       await fetchAllUsers();
     } catch (error) {
-      setError("Failed to update user");
+      setError(t("error.updateUser"));
       console.error("Failed to update user", error);
     } finally {
       setLoading(false);
@@ -59,7 +61,7 @@ const UserManagement: React.FC = () => {
       await syncUser(userId);
       await fetchAllUsers();
     } catch (error) {
-      setError("Failed to update user role");
+      setError(t("error.updateUserRole"));
       console.error("Failed to update user role", error);
     } finally {
       setLoading(false);
@@ -73,7 +75,7 @@ const UserManagement: React.FC = () => {
      (user.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()))
   );
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>{t("loading")}</div>;
   if (error) return <div className="alert alert-danger">{error}</div>;
 
   return (
@@ -87,20 +89,19 @@ const UserManagement: React.FC = () => {
       >
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="mb-0">User Management</h2>
+            <h2 className="mb-0">{t("userManagement.title")}</h2>
           </div>
 
           <Row className="mb-4 g-3">
-       
             <Col md={3}>
               <Form.Select
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
               >
-                <option>All Roles</option>
-                <option>Admin</option>
-                <option>Customer</option>
-                <option>Employee</option>
+                <option>{t("userManagement.allRoles")}</option>
+                <option>{t("userManagement.admin")}</option>
+                <option>{t("userManagement.customer")}</option>
+                <option>{t("userManagement.employee")}</option>
               </Form.Select>
             </Col>
           </Row>
@@ -114,7 +115,7 @@ const UserManagement: React.FC = () => {
           <div className="d-flex justify-content-between align-items-center mt-4">
             <div>
                 <span className="text-muted">
-                Showing {filteredUsers.length} of {users.length} entries
+                {t("userManagement.showingEntries", { count: filteredUsers.length, total: users.length })}
                 </span>
             </div>
           </div>

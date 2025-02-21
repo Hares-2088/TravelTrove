@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { useReviewsApi } from "../../../reviews/api/review.api"; 
-import AddReview from "../AddReviewButton";
+import { useTranslation } from 'react-i18next';
+import { useReviewsApi } from "../../../reviews/api/review.api";
+import AddReviewButton from "../AddReviewButton";
 import ViewReviews from "../ViewReviews";
 
 const ReviewsTab: React.FC = () => {
-  const { getReviewsByPackage, addReview } = useReviewsApi(); // API methods
+  const { t } = useTranslation();
+  const { getReviewsByPackage, addReview, getAverageRating } = useReviewsApi(); // API methods
   const [reviews, setReviews] = useState<any[]>([]);
+  const [averageRating, setAverageRating] = useState<number | null>(null);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [modalType, setModalType] = useState<"add" | "view" | null>(null);
   const [currentPackageId, setCurrentPackageId] = useState<string | null>(null);
@@ -22,25 +25,28 @@ const ReviewsTab: React.FC = () => {
     setCurrentPackageId(null);
   };
 
-  const handleAddReview = async (packageId: string, newReview: any) => {
-    await addReview(packageId, newReview);
+  const handleAddReview = async (newReview: any) => {
+    await addReview(newReview);
     closeModal();
   };
 
   const handleViewReviews = async (packageId: string) => {
     const reviews = await getReviewsByPackage(packageId);
     setReviews(reviews);
+    const rating = await getAverageRating(packageId);
+    setAverageRating(rating);
   };
 
   return (
     <div className="reviews-tab">
-      <h1>Reviews</h1>
+      <h1>{t('reviews')}</h1>
+      {averageRating !== null && <p>{t('averageRating')}: {averageRating}</p>}
 
       <div className="package-buttons">
-        <button onClick={() => openModal("view", "package123")}>View Reviews (Package 123)</button>
-        <button onClick={() => openModal("add", "package123")}>Add Review (Package 123)</button>
-        <button onClick={() => openModal("view", "package456")}>View Reviews (Package 456)</button>
-        <button onClick={() => openModal("add", "package456")}>Add Review (Package 456)</button>
+        <button onClick={() => openModal("view", "package123")}>{t('viewReviews')} (Package 123)</button>
+        <button onClick={() => openModal("add", "package123")}>{t('addReview')} (Package 123)</button>
+        <button onClick={() => openModal("view", "package456")}>{t('viewReviews')} (Package 456)</button>
+        <button onClick={() => openModal("add", "package456")}>{t('addReview')} (Package 456)</button>
       </div>
 
       {isOverlayVisible && (
@@ -53,14 +59,14 @@ const ReviewsTab: React.FC = () => {
             {modalType === "view" && (
               <ViewReviews
                 packageId={currentPackageId!}
-                reviews={reviews} onClose={function (): void {
-                  throw new Error("Function not implemented.");
-                } }              />
+                reviews={reviews}
+                onClose={closeModal}
+              />
             )}
             {modalType === "add" && (
-              <AddReview
+              <AddReviewButton
                 packageId={currentPackageId!}
-                onSubmit={(newReview) => handleAddReview(currentPackageId!, newReview)}
+                onSubmit={(newReview: any) => handleAddReview(newReview)}
               />
             )}
           </div>
