@@ -7,11 +7,13 @@ import {
   HotelRequestModel,
 } from "../../../hotels/models/hotel.model";
 import { CityResponseModel } from "../../../cities/models/city.model";
+import { useTranslation } from "react-i18next";
 import "../../../../shared/css/Scrollbar.css";
 
 const HotelsTab: React.FC = () => {
   const { getAllHotels, getHotelById, addHotel, updateHotel, deleteHotel } = useHotelsApi();
   const { getAllCities } = useCitiesApi();
+  const { t } = useTranslation();
   const [hotels, setHotels] = useState<HotelResponseModel[]>([]);
   const [cities, setCities] = useState<CityResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -44,7 +46,7 @@ const HotelsTab: React.FC = () => {
       const data = await getAllCities();
       setCities(data);
     } catch (error) {
-      console.error("Error fetching cities:", error);
+      console.error(t("error.fetchingCities"), error);
     }
   };
 
@@ -53,7 +55,7 @@ const HotelsTab: React.FC = () => {
       const data = await getAllHotels();
       setHotels(data);
     } catch (error) {
-      console.error("Error fetching hotels:", error);
+      console.error(t("error.fetchingHotels"), error);
     }
   };
 
@@ -62,13 +64,13 @@ const HotelsTab: React.FC = () => {
       const hotel = await getHotelById(hotelId);
       setViewingHotel(hotel);
     } catch (error) {
-      console.error("Error fetching hotel details:", error);
+      console.error(t("error.fetchingHotelDetails"), error);
     }
   };
 
   const getCityName = (cityId: string) => {
     const city = cities.find((city) => city.cityId === cityId);
-    return city ? city.name : "Unknown City";
+    return city ? city.name : t("unknownCity");
   };
 
   const handleSave = async () => {
@@ -80,6 +82,8 @@ const HotelsTab: React.FC = () => {
     setUrlError(!isUrlValid)
     setCityError(!isCityValid);
 
+    if (!isNameValid || !isUrlValid || !isCityValid) return;
+
     try {
       if (modalType === "create") {
         await addHotel(formData);
@@ -89,7 +93,7 @@ const HotelsTab: React.FC = () => {
       setShowModal(false);
       await fetchHotels();
     } catch (error) {
-      console.error("Error saving hotel:", error);
+      console.error(t("error.savingHotel"), error);
     }
   };
 
@@ -101,7 +105,7 @@ const HotelsTab: React.FC = () => {
         await fetchHotels();
       }
     } catch (error) {
-      console.error("Error deleting hotel:", error);
+      console.error(t("error.deletingHotel"), error);
     }
   };
 
@@ -120,20 +124,20 @@ const HotelsTab: React.FC = () => {
               gap: "5px",
             }}
           >
-            <span>&larr;</span> Back to List
+            <span>&larr;</span> {t("backToList")}
           </Button>
           <h3>{viewingHotel.name}</h3>
           <p>
-            <strong>Hotel url:</strong> {viewingHotel.url}
+            <strong>{t("hotelUrl")}:</strong> {viewingHotel.url}
           </p>
           <p>
-            <strong>City:</strong> {getCityName(viewingHotel.cityId)}
+            <strong>{t("city")}:</strong> {getCityName(viewingHotel.cityId)}
           </p>
         </div>
       ) : (
         <>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3>Hotels</h3>
+            <h3>{t("hotels")}</h3>
             <Button
               variant="primary"
               onClick={() => {
@@ -143,7 +147,7 @@ const HotelsTab: React.FC = () => {
                 setShowModal(true);
               }}
             >
-              Create
+              {t("create")}
             </Button>
           </div>
           <div
@@ -159,8 +163,8 @@ const HotelsTab: React.FC = () => {
             >
               <thead className="bg-light">
                 <tr>
-                  <th>Name</th>
-                  <th>Actions</th>
+                  <th>{t("name")}</th>
+                  <th>{t("actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -191,7 +195,7 @@ const HotelsTab: React.FC = () => {
                           setShowModal(true);
                         }}
                       >
-                        Edit
+                        {t("edit")}
                       </Button>
                       <Button
                         variant="outline-danger"
@@ -202,7 +206,7 @@ const HotelsTab: React.FC = () => {
                           setShowModal(true);
                         }}
                       >
-                        Delete
+                        {t("delete")}
                       </Button>
                     </td>
                   </tr>
@@ -217,19 +221,19 @@ const HotelsTab: React.FC = () => {
         <Modal.Header closeButton>
           <Modal.Title>
             {modalType === "create"
-              ? "Create Hotel"
+              ? t("createHotel")
               : modalType === "update"
-              ? "Edit Hotel"
-              : "Delete Hotel"}
+                ? t("editHotel")
+                : t("deleteHotel")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {modalType === "delete" ? (
-            <p>Are you sure you want to delete this hotel?</p>
+            <p>{t("deleteConfirmation")}</p>
           ) : (
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>Hotel Name</Form.Label>
+                <Form.Label>{t("hotelName")}</Form.Label>
                 <Form.Control
                   required
                   type="text"
@@ -240,10 +244,10 @@ const HotelsTab: React.FC = () => {
                   }}
                   isInvalid={nameError}
                 />
-                <div className="invalid-feedback">Hotel name is required.</div>
+                <div className="invalid-feedback">{t("nameRequired")}</div>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Hotel url</Form.Label>
+                <Form.Label>{t("hotelUrl")}</Form.Label>
                 <Form.Control
                   required
                   type="text"
@@ -254,10 +258,10 @@ const HotelsTab: React.FC = () => {
                   }}
                   isInvalid={urlError}
                 />
-                <div className="invalid-feedback">Hotel url is required.</div>
+                <div className="invalid-feedback">{t("urlRequired")}</div>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>City</Form.Label>
+                <Form.Label>{t("city")}</Form.Label>
                 <Form.Select
                   value={formData.cityId}
                   onChange={(e) => {
@@ -266,7 +270,7 @@ const HotelsTab: React.FC = () => {
                   }}
                   isInvalid={cityError}
                 >
-                  <option value="">Select a city</option>
+                  <option value="">{t("selectCity")}</option>
                   {cities.map((city) => (
                     <option key={city.cityId} value={city.cityId}>
                       {city.name}
@@ -274,7 +278,7 @@ const HotelsTab: React.FC = () => {
                   ))}
                 </Form.Select>
                 <div className="invalid-feedback">
-                  A city selection is required.
+                  {t("cityRequired")}
                 </div>
               </Form.Group>
             </Form>
@@ -282,13 +286,13 @@ const HotelsTab: React.FC = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
-            {modalType === "delete" ? "Confirm" : "Save"}
+            {modalType === "delete" ? t("confirm") : t("save")}
           </Button>
         </Modal.Footer>
       </Modal>

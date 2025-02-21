@@ -41,7 +41,7 @@ const CitiesTab: React.FC = () => {
       const data = await getAllCountries();
       setCountries(data);
     } catch (error) {
-      console.error("Error fetching countries:", error);
+      console.error(t("error.fetchingCountries"), error);
     }
   };
 
@@ -50,7 +50,7 @@ const CitiesTab: React.FC = () => {
       const data = await getAllCities();
       setCities(data);
     } catch (error) {
-      console.error("Error fetching cities:", error);
+      console.error(t("error.fetchingCities"), error);
     }
   };
 
@@ -59,7 +59,7 @@ const CitiesTab: React.FC = () => {
       const city = await getCityById(cityId);
       setViewingCity(city);
     } catch (error) {
-      console.error("Error fetching city details:", error);
+      console.error(t("error.fetchingCityDetails"), error);
     }
   };
 
@@ -75,6 +75,8 @@ const CitiesTab: React.FC = () => {
     setNameError(!isNameValid);
     setCountryError(!isCountryValid);
 
+    if (!isNameValid || !isCountryValid) return;
+
     try {
       if (modalType === "create") {
         await addCity(formData);
@@ -84,7 +86,7 @@ const CitiesTab: React.FC = () => {
       setShowModal(false);
       await fetchCities();
     } catch (error) {
-      console.error("Error saving city:", error);
+      console.error(t("error.savingCity"), error);
     }
   };
 
@@ -96,7 +98,7 @@ const CitiesTab: React.FC = () => {
         await fetchCities();
       }
     } catch (error) {
-      console.error("Error deleting city:", error);
+      console.error(t("error.deletingCity"), error);
     }
   };
 

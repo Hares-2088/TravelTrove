@@ -7,27 +7,23 @@ export const useReviewsApi = () => {
   // Fetch all reviews for a specific package
   const getReviewsByPackage = async (packageId: string): Promise<ReviewResponseModel[]> => {
     try {
-        const response = await axiosInstance.get(`/reviews/${packageId}`);
-        console.log("Fetched Reviews:", response.data);
-        return response.data;
+      const response = await axiosInstance.get(`/reviews/${packageId}`);
+      console.log("Fetched Reviews:", response.data);
+      return response.data;
     } catch (error) {
-        console.error("Error fetching reviews:", error);
-        return [];  // Return empty array in case of error
+      console.error("Error fetching reviews:", error);
+      return [];  // Return empty array in case of error
     }
-};
+  };
 
-
-  
-
-  const addReview = async (packageId: string, review: ReviewRequestModel): Promise<ReviewResponseModel> => {
+  const addReview = async (review: ReviewRequestModel): Promise<ReviewResponseModel> => {
     const response = await axiosInstance.post<ReviewResponseModel>(`/reviews`, review);
     return response.data;
   };
 
-
   const getAverageRating = async (packageId: string): Promise<number | null> => {
     try {
-      const response = await axiosInstance.get(`/reviews/average-rating`);
+      const response = await axiosInstance.get(`/reviews/${packageId}/average-rating`);
       if (response.status === 200) {
         return response.data?.averageRating ?? null;
       }
@@ -37,7 +33,6 @@ export const useReviewsApi = () => {
       return null;
     }
   };
-  
 
   return {
     getReviewsByPackage,

@@ -8,7 +8,7 @@ import {
 } from "../../travelers/model/traveler.model";
 import { BookingStatus } from "../../bookings/models/bookings.model";
 import { useNavigate } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 import "./BookingForm.css"; // Import the CSS file
 import {
   FaUserPlus,
@@ -35,6 +35,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
   const [error, setError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{ [key: number]: string[] }>({});
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Fetch travelers when the component mounts
@@ -80,7 +81,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
     }
   };
 
-
   const handleAddTraveler = () => {
     setNewTravelers([
       ...newTravelers,
@@ -108,6 +108,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       setError(null);
     }
   };
+
   const handleTravelerChange = (
     index: number,
     field: string,
@@ -118,6 +119,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
     );
     setNewTravelers(updatedTravelers);
   };
+
   const validateForm = () => {
     let errors: { [key: number]: string[] } = {};
 
@@ -125,16 +127,19 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       let travelerErrors: string[] = [];
 
       if (!traveler.firstName.trim())
-        travelerErrors.push("First name is required.");
+        travelerErrors.push(t("bookingForm.firstNameRequired"));
       if (!traveler.lastName.trim())
-        travelerErrors.push("Last name is required.");
-      if (!traveler.email.trim()) travelerErrors.push("Email is required.");
-      if (!traveler.city.trim()) travelerErrors.push("City is required.");
-      if (!traveler.state.trim()) travelerErrors.push("State is required.");
+        travelerErrors.push(t("bookingForm.lastNameRequired"));
+      if (!traveler.email.trim())
+        travelerErrors.push(t("bookingForm.emailRequired"));
+      if (!traveler.city.trim())
+        travelerErrors.push(t("bookingForm.cityRequired"));
+      if (!traveler.state.trim())
+        travelerErrors.push(t("bookingForm.stateRequired"));
       if (!traveler.countryId.trim())
-        travelerErrors.push("Country is required.");
+        travelerErrors.push(t("bookingForm.countryRequired"));
       if (!traveler.addressLine1.trim())
-        travelerErrors.push("Address Line 1 is required.");
+        travelerErrors.push(t("bookingForm.addressLine1Required"));
 
       if (travelerErrors.length > 0) {
         errors[index] = travelerErrors;
@@ -147,12 +152,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
 
   const handleSubmit = () => {
     if (!validateForm()) {
-      setError("Please fill in all required fields before submitting.");
+      setError(t("bookingForm.fillRequiredFields"));
       return;
     }
 
     if (!user?.sub) {
-      setError("User ID is missing");
+      setError(t("bookingForm.userIdMissing"));
       return;
     }
     const bookingRequest = {
@@ -173,18 +178,18 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
     <div className="container p-4 shadow bg-white rounded">
       {/* Package Info */}
       <div className="alert alert-info">
-        <strong>Package:</strong> {pkg.name} <br />
-        <strong>Dates:</strong> {pkg.startDate} - {pkg.endDate}
+        <strong>{t("bookingForm.package")}:</strong> {pkg.name} <br />
+        <strong>{t("bookingForm.dates")}:</strong> {pkg.startDate} - {pkg.endDate}
       </div>
 
       {/* Existing Travelers Selection */}
       <div className="mb-3">
-        <label className="form-label fw-bold">Select a Traveler:</label>
+        <label className="form-label fw-bold">{t("bookingForm.selectTraveler")}:</label>
         <select
           onChange={(e) => handleTravelerSelect(e.target.value)}
           className="form-select"
         >
-          <option value="">Choose...</option>
+          <option value="">{t("bookingForm.choose")}</option>
           {travelers.map((traveler) => (
             <option key={traveler.travelerId} value={traveler.travelerId}>
               {traveler.firstName} {traveler.lastName}
@@ -196,7 +201,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       {/* Display Selected Travelers */}
       {selectedTravelers.length > 0 && (
         <div className="mb-3">
-          <h5 className="fw-bold text-success">Selected Travelers:</h5>
+          <h5 className="fw-bold text-success">{t("bookingForm.selectedTravelers")}:</h5>
           {selectedTravelers.map((traveler) => (
             <div
               key={traveler.travelerId}
@@ -225,7 +230,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       {newTravelers.map((traveler, index) => (
         <div key={index} className="p-3 border rounded mb-3 bg-light">
           <h6 className="fw-bold text-secondary d-flex justify-content-between">
-            New Traveler #{index + 1}
+            {t("bookingForm.newTraveler")} #{index + 1}
             <button
               className="btn btn-sm btn-outline-danger"
               onClick={() => handleRemoveNewTraveler(index)}
@@ -238,12 +243,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
             <div className="col-md-6 mb-2">
               <input
                 type="text"
-                className={`form-control ${
-                  formErrors[index]?.includes("First name is required.")
+                className={`form-control ${formErrors[index]?.includes(t("bookingForm.firstNameRequired"))
                     ? "is-invalid"
                     : ""
-                }`}
-                placeholder="First Name *"
+                  }`}
+                placeholder={t("bookingForm.firstNamePlaceholder")}
                 value={traveler.firstName}
                 onChange={(e) =>
                   handleTravelerChange(index, "firstName", e.target.value)
@@ -255,12 +259,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
             <div className="col-md-6 mb-2">
               <input
                 type="text"
-                className={`form-control ${
-                  formErrors[index]?.includes("Last name is required.")
+                className={`form-control ${formErrors[index]?.includes(t("bookingForm.lastNameRequired"))
                     ? "is-invalid"
                     : ""
-                }`}
-                placeholder="Last Name *"
+                  }`}
+                placeholder={t("bookingForm.lastNamePlaceholder")}
                 value={traveler.lastName}
                 onChange={(e) =>
                   handleTravelerChange(index, "lastName", e.target.value)
@@ -272,12 +275,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
             <div className="col-md-6 mb-2">
               <input
                 type="email"
-                className={`form-control ${
-                  formErrors[index]?.includes("Email is required.")
+                className={`form-control ${formErrors[index]?.includes(t("bookingForm.emailRequired"))
                     ? "is-invalid"
                     : ""
-                }`}
-                placeholder="Email *"
+                  }`}
+                placeholder={t("bookingForm.emailPlaceholder")}
                 value={traveler.email}
                 onChange={(e) =>
                   handleTravelerChange(index, "email", e.target.value)
@@ -289,12 +291,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
             <div className="col-md-6 mb-2">
               <input
                 type="text"
-                className={`form-control ${
-                  formErrors[index]?.includes("Address Line 1 is required.")
+                className={`form-control ${formErrors[index]?.includes(t("bookingForm.addressLine1Required"))
                     ? "is-invalid"
                     : ""
-                }`}
-                placeholder="Address Line 1 *"
+                  }`}
+                placeholder={t("bookingForm.addressLine1Placeholder")}
                 value={traveler.addressLine1}
                 onChange={(e) =>
                   handleTravelerChange(index, "addressLine1", e.target.value)
@@ -307,7 +308,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Address Line 2 (Optional)"
+                placeholder={t("bookingForm.addressLine2Placeholder")}
                 value={traveler.addressLine2}
                 onChange={(e) =>
                   handleTravelerChange(index, "addressLine2", e.target.value)
@@ -319,12 +320,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
             <div className="col-md-6 mb-2">
               <input
                 type="text"
-                className={`form-control ${
-                  formErrors[index]?.includes("City is required.")
+                className={`form-control ${formErrors[index]?.includes(t("bookingForm.cityRequired"))
                     ? "is-invalid"
                     : ""
-                }`}
-                placeholder="City *"
+                  }`}
+                placeholder={t("bookingForm.cityPlaceholder")}
                 value={traveler.city}
                 onChange={(e) =>
                   handleTravelerChange(index, "city", e.target.value)
@@ -336,12 +336,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
             <div className="col-md-6 mb-2">
               <input
                 type="text"
-                className={`form-control ${
-                  formErrors[index]?.includes("State is required.")
+                className={`form-control ${formErrors[index]?.includes(t("bookingForm.stateRequired"))
                     ? "is-invalid"
                     : ""
-                }`}
-                placeholder="State *"
+                  }`}
+                placeholder={t("bookingForm.statePlaceholder")}
                 value={traveler.state}
                 onChange={(e) =>
                   handleTravelerChange(index, "state", e.target.value)
@@ -353,12 +352,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
             <div className="col-md-6 mb-2">
               <input
                 type="text"
-                className={`form-control ${
-                  formErrors[index]?.includes("Country is required.")
+                className={`form-control ${formErrors[index]?.includes(t("bookingForm.countryRequired"))
                     ? "is-invalid"
                     : ""
-                }`}
-                placeholder="Country *"
+                  }`}
+                placeholder={t("bookingForm.countryPlaceholder")}
                 value={traveler.countryId}
                 onChange={(e) =>
                   handleTravelerChange(index, "countryId", e.target.value)
@@ -375,7 +373,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
           className="btn btn-outline-primary w-100 my-3"
           onClick={handleAddTraveler}
         >
-          <FaUserPlus /> Add Traveler
+          <FaUserPlus /> {t("bookingForm.addTraveler")}
         </button>
       )}
 
@@ -385,18 +383,18 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       {/* Submit Button */}
       {selectedTravelers.length > 0 || newTravelers.length > 0 ? (
         <button className="btn btn-primary w-100" onClick={handleSubmit}>
-          <FaCheckCircle /> Confirm Booking
+          <FaCheckCircle /> {t("bookingForm.confirmBooking")}
         </button>
       ) : travelers.length === 0 ? (
         <button
           className="btn btn-warning w-100"
           onClick={() => navigate(AppRoutes.ProfileCreatePage)}
         >
-          <FaExclamationTriangle /> Create Traveler Profile before booking
+          <FaExclamationTriangle /> {t("bookingForm.createTravelerProfile")}
         </button>
       ) : (
         <button className="btn btn-secondary w-100" disabled>
-          <FaExclamationTriangle /> Select or Add a Traveler to Confirm Booking
+          <FaExclamationTriangle /> {t("bookingForm.selectOrAddTraveler")}
         </button>
       )}
     </div>
