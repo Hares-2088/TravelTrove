@@ -241,5 +241,11 @@
     "Admin": "Administrateur",
     "Customer": "Client",
     "Employee": "Employé"
-  }
+  },
+  "paymentCanceled": "Paiement annulé",
+  "paymentSuccess": "Paiement réussi !",
+  "paymentNotCompleted": "Votre paiement n'a pas été effectué.",
+  "paymentConfirmed": "Votre réservation a été confirmée.",
+  "tryAgain": "Réessayer",
+  "goHome": "Aller à l'accueil"
 }

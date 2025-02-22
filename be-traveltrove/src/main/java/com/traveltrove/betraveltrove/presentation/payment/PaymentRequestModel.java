@@ -14,12 +14,12 @@ import java.util.List;
 @Builder
 public class PaymentRequestModel {
     private Long amount; // Amount in cents
-    private String currency; // Currency code (e.g., "usd")
+    private String currency; // Currency
     private String packageId; // ID of the package being purchased
     private String successUrl; // Frontend success URL
     private String cancelUrl; // Frontend cancel URL
     private String bookingId;
-//private String bookingRequest; // A JSON string containing the booking details
+    private String packageName;
 
     private List<TravelerRequestModel> travelers; // List of travelers for the booking
 
