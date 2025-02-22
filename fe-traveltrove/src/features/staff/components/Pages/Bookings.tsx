@@ -6,8 +6,6 @@ import {
   Form,
   Card,
   Collapse,
-  Row,
-  Col,
 } from "react-bootstrap"; // Import Row and Col
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";

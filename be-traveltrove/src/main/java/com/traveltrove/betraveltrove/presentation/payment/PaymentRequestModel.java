@@ -19,8 +19,6 @@ public class PaymentRequestModel {
     private String successUrl; // Frontend success URL
     private String cancelUrl; // Frontend cancel URL
     private String bookingId;
-    private String packageName;
-
     private List<TravelerRequestModel> travelers; // List of travelers for the booking
 
 }
