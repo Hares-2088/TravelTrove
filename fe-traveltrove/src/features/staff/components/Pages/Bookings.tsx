@@ -6,6 +6,8 @@ import {
   Form,
   Card,
   Collapse,
+  Row,
+  Col,
 } from "react-bootstrap"; // Import Row and Col
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
@@ -24,24 +26,21 @@ import "../../../../shared/css/Scrollbar.css";
 const formatStatus = (status: string) => {
   return status
     .toLowerCase()
-    .split("_")
+    .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+    .join(' ');
 };
 
 const Bookings: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const packageId = searchParams.get("packageId");
-  const { getAllBookings, updateBookingStatus, getPaymentByBookingId } =
-    useBookingsApi();
+  const { getAllBookings, updateBookingStatus, getPaymentByBookingId } = useBookingsApi();
   const { getUserById } = useUsersApi(); // Get user by ID
   const { getTravelerById } = useTravelersApi(); // Get traveler by ID
   const [bookings, setBookings] = useState<BookingResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"updateStatus" | "view">(
-    "updateStatus"
-  );
+  const [modalType, setModalType] = useState<"updateStatus" | "view">("updateStatus");
   const [selectedBooking, setSelectedBooking] =
     useState<BookingResponseModel | null>(null);
   const [formData, setFormData] = useState<BookingRequestModel>({
@@ -58,14 +57,10 @@ const Bookings: React.FC = () => {
     status: false,
     bookingDate: false,
   });
-  const [paymentDetails, setPaymentDetails] = useState<{
-    [key: string]: PaymentResponseModel;
-  }>({});
+  const [paymentDetails, setPaymentDetails] = useState<{ [key: string]: PaymentResponseModel }>({});
   const [userNames, setUserNames] = useState<{ [key: string]: string }>({}); // State for user names
   const [openBookingId, setOpenBookingId] = useState<string | null>(null); // State for toggling travelers list
-  const [travelers, setTravelers] = useState<{
-    [key: string]: { name: string; email: string }[];
-  }>({}); // State for travelers
+  const [travelers, setTravelers] = useState<{ [key: string]: { name: string; email: string }[] }>({}); // State for travelers
 
   useEffect(() => {
     fetchBookings();
@@ -74,27 +69,13 @@ const Bookings: React.FC = () => {
   const fetchBookings = async () => {
     try {
       const data = await getAllBookings({ packageId: packageId || undefined });
-      const travelerNamesPromises = data.map(async (booking) => {
-        let name = "No Traveler";
-        const user = await getUserById(booking.userId);
-        let primaryTravelerId = user.travelerId;
-        if (!primaryTravelerId && user.travelerIds && user.travelerIds.length > 0) {
-          primaryTravelerId = user.travelerIds[0];
-        }
-        if (primaryTravelerId) {
-          const traveler = await getTravelerById(primaryTravelerId);
-          if (traveler) {
-            name = `${traveler.firstName} ${traveler.lastName}`;
-          }
-        }
-        return { bookingId: booking.bookingId, name };
-      });
-      const travelerNamesData = await Promise.all(travelerNamesPromises);
-      const travelerNamesMap = travelerNamesData.reduce((acc, { bookingId, name }) => {
-        acc[bookingId] = name;
+      const userIds = data.map((booking) => booking.userId);
+      const userNamesData = await Promise.all(userIds.map((id) => getUserById(id)));
+      const userNamesMap = userNamesData.reduce((acc, user) => {
+        acc[user.userId] = user.firstName + " " + user.lastName; // Assuming firstName and lastName exist
         return acc;
       }, {} as { [key: string]: string });
-      setUserNames(travelerNamesMap);
+      setUserNames(userNamesMap);
       setBookings(data);
       fetchPayments(data);
     } catch (error) {
@@ -149,6 +130,7 @@ const Bookings: React.FC = () => {
       setShowModal(false);
       await fetchBookings();
     } catch (error) {
+      console.error("Error saving booking:", error);
     }
   };
 
@@ -188,7 +170,7 @@ const Bookings: React.FC = () => {
       >
         <Card.Body className="p-4">
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3>{t("Bookings")}</h3>
+            <h3>{t("bookings.bookings")}</h3>
           </div>
 
           <Card className="rounded shadow-sm border-0">
@@ -196,25 +178,25 @@ const Bookings: React.FC = () => {
               <Table bordered hover responsive className="rounded custom-table">
                 <thead className="bg-light">
                   <tr>
-                    <th>{t("User Name")}</th>
-                    {/* <th>{t("Total Price")}</th> */}
-                    <th>{t("Status")}</th>
-                    <th>{t("Booking Date")}</th>
-                    <th>{t("revenue")}</th>
-                    <th>{t("Actions")}</th>
+                    <th>{t("bookings.userName")}</th>
+                    <th>{t("bookings.totalPrice")}</th>
+                    <th>{t("bookings.status")}</th>
+                    <th>{t("bookings.bookingDate")}</th>
+                    <th>{t("bookings.revenue")}</th>
+                    <th>{t("bookings.actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {bookings.map((booking) => (
                     <React.Fragment key={booking.bookingId}>
                       <tr>
-                      <td>{userNames[booking.bookingId]}</td>
-                      {/* Display user name */}
-                        {/* <td>{booking.totalPrice}</td> */}
+                        <td>{userNames[booking.userId]}</td>
+                        <td>{booking.totalPrice}</td>
                         <td>{formatStatus(booking.status)}</td>
-                        {/* Format status */}
                         <td>{booking.bookingDate}</td>
-                        <td>${booking.totalPrice.toFixed(2)}</td>
+                        <td>{paymentDetails[booking.bookingId]?.amount !== undefined ? `$${((paymentDetails[booking.bookingId].amount) / 100).toFixed(2)}` : t('bookings.noAmount')}
+                          &nbsp;({paymentDetails[booking.bookingId]?.currency || t('bookings.noCurrency')})
+                        </td>
                         <td>
                           {booking.status !== BookingStatus.REFUNDED && (
                             <Button
@@ -239,23 +221,15 @@ const Bookings: React.FC = () => {
                                 setShowModal(true);
                               }}
                             >
-                              {t("Update Status")}
+                              {t("bookings.updateStatus")}
                             </Button>
                           )}
                           <Button
                             variant="outline-secondary"
-                            onClick={() =>
-                              booking.travelerIds &&
-                              toggleTravelersList(
-                                booking.bookingId,
-                                booking.travelerIds
-                              )
-                            }
+                            onClick={() => booking.travelerIds && toggleTravelersList(booking.bookingId, booking.travelerIds)}
                             className="ml-2"
                           >
-                            {openBookingId === booking.bookingId
-                              ? t("Hide Travelers")
-                              : t("Show Travelers")}
+                            {openBookingId === booking.bookingId ? t("bookings.hideTravelers") : t("bookings.showTravelers")}
                           </Button>
                         </td>
                       </tr>
@@ -264,19 +238,14 @@ const Bookings: React.FC = () => {
                           <Collapse in={openBookingId === booking.bookingId}>
                             <div className="p-3">
                               <div className="travelers-grid">
-                                {travelers[booking.bookingId]?.map(
-                                  (traveler) => (
-                                    <Card
-                                      key={traveler.email}
-                                      className="traveler-card"
-                                    >
-                                      <Card.Body>
-                                        <Card.Title>{traveler.name}</Card.Title>
-                                        <Card.Text>{traveler.email}</Card.Text>
-                                      </Card.Body>
-                                    </Card>
-                                  )
-                                )}
+                                {travelers[booking.bookingId]?.map((traveler) => (
+                                  <Card key={traveler.email} className="traveler-card">
+                                    <Card.Body>
+                                      <Card.Title>{traveler.name}</Card.Title>
+                                      <Card.Text>{traveler.email}</Card.Text>
+                                    </Card.Body>
+                                  </Card>
+                                ))}
                               </div>
                             </div>
                           </Collapse>
@@ -296,37 +265,34 @@ const Bookings: React.FC = () => {
           >
             <Modal.Header closeButton>
               <Modal.Title>
-                {modalType === "updateStatus"
-                  ? t("Update Booking Status")
-                  : t("View Booking")}
+                {modalType === "updateStatus" ? t("bookings.updateBookingStatus") : t("bookings.viewBooking")}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {modalType === "view" ? (
                 <div>
                   <p>
-                    <strong>{t("User Name")}:</strong>{" "}
-                    {userNames[selectedBooking?.userId || ""]}
+                    <strong>{t("bookings.userName")}:</strong> {userNames[selectedBooking?.userId || ""]}
                   </p>
                   <p>
-                    <strong>{t("Total Price")}:</strong>{" "}
+                    <strong>{t("bookings.totalPrice")}:</strong>{" "}
                     {selectedBooking?.totalPrice}
                   </p>
                   <p>
-                    <strong>{t("Status")}:</strong>{" "}
+                    <strong>{t("bookings.status")}:</strong>{" "}
                     {selectedBooking?.status
                       ? formatStatus(selectedBooking.status)
                       : ""}
                   </p>
                   <p>
-                    <strong>{t("Booking Date")}:</strong>{" "}
+                    <strong>{t("bookings.bookingDate")}:</strong>{" "}
                     {selectedBooking?.bookingDate}
                   </p>
                 </div>
               ) : (
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3">
-                    <Form.Label>{t("Status")}</Form.Label>
+                    <Form.Label>{t("bookings.status")}</Form.Label>
                     <Form.Control
                       as="select"
                       value={formData.status}
@@ -340,27 +306,17 @@ const Bookings: React.FC = () => {
                     >
                       {/* Always show the current status as the placeholder */}
                       <option value={selectedBooking?.status} disabled>
-                        {formatStatus(
-                          selectedBooking?.status || "Select Status"
-                        )}
+                        {formatStatus(selectedBooking?.status || "Select Status")}
                       </option>
 
                       {/* If status is COMPLETED, only allow REFUNDED */}
-                      {selectedBooking?.status ===
-                      BookingStatus.BOOKING_CONFIRMED ? (
-                        <option value={BookingStatus.REFUNDED}>
-                          {formatStatus(BookingStatus.REFUNDED)}
-                        </option>
+                      {selectedBooking?.status === BookingStatus.BOOKING_CONFIRMED ? (
+                        <option value={BookingStatus.REFUNDED}>{formatStatus(BookingStatus.REFUNDED)}</option>
                       ) : (
                         Object.values(BookingStatus)
-                          .filter(
-                            (status) =>
-                              status !== BookingStatus.REFUNDED &&
-                              !(
-                                selectedBooking?.status ===
-                                  BookingStatus.PAYMENT_ATTEMPT2_PENDING &&
-                                status === BookingStatus.PAYMENT_PENDING
-                              )
+                          .filter((status) =>
+                            status !== BookingStatus.REFUNDED &&
+                            !(selectedBooking?.status === BookingStatus.PAYMENT_ATTEMPT2_PENDING && status === BookingStatus.PAYMENT_PENDING)
                           )
                           .map((status) => (
                             <option key={status} value={status}>
@@ -370,7 +326,7 @@ const Bookings: React.FC = () => {
                       )}
                     </Form.Control>
                     <Form.Control.Feedback type="invalid">
-                      {t("Status is required")}
+                      {t("bookings.statusRequired")}
                     </Form.Control.Feedback>
                   </Form.Group>
                   <Modal.Footer>
@@ -378,10 +334,10 @@ const Bookings: React.FC = () => {
                       variant="secondary"
                       onClick={() => setShowModal(false)}
                     >
-                      {t("Cancel")}
+                      {t("bookings.cancel")}
                     </Button>
                     <Button type="submit" variant="primary">
-                      {t("Save")}
+                      {t("bookings.save")}
                     </Button>
                   </Modal.Footer>
                 </Form>
