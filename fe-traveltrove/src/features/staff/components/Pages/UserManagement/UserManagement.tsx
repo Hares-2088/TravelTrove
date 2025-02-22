@@ -10,11 +10,6 @@ const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<UserResponseModel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-<<<<<<< HEAD
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRole, setSelectedRole] = useState("All Roles");
-  const { t } = useTranslation();
-=======
   const { t } = useTranslation();
   const [selectedRole, setSelectedRole] = useState(t("allRoles"));
 
@@ -33,7 +28,6 @@ const UserManagement: React.FC = () => {
   useEffect(() => {
     setSelectedRole(t("allRoles"));
   }, [t]);
->>>>>>> 3a22d2b (translate works for filtering)
 
   const fetchAllUsers = async () => {
     try {
@@ -42,11 +36,7 @@ const UserManagement: React.FC = () => {
       setUsers(data || []);
       setError(null);
     } catch (err) {
-<<<<<<< HEAD
-      setError(t("error.fetchUsers"));
-=======
       setError(t("errorFetchingUsers"));
->>>>>>> 3a22d2b (translate works for filtering)
     } finally {
       setLoading(false);
     }
@@ -61,12 +51,7 @@ const UserManagement: React.FC = () => {
       await updateUser(userId, updatedUser);
       await fetchAllUsers();
     } catch (error) {
-<<<<<<< HEAD
-      setError(t("error.updateUser"));
-      console.error("Failed to update user", error);
-=======
       setError(t("updateFailed"));
->>>>>>> 3a22d2b (translate works for filtering)
     } finally {
       setLoading(false);
     }
@@ -79,12 +64,7 @@ const UserManagement: React.FC = () => {
       await syncUser(userId);
       await fetchAllUsers();
     } catch (error) {
-<<<<<<< HEAD
-      setError(t("error.updateUserRole"));
-      console.error("Failed to update user role", error);
-=======
       setError(t("updateFailedRole"));
->>>>>>> 3a22d2b (translate works for filtering)
     } finally {
       setLoading(false);
     }
@@ -103,11 +83,7 @@ const UserManagement: React.FC = () => {
       <Card className="rounded shadow border-0" style={{ width: "100%", maxWidth: "1600px" }}>
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4">
-<<<<<<< HEAD
-            <h2 className="mb-0">{t("userManagement.title")}</h2>
-=======
             <h2 className="mb-0">{t("userManagement")}</h2>
->>>>>>> 3a22d2b (translate works for filtering)
           </div>
 
           <Row className="mb-4 g-3">
@@ -116,17 +92,10 @@ const UserManagement: React.FC = () => {
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
               >
-<<<<<<< HEAD
-                <option>{t("userManagement.allRoles")}</option>
-                <option>{t("userManagement.admin")}</option>
-                <option>{t("userManagement.customer")}</option>
-                <option>{t("userManagement.employee")}</option>
-=======
                 <option>{t("allRoles")}</option>
                 <option>{t("roles.Admin")}</option>
                 <option>{t("roles.Customer")}</option>
                 <option>{t("roles.Employee")}</option>
->>>>>>> 3a22d2b (translate works for filtering)
               </Form.Select>
             </Col>
           </Row>
@@ -139,15 +108,9 @@ const UserManagement: React.FC = () => {
 
           <div className="d-flex justify-content-between align-items-center mt-4">
             <div>
-<<<<<<< HEAD
-                <span className="text-muted">
-                {t("userManagement.showingEntries", { count: filteredUsers.length, total: users.length })}
-                </span>
-=======
               <span className="text-muted">
                 {t("showingEntries", { count: filteredUsers.length, total: users.length })}
               </span>
->>>>>>> 3a22d2b (translate works for filtering)
             </div>
           </div>
         </Card.Body>

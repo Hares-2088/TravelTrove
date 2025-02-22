@@ -25,7 +25,7 @@ const PaymentCancelPage: React.FC = () => {
           <div className="mt-3">
             <button
               className="btn btn-danger me-2"
-              onClick={() => navigate("/checkout")}
+              onClick={() => navigate("/trips")}
             >
               {t("tryAgain")}
             </button>
