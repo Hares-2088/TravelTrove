@@ -76,12 +76,10 @@ const Bookings: React.FC = () => {
   const fetchBookings = async () => {
     try {
       const data = await getAllBookings({ packageId: packageId || undefined });
-      // Instead of fetching names directly from the user, fetch the user and then the traveler profile.
       const travelerNamesPromises = data.map(async (booking) => {
         let name = "No Traveler";
         const user = await getUserById(booking.userId);
         let primaryTravelerId = user.travelerId;
-        // Fall back to the first traveler in travelerIds if travelerId isn't set.
         if (!primaryTravelerId && user.travelerIds && user.travelerIds.length > 0) {
           primaryTravelerId = user.travelerIds[0];
         }
@@ -102,7 +100,6 @@ const Bookings: React.FC = () => {
       setBookings(data);
       fetchPayments(data);
     } catch (error) {
-      console.error("Error fetching bookings:", error);
     }
   };
   
@@ -114,10 +111,7 @@ const Bookings: React.FC = () => {
         const payment = await getPaymentByBookingId(booking.bookingId);
         paymentDetails[booking.bookingId] = payment;
       } catch (error) {
-        console.error(
-          `Error fetching payment for booking ${booking.bookingId}:`,
-          error
-        );
+        
       }
     }
     setPaymentDetails(paymentDetails);
@@ -128,13 +122,11 @@ const Bookings: React.FC = () => {
       const travelersData = await Promise.all(
         travelerIds.map((id) => getTravelerById(id))
       );
-      console.log("Fetched travelers:", travelersData); // Log fetched travelers
       return travelersData.map((traveler) => ({
         name: `${traveler.firstName} ${traveler.lastName}`,
         email: traveler.email,
       }));
     } catch (error) {
-      console.error("Error fetching travelers:", error);
       return [];
     }
   };
@@ -159,7 +151,6 @@ const Bookings: React.FC = () => {
       setShowModal(false);
       await fetchBookings();
     } catch (error) {
-      console.error("Error saving booking:", error);
     }
   };
 

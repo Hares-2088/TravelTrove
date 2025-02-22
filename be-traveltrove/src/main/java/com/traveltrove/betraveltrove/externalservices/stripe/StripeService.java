@@ -48,7 +48,6 @@ public class StripeService {
             // Build product data
             SessionCreateParams.LineItem.PriceData.ProductData productData =
                     SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                            .setName("Package: " + paymentRequest.getPackageName())
                             .setName("Package: " + paymentRequest.getPackageId())
                             .build();
 
