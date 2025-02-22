@@ -18,8 +18,6 @@
   "cities": "Cities",
   "create": "Create",
   "name": "Name",
-  "actions": "Actions",
-  "edit": "Edit",
   "delete": "Delete",
   "createCity": "Create City",
   "editCity": "Edit City",
@@ -29,8 +27,6 @@
   "cityNameRequired": "City name is required.",
   "selectCountry": "Select a country",
   "countryRequired": "A country selection is required.",
-  "cancel": "Cancel",
-  "save": "Save",
   "confirm": "Confirm",
   "title": "Countries",
   "createC": "Create",
@@ -188,7 +184,6 @@
   "error.fetchUsers": "Failed to fetch users.",
   "error.updateUser": "Failed to update user.",
   "error.updateUserRole": "Failed to update user role.",
-  "loading": "Loading...",
   "airports": "Airports",
   "createAirport": "Create Airport",
   "editAirport": "Edit Airport",
@@ -234,8 +229,6 @@
   "unknownHotel": "Unknown Hotel",
   "selectHotel": "Select a hotel",
   "invalidHotel": "Hotel is required",
-
-
   "email": "Email",
   "role": "Role",
   "actions": "Actions",
@@ -255,11 +248,26 @@
     "Customer": "Customer",
     "Employee": "Employee"
   },
-
   "paymentCanceled": "Payment Canceled",
   "paymentSuccess": "Payment Successful!",
   "paymentNotCompleted": "Your payment was not completed.",
   "paymentConfirmed": "Your booking has been confirmed.",
   "tryAgain": "Try Again",
-  "goHome": "Go to Home"
+  "goHome": "Go to Home",
+  "contactUs": {
+    "title": "Contact Us",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "enterFirstName": "Enter your first name",
+    "enterLastName": "Enter your last name",
+    "enterEmail": "Enter your email",
+    "enterSubject": "Enter the subject",
+    "enterMessage": "Enter your message",
+    "submit": "Submit",
+    "success": "Your message has been sent successfully!",
+    "error": "Failed to send message. Please try again."
+  }
 }

@@ -225,13 +225,8 @@
   "invalidHotel": "L'hôtel est requis",
   "email": "Courriel",
   "role": "Rôle",
-  "actions": "Actions",
-  "edit": "Modifier",
   "selectRole": "Sélectionnez un rôle",
-  "cancel": "Annuler",
-  "save": "Enregistrer",
   "updateFailed": "La mise à jour a échoué. Veuillez réessayer.",
-  "loading": "Chargement...",
   "errorFetchingUsers": "Erreur lors de la récupération des utilisateurs.",
   "updateFailedRole": "La mise à jour du rôle a échoué.",
   "userManagement": "Gestion des utilisateurs",
@@ -247,5 +242,21 @@
   "paymentNotCompleted": "Votre paiement n'a pas été effectué.",
   "paymentConfirmed": "Votre réservation a été confirmée.",
   "tryAgain": "Réessayer",
-  "goHome": "Aller à l'accueil"
+  "goHome": "Aller à l'accueil",
+  "contactUs": {
+    "title": "Contactez-nous",
+    "firstName": "Prénom",
+    "lastName": "Nom de famille",
+    "email": "Courriel",
+    "subject": "Sujet",
+    "message": "Message",
+    "enterFirstName": "Entrez votre prénom",
+    "enterLastName": "Entrez votre nom de famille",
+    "enterEmail": "Entrez votre courriel",
+    "enterSubject": "Entrez le sujet",
+    "enterMessage": "Entrez votre message",
+    "submit": "Soumettre",
+    "success": "Votre message a été envoyé avec succès!",
+    "error": "Échec de l'envoi du message. Veuillez réessayer."
+  }
 }
