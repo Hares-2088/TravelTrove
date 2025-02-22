@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Table, Button, Modal, Form, Row, Col, Alert } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { PencilSquare, Trash } from "react-bootstrap-icons";
+import { Table, Button, Modal, Form } from "react-bootstrap";
+import { PencilSquare } from "react-bootstrap-icons";
 import { UserResponseModel } from "../model/users.model";
+import { useTranslation } from "react-i18next";
 
 interface Auth0Role {
   id: string;
@@ -17,27 +17,29 @@ const AUTH0_ROLES: Auth0Role[] = [
 
 interface UsersListProps {
   users: UserResponseModel[];
-  onUpdateUser: (
-    userId: string,
-    updatedUser: Partial<UserResponseModel>
-  ) => Promise<void>;
+  onUpdateUser: (userId: string, updatedUser: Partial<UserResponseModel>) => Promise<void>;
   onUpdateRole: (userId: string, roles: string[]) => Promise<void>;
 }
 
-const UsersList: React.FC<UsersListProps> = ({
-  users,
-  onUpdateUser,
-  onUpdateRole,
-}) => {
-  const [editingUser, setEditingUser] = useState<UserResponseModel | null>(
-    null
-  );
+const UsersList: React.FC<UsersListProps> = ({ users, onUpdateUser, onUpdateRole }) => {
+  const [editingUser, setEditingUser] = useState<UserResponseModel | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     roleId: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
+
+  // Updated getRoleName function checks if the roleIdentifier matches an Auth0 role id.
+  // If not, it assumes the roleIdentifier is already the English role name.
+  const getRoleName = (roleIdentifier: string): string => {
+    const role = AUTH0_ROLES.find((r) => r.id === roleIdentifier);
+    if (role) {
+      return t(`roles.${role.name}`);
+    }
+    return t(`roles.${roleIdentifier}`);
+  };
 
   const handleEditClick = (user: UserResponseModel) => {
     setEditingUser(user);
@@ -53,9 +55,7 @@ const UsersList: React.FC<UsersListProps> = ({
     setError(null);
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -71,20 +71,15 @@ const UsersList: React.FC<UsersListProps> = ({
     setError(null);
 
     try {
-      // Update user details
-      await onUpdateUser(editingUser.userId, {
-        email: formData.email,
-      });
+      await onUpdateUser(editingUser.userId, { email: formData.email });
 
-      // If role has changed, update it
       if (editingUser.roles[0] !== formData.roleId) {
         await onUpdateRole(editingUser.userId, [formData.roleId]);
       }
 
       handleModalClose();
     } catch (err) {
-      setError("Failed to update user. Please try again.");
-      console.error("Update failed:", err);
+      setError(t("updateFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -95,31 +90,20 @@ const UsersList: React.FC<UsersListProps> = ({
       <Table hover className="align-middle">
         <thead className="table-light">
           <tr>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Actions</th>
+            <th>{t("email")}</th>
+            <th>{t("role")}</th>
+            <th>{t("actions")}</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user) => (
             <tr key={user.userId}>
               <td>{user.email}</td>
+              <td>{user.roles.map((roleId) => getRoleName(roleId)).join(", ")}</td>
               <td>
-                {user.roles
-                  .map(
-                    (roleId) =>
-                      AUTH0_ROLES.find((r) => r.id === roleId)?.name || roleId
-                  )
-                  .join(", ")}
-              </td>
-              <td>
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() => handleEditClick(user)}
-                >
+                <Button variant="outline-primary" size="sm" onClick={() => handleEditClick(user)}>
                   <PencilSquare className="me-1" />
-                  Edit
+                  {t("edit")}
                 </Button>
               </td>
             </tr>
@@ -130,34 +114,27 @@ const UsersList: React.FC<UsersListProps> = ({
       <Modal show={!!editingUser} onHide={handleModalClose}>
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Edit User</Modal.Title>
+            <Modal.Title>{t("edit")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {error && <div className="alert alert-danger mb-3">{error}</div>}
             <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
+              <Form.Label>{t("email")}</Form.Label>
               <Form.Control
                 type="email"
                 name="email"
                 value={formData.email}
-                onChange={(e) =>
-                  handleChange(e as React.ChangeEvent<HTMLInputElement>)
-                }
+                onChange={(e) => handleChange(e as React.ChangeEvent<HTMLInputElement>)}
                 readOnly
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Role</Form.Label>
-              <Form.Select
-                name="roleId"
-                value={formData.roleId}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select a role</option>
+              <Form.Label>{t("role")}</Form.Label>
+              <Form.Select name="roleId" value={formData.roleId} onChange={handleChange} required>
+                <option value="">{t("selectRole")}</option>
                 {AUTH0_ROLES.map((role) => (
                   <option key={role.id} value={role.id}>
-                    {role.name}
+                    {t(`roles.${role.name}`)}
                   </option>
                 ))}
               </Form.Select>
@@ -165,10 +142,10 @@ const UsersList: React.FC<UsersListProps> = ({
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleModalClose}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button variant="primary" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Changes"}
+              {t("save")}
             </Button>
           </Modal.Footer>
         </Form>

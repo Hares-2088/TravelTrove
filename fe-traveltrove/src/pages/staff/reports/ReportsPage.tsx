@@ -33,12 +33,12 @@ const ReportsPage: React.FC = () => {
           </Accordion.Item>
 
           {/* Add more sections as needed */}
-          <Accordion.Item eventKey="2">
+          {/* <Accordion.Item eventKey="2">
             <Accordion.Header>Other Report Type 3</Accordion.Header>
             <Accordion.Body>
               <p>Placeholder for Report Type 3</p>
             </Accordion.Body>
-          </Accordion.Item>
+          </Accordion.Item> */}
         </Accordion>
       </div>
     </div>

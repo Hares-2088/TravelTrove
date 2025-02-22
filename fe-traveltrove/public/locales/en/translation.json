@@ -233,5 +233,33 @@
   "unknownEvent": "Unknown Event",
   "unknownHotel": "Unknown Hotel",
   "selectHotel": "Select a hotel",
-  "invalidHotel": "Hotel is required"
+  "invalidHotel": "Hotel is required",
+
+
+  "email": "Email",
+  "role": "Role",
+  "actions": "Actions",
+  "edit": "Edit",
+  "selectRole": "Select Role",
+  "cancel": "Cancel",
+  "save": "Save",
+  "updateFailed": "Update failed. Please try again.",
+  "loading": "Loading...",
+  "errorFetchingUsers": "Error fetching users.",
+  "updateFailedRole": "Failed to update role.",
+  "userManagement": "User Management",
+  "allRoles": "All Roles",
+  "showingEntries": "Showing {{count}} of {{total}} entries",
+  "roles": {
+    "Admin": "Admin",
+    "Customer": "Customer",
+    "Employee": "Employee"
+  },
+
+  "paymentCanceled": "Payment Canceled",
+  "paymentSuccess": "Payment Successful!",
+  "paymentNotCompleted": "Your payment was not completed.",
+  "paymentConfirmed": "Your booking has been confirmed.",
+  "tryAgain": "Try Again",
+  "goHome": "Go to Home"
 }

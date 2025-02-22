@@ -48,7 +48,7 @@ public class StripeService {
             // Build product data
             SessionCreateParams.LineItem.PriceData.ProductData productData =
                     SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                            .setName("Package: " + paymentRequest.getPackageId())
+                            .setName("Package: " + paymentRequest.getPackageName())
                             .build();
 
             // Build price data (amount is in cents)

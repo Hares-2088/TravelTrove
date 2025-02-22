@@ -222,5 +222,30 @@
   "unknownEvent": "Événement inconnu",
   "unknownHotel": "Hôtel inconnu",
   "selectHotel": "Sélectionner un hôtel",
-  "invalidHotel": "L'hôtel est requis"
+  "invalidHotel": "L'hôtel est requis",
+  "email": "Courriel",
+  "role": "Rôle",
+  "actions": "Actions",
+  "edit": "Modifier",
+  "selectRole": "Sélectionnez un rôle",
+  "cancel": "Annuler",
+  "save": "Enregistrer",
+  "updateFailed": "La mise à jour a échoué. Veuillez réessayer.",
+  "loading": "Chargement...",
+  "errorFetchingUsers": "Erreur lors de la récupération des utilisateurs.",
+  "updateFailedRole": "La mise à jour du rôle a échoué.",
+  "userManagement": "Gestion des utilisateurs",
+  "allRoles": "Tous les rôles",
+  "showingEntries": "Affichage de {{count}} sur {{total}} entrées",
+  "roles": {
+    "Admin": "Administrateur",
+    "Customer": "Client",
+    "Employee": "Employé"
+  },
+  "paymentCanceled": "Paiement annulé",
+  "paymentSuccess": "Paiement réussi !",
+  "paymentNotCompleted": "Votre paiement n'a pas été effectué.",
+  "paymentConfirmed": "Votre réservation a été confirmée.",
+  "tryAgain": "Réessayer",
+  "goHome": "Aller à l'accueil"
 }
