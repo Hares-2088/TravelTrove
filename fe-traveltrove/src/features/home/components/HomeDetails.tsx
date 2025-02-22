@@ -69,14 +69,14 @@ const HomeDetails: React.FC = () => {
         style={{ backgroundImage: 'url(https://traveltrove-images.s3.us-east-2.amazonaws.com/auth0-675e3886e184fd643a8ed5aa_cd1962fc-a3bc-4ddc-ac5d-a2606139f135_hero-image.jpg)' }}
       >
         <div className="hero-content">
-          <h1>{t('home.heroTitle')}</h1>
-          <p>{t('home.heroSubtitle')}</p>
+          <h1>{t('homePage.heroTitle')}</h1>
+          <p>{t('homePage.heroSubtitle')}</p>
         </div>
       </section>
 
       {/* Popular Destinations Carousel */}
       <section className="popular-destinations">
-        <h2>{t('home.popularDestinations')}</h2>
+        <h2>{t('homePage.popularDestinations')}</h2>
         {tours.length > 0 ? (
           <Carousel activeIndex={index} onSelect={(selectedIndex) => setIndex(selectedIndex)} indicators={false} nextIcon={<span aria-hidden="true" className="carousel-control-next-icon" />} prevIcon={<span aria-hidden="true" className="carousel-control-prev-icon" />}>
             {tours.map((tour, idx) => (
@@ -97,7 +97,7 @@ const HomeDetails: React.FC = () => {
                           <Card.Title>{tour.name}</Card.Title>
                           <Card.Text>{tour.description}</Card.Text>
                           <Link to={`/tours/${tour.tourId}`}>
-                            <Button variant="dark">{t('home.exploreNow')}</Button>
+                            <Button variant="dark">{t('homePage.exploreNow')}</Button>
                           </Link>
                         </Card.Body>
                       </Card>
@@ -108,7 +108,7 @@ const HomeDetails: React.FC = () => {
             ))}
           </Carousel>
         ) : (
-          <Alert variant="info" className="home-info">{t('home.noToursAvailable')}</Alert>
+          <Alert variant="info" className="home-info">{t('homePage.noToursAvailable')}</Alert>
         )}
       </section>
 
@@ -138,7 +138,7 @@ const HomeDetails: React.FC = () => {
 
       {/* Reviews Section */}
       <section className="reviews-section">
-        <h2>{t('home.customerReviews')}</h2>
+        <h2>{t('homePage.customerReviews')}</h2>
         <div className="elfsight-app-6d3f48d9-c5ae-4dae-8574-3ea7f9eb1362" data-elfsight-app-lazy></div>
       </section>
     </div>
