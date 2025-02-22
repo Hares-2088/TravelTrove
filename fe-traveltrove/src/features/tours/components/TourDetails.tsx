@@ -97,41 +97,47 @@ const TourDetails: React.FC = () => {
   if (!tour) return <div>No tour details found.</div>;
 
   return (
-    <div className="tour-details">
-      <header className="tour-header">
-        <h1 className="tour-title">{tour.name}</h1>
-        <p className="tour-description">{tour.description}</p>
-        {tour.tourImageUrl && (
-          <img src={tour.tourImageUrl} alt={tour.name} className="tour-main-image" />
-        )}
-      </header>
+    <div className="tour-details-page">
+      <div className="tour-details">
+        <header className="tour-header">
+          <h1 className="tour-title">{tour.name}</h1>
+          <p className="tour-description">{tour.description}</p>
+          {tour.tourImageUrl && (
+            <img src={tour.tourImageUrl} alt={tour.name} className="tour-main-image" />
+          )}
+        </header>
 
-      <section className="tour-events">
-        <h2 onClick={() => setShowEvents(!showEvents)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-          Tour Events <ChevronDown className={`chevron-icon ${showEvents ? 'open' : ''}`} />
-        </h2>
-        <p>Click to expand and see the tour events.</p>
-        {showEvents && (
-          tourEvents.length === 0 ? (
-            <p>No events available for this tour.</p>
-          ) : (
-            <ul className="event-list">
-              {tourEvents.sort((a, b) => a.seq - b.seq).map((event) => (
-                <li key={event.tourEventId} className="event-item">
-                  <Calendar className="event-icon" />
-                  <div>
-                    <h3>{event.seq}. {event.seqDesc}</h3>
-                    <p>Event: {events[event.eventId]?.name || "Unknown Event"}</p>
-                    <p>Hotel: {hotels[event.hotelId]?.name || "Unknown Hotel"}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )
-        )}
-      </section>
+        <section className="tour-events">
+          <h2 onClick={() => setShowEvents(!showEvents)} className="tour-events-header">
+            Tour Events <ChevronDown className={`chevron-icon ${showEvents ? 'open' : ''}`} />
+          </h2>
+          {showEvents && (
+            tourEvents.length === 0 ? (
+              <p>No events available for this tour.</p>
+            ) : (
+              <ul className="event-list">
+                {tourEvents.sort((a, b) => a.seq - b.seq).map((event) => (
+                  <li key={event.tourEventId} className="event-item">
+                    <Calendar className="event-icon" />
+                    <div>
+                      <h3>{event.seq}. {event.seqDesc}</h3>
+                      <p>Event: {events[event.eventId]?.name || "Unknown Event"}</p>
+                      <p>Hotel: {hotels[event.hotelId]?.name || "Unknown Hotel"}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )
+          )}
+        </section>
 
-      {tourId && <PackageList tourId={tourId} />}
+        {tourId && (
+          <>
+            <h2 className="packages-header">Packages</h2>
+            <PackageList tourId={tourId} />
+          </>
+        )}
+      </div>
     </div>
   );
 };

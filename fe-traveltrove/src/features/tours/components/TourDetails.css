@@ -2,26 +2,27 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #fff5f0;
+  background-color: #f9f9f9;
+  font-family: 'Arial', sans-serif;
 }
 
 .tour-details {
   flex: 1;
   padding: 20px;
   max-width: 800px;
-  margin: 0 auto;
+  margin: 20px auto;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tour-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 20px;
 }
 
 .tour-title {
-  font-size: 2em;
+  font-size: 2.5em;
   margin-bottom: 10px;
   color: #333;
 }
@@ -43,9 +44,18 @@
   margin-top: 20px;
 }
 
-h2 {
+.tour-events-header {
   font-size: 1.8rem;
   color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+
+.tour-events-header:hover {
+  color: #007bff;
 }
 
 .tour-cities {
@@ -89,6 +99,11 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
+  transition: background-color 0.3s;
+}
+
+.event-item:hover {
+  background-color: #f1f1f1;
 }
 
 .event-icon {
@@ -131,4 +146,19 @@ h2 {
 
 .chevron-icon.open {
   transform: rotate(180deg);
+}
+
+.loading, .error {
+  text-align: center;
+  font-size: 1.2em;
+  color: #333;
+  margin-top: 2rem;
+}
+
+.packages-header {
+  font-size: 1.8rem;
+  color: #333;
+  text-align: left;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
