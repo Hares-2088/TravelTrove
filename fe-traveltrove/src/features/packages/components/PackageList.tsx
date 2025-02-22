@@ -25,7 +25,6 @@ const PackageList: React.FC<PackageListProps> = ({ tourId }) => {
     const fetchPackages = async () => {
       setLoading(true);
       try {
-        console.log(`📢 Fetching packages for tourId=${tourId}`);
         const data = await getAllPackages({ tourId });
 
         if (isMounted) {
@@ -33,12 +32,10 @@ const PackageList: React.FC<PackageListProps> = ({ tourId }) => {
           const filteredPackages = data.filter(pkg =>
             ["UPCOMING", "BOOKING_OPEN", "SOLD_OUT"].includes(pkg.status)
           );
-          console.log(`✅ Packages fetched successfully for tourId=${tourId}`, filteredPackages);
           setPackages(filteredPackages);
         }
       } catch (err) {
         if (isMounted) {
-          console.error(`❌ Error fetching packages for tourId=${tourId}:`, err);
           setError(t("error.fetchingPackages"));
         }
       } finally {
@@ -65,7 +62,7 @@ const PackageList: React.FC<PackageListProps> = ({ tourId }) => {
       ) : (
         packages.map((pkg) => (
           <Card key={pkg.packageId} className="package-item">
-            <div className="price-tag">${pkg.priceTriple}</div>
+            <div className="price-tag">${pkg.priceSingle}</div>
             <Card.Body>
               <Card.Title>{pkg.name}</Card.Title>
               <Card.Text>{pkg.description}</Card.Text>
