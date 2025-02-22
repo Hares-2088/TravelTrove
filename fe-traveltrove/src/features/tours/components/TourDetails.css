@@ -81,14 +81,30 @@ h2 {
 }
 
 .event-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 1rem 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
-.event-image {
-  width: 100%;
-  max-width: 400px;
-  height: auto;
-  margin: 1rem 0;
+.event-icon {
+  width: 24px;
+  height: 24px;
+  color: #007bff;
+}
+
+.event-item h3 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.event-item p {
+  margin: 0;
+  color: #555;
 }
 
 .itinerary-image {
@@ -106,4 +122,13 @@ h2 {
 .tour-info p {
   font-size: 1.1em;
   margin: 5px 0;
+}
+
+.chevron-icon {
+  margin-left: 10px;
+  transition: transform 0.3s;
+}
+
+.chevron-icon.open {
+  transform: rotate(180deg);
 }

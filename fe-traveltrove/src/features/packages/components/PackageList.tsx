@@ -4,6 +4,7 @@ import { PackageResponseModel } from "../models/package.model";
 import { Link } from "react-router-dom";
 import { Card, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { Calendar } from "lucide-react";
 import "./PackageList.css";
 
 interface PackageListProps {
@@ -66,6 +67,12 @@ const PackageList: React.FC<PackageListProps> = ({ tourId }) => {
             <Card.Body>
               <Card.Title>{pkg.name}</Card.Title>
               <Card.Text>{pkg.description}</Card.Text>
+              <Card.Text>
+                <Calendar className="date-icon" /> <strong>Start Date:</strong> {new Date(pkg.startDate).toLocaleDateString()}
+              </Card.Text>
+              <Card.Text>
+                <Calendar className="date-icon" /> <strong>End Date:</strong> {new Date(pkg.endDate).toLocaleDateString()}
+              </Card.Text>
               <Link to={`/packages/${pkg.packageId}`}>
                 <Button variant="dark">{t("viewDetails")}</Button>
               </Link>
