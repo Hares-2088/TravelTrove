@@ -519,10 +519,10 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                         setShowModal(true);
                     }}
                 >
-                    {t("tourPackagesTab.createPackage")}
+                    {t("Create Package")}
                 </Button>
                 <Button variant="outline-secondary" onClick={() => setShowFilters(!showFilters)}>
-                    <FaFilter /> {t("tourPackagesTab.filters")}
+                    <FaFilter /> {t("Filters")}
                 </Button>
             </div>
 
@@ -535,7 +535,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     centered
                 >
                     <Modal.Header closeButton>
-                        <Modal.Title>{t("tourPackagesTab.allReviews")}</Modal.Title>
+                        <Modal.Title>{t("All Reviews")}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         {reviews && reviews.length > 0 ? (
@@ -554,12 +554,12 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 </ul>
                             </div>
                         ) : (
-                            <p>{t("tourPackagesTab.noReviewsAvailable")}</p>
+                            <p>{t("No Reviews Available")}</p>
                         )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setShowReviewList(false)}>
-                            {t("tourPackagesTab.close")}
+                            {t("Close")}
                         </Button>
                     </Modal.Footer>
                 </Modal>
@@ -570,7 +570,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 <div className="filter-bar">
                     <Form.Control
                         type="text"
-                        placeholder={t("tourPackagesTab.filterByName")}
+                        placeholder={t("Filter by name")}
                         value={filterName}
                         onChange={(e) => setFilterName(e.target.value)}
                     />
@@ -579,10 +579,10 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
                     >
-                        <option value="">{t("tourPackagesTab.allStatuses")}</option>
-                        <option value="Active">{t("tourPackages.tabActive")}</option>
-                        <option value="Inactive">{t("tourPackagesTab.inactive")}</option>
-                        <option value="EXPIRED">{t("tourPackagesTab.expired")}</option> {/* Added Expired option */}
+                        <option value="">{t("All Statuses")}</option>
+                        <option value="Active">{t("Active")}</option>
+                        <option value="Inactive">{t("Inactive")}</option>
+                        <option value="EXPIRED">{t("Expired")}</option> {/* Added Expired option */}
                     </Form.Control>
                     <Form.Control
                         type="date"
@@ -594,21 +594,21 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                         value={sortField || ""}
                         onChange={(e) => setSortField(e.target.value as any)}
                     >
-                        <option value="">{t("tourPackagesTab.sortBy")}</option>
-                        <option value="price">{t("tourPackagesTab.price")}</option>
-                        <option value="date">{t("tourPackagesTab.date")}</option>
-                        <option value="popularity">{t("tourPackagesTab.popularity")}</option>
+                        <option value="">{t("Sort by")}</option>
+                        <option value="price">{t("Price")}</option>
+                        <option value="date">{t("Date")}</option>
+                        <option value="popularity">{t("Popularity")}</option>
                     </Form.Control>
                     <Form.Control
                         as="select"
                         value={sortOrder}
                         onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
                     >
-                        <option value="asc">{t("tourPackagesTab.ascending")}</option>
-                        <option value="desc">{t("tourPackagesTab.descending")}</option>
+                        <option value="asc">{t("Ascending")}</option>
+                        <option value="desc">{t("Descending")}</option>
                     </Form.Control>
                     <Button variant="secondary" onClick={handleResetFilters}>
-                        {t("tourPackagesTab.resetFilters")}
+                        {t("Reset Filters")}
                     </Button>
                 </div>
             )}
@@ -617,14 +617,14 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             <Table bordered hover responsive className="rounded">
                 <thead className="bg-light">
                     <tr>
-                        <th>{t("tourPackagesTab.name")}</th>
-                        <th>{t("tourPackagesTab.packageStatus")}</th>
-                        <th>{t("tourPackagesTab.startDate")}</th>
-                        <th>{t("tourPackagesTab.endDate")}</th>
-                        <th>{t("tourPackagesTab.priceSingle")}</th>
-                        <th>{t("tourPackagesTab.availableSeats")}</th>
-                        <th>{t("tourPackagesTab.avgRating")}</th>
-                        <th>{t("tourPackagesTab.actions")}</th>
+                        <th>{t("Name")}</th>
+                        <th>{t("Package Status")}</th>
+                        <th>{t("Start Date")}</th>
+                        <th>{t("End Date")}</th>
+                        <th>{t("Price")}</th>
+                        <th>{t("Available Seats")}</th>
+                        <th>{t("Avg. Rating")}</th>
+                        <th>{t("Actions")}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -674,7 +674,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     }}
                                     disabled={pkg.status === PackageStatus.CANCELLED || pkg.status === PackageStatus.COMPLETED} // Disable if status is CANCELLED
                                 >
-                                    {t("tourPackagesTab.editPackage")}
+                                    {t("Edit Package")}
                                 </Button>
                                 {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
                                     <Button
@@ -686,7 +686,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                             setShowModal(true);
                                         }}
                                     >
-                                        {t("tourPackagesTab.cancelPackage")}
+                                        {t("Cancel Package")}
                                     </Button>
                                 )}
                                 <Button
@@ -694,18 +694,18 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     className="ms-2"
                                     onClick={() => navigate(`/bookings?packageId=${pkg.packageId}`)}
                                 >
-                                    {t("tourPackagesTab.viewBookings")}
+                                    {t("View Bookings")}
                                 </Button>
                                 <Button variant="outline-secondary"
                                     className="ms-2"
                                     onClick={() => handleViewAllReviews(pkg.packageId)}>
-                                    {t("tourPackagesTab.viewAllReviews")}
+                                    {t("View All Reviews")}
                                 </Button>
                                 <Button variant="outline-secondary"
                                     className="ms-2"
                                     onClick={() => handleUpdateSeats(pkg.packageId, 1)} // Example: Decrease by 1
                                 >
-                                    {loading ? t("tourPackagesTab.decreaseSeats") : t("tourPackagesTab.decreaseSeats")}
+                                    {loading ? "Decrease Seats" : "Decrease Seats"}
                                 </Button>
                                 {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
                                     <Button
@@ -717,7 +717,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                             setStatusModalVisible(true);
                                         }}
                                     >
-                                        {t("tourPackagesTab.changeStatus")}
+                                        {t("Change Status")}
                                     </Button>
                                 )}
                             </td>
@@ -731,38 +731,38 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {modalType === "create"
-                            ? t("tourPackagesTab.createPackage")
+                            ? t("Create Package")
                             : modalType === "review"
-                                ? t("tourPackagesTab.addReview")
+                                ? t("Add Review")
                                 : modalType === "update"
-                                    ? t("tourPackagesTab.editPackage")
+                                    ? t("Edit Package")
                                     : modalType === "cancel"
-                                        ? t("tourPackagesTab.cancelPackage")
+                                        ? t("Cancel Package")
                                         : modalType === "view"
-                                            ? t("tourPackagesTab.viewPackage")
-                                            : t("tourPackagesTab.viewReviews")}
+                                            ? t("View Package")
+                                            : t("View Reviews")}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {modalType === "cancel" ? (
-                        <p>{t("tourPackagesTab.areYouSureCancel")}</p>
+                        <p>{t("Are you sure you want to cancel this package? This action cannot be undone.")}</p>
                     ) : modalType === "view" ? (
                         <div>
-                            <p><strong>{t("tourPackagesTab.packageName")}:</strong> {selectedPackage?.name}</p>
-                            <p><strong>{t("tourPackagesTab.packageDescription")}:</strong> {selectedPackage?.description}</p>
-                            <p><strong>{t("tourPackagesTab.startDate")}:</strong> {selectedPackage?.startDate}</p>
-                            <p><strong>{t("tourPackagesTab.endDate")}:</strong> {selectedPackage?.endDate}</p>
-                            <p><strong>{t("tourPackagesTab.priceSingle")}:</strong> {selectedPackage?.priceSingle}</p>
-                            <p><strong>{t("tourPackagesTab.priceDouble")}:</strong> {selectedPackage?.priceDouble}</p>
-                            <p><strong>{t("tourPackagesTab.priceTriple")}:</strong> {selectedPackage?.priceTriple}</p>
-                            <p><strong>{t("tourPackagesTab.availableSeats")}:</strong> {selectedPackage?.availableSeats}</p>
-                            <p><strong>{t("tourPackagesTab.totalSeats")}:</strong> {selectedPackage?.totalSeats}</p>
-                            <p><strong>{t("tourPackagesTab.packageStatus")}:</strong> {selectedPackage?.status}</p>
+                            <p><strong>{t("packageName")}:</strong> {selectedPackage?.name}</p>
+                            <p><strong>{t("packageDescription")}:</strong> {selectedPackage?.description}</p>
+                            <p><strong>{t("startDate")}:</strong> {selectedPackage?.startDate}</p>
+                            <p><strong>{t("endDate")}:</strong> {selectedPackage?.endDate}</p>
+                            <p><strong>{t("priceSingle")}:</strong> {selectedPackage?.priceSingle}</p>
+                            <p><strong>{t("priceDouble")}:</strong> {selectedPackage?.priceDouble}</p>
+                            <p><strong>{t("priceTriple")}:</strong> {selectedPackage?.priceTriple}</p>
+                            <p><strong>{("availableSeats")}:</strong> {selectedPackage?.availableSeats}</p>
+                            <p><strong>{("totalSeats")}:</strong> {selectedPackage?.totalSeats}</p>
+                            <p><strong>{("packageStatus")}:</strong> {selectedPackage?.status}</p>
                         </div>
                     ) : modalType === "review" ? (
                         <Form onSubmit={handleReviewSubmit}>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.reviewerName")}</Form.Label>
+                                <Form.Label>{t("Reviewer Name")}</Form.Label>
                                 <Form.Control
                                     required
                                     type="text"
@@ -773,12 +773,12 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     isInvalid={reviewErrors.reviewerName}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {t("tourPackagesTab.reviewerNameRequired")}
+                                    {t("Reviewer Name Required")}
                                 </Form.Control.Feedback>
                             </Form.Group>
 
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.reviewDescription")}</Form.Label>
+                                <Form.Label>{t("Review Description")}</Form.Label>
                                 <Form.Control
                                     as="textarea"
                                     value={reviewData.description}
@@ -789,22 +789,22 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     isInvalid={reviewErrors.description}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {t("tourPackagesTab.reviewDescriptionRequired")}
+                                    {t("Review Description Required")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.rating")}</Form.Label>
+                                <Form.Label>{t("Rating")}</Form.Label>
                                 <div>{getStars(reviewData.rating, handleStarClick)}</div>
                                 <Form.Control.Feedback type="invalid">
-                                    {t("tourPackagesTab.ratingRequired")}
+                                    {t("Rating Required")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={() => setShowModal(false)}>
-                                    {t("tourPackagesTab.cancel")}
+                                    {t("Cancel")}
                                 </Button>
                                 <Button type="submit" variant="primary">
-                                    {t("tourPackagesTab.submitReview")}
+                                    {t("Submit Review")}
                                 </Button>
                             </Modal.Footer>
                         </Form>
@@ -812,7 +812,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.packageName")}</Form.Label>
+                                <Form.Label>{t("packageName")}</Form.Label>
                                 <Form.Control
                                     required
                                     type="text"
@@ -823,11 +823,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     isInvalid={formErrors.name}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {t("tourPackagesTab.packageNameRequired")}
+                                    {t("packageNameRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.packageDescription")}</Form.Label>
+                                <Form.Label>{t("packageDescription")}</Form.Label>
                                 <Form.Control
                                     as="textarea"
                                     value={formData.description}
@@ -838,11 +838,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     isInvalid={formErrors.description}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {t("tourPackagesTab.packageDescriptionRequired")}
+                                    {t("packageDescriptionRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.startDate")}</Form.Label>
+                                <Form.Label>{t("startDate")}</Form.Label>
                                 <Form.Control
                                     type="date"
                                     value={formData.startDate}
@@ -853,11 +853,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     disabled={!isStartDateEditable} // Disable if booking status is BOOKING_OPEN
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {formErrors.startDate ? t("tourPackagesTab.startDateRequired") : t("tourPackagesTab.startDateBeforeEndDate")}
+                                    {formErrors.startDate ? t("startDateRequired") : t("startDateBeforeEndDate")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.endDate")}</Form.Label>
+                                <Form.Label>{t("endDate")}</Form.Label>
                                 <Form.Control
                                     type="date"
                                     value={formData.endDate}
@@ -867,11 +867,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     isInvalid={formErrors.endDate || formErrors.dateOrder}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {formErrors.endDate ? t("tourPackagesTab.endDateRequired") : t("tourPackagesTab.startDateBeforeEndDate")}
+                                    {formErrors.endDate ? t("endDateRequired") : t("startDateBeforeEndDate")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.priceSingle")}</Form.Label>
+                                <Form.Label>{t("priceSingle")}</Form.Label>
                                 <Form.Control
                                     type="number"
                                     value={formData.priceSingle}
@@ -881,11 +881,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     isInvalid={formErrors.priceSingle}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {t("tourPackagesTab.priceSingleRequired")}
+                                    {t("priceSingleRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.priceDouble")}</Form.Label>
+                                <Form.Label>{t("priceDouble")}</Form.Label>
                                 <Form.Control
                                     type="number"
                                     value={formData.priceDouble}
@@ -895,7 +895,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.priceTriple")}</Form.Label>
+                                <Form.Label>{t("priceTriple")}</Form.Label>
                                 <Form.Control
                                     type="number"
                                     value={formData.priceTriple}
@@ -905,7 +905,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.airport")}</Form.Label>
+                                <Form.Label>{t("airport")}</Form.Label>
                                 <Form.Control
                                     as="select"
                                     value={formData.airportId}
@@ -914,7 +914,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     }
                                     isInvalid={formErrors.airportId}
                                 >
-                                    <option value="">{t("tourPackagesTab.selectAirport")}</option>
+                                    <option value="">{t("selectAirport")}</option>
                                     {airports.map((airport) => (
                                         <option key={airport.airportId} value={airport.airportId}>
                                             {airport.name}
@@ -922,11 +922,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     ))}
                                 </Form.Control>
                                 <Form.Control.Feedback type="invalid">
-                                    {t("tourPackagesTab.airportRequired")}
+                                    {t("airportRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.totalSeats")}</Form.Label>
+                                <Form.Label>{t("totalSeats")}</Form.Label>
                                 <Form.Control
                                     type="number"
                                     value={formData.totalSeats}
@@ -953,10 +953,10 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             )}
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={() => setShowModal(false)}>
-                                    {t("tourPackagesTab.cancel")}
+                                    {t("cancel")}
                                 </Button>
                                 <Button type="submit" variant="primary">
-                                    {t("tourPackagesTab.save")}
+                                    {t("save")}
                                 </Button>
                             </Modal.Footer>
                         </Form>
@@ -965,10 +965,10 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 {modalType === "cancel" && (
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setShowModal(false)}>
-                            {t("tourPackagesTab.cancel")}
+                            {t("Cancel")}
                         </Button>
                         <Button variant="danger" onClick={handleCancelPackage}>
-                            {t("tourPackagesTab.confirm")}
+                            {t("Confirm")}
                         </Button>
                     </Modal.Footer>
                 )}
@@ -976,11 +976,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
 
             <Modal show={statusModalVisible} onHide={() => setStatusModalVisible(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{t("tourPackagesTab.changePackageStatus")}</Modal.Title>
+                    <Modal.Title>{t("Change Package Status")}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form.Group>
-                        <Form.Label>{t("tourPackagesTab.selectNewStatus")}</Form.Label>
+                        <Form.Label>{t("Select New Status")}</Form.Label>
                         <Form.Control
                             as="select"
                             value={newStatus || ""}
@@ -989,19 +989,19 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 setNewStatus(selectedValue);
                             }}
                         >
-                            <option value="">{t("tourPackagesTab.selectStatus")}</option>
-                            <option value={PackageStatus.BOOKING_OPEN}>{t("tourPackagesTab.bookingOpen")}</option>
-                            <option value={PackageStatus.BOOKING_CLOSED}>{t("tourPackagesTab.bookingClosed")}</option>
-                            <option value={PackageStatus.COMPLETED}>{t("tourPackagesTab.completed")}</option>
+                            <option value="">{t("Select Status")}</option>
+                            <option value={PackageStatus.BOOKING_OPEN}>{t("Booking Open")}</option>
+                            <option value={PackageStatus.BOOKING_CLOSED}>{t("Booking Closed")}</option>
+                            <option value={PackageStatus.COMPLETED}>{t("Completed")}</option>
                         </Form.Control>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setStatusModalVisible(false)}>
-                        {t("tourPackagesTab.cancel")}
+                        {t("Cancel")}
                     </Button>
                     <Button variant="primary" onClick={handleStatusChange} disabled={!newStatus}>
-                        {t("tourPackagesTab.changeStatus")}
+                        {t("Change Status")}
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -1009,9 +1009,9 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             <ToastContainer position="top-end" className="p-3">
                 <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide>
                     <Toast.Header>
-                        <strong className="me-auto">{t("tourPackagesTab.notification")}</strong>
+                        <strong className="me-auto">{t("Notification")}</strong>
                     </Toast.Header>
-                    <Toast.Body>{t("tourPackagesTab.packageCanceled")}</Toast.Body>
+                    <Toast.Body>{t("Package has been canceled successfully.")}</Toast.Body>
                 </Toast>
             </ToastContainer>
         </div>

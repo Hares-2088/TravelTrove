@@ -18,7 +18,7 @@ const PackageDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const { isAuthenticated, user, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -66,10 +66,6 @@ const PackageDetails: React.FC = () => {
     }
   };
 
-  const handleLogin = async () => {
-    await loginWithRedirect();
-  };
-
   if (loading) return <Spinner animation="border" className="loading-spinner" />;
   if (error) return <Alert variant="danger" className="error-alert">{error}</Alert>;
   if (!pkg) return <Alert variant="info" className="info-alert">{t('noPackageDetails')}</Alert>;
@@ -96,13 +92,13 @@ const PackageDetails: React.FC = () => {
               </Col>
             </Row>
             <div className="package-actions">
-              {isAuthenticated ? (
+              {isAuthenticated && pkg.status !== "UPCOMING" && pkg.status !== "SOLD_OUT" && (
+                <Button variant="dark" onClick={handleBook} className="action-button book-button">
+                  {t('bookNow')}
+                </Button>
+              )}
+              {isAuthenticated && (
                 <>
-                  {pkg.status !== "UPCOMING" && pkg.status !== "SOLD_OUT" && (
-                    <Button variant="dark" onClick={handleBook} className="action-button book-button">
-                      {t('bookNow')}
-                    </Button>
-                  )}
                   {isSubscribed ? (
                     <Button variant="danger" onClick={handleUnsubscribe} className="action-button unsubscribe-button">
                       {t('unsubscribe')}
@@ -113,13 +109,6 @@ const PackageDetails: React.FC = () => {
                     </Button>
                   )}
                 </>
-              ) : (
-                <Alert variant="info" className="info-alert">
-                  {t('pleaseLoginToBookOrSubscribe')}
-                  <Button variant="primary" onClick={handleLogin} className="ms-2">
-                    {t('signIn')}
-                  </Button>
-                </Alert>
               )}
             </div>
           </Card.Body>
