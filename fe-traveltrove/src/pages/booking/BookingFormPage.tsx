@@ -28,7 +28,6 @@ const BookingFormPage: React.FC = () => {
       const response = await axiosInstance.post("payments/create-checkout-session", {
         amount: amountInCents,
         currency: "usd",
-        packageName: pkg.name,
         packageId: pkg.packageId,
         successUrl: `${feBaseURL}/payment-success`, 
         cancelUrl: `${feBaseURL}/payment-cancelled`,   
