@@ -519,7 +519,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                         setShowModal(true);
                     }}
                 >
-                    {t("tourPackagesTab.CreatePackage")}
+                    {t("tourPackagesTab.createPackage")}
                 </Button>
                 <Button variant="outline-secondary" onClick={() => setShowFilters(!showFilters)}>
                     <FaFilter /> {t("tourPackagesTab.filters")}

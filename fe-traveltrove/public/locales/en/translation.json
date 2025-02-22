@@ -348,5 +348,24 @@
     "totalSeats": "Total Seats",
     "selectAirport": "Select Airport",
     "CreatePackage": "Create Package"
+  },
+  "bookings": {
+    "bookings": "Bookings",
+    "userName": "User Name",
+    "totalPrice": "Total Price",
+    "status": "Status",
+    "bookingDate": "Booking Date",
+    "revenue": "Revenue",
+    "actions": "Actions",
+    "updateStatus": "Update Status",
+    "hideTravelers": "Hide Travelers",
+    "showTravelers": "Show Travelers",
+    "updateBookingStatus": "Update Booking Status",
+    "viewBooking": "View Booking",
+    "cancel": "Cancel",
+    "save": "Save",
+    "noAmount": "No Amount",
+    "noCurrency": "No Currency",
+    "statusRequired": "Status is required"
   }
 }

@@ -340,5 +340,24 @@
     "availableSeats": "Places disponibles",
     "totalSeats": "Places totales",
     "selectAirport": "Sélectionner un aéroport"
+  },
+  "bookings": {
+    "bookings": "Réservations",
+    "userName": "Nom d'utilisateur",
+    "totalPrice": "Prix total",
+    "status": "Statut",
+    "bookingDate": "Date de réservation",
+    "revenue": "Revenu",
+    "actions": "Actions",
+    "updateStatus": "Mettre à jour le statut",
+    "hideTravelers": "Masquer les voyageurs",
+    "showTravelers": "Afficher les voyageurs",
+    "updateBookingStatus": "Mettre à jour le statut de la réservation",
+    "viewBooking": "Voir la réservation",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "noAmount": "Pas de montant",
+    "noCurrency": "Pas de devise",
+    "statusRequired": "Le statut est requis"
   }
 }

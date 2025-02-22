@@ -158,7 +158,7 @@ const Bookings: React.FC = () => {
       >
         <Card.Body className="p-4">
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3>{t("Bookings")}</h3>
+            <h3>{t("bookings.bookings")}</h3>
           </div>
 
           <Card className="rounded shadow-sm border-0">
@@ -166,12 +166,12 @@ const Bookings: React.FC = () => {
               <Table bordered hover responsive className="rounded custom-table">
                 <thead className="bg-light">
                   <tr>
-                    <th>{t("User Name")}</th>
-                    <th>{t("Total Price")}</th>
-                    <th>{t("Status")}</th>
-                    <th>{t("Booking Date")}</th>
-                    <th>{t("revenue")}</th>
-                    <th>{t("Actions")}</th>
+                    <th>{t("bookings.userName")}</th>
+                    <th>{t("bookings.totalPrice")}</th>
+                    <th>{t("bookings.status")}</th>
+                    <th>{t("bookings.bookingDate")}</th>
+                    <th>{t("bookings.revenue")}</th>
+                    <th>{t("bookings.actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -184,8 +184,8 @@ const Bookings: React.FC = () => {
                             <td>{formatStatus(booking.status)}</td>
                             {/* Format status */}
                             <td>{booking.bookingDate}</td>
-                            <td>{paymentDetails[booking.bookingId]?.amount !== undefined ? `$${((paymentDetails[booking.bookingId].amount) / 100).toFixed(2)}` : t('noAmount')}
-                                &nbsp;({paymentDetails[booking.bookingId]?.currency || t('noCurrency')})
+                            <td>{paymentDetails[booking.bookingId]?.amount !== undefined ? `$${((paymentDetails[booking.bookingId].amount) / 100).toFixed(2)}` : t('bookings.noAmount')}
+                                &nbsp;({paymentDetails[booking.bookingId]?.currency || t('bookings.noCurrency')})
                             </td>
                             <td>
                                 {booking.status !== BookingStatus.REFUNDED && (
@@ -211,7 +211,7 @@ const Bookings: React.FC = () => {
                                             setShowModal(true);
                                         }}
                                     >
-                                        {t("Update Status")}
+                                        {t("bookings.updateStatus")}
                                     </Button>
                                 )}
                                 <Button
@@ -219,7 +219,7 @@ const Bookings: React.FC = () => {
                                     onClick={() => booking.travelerIds && toggleTravelersList(booking.bookingId, booking.travelerIds)}
                                     className="ml-2"
                                 >
-                                    {openBookingId === booking.bookingId ? t("Hide Travelers") : t("Show Travelers")}
+                                    {openBookingId === booking.bookingId ? t("bookings.hideTravelers") : t("bookings.showTravelers")}
                                 </Button>
                             </td>
                         </tr>
@@ -255,32 +255,32 @@ const Bookings: React.FC = () => {
           >
             <Modal.Header closeButton>
               <Modal.Title>
-                {modalType === "updateStatus" ? t("Update Booking Status") : t("View Booking")}
+                {modalType === "updateStatus" ? t("bookings.updateBookingStatus") : t("bookings.viewBooking")}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {modalType === "view" ? (
                 <div>
                   <p>
-                    <strong>{t("User Name")}:</strong> {userNames[selectedBooking?.userId || ""]}
+                    <strong>{t("bookings.userName")}:</strong> {userNames[selectedBooking?.userId || ""]}
                   </p>
                   <p>
-                    <strong>{t("Total Price")}:</strong>{" "}
+                    <strong>{t("bookings.totalPrice")}:</strong>{" "}
                     {selectedBooking?.totalPrice}
                   </p>
                   <p>
-                    <strong>{t("Status")}:</strong>{" "}
+                    <strong>{t("bookings.status")}:</strong>{" "}
                     {selectedBooking?.status ? formatStatus(selectedBooking.status) : ""}
                   </p>
                   <p>
-                    <strong>{t("Booking Date")}:</strong>{" "}
+                    <strong>{t("bookings.bookingDate")}:</strong>{" "}
                     {selectedBooking?.bookingDate}
                   </p>
                 </div>
               ) : (
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3">
-                    <Form.Label>{t("Status")}</Form.Label>
+                    <Form.Label>{t("bookings.status")}</Form.Label>
                     <Form.Control
                       as="select"
                       value={formData.status}
@@ -314,7 +314,7 @@ const Bookings: React.FC = () => {
                       )}
                     </Form.Control>
                     <Form.Control.Feedback type="invalid">
-                      {t("Status is required")}
+                      {t("bookings.statusRequired")}
                     </Form.Control.Feedback>
                   </Form.Group>
                   <Modal.Footer>
@@ -322,10 +322,10 @@ const Bookings: React.FC = () => {
                       variant="secondary"
                       onClick={() => setShowModal(false)}
                     >
-                      {t("Cancel")}
+                      {t("bookings.cancel")}
                     </Button>
                     <Button type="submit" variant="primary">
-                      {t("Save")}
+                      {t("bookings.save")}
                     </Button>
                   </Modal.Footer>
                 </Form>
