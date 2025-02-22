@@ -76,18 +76,18 @@ export const usePackagesApi = () => {
 
         const payload = { status }; // Ensure this key matches the backend DTO
 
-        console.log(`📢 Sending request to update package status:`, JSON.stringify(payload, null, 2));
+
 
         try {
             const currentPackage = await getPackageById(packageId);
-            console.log(`Current package status: ${currentPackage.status}, Requested status: ${status}`);
+            
 
             const response = await axiosInstance.patch<PackageResponseModel>(
                 `/packages/${packageId}/status`,
                 payload
             );
 
-            console.log(`✅ Successfully updated package status:`, response.data);
+
             return response.data;
         } catch (error) {
             console.error(`❌ Error updating package status for ${packageId}:`, error);

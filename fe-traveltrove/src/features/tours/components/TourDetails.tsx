@@ -34,11 +34,11 @@ const TourDetails: React.FC = () => {
 
     const fetchTour = async () => {
       try {
-        console.log(`📢 Fetching tour details for tourId=${tourId}`);
+        
         const data = await getTourByTourId(tourId);
 
         if (isMounted) {
-          console.log(`✅ Tour details loaded for tourId=${tourId}`, data);
+
           setTour(data);
         }
       } catch (err) {

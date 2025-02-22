@@ -170,7 +170,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pkg, onSubmit }) => {
       travelers: [...selectedTravelers, ...newTravelers],
     };
 
-    console.log("Booking Request:", bookingRequest);
+
     onSubmit(bookingRequest);
   };
 

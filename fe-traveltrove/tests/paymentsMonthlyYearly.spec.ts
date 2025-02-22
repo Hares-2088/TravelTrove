@@ -19,14 +19,14 @@ test("download payments csv", async ({ page }) => {
   const download = await downloadPromise;
 
   const suggestedFilename = download.suggestedFilename();
-  console.log("Downloaded file:", suggestedFilename);
+
   expect(suggestedFilename).toMatch(/revenue-report-\d{4}-?.*\.csv/);
 
   const savePath = path.join(__dirname, suggestedFilename);
 
   // Save the file
   await download.saveAs(savePath);
-  console.log(`File saved at: ${savePath}`);
+  
 
   // Verify that the file exists
   expect(fs.existsSync(savePath)).toBeTruthy();
@@ -39,7 +39,7 @@ test("download payments csv", async ({ page }) => {
   );
 
   fs.unlinkSync(savePath);
-  console.log("File deleted after verification");
+  
 
   await page.close();
 });

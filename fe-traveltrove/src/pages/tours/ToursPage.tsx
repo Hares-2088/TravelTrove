@@ -6,7 +6,7 @@ import './ToursPage.css';
 
 const ToursPage: FC = (): JSX.Element => {
   useEffect(() => {
-    console.log("🚀 ToursPage rendered");
+    
   }, []);
 
   return (

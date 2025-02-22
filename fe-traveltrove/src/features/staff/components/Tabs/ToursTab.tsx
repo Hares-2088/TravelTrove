@@ -298,7 +298,7 @@ const ToursTab: React.FC = () => {
                   onFileSelect={requestPresignedUrl}  // ✅ Pass the function that gets the pre-signed URL
                   presignedUrl={presignedUrl}  // ✅ Ensure this is updated
                   onUploadComplete={(imageUrl) => {
-                    console.log("Image uploaded successfully:", imageUrl);
+
                     setFormData({ ...formData, tourImageUrl: imageUrl });
                   }}
                   tourId={selectedTour ? selectedTour.tourId : null} // Pass tourId prop

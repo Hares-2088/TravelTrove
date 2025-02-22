@@ -14,10 +14,10 @@ const ToursList: React.FC = () => {
 
   const fetchTours = useCallback(async () => {
     try {
-      console.log("📢 Fetching tour list...");
+      
       const data = await getAllTours();
       setTours(data || []);
-      console.log("✅ Tours fetched successfully:", data);
+
     } catch (err) {
       console.error("❌ Failed to fetch tours:", err);
       setError("Failed to fetch tours.");
@@ -27,7 +27,7 @@ const ToursList: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log("🚀 useEffect triggered: Fetching tours...");
+    
     fetchTours();
   }, [fetchTours]);
 

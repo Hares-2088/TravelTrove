@@ -19,10 +19,10 @@ const NavBar: React.FC = () => {
 
   const handleLanguageChange = (lng: string) => {
     i18n.changeLanguage(lng);
-    console.log("Language switched to:", lng);
+
   };
 
-  console.log("Current Language:", i18n.language);
+
 
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
     useAuth0();
