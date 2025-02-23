@@ -225,7 +225,7 @@ const EventsTab: React.FC = () => {
             }}
           />
           <div
-            className="dashboard-scrollbar"
+            
             style={{ maxHeight: "700px", overflowY: "auto" }}
           >
             <Table bordered hover responsive className="rounded">

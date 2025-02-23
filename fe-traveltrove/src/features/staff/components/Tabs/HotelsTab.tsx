@@ -151,7 +151,7 @@ const HotelsTab: React.FC = () => {
             </Button>
           </div>
           <div
-            className="dashboard-scrollbar"
+            
             style={{ maxHeight: "700px", overflowY: "auto" }}
           >
             <Table
