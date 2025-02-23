@@ -197,7 +197,7 @@ const Bookings: React.FC = () => {
                 <thead className="bg-light">
                   <tr>
                     <th>{t("User Name")}</th>
-                    <th>{t("Total Price")}</th>
+                    {/* <th>{t("Total Price")}</th> */}
                     <th>{t("Status")}</th>
                     <th>{t("Booking Date")}</th>
                     <th>{t("revenue")}</th>
@@ -210,7 +210,7 @@ const Bookings: React.FC = () => {
                       <tr>
                       <td>{userNames[booking.bookingId]}</td>
                       {/* Display user name */}
-                        <td>{booking.totalPrice}</td>
+                        {/* <td>{booking.totalPrice}</td> */}
                         <td>{formatStatus(booking.status)}</td>
                         {/* Format status */}
                         <td>{booking.bookingDate}</td>

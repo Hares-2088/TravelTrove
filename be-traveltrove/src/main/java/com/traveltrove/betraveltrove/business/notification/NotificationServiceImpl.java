@@ -168,28 +168,43 @@ public class NotificationServiceImpl implements NotificationService {
                                      String description, String startDate, String endDate, String priceSingle) {
 
         return Mono.fromCallable(() -> {
-                    // Build email content
-                    String subject = "🚨 Low Quantity of Available Seats for " + name + " (" + packageId + ")!";
-                    String htmlContent = loadHtmlTemplate("admin-resource-alert-email.html",
-                            name, packageId, availableSeats, description, startDate, endDate, priceSingle);
+                    // 1. Provide safe defaults for null values
+                    String safeName         = (name         != null) ? name         : "Unknown Package";
+                    String safePackageId    = (packageId    != null) ? packageId    : "N/A";
+                    String safeSeats        = (availableSeats != null) ? availableSeats : "N/A";
+                    String safeDescription  = (description  != null) ? description  : "N/A";
+                    String safeStartDate    = (startDate    != null) ? startDate    : "N/A";
+                    String safeEndDate      = (endDate      != null) ? endDate      : "N/A";
+                    String safePriceSingle  = (priceSingle  != null) ? priceSingle  : "N/A";
 
-                    // Create MimeMessage
+                    // 2. Build the email subject and load the template
+                    String subject = "🚨 Low Quantity of Available Seats for " + safeName + " (" + safePackageId + ")!";
+                    String htmlContent = loadHtmlTemplate(
+                            "admin-resource-alert-email.html",
+                            safeName,       // {{arg0}}
+                            safePackageId,  // {{arg1}}
+                            safeSeats,      // {{arg2}}
+                            safeDescription,// {{arg3}}
+                            safeStartDate,  // {{arg4}}
+                            safeEndDate,    // {{arg5}}
+                            safePriceSingle // {{arg6}}
+                    );
+
+                    // 3. Create and send the MimeMessage
                     MimeMessage message = mailSender.createMimeMessage();
                     MimeMessageHelper helper = new MimeMessageHelper(message, true);
                     helper.setTo(to);
                     helper.setSubject(subject);
-                    helper.setText(htmlContent, true);  // Set the email content
-                    helper.setFrom("traveltrove.notifications@gmail.com");  // Your sender email
+                    helper.setText(htmlContent, true);
+                    helper.setFrom("traveltrove.notifications@gmail.com");
 
+                    mailSender.send(message);
 
-                    // Send email
-                    mailSender.send(message);  // This will throw an exception if it fails
-
-                    // Return a notification to be saved (optional, depending on your implementation)
+                    // 4. Optionally save a Notification record
                     return new Notification(UUID.randomUUID().toString(), to, subject, htmlContent);
                 })
-                .flatMap(notificationRepository::save)  // Save notification if needed (optional)
-                .then();  // Return Mono<Void> as expected
+                .flatMap(notificationRepository::save)
+                .then();
     }
 
 
@@ -247,7 +262,9 @@ public class NotificationServiceImpl implements NotificationService {
 
             String htmlContent = content.toString();
             for (int i = 0; i < templateArgs.length; i++) {
-                htmlContent = htmlContent.replace("{{arg" + i + "}}", templateArgs[i]);
+                // provide a fallback if templateArgs[i] is null
+                String safeArg = (templateArgs[i] != null) ? templateArgs[i] : "N/A";
+                htmlContent = htmlContent.replace("{{arg" + i + "}}", safeArg);
             }
 
             return htmlContent;
