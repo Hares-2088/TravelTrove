@@ -32,8 +32,8 @@ const UploadImage: React.FC<UploadImageProps> = ({ onUploadComplete, tourId }) =
         setPresignedUrl(url);
         setExpectedContentType(contentType);
 
-        console.log("Pre-signed URL:", url);
-        console.log("Expected Content-Type:", contentType);
+
+
       } catch (error) {
         console.error("Error generating pre-signed URL:", error);
         setError("Failed to generate pre-signed URL.");
@@ -67,7 +67,7 @@ const UploadImage: React.FC<UploadImageProps> = ({ onUploadComplete, tourId }) =
       toast.success("Upload successful!"); // Show success message
       setImage(null); // Reset image state
       setPresignedUrl(null); // Reset presigned URL state
-      console.log("Upload success! Image URL:", uploadedImageUrl);
+
     } catch (error) {
       console.error("Upload failed:", error);
       setError("Upload failed. Please try again.");

@@ -19,7 +19,7 @@ const HomeDetails: React.FC = () => {
   // Fetch tours
   const fetchTours = useCallback(async () => {
     try {
-      console.log('📢 Fetching tours...');
+      
       const [allTours, umrahData, hajjData] = await Promise.all([
         getAllTours(),
         getTourByTourId('6a237fda-4924-4c73-a6df-73c1e0c37af2'), // Umrah tourId
@@ -29,7 +29,7 @@ const HomeDetails: React.FC = () => {
       setTours(filteredTours.slice(0, 10)); // Get first 10 tours
       setUmrahTour(umrahData);
       setHajjTour(hajjData);
-      console.log('✅ Tours fetched successfully:', filteredTours);
+
     } catch (err) {
       console.error('❌ Failed to fetch tours:', err);
       setError(t('error.fetchTours'));
@@ -39,7 +39,7 @@ const HomeDetails: React.FC = () => {
   }, [t]);
 
   useEffect(() => {
-    console.log('🚀 useEffect triggered: Fetching tours...');
+    
     fetchTours();
   }, [fetchTours]);
 

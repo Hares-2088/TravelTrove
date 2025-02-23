@@ -8,7 +8,7 @@ export const useReviewsApi = () => {
   const getReviewsByPackage = async (packageId: string): Promise<ReviewResponseModel[]> => {
     try {
       const response = await axiosInstance.get(`/reviews/${packageId}`);
-      console.log("Fetched Reviews:", response.data);
+
       return response.data;
     } catch (error) {
       console.error("Error fetching reviews:", error);

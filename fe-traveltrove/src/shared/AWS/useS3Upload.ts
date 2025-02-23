@@ -14,7 +14,7 @@ export const useS3Upload = () => {
             { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        console.log("Pre-signed URL response:", response.data);  // ✅ Log response
+
 
         // ✅ Check if the URL contains the correct AWS region
         if (!response.data.presignedUrl.includes(`.${awsRegion}.`)) {
@@ -22,7 +22,7 @@ export const useS3Upload = () => {
         }
 
         const presignedUrl = response.data.presignedUrl;
-        console.log("Pre-Signed URL from backend:", presignedUrl); // ✅ Log pre-signed URL
+
 
         return {
             url: presignedUrl,
@@ -32,16 +32,16 @@ export const useS3Upload = () => {
 
     // Upload a file using an **already provided pre-signed URL**
     const uploadFileToS3 = async (file: File, presignedUrl: string, expectedContentType: string): Promise<string> => {
-        console.log("Uploading file:", file.name);
-        console.log("Using pre-signed URL:", presignedUrl);
-        console.log("Decoded URL:", decodeURIComponent(presignedUrl)); // ✅ Log decoded URL
-        console.log("Expected Content-Type:", expectedContentType);
+
+
+
+
 
         if (!expectedContentType) {
             throw new Error("Missing expected content type. Ensure pre-signed URL response includes contentType.");
         }
 
-        console.log("Uploading to:", new URL(presignedUrl).toString()); // ✅ Log uploading URL
+
 
         const response = await fetch(presignedUrl, {
             method: "PUT",

@@ -36,7 +36,7 @@ export const useUsersApi = () => {
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
-          console.log(`User with ID ${userId} not found (404).`);
+          
           return null; // Return null to indicate user not found
         }
       }
