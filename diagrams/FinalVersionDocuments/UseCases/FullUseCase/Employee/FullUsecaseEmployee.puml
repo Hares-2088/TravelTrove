@@ -1,0 +1,71 @@
+@startuml
+left to right direction
+
+' Add a header with left alignment
+header
+Dar El Salam
+endheader
+
+' Custom skin parameters for use cases
+skinparam usecase {
+    BackgroundColor lightblue
+    BorderColor DarkSlateGray
+    ArrowColor Black
+}
+
+actor "Dar El Salam's Employee" as Employee
+
+rectangle "Travel Trove System" {
+
+    usecase "Browse packages"
+    usecase "Add package"
+    usecase "Modify package"
+    usecase "Filter search result"
+    usecase "Custom notification"
+    usecase "Manage events"
+    usecase "Manage tours"
+    usecase "Manage countries"
+    usecase "Manage cities"
+    usecase "Manage tour events"
+'    usecase "View Account"
+'    usecase "Edit Account"
+    usecase "Manage hotels"
+    usecase "Manage airports"
+
+    usecase "Access package bookings"
+'    usecase "Assign a Traveler to booking"
+'    usecase "Remove a Traveler from booking"
+    usecase "View Travelers"
+    usecase "View Traveler Details"
+
+    usecase "View Package Reviews"
+    usecase "View All Reviews"
+    usecase "Remove a Review"
+}
+Employee -- "Browse packages"
+Employee -- "Manage events"
+Employee -- "Manage tours"
+Employee -- "Manage countries"
+Employee -- "Manage cities"
+'Employee -- "View Account"
+Employee -- "Manage hotels"
+Employee -- "Manage airports"
+Employee -- "Access package bookings"
+Employee -- "View All Reviews"
+
+"Browse packages" <.. "Filter search result" : <<extend>>
+"Browse packages" <.. "Add package" : <<extend>>
+"Browse packages" <.. "Modify package" : <<extend>>
+"Browse packages" <.. "View Package Reviews" : <<extend>>
+"Modify package" <.. "Custom notification" : <<extend>>
+"Modify package" <.. "Filter search result" : <<extend>>
+"Manage tours" <.. "Manage tour events" : <<extend>>
+'"View Account" <.. "Edit Account" : <<extend>>
+'"Access package bookings" <.. "Assign a Traveler to booking" : <<extend>>
+'"Access package bookings" <.. "Remove a Traveler from booking" : <<extend>>
+"Access package bookings" <.. "View Travelers" : <<extend>>
+"View Travelers" <.. "View Traveler Details" : <<extend>>
+"View All Reviews" ..> "Remove a Review" : <<extend>>
+"View Package Reviews" ..> "Remove a Review" : <<extend>>
+
+@enduml

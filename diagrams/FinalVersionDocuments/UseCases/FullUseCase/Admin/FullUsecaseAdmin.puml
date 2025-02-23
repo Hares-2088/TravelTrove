@@ -6,11 +6,9 @@ header
 Dar El Salam
 endheader
 
-' Custom skin parameters for use cases
 skinparam usecase {
     BackgroundColor lightblue
     BorderColor DarkSlateGray
-    ArrowColor Black
     ArrowColor Black
 }
 
@@ -18,16 +16,16 @@ actor "Dar El Salam's Admin" as Admin
 
 rectangle "Travel Trove System" {
 
-    usecase "Manage an employee account"
-    usecase "Manage Roles"
+    usecase "Manage user accounts"
+    usecase "Control Roles"
     usecase "Generate report"
     usecase "Remove a tour package"
 
 }
 
-"Manage an employee account" ..> "Manage Roles" : <<include>>
+"Manage user accounts" ..> "Control Roles" : <<include>>
 Admin <|-- Employee
-Admin -- "Manage an employee account"
+Admin -- "Manage user accounts"
 Admin -- "Generate report"
 Admin -- "Remove a tour package"
 
