@@ -226,24 +226,27 @@ public class BookingServiceImpl implements BookingService {
                     booking.setStatus(BookingStatus.BOOKING_CONFIRMED);
 
                     return packageService.decreaseAvailableSeats(booking.getPackageId(), booking.getTravelerIds().size())
-                            .doOnSuccess(updatedPackage -> log.info("✅ Successfully decreased available seats for packageId={}", booking.getPackageId()))
+                            .doOnSuccess(updatedPackage -> log.info("✅ Successfully decreased seats for packageId={}", booking.getPackageId()))
                             .doOnError(error -> log.error("❌ Error decreasing seats for packageId={}: {}", booking.getPackageId(), error.getMessage()))
                             .then(bookingRepository.save(booking))
                             .flatMap(savedBooking ->
                                     packageService.getPackageByPackageId(savedBooking.getPackageId())
-                                            .flatMap(tourPackage -> {
-                                                log.info("📧 Scheduling post-trip email for bookingId={}, packageId={}", savedBooking.getBookingId(), tourPackage.getPackageId());
-                                                schedulePostTripEmail(savedBooking, tourPackage);
-                                                return Mono.just(savedBooking);
+                                            .doOnSuccess(pkg -> {
+                                                try {
+                                                    log.info("📧 Attempting to schedule email");
+                                                    schedulePostTripEmail(savedBooking, pkg);
+                                                } catch (Exception e) {
+                                                    log.error("📧 Email scheduling failed: {}", e.getMessage());
+                                                }
                                             })
+                                            .onErrorResume(error -> {
+                                                log.error("📧 Package fetch failed but continuing: {}", error.getMessage());
+                                                return Mono.empty();
+                                            })
+                                            .thenReturn(savedBooking)
                             )
-//                            .flatMap(savedBooking ->
-//                                    subscriptionService.subscribeUserToPackage(savedBooking.getUserId(), savedBooking.getPackageId())
-//                                            .thenReturn(savedBooking)
-//                            )
-                            .doOnSuccess(savedBooking -> log.info("✅ Booking payment confirmed: bookingId={}, userId={}, packageId={}",
-                                    savedBooking.getBookingId(), savedBooking.getUserId(), savedBooking.getPackageId()))
-                            .doOnError(error -> log.error("❌ Failed to confirm booking payment: error={}", error.getMessage()));
+                            .doOnSuccess(savedBooking -> log.info("✅ Booking confirmed: bookingId={}", savedBooking.getBookingId()))
+                            .doOnError(error -> log.error("❌ Failed to confirm booking: {}", error.getMessage()));
                 })
                 .map(BookingEntityModelUtil::toBookingResponseModel);
     }
