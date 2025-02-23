@@ -2210,6 +2210,15 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
                         .bookingDate(LocalDate.now().plusMonths(3))
                         .totalPrice(2000.0)
+                        .build(),
+                // debo
+                Booking.builder()
+                        .bookingId("2a4fff75-5ad6-4ea7-b3ca-b7eca3cdda97")
+                        .userId("google-oauth2|115284042119137530811")
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b751d")
+                        .status(BookingStatus.BOOKING_CONFIRMED)
+                        .bookingDate(LocalDate.of(2024, 9, 15))
+                        .totalPrice(1800.0)
                         .build()
         );
 
