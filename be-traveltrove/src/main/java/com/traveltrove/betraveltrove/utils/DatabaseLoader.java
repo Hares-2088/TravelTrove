@@ -1608,6 +1608,23 @@ public class DatabaseLoader {
 
                 com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
                         .id(null)
+                        .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b751d")
+                        .name("New York Adventure Package")
+                        .description("Experience the thrill of New York City with a complete package including flights and guided tours.")
+                        .startDate(LocalDate.of(2024, 11, 15))
+                        .endDate(LocalDate.of(2025, 1, 22))
+                        .airportId("d1e91f6c-723e-43b9-812f-2f3d3bfb4081")
+                        .tourId("7f54a45d-8c1d-432f-a5c8-1f93b89bfe29")
+                        .priceSingle(1800.0)
+                        .priceDouble(1600.0)
+                        .priceTriple(1400.0)
+                        .totalSeats(130)
+                        .availableSeats(0)
+                        .status(PackageStatus.COMPLETED)
+                        .build(),
+
+                com.traveltrove.betraveltrove.dataaccess.tourpackage.Package.builder()
+                        .id(null)
                         .packageId("4f3a6bde-bc68-4b1e-835a-1e5aaf7b752b") // Unique ID for Hajj package
                         .name("Hajj Pilgrimage Package")
                         .description("Join us for the sacred pilgrimage of Hajj with comprehensive support and guidance.")

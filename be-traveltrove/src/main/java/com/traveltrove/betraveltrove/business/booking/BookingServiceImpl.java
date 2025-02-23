@@ -420,7 +420,7 @@ public class BookingServiceImpl implements BookingService {
                                 tourPackage.getDescription(),
                                 tourPackage.getStartDate().toString(),
                                 tourPackage.getEndDate().toString(),
-                                baseUrl
+                                baseUrl + "/packages/" + tourPackage.getPackageId()
                         )
                 ).subscribe();
             }, sendTime);

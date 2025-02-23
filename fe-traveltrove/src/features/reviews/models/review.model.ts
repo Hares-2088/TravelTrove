@@ -4,8 +4,6 @@ export interface ReviewRequestModel {
   reviewerName: string;
   rating: number;
   review: string;
-  date: string;
-  averageRating: number;
   }
 
 export interface ReviewResponseModel {

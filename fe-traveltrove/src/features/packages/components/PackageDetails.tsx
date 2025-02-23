@@ -4,7 +4,8 @@ import { usePackagesApi } from "../api/packages.api";
 import { PackageResponseModel } from "../models/package.model";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSubscriptionsApi } from "../api/subscriptions.api";
-import { Container, Row, Col, Button, Spinner, Alert, Card } from "react-bootstrap";
+import { useReviewsApi } from "../../reviews/api/review.api";
+import { Container, Row, Col, Button, Spinner, Alert, Card, Modal, Form } from "react-bootstrap";
 import { DollarSign, Calendar, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import "./PackageDetails.css";
@@ -14,10 +15,15 @@ const PackageDetails: React.FC = () => {
   const { packageId } = useParams<{ packageId: string }>();
   const { getPackageById } = usePackagesApi();
   const { checkSubscription, subscribeToPackage, unsubscribeFromPackage } = useSubscriptionsApi();
+  const { getReviewsByPackage, addReview } = useReviewsApi();
   const [pkg, setPkg] = useState<PackageResponseModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewData, setReviewData] = useState({ rating: 0, review: "" });
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [hasConfirmedBooking, setHasConfirmedBooking] = useState(false);
   const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -48,6 +54,30 @@ const PackageDetails: React.FC = () => {
     fetchSubscriptionStatus();
   }, [isAuthenticated, user, packageId, checkSubscription]);
 
+  useEffect(() => {
+    const checkUserReview = async () => {
+      if (isAuthenticated && user?.sub && packageId) {
+        const reviews = await getReviewsByPackage(packageId);
+        const userReview = reviews.find(review => review.userId === user.sub);
+        setHasReviewed(!!userReview);
+      }
+    };
+
+    checkUserReview();
+  }, [isAuthenticated, user, packageId, getReviewsByPackage]);
+
+  useEffect(() => {
+    const checkUserBooking = async () => {
+      if (isAuthenticated && user?.sub && packageId) {
+        const bookings = await getBookingsByPackage(packageId);
+        const userBooking = bookings.find(booking => booking.userId === user.sub && booking.status === "CONFIRMED_BOOKING");
+        setHasConfirmedBooking(!!userBooking);
+      }
+    };
+
+    checkUserBooking();
+  }, [isAuthenticated, user, packageId]);
+
   const handleBook = () => {
     navigate(AppRoutes.BookingFormPage, { state: { package: pkg } });
   };
@@ -66,9 +96,24 @@ const PackageDetails: React.FC = () => {
     }
   };
 
+  const handleAddReview = async () => {
+    if (isAuthenticated && user?.sub && packageId) {
+      await addReview({
+        packageId,
+        userId: user.sub,
+        reviewerName: `${user.given_name || "Anonymous"} ${user.family_name || ""}`,
+        rating: reviewData.rating,
+        review: reviewData.review,
+      });
+      setShowReviewModal(false);
+    }
+  };
+
   if (loading) return <Spinner animation="border" className="loading-spinner" />;
   if (error) return <Alert variant="danger" className="error-alert">{error}</Alert>;
   if (!pkg) return <Alert variant="info" className="info-alert">{t('noPackageDetails')}</Alert>;
+
+  const isReviewButtonVisible = !hasReviewed && hasConfirmedBooking && new Date() > new Date(pkg.endDate);
 
   return (
     <Container className="package-details-container">
@@ -108,12 +153,54 @@ const PackageDetails: React.FC = () => {
                       {t('subscribe')}
                     </Button>
                   )}
+                  {isReviewButtonVisible && (
+                    <Button variant="primary" onClick={() => setShowReviewModal(true)} className="action-button review-button">
+                      {t('addReview')}
+                    </Button>
+                  )}
                 </>
               )}
             </div>
           </Card.Body>
         </Card>
       </div>
+
+      <Modal show={showReviewModal} onHide={() => setShowReviewModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t('addReview')}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="reviewRating">
+              <Form.Label>{t('rating')}</Form.Label>
+              <Form.Control
+                type="number"
+                min="1"
+                max="5"
+                value={reviewData.rating}
+                onChange={(e) => setReviewData({ ...reviewData, rating: Number(e.target.value) })}
+              />
+            </Form.Group>
+            <Form.Group controlId="reviewText">
+              <Form.Label>{t('review')}</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={reviewData.review}
+                onChange={(e) => setReviewData({ ...reviewData, review: e.target.value })}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowReviewModal(false)}>
+            {t('cancel')}
+          </Button>
+          <Button variant="primary" onClick={handleAddReview}>
+            {t('submitReview')}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

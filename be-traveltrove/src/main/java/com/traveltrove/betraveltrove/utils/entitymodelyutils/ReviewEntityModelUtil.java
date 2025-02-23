@@ -23,6 +23,7 @@ public class ReviewEntityModelUtil {
         return Review.builder()
                 .packageId(reviewRequestModel.getPackageId())
                 .userId(reviewRequestModel.getUserId())
+                .reviewerName(reviewRequestModel.getReviewerName())
                 .rating(reviewRequestModel.getRating())
                 .review(reviewRequestModel.getReview())
                 .date(LocalDateTime.now())
