@@ -176,7 +176,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
       </div>
 
       <div
-        className="dashboard-scrollbar"
+        
         style={{ maxHeight: "550px", overflowY: "auto" }}
       >
         <Table bordered hover responsive>

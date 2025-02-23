@@ -247,5 +247,8 @@
   "paymentNotCompleted": "Votre paiement n'a pas été effectué.",
   "paymentConfirmed": "Votre réservation a été confirmée.",
   "tryAgain": "Réessayer",
-  "goHome": "Aller à l'accueil"
+  "goHome": "Aller à l'accueil",
+
+  "showCompleted": "Packages terminés",
+  "completed": "Terminé"
 }

@@ -125,7 +125,6 @@ const ToursTab: React.FC = () => {
     <div>
       {viewingTour ? (
         <div
-          className="dashboard-scrollbar"
           style={{ maxHeight: "700px", overflowY: "auto" }}
         >
           <Button
@@ -171,7 +170,6 @@ const ToursTab: React.FC = () => {
           </div>
 
           <div
-            className="dashboard-scrollbar"
             style={{ maxHeight: "700px", overflowY: "auto" }}
           >
             <Table bordered hover responsive className="rounded">

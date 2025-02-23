@@ -261,5 +261,8 @@
   "paymentNotCompleted": "Your payment was not completed.",
   "paymentConfirmed": "Your booking has been confirmed.",
   "tryAgain": "Try Again",
-  "goHome": "Go to Home"
+  "goHome": "Go to Home",
+
+  "showCompleted": "Past Packages",
+  "completed": "Completed"
 }

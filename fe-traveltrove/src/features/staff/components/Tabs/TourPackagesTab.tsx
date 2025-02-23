@@ -624,7 +624,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                         <th>{t("Price")}</th>
                         <th>{t("Available Seats")}</th>
                         <th>{t("Avg. Rating")}</th>
-                        <th>{t("Actions")}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -637,11 +636,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             <td>{pkg.priceSingle}</td>
                             <td>{pkg.availableSeats}</td>
                             <td>{calculateAverageRating(pkg.packageId)}</td>
-                            <td>
-                                <Button variant="primary" onClick={() => handleAddReview(pkg.packageId)}>
-                                    {t("Add Review")}
-                                </Button>
-                            </td>
                             <td>
                                 <Button
                                     variant="outline-primary"
@@ -699,7 +693,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 <Button variant="outline-secondary"
                                     className="ms-2"
                                     onClick={() => handleViewAllReviews(pkg.packageId)}>
-                                    {t("View All Reviews")}
+                                    {t("View Reviews")}
                                 </Button>
                                 <Button variant="outline-secondary"
                                     className="ms-2"
