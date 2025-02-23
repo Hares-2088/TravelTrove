@@ -34,16 +34,12 @@ const TourDetails: React.FC = () => {
 
     const fetchTour = async () => {
       try {
-        
         const data = await getTourByTourId(tourId);
-
         if (isMounted) {
-
           setTour(data);
         }
       } catch (err) {
         if (isMounted) {
-          console.error(`❌ Failed to fetch tour details for tourId=${tourId}:`, err);
           setError("Failed to fetch tour details.");
         }
       } finally {
@@ -80,7 +76,6 @@ const TourDetails: React.FC = () => {
           setHotels(hotelMap);
         }
       } catch (err) {
-        console.error(`❌ Failed to fetch tour events for tourId=${tourId}:`, err);
       }
     };
 
@@ -97,47 +92,71 @@ const TourDetails: React.FC = () => {
   if (!tour) return <div>No tour details found.</div>;
 
   return (
-    <div className="tour-details-page">
-      <div className="tour-details">
-        <header className="tour-header">
-          <h1 className="tour-title">{tour.name}</h1>
-          <p className="tour-description">{tour.description}</p>
-          {tour.tourImageUrl && (
-            <img src={tour.tourImageUrl} alt={tour.name} className="tour-main-image" />
-          )}
-        </header>
-
-        <section className="tour-events">
-          <h2 onClick={() => setShowEvents(!showEvents)} className="tour-events-header">
-            Tour Events <ChevronDown className={`chevron-icon ${showEvents ? 'open' : ''}`} />
-          </h2>
-          {showEvents && (
-            tourEvents.length === 0 ? (
-              <p>No events available for this tour.</p>
-            ) : (
-              <ul className="event-list">
-                {tourEvents.sort((a, b) => a.seq - b.seq).map((event) => (
-                  <li key={event.tourEventId} className="event-item">
-                    <Calendar className="event-icon" />
-                    <div>
-                      <h3>{event.seq}. {event.seqDesc}</h3>
-                      <p>Event: {events[event.eventId]?.name || "Unknown Event"}</p>
-                      <p>Hotel: {hotels[event.hotelId]?.name || "Unknown Hotel"}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )
-          )}
-        </section>
-
-        {tourId && (
-          <>
-            <h2 className="packages-header">Packages</h2>
-            <PackageList tourId={tourId} />
-          </>
-        )}
+    <div className="container tour-details-page">
+      <div className="row">
+        <div className="col-12">
+          <header className="tour-header text-center my-4">
+            <h1 className="tour-title">{tour.name}</h1>
+            <p className="tour-description">{tour.description}</p>
+            {tour.tourImageUrl && (
+              <img
+                src={tour.tourImageUrl}
+                alt={tour.name}
+                className="tour-main-image img-fluid rounded"
+              />
+            )}
+          </header>
+        </div>
       </div>
+
+      <div className="row">
+        <div className="col-12">
+          <section className="tour-events my-4">
+            <h2
+              onClick={() => setShowEvents(!showEvents)}
+              className="tour-events-header d-flex align-items-center justify-content-between"
+              style={{ cursor: "pointer" }}
+            >
+              Tour Events <ChevronDown className={`chevron-icon ${showEvents ? 'open' : ''}`} />
+            </h2>
+            {showEvents && (
+              tourEvents.length === 0 ? (
+                <p>No events available for this tour.</p>
+              ) : (
+                <ul className="list-group">
+                  {tourEvents.sort((a, b) => a.seq - b.seq).map((event) => (
+                    <li key={event.tourEventId} className="list-group-item">
+                      <div className="d-flex align-items-center">
+                        <Calendar className="event-icon me-2" />
+                        <div>
+                          <h3 className="h5 mb-1">
+                            {event.seq}. {event.seqDesc}
+                          </h3>
+                          <p className="mb-0">
+                            Event: {events[event.eventId]?.name || "Unknown Event"}
+                          </p>
+                          <p className="mb-0">
+                            Hotel: {hotels[event.hotelId]?.name || "Unknown Hotel"}
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )
+            )}
+          </section>
+        </div>
+      </div>
+
+      {tourId && (
+        <div className="row">
+          <div className="col-12">
+            <h2 className="packages-header my-4">Packages</h2>
+            <PackageList tourId={tourId} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
