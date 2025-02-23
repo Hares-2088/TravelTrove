@@ -10,6 +10,7 @@ import UploadImage from "../../../../shared/AWS/UploadImage";
 import { useS3Upload } from "../../../../shared/AWS/useS3Upload"; // Import the custom hook
 import { toast } from "react-toastify"; // Import toast
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
+import { useUserContext } from "../../../../context/UserContext";
 
 const ToursTab: React.FC = () => {
   const { getAllTours, getTourByTourId, addTour, updateTour, deleteTour, updateTourImage, calculateRevenueByTourId } = useToursApi();
@@ -29,6 +30,10 @@ const ToursTab: React.FC = () => {
   const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [revenue, setRevenue] = useState<number | null>(null);
+  const {roles} = useUserContext();
+
+  const isAdmin = roles.includes("Admin"); 
+
 
   useEffect(() => {
     fetchTours();
@@ -228,17 +233,19 @@ const ToursTab: React.FC = () => {
                       >
                         {t('updateImage')}
                       </Button>
-                      <Button
-                        variant="outline-danger"
-                        className="ms-2"
-                        onClick={() => {
-                          setSelectedTour(tour);
-                          setModalType("delete");
-                          setShowModal(true);
-                        }}
-                      >
-                        {t('deleteTour')}
-                      </Button>
+                      {isAdmin && (
+                        <Button
+                          variant="outline-danger"
+                          className="ms-2"
+                          onClick={() => {
+                            setSelectedTour(tour);
+                            setModalType("delete");
+                            setShowModal(true);
+                          }}
+                        >
+                          {t('deleteTour')}
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))}

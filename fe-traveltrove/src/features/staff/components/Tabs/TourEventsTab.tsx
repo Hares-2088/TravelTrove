@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import { useTourEventsApi } from '../../../tourevents/api/tourevent.api';
+import { useTourEventsApi } from "../../../tourevents/api/tourevent.api";
 import { useEventsApi } from "../../../events/api/events.api";
 import { useHotelsApi } from "../../../hotels/api/hotels.api";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import {
   TourEventRequestModel,
   TourEventResponseModel,
-} from '../../../tourevents/model/tourevents.model';
+} from "../../../tourevents/model/tourevents.model";
 import "../../../../shared/css/Scrollbar.css";
+import { useUserContext } from "../../../../context/UserContext";
 
 interface EventResponseModel {
   eventId: string;
@@ -36,6 +37,9 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
 
   const { getAllHotels } = useHotelsApi();
 
+  const { roles } = useUserContext();
+  const isAdmin = roles.includes("Admin");
+
   const { t } = useTranslation(); // Initialize translation hook
   const [tourEvents, setTourEvents] = useState<TourEventResponseModel[]>([]);
   const [events, setEvents] = useState<EventResponseModel[]>([]);
@@ -43,8 +47,11 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
   const [loading, setLoading] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
-  const [selectedEvent, setSelectedEvent] = useState<TourEventResponseModel | null>(null);
+  const [modalType, setModalType] = useState<"create" | "update" | "delete">(
+    "create"
+  );
+  const [selectedEvent, setSelectedEvent] =
+    useState<TourEventResponseModel | null>(null);
 
   const [formData, setFormData] = useState<TourEventRequestModel>({
     tourId: tourId,
@@ -58,7 +65,6 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
   const [seqDescError, setSeqDescError] = useState(false);
   const [eventIdError, setEventIdError] = useState(false);
   const [hotelIdError, setHotelIdError] = useState(false);
-
 
   useEffect(() => {
     fetchTourEvents();
@@ -107,11 +113,12 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     setEventIdError(!isEventIdValid);
     setHotelIdError(!isHotelIdValid); // Set error state for hotelId
 
-    if (!isSeqValid || !isSeqDescValid || !isEventIdValid || !isHotelIdValid) return;
+    if (!isSeqValid || !isSeqDescValid || !isEventIdValid || !isHotelIdValid)
+      return;
 
     try {
       if (modalType === "create") {
-        const highestSeq = Math.max(...tourEvents.map(event => event.seq), 0); // Get highest seq number
+        const highestSeq = Math.max(...tourEvents.map((event) => event.seq), 0); // Get highest seq number
         setFormData({ ...formData, seq: highestSeq + 1 }); // Set next seq value
         await addTourEvent(formData); // Save new event with hotelId
       } else if (modalType === "update" && selectedEvent) {
@@ -123,7 +130,6 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
       console.error("Error saving tour event:", error);
     }
   };
-
 
   const handleDelete = async () => {
     try {
@@ -142,7 +148,6 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
     return event ? event.name : t("unknownEvent");
   };
 
-
   const getHotelNameById = (hotelId: string) => {
     const hotel = hotels.find((h) => h.hotelId === hotelId);
     return hotel ? hotel.name : t("unknownHotel");
@@ -158,7 +163,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
             setModalType("create");
             setFormData({
               tourId,
-              seq: Math.max(...tourEvents.map(event => event.seq), 0) + 1,
+              seq: Math.max(...tourEvents.map((event) => event.seq), 0) + 1,
               seqDesc: "",
               eventId: "",
               hotelId: "",
@@ -170,7 +175,10 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
         </Button>
       </div>
 
-      <div className="dashboard-scrollbar" style={{ maxHeight: "550px", overflowY: "auto" }}>
+      <div
+        className="dashboard-scrollbar"
+        style={{ maxHeight: "550px", overflowY: "auto" }}
+      >
         <Table bordered hover responsive>
           <thead className="bg-light">
             <tr>
@@ -233,8 +241,8 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
             {modalType === "create"
               ? t("createTitle")
               : modalType === "update"
-                ? t("editTitle")
-                : t("deleteTitle")}
+              ? t("editTitle")
+              : t("deleteTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -291,7 +299,6 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                 <div className="invalid-feedback">{t("invalidEvent")}</div>
               </Form.Group>
 
-
               <Form.Group className="mb-3">
                 <Form.Label>{t("hotelLabel")}</Form.Label>
                 <Form.Select
@@ -312,15 +319,15 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                 </Form.Select>
                 <div className="invalid-feedback">{t("invalidHotel")}</div>
               </Form.Group>
-
-
             </Form>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            {t("cancelTE")}
-          </Button>
+            {isAdmin && (
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              {t("cancelTE")}
+            </Button>
+            )}
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
             onClick={modalType === "delete" ? handleDelete : handleSave}
