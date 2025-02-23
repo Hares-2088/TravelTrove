@@ -1856,6 +1856,14 @@ public class DatabaseLoader {
                         .permissions(null)
                         .travelerId("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31")
                         .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
+                        .build(),
+
+                User.builder()
+                        .id(null)
+                        .userId("google-oauth2|115284042119137530811")
+                        .email("mia.moore@example.com")
+                        .travelerId("4a9adfcc-cfc9-4c25-908b-031bdeb2ab99")
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab99"))
                         .build()
         );
 
@@ -1882,6 +1890,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_PENDING)
                         .bookingDate(LocalDate.now().minusMonths(1))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1891,6 +1900,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(1))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1900,6 +1910,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(1))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1909,6 +1920,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(1))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1918,6 +1930,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(1))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1927,6 +1940,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(1))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1936,6 +1950,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(6))
                         .totalPrice(1300.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1945,6 +1960,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusWeeks(4))
                         .totalPrice(2000.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1954,6 +1970,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_PENDING)
                         .bookingDate(LocalDate.now())
                         .totalPrice(1700.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1963,6 +1980,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(2))
                         .totalPrice(1900.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1972,6 +1990,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusYears(1))
                         .totalPrice(2200.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1981,6 +2000,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(5))
                         .totalPrice(1800.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1990,6 +2010,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
                         .bookingDate(LocalDate.now().minusDays(3))
                         .totalPrice(2100.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -1999,6 +2020,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusWeeks(2))
                         .totalPrice(1500.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 Booking.builder()
@@ -2008,6 +2030,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusYears(1).minusMonths(2))
                         .totalPrice(2000.0)
+                        .travelerIds(List.of("ec1c67c8-af60-4956-a84a-fa569897a065"))
                         .build(),
 
                 // user:  675f4b619a80612ce548e068
@@ -2018,6 +2041,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(2))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("7491755b-1904-4432-96f6-d7c14d3d1532"))
                         .build(),
 
                 Booking.builder()
@@ -2027,6 +2051,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_PENDING)
                         .bookingDate(LocalDate.now().minusMonths(1))
                         .totalPrice(1300.0)
+                        .travelerIds(List.of("7491755b-1904-4432-96f6-d7c14d3d1532"))
                         .build(),
 
                 Booking.builder()
@@ -2036,6 +2061,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
                         .bookingDate(LocalDate.now().minusWeeks(2))
                         .totalPrice(2000.0)
+                        .travelerIds(List.of("7491755b-1904-4432-96f6-d7c14d3d1532"))
                         .build(),
 
                 Booking.builder()
@@ -2045,6 +2071,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_FAILED)
                         .bookingDate(LocalDate.now().minusDays(10))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("7491755b-1904-4432-96f6-d7c14d3d1532"))
                         .build(),
 
                 Booking.builder()
@@ -2054,6 +2081,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now())
                         .totalPrice(1700.0)
+                        .travelerIds(List.of("7491755b-1904-4432-96f6-d7c14d3d1532"))
                         .build(),
                 // user: 675f4b7ae184fd643a8ed902
 
@@ -2064,6 +2092,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(3))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("fd96c9f3-1429-4a32-b8f1-033fdd4aa0eb"))
                         .build(),
 
                 Booking.builder()
@@ -2073,6 +2102,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(2))
                         .totalPrice(1300.0)
+                        .travelerIds(List.of("fd96c9f3-1429-4a32-b8f1-033fdd4aa0eb"))
                         .build(),
 
                 Booking.builder()
@@ -2082,6 +2112,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_PENDING)
                         .bookingDate(LocalDate.now().minusWeeks(5))
                         .totalPrice(2000.0)
+                        .travelerIds(List.of("fd96c9f3-1429-4a32-b8f1-033fdd4aa0eb"))
                         .build(),
 
                 Booking.builder()
@@ -2091,6 +2122,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_FAILED)
                         .bookingDate(LocalDate.now().minusWeeks(2))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("fd96c9f3-1429-4a32-b8f1-033fdd4aa0eb"))
                         .build(),
 
                 //user: 675f4b9d9a80612ce548e069
@@ -2101,6 +2133,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(4))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("565ac69b-5022-42d7-89f4-e031f67da710"))
                         .build(),
 
                 Booking.builder()
@@ -2110,6 +2143,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_PENDING)
                         .bookingDate(LocalDate.now().minusMonths(3))
                         .totalPrice(1300.0)
+                        .travelerIds(List.of("565ac69b-5022-42d7-89f4-e031f67da710"))
                         .build(),
 
                 Booking.builder()
@@ -2119,6 +2153,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusWeeks(6))
                         .totalPrice(2000.0)
+                        .travelerIds(List.of("565ac69b-5022-42d7-89f4-e031f67da710"))
                         .build(),
 
                 Booking.builder()
@@ -2129,6 +2164,7 @@ public class DatabaseLoader {
                         .bookingDate(LocalDate.now().minusMonths(3))
                         .travelerIds(List.of("c69fa655-d480-48e4-8b66-0d54c1b2b46d", "b3904b84-9cd3-46ca-bcf3-f2206411a842"))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
 
                 Booking.builder()
@@ -2138,6 +2174,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().minusMonths(2))
                         .totalPrice(1300.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
 
                 Booking.builder()
@@ -2147,6 +2184,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_PENDING)
                         .bookingDate(LocalDate.now().minusWeeks(6))
                         .totalPrice(2000.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
 
                 Booking.builder()
@@ -2156,6 +2194,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_FAILED)
                         .bookingDate(LocalDate.now().minusWeeks(3))
                         .totalPrice(1600.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
 
                 Booking.builder()
@@ -2165,6 +2204,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now())
                         .totalPrice(1700.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
 
                 Booking.builder()
@@ -2174,6 +2214,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.REFUNDED)
                         .bookingDate(LocalDate.now().plusDays(10))
                         .totalPrice(2200.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
 
                 Booking.builder()
@@ -2183,6 +2224,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
                         .bookingDate(LocalDate.now().plusWeeks(2))
                         .totalPrice(1800.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
 
                 Booking.builder()
@@ -2192,6 +2234,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().plusMonths(1))
                         .totalPrice(1900.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
                 // user: 675f4bb4e184fd643a8ed903
                 Booking.builder()
@@ -2201,6 +2244,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.now().plusMonths(2))
                         .totalPrice(1500.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
 
                 Booking.builder()
@@ -2210,6 +2254,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.PAYMENT_ATTEMPT2_PENDING)
                         .bookingDate(LocalDate.now().plusMonths(3))
                         .totalPrice(2000.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab31"))
                         .build(),
                 // debo
                 Booking.builder()
@@ -2219,6 +2264,7 @@ public class DatabaseLoader {
                         .status(BookingStatus.BOOKING_CONFIRMED)
                         .bookingDate(LocalDate.of(2024, 9, 15))
                         .totalPrice(1800.0)
+                        .travelerIds(List.of("4a9adfcc-cfc9-4c25-908b-031bdeb2ab99"))
                         .build()
         );
 
