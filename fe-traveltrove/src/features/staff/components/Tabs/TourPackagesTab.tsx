@@ -961,7 +961,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             </Form.Group>
                             {modalType === "update" && (
                                 <Form.Group className="mb-3">
-                                    <Form.Label>{t("notificationMessage")}</Form.Label>
+                                    <Form.Label>Notification</Form.Label>
                                     <Form.Control
                                         as="textarea"
                                         rows={3}
