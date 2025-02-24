@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
 
   const handleNavClick = (tab: string) => {
     setActiveTab(tab);
-    setShowOffcanvas(false); // Close offcanvas on mobile when an item is clicked
+    setShowOffcanvas(false); //  offcanvas on mobile when an item is clicked
   };
 
   const navItems = (
@@ -159,7 +159,6 @@ const Dashboard: React.FC = () => {
       >
         <Card.Body className="p-0 d-flex flex-column h-100">
           <Tab.Container activeKey={activeTab}>
-            {/* Mobile Header (visible on xs devices) */}
             <div className="d-flex d-sm-none align-items-center justify-content-between p-3 bg-dark text-white">
               <h4 className="mb-0" style={{ fontWeight: "bold" }}>
                 {t("dashboard")}
@@ -169,7 +168,6 @@ const Dashboard: React.FC = () => {
               </Button>
             </div>
             <Row className="g-0 flex-grow-1 h-100">
-              {/* Desktop Sidebar (hidden on mobile) */}
               <Col
                 xs={12}
                 sm={3}
@@ -182,7 +180,6 @@ const Dashboard: React.FC = () => {
                 <Nav className="flex-column text-center">{navItems}</Nav>
               </Col>
 
-              {/* Main Content */}
               <Col
                 xs={12}
                 sm={9}
