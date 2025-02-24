@@ -942,6 +942,21 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     {t("tourPackagesTab.airportRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>{t("tourPackagesTab.totalSeats")}</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    value={formData.totalSeats}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, totalSeats: +e.target.value })
+                                    }
+                                    isInvalid={formErrors.totalSeats}
+                                    required
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {t("tourPackagesTab.totalSeatsRequired")}
+                                </Form.Control.Feedback>
+                            </Form.Group>
                             {modalType === "update" && (
                                 <Form.Group className="mb-3">
                                     <Form.Label>{t("notificationMessage")}</Form.Label>
