@@ -80,8 +80,8 @@ const PackageList: React.FC<PackageListProps> = ({ tourId }) => {
                 {pkg.status === "COMPLETED" ? t("completed") : `$${pkg.priceSingle}`}
               </div>
               <Card.Body>
-                <Card.Title>{pkg.name}</Card.Title>
-                <Card.Text>{pkg.description}</Card.Text>
+                <Card.Title className="package-title">{pkg.name}</Card.Title>
+                <Card.Text className="package-description">{pkg.description}</Card.Text>
                 <div className="package-dates">
                   <p><Calendar className="date-icon" /> {t('startDate')}: {new Date(pkg.startDate).toLocaleDateString()}</p>
                   <p><Calendar className="date-icon" /> {t('endDate')}: {new Date(pkg.endDate).toLocaleDateString()}</p>
