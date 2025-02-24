@@ -347,7 +347,8 @@
     "airport": "Airport",
     "totalSeats": "Total Seats",
     "selectAirport": "Select Airport",
-    "CreatePackage": "Create Package"
+    "CreatePackage": "Create Package",
+    "cancelled": "Package Canceled"
   },
   "bookings": {
     "bookings": "Bookings",
@@ -380,5 +381,7 @@
   "hotel": "Hotel",
   "unknownEvent": "Unknown Event",
   "unknownHotel": "Unknown Hotel",
-  "packages": "Packages"
+  "packages": "Packages",
+  "confirmButton": "Confirm",
+  "cancelButton": "Cancel"
 }

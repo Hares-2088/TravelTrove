@@ -4,7 +4,6 @@
   gap: 20px;
   justify-content: center;
 }
-
 .package-item {
   position: relative;
   border: 1px solid #ddd;
@@ -18,22 +17,18 @@
 .package-item:hover {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
-
 .package-image {
   width: 100%;
   height: 200px;
   object-fit: cover;
 }
-
 .package-item h2 {
   font-size: 1.5em;
 }
-
 .package-item p {
   font-size: 1em;
   color: #555;
 }
-
 .status-tag {
   position: absolute;
   top: 10px;
@@ -57,7 +52,6 @@
 .package-item .btn {
   margin-top: 10px;
 }
-
 .date-icon {
   width: 16px;
   height: 16px;

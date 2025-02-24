@@ -504,10 +504,9 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
-
-
                 <Button
                     variant="primary"
+                    className="btn-modern"
                     onClick={() => {
                         setModalType("create");
                         setFormData({
@@ -537,7 +536,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 >
                     {t("tourPackagesTab.createPackage")}
                 </Button>
-                <Button variant="outline-secondary" onClick={() => setShowFilters(!showFilters)}>
+                <Button
+                    variant="outline-secondary"
+                    className="btn-modern"
+                    onClick={() => setShowFilters(!showFilters)}
+                >
                     <FaFilter /> {t("tourPackagesTab.filters")}
                 </Button>
             </div>
@@ -654,82 +657,82 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             <td>{pkg.availableSeats}</td>
                             <td>{calculateAverageRating(pkg.packageId)}</td>
                             <td>
-                                <Button variant="primary" onClick={() => handleAddReview(pkg.packageId)}>
-                                    {t("Add Review")}
-                                </Button>
-                            </td>
-                            <td>
-                                <Button
-                                    variant="outline-primary"
-                                    onClick={() => {
-                                        setSelectedPackage(pkg);
-                                        setModalType("update");
-                                        setFormData({
-                                            airportId: pkg.airportId,
-                                            tourId: pkg.tourId,
-                                            name: pkg.name,
-                                            description: pkg.description,
-                                            startDate: pkg.startDate,
-                                            endDate: pkg.endDate,
-                                            priceSingle: pkg.priceSingle,
-                                            priceDouble: pkg.priceDouble,
-                                            priceTriple: pkg.priceTriple,
-                                            totalSeats: pkg.totalSeats,
-                                        });
-                                        setFormErrors({
-                                            name: false,
-                                            description: false,
-                                            startDate: false,
-                                            endDate: false,
-                                            priceSingle: false,
-                                            airportId: false,
-                                            dateOrder: false,
-                                            totalSeats: false,
-                                        });
-                                        setShowModal(true);
-                                    }}
-                                    disabled={pkg.status === PackageStatus.CANCELLED || pkg.status === PackageStatus.COMPLETED} // Disable if status is CANCELLED
-                                >
-                                    {t("tourPackagesTab.editPackage")}
-                                </Button>
-                                {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
+                                <div className="d-flex flex-wrap gap-2">
                                     <Button
-                                        variant="outline-danger"
-                                        className="ms-2"
+                                        variant="outline-primary"
+                                        className="btn-modern"
                                         onClick={() => {
                                             setSelectedPackage(pkg);
-                                            setModalType("cancel");
+                                            setModalType("update");
+                                            setFormData({
+                                                airportId: pkg.airportId,
+                                                tourId: pkg.tourId,
+                                                name: pkg.name,
+                                                description: pkg.description,
+                                                startDate: pkg.startDate,
+                                                endDate: pkg.endDate,
+                                                priceSingle: pkg.priceSingle,
+                                                priceDouble: pkg.priceDouble,
+                                                priceTriple: pkg.priceTriple,
+                                                totalSeats: pkg.totalSeats,
+                                            });
+                                            setFormErrors({
+                                                name: false,
+                                                description: false,
+                                                startDate: false,
+                                                endDate: false,
+                                                priceSingle: false,
+                                                airportId: false,
+                                                dateOrder: false,
+                                                totalSeats: false,
+                                            });
                                             setShowModal(true);
                                         }}
+                                        disabled={pkg.status === PackageStatus.CANCELLED || pkg.status === PackageStatus.COMPLETED} // Disable if status is CANCELLED
                                     >
-                                        {t("tourPackagesTab.cancelPackage")}
+                                        {t("tourPackagesTab.editPackage")}
                                     </Button>
-                                )}
-                                <Button
-                                    variant="outline-secondary"
-                                    className="ms-2"
-                                    onClick={() => navigate(`/bookings?packageId=${pkg.packageId}`)}
-                                >
-                                    {t("tourPackagesTab.viewBookings")}
-                                </Button>
-                                <Button variant="outline-secondary"
-                                    className="ms-2"
-                                    onClick={() => handleViewAllReviews(pkg.packageId)}>
-                                    {t("tourPackagesTab.viewAllReviews")}
-                                </Button>
-                                {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
+                                    {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
+                                        <Button
+                                            variant="outline-danger"
+                                            className="btn-modern"
+                                            onClick={() => {
+                                                setSelectedPackage(pkg);
+                                                setModalType("cancel");
+                                                setShowModal(true);
+                                            }}
+                                        >
+                                            {t("tourPackagesTab.cancelPackage")}
+                                        </Button>
+                                    )}
                                     <Button
                                         variant="outline-secondary"
-                                        className="ms-2"
-                                        onClick={() => {
-                                            setSelectedPackage(pkg);
-                                            setNewStatus(null);
-                                            setStatusModalVisible(true);
-                                        }}
+                                        className="btn-modern"
+                                        onClick={() => navigate(`/bookings?packageId=${pkg.packageId}`)}
                                     >
-                                        {t("tourPackagesTab.changeStatus")}
+                                        {t("tourPackagesTab.viewBookings")}
                                     </Button>
-                                )}
+                                    <Button
+                                        variant="outline-secondary"
+                                        className="btn-modern"
+                                        onClick={() => handleViewAllReviews(pkg.packageId)}
+                                    >
+                                        {t("tourPackagesTab.viewAllReviews")}
+                                    </Button>
+                                    {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
+                                        <Button
+                                            variant="outline-secondary"
+                                            className="btn-modern"
+                                            onClick={() => {
+                                                setSelectedPackage(pkg);
+                                                setNewStatus(null);
+                                                setStatusModalVisible(true);
+                                            }}
+                                        >
+                                            {t("tourPackagesTab.changeStatus")}
+                                        </Button>
+                                    )}
+                                </div>
                             </td>
                         </tr>
                     ))}
@@ -889,6 +892,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                         setFormData({ ...formData, priceSingle: +e.target.value })
                                     }
                                     isInvalid={formErrors.priceSingle}
+                                    required
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {t("tourPackagesTab.priceSingleRequired")}
@@ -902,6 +906,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     onChange={(e) =>
                                         setFormData({ ...formData, priceDouble: +e.target.value })
                                     }
+                                    required
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">
@@ -912,6 +917,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     onChange={(e) =>
                                         setFormData({ ...formData, priceTriple: +e.target.value })
                                     }
+                                    required
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">
@@ -923,6 +929,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                         setFormData({ ...formData, airportId: e.target.value })
                                     }
                                     isInvalid={formErrors.airportId}
+                                    required
                                 >
                                     <option value="">{t("tourPackagesTab.selectAirport")}</option>
                                     {airports.map((airport) => (
@@ -1010,6 +1017,14 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     <Toast.Body>{t("tourPackagesTab.packageCanceled")}</Toast.Body>
                 </Toast>
             </ToastContainer>
+
+            <style>{`
+                .btn-modern {
+                    flex: 1;
+                    min-width: 150px;
+                    margin: 5px;
+                }
+            `}</style>
         </div>
     );
 };
