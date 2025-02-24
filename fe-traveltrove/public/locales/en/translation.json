@@ -264,5 +264,7 @@
   "goHome": "Go to Home",
 
   "showCompleted": "Past Packages",
-  "completed": "Completed"
+  "completed": "Completed",
+
+  "reviewSubmittedSuccessfully": "Review submitted successfully."
 }

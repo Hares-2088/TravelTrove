@@ -250,5 +250,7 @@
   "goHome": "Aller à l'accueil",
 
   "showCompleted": "Packages terminés",
-  "completed": "Terminé"
+  "completed": "Terminé",
+
+  "reviewSubmittedSuccessfully": "Votre avis a été soumis avec succès."
 }
