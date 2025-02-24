@@ -176,7 +176,6 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
       </div>
 
       <div
-        
         style={{ maxHeight: "550px", overflowY: "auto" }}
       >
         <Table bordered hover responsive>
@@ -241,8 +240,8 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
             {modalType === "create"
               ? t("createTitle")
               : modalType === "update"
-              ? t("editTitle")
-              : t("deleteTitle")}
+                ? t("editTitle")
+                : t("deleteTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -323,11 +322,11 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
           )}
         </Modal.Body>
         <Modal.Footer>
-            {isAdmin && (
+          {isAdmin && (
             <Button variant="secondary" onClick={() => setShowModal(false)}>
               {t("cancelTE")}
             </Button>
-            )}
+          )}
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
             onClick={modalType === "delete" ? handleDelete : handleSave}

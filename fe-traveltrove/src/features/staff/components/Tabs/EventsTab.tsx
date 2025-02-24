@@ -9,7 +9,6 @@ import {
   EventRequestModel,
 } from "../../../events/model/events.model";
 import "../../../../shared/css/Scrollbar.css";
-import FilterBar from "../../../../shared/components/FilterBar";
 
 const EventsTab: React.FC = () => {
   const { t } = useTranslation();
@@ -34,7 +33,7 @@ const EventsTab: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
 
-  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
+  const uniformButtonStyle = { minWidth: "120px", margin: "0.2rem" };
 
 
   const fetchEvents = async () => {
@@ -186,36 +185,6 @@ const EventsTab: React.FC = () => {
               {t("createE")}
             </Button>
           </div>
-          <FilterBar
-            filters={[
-              {
-                label: t("selectCountryE"),
-                value: selectedCountry,
-                options: countries.map((country) => ({
-                  value: country.id,
-                  label: country.name,
-                })),
-                onChange: setSelectedCountry,
-                onClick: fetchCountries,
-              },
-              {
-                label: t("selectCity"),
-                value: selectedCity,
-                options: cities
-                  .filter((city) => !selectedCountry || city.countryId === selectedCountry)
-                  .map((city) => ({
-                    value: city.id,
-                    label: city.name,
-                  })),
-                onChange: setSelectedCity,
-                onClick: fetchCities,
-              },
-            ]}
-            resetFilters={() => {
-              setSelectedCountry("");
-              setSelectedCity("");
-            }}
-          />
           <div className="dashboard-scrollbar" style={{ maxHeight: "700px", overflowY: "auto" }}>
             <Table bordered hover responsive className="rounded">
               <thead className="bg-light">
@@ -296,8 +265,8 @@ const EventsTab: React.FC = () => {
             {modalType === "create"
               ? t("createE")
               : modalType === "update"
-              ? t("editE")
-              : t("deleteE")}
+                ? t("editE")
+                : t("deleteE")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

@@ -81,7 +81,7 @@ const Bookings: React.FC = () => {
     } catch (error) {
     }
   };
-  
+
 
   const fetchPayments = async (bookings: BookingResponseModel[]) => {
     const paymentDetails: { [key: string]: PaymentResponseModel } = {};
@@ -90,7 +90,7 @@ const Bookings: React.FC = () => {
         const payment = await getPaymentByBookingId(booking.bookingId);
         paymentDetails[booking.bookingId] = payment;
       } catch (error) {
-        
+
       }
     }
     setPaymentDetails(paymentDetails);
@@ -156,107 +156,87 @@ const Bookings: React.FC = () => {
 
   return (
     <div
-      className="d-flex justify-content-center align-items-center p-4 dashboard-scrollbar"
-      style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}
+      className="d-flex justify-content-center align-items-start p-4 dashboard-scrollbar"
+      style={{ backgroundColor: "#f8f9fa", minHeight: "100vh", overflowY: "auto" }}
     >
       <Card
-        className="rounded shadow border-0"
+        className="rounded shadow border-0 w-100"
         style={{
-          width: "1600px",
-          height: "800px",
+          maxWidth: "1600px",
+          height: "auto",
           borderRadius: "15px",
           overflow: "hidden",
         }}
       >
-        <Card.Body className="p-4">
+        <Card.Body className="p-4" style={{ maxHeight: "70vh", overflowY: "auto" }}>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h3>{t("bookings.bookings")}</h3>
           </div>
 
-          <Card className="rounded shadow-sm border-0">
-            <Card.Body>
-              <Table bordered hover responsive className="rounded custom-table">
-                <thead className="bg-light">
-                  <tr>
-                    <th>{t("bookings.userName")}</th>
-                    <th>{t("bookings.totalPrice")}</th>
-                    <th>{t("bookings.status")}</th>
-                    <th>{t("bookings.bookingDate")}</th>
-                    <th>{t("bookings.revenue")}</th>
-                    <th>{t("bookings.actions")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bookings.map((booking) => (
-                    <React.Fragment key={booking.bookingId}>
-                      <tr>
-                        <td>{userNames[booking.userId]}</td>
-                        <td>{booking.totalPrice}</td>
-                        <td>{formatStatus(booking.status)}</td>
-                        <td>{booking.bookingDate}</td>
-                        <td>{paymentDetails[booking.bookingId]?.amount !== undefined ? `$${((paymentDetails[booking.bookingId].amount) / 100).toFixed(2)}` : t('bookings.noAmount')}
-                          &nbsp;({paymentDetails[booking.bookingId]?.currency || t('bookings.noCurrency')})
-                        </td>
-                        <td>
-                          {booking.status !== BookingStatus.REFUNDED && (
-                            <Button
-                              variant="outline-primary"
-                              onClick={() => {
-                                setSelectedBooking(booking);
-                                setModalType("updateStatus");
-                                setFormData({
-                                  userId: booking.userId,
-                                  packageId: booking.packageId,
-                                  totalPrice: booking.totalPrice,
-                                  status: booking.status,
-                                  bookingDate: booking.bookingDate,
-                                  travelers: [],
-                                });
-                                setFormErrors({
-                                  userId: false,
-                                  totalPrice: false,
-                                  status: false,
-                                  bookingDate: false,
-                                });
-                                setShowModal(true);
-                              }}
-                            >
-                              {t("bookings.updateStatus")}
-                            </Button>
-                          )}
-                          <Button
-                            variant="outline-secondary"
-                            onClick={() => booking.travelerIds && toggleTravelersList(booking.bookingId, booking.travelerIds)}
-                            className="ml-2"
-                          >
-                            {openBookingId === booking.bookingId ? t("bookings.hideTravelers") : t("bookings.showTravelers")}
-                          </Button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colSpan={5} className="p-0">
-                          <Collapse in={openBookingId === booking.bookingId}>
-                            <div className="p-3">
-                              <div className="travelers-grid">
-                                {travelers[booking.bookingId]?.map((traveler) => (
-                                  <Card key={traveler.email} className="traveler-card">
-                                    <Card.Body>
-                                      <Card.Title>{traveler.name}</Card.Title>
-                                      <Card.Text>{traveler.email}</Card.Text>
-                                    </Card.Body>
-                                  </Card>
-                                ))}
-                              </div>
-                            </div>
-                          </Collapse>
-                        </td>
-                      </tr>
-                    </React.Fragment>
-                  ))}
-                </tbody>
-              </Table>
-            </Card.Body>
-          </Card>
+          <Row>
+            {bookings.map((booking) => (
+              <Col xs={12} md={6} lg={4} key={booking.bookingId} className="mb-4">
+                <Card className="h-100 booking-card">
+                  <Card.Body>
+                    <Card.Title>{userNames[booking.userId]}</Card.Title>
+                    <Card.Text>
+                      <strong>{t("bookings.totalPrice")}:</strong> {booking.totalPrice}<br />
+                      <strong>{t("bookings.status")}:</strong> {formatStatus(booking.status)}<br />
+                      <strong>{t("bookings.bookingDate")}:</strong> {booking.bookingDate}<br />
+                      <strong>{t("bookings.revenue")}:</strong> {paymentDetails[booking.bookingId]?.amount !== undefined ? `$${((paymentDetails[booking.bookingId].amount) / 100).toFixed(2)}` : t('bookings.noAmount')}
+                      &nbsp;({paymentDetails[booking.bookingId]?.currency || t('bookings.noCurrency')})
+                    </Card.Text>
+                    <div className="d-flex justify-content-between">
+                      {booking.status !== BookingStatus.REFUNDED && (
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => {
+                            setSelectedBooking(booking);
+                            setModalType("updateStatus");
+                            setFormData({
+                              userId: booking.userId,
+                              packageId: booking.packageId,
+                              totalPrice: booking.totalPrice,
+                              status: booking.status,
+                              bookingDate: booking.bookingDate,
+                              travelers: [],
+                            });
+                            setFormErrors({
+                              userId: false,
+                              totalPrice: false,
+                              status: false,
+                              bookingDate: false,
+                            });
+                            setShowModal(true);
+                          }}
+                        >
+                          {t("bookings.updateStatus")}
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => booking.travelerIds && toggleTravelersList(booking.bookingId, booking.travelerIds)}
+                      >
+                        {openBookingId === booking.bookingId ? t("bookings.hideTravelers") : t("bookings.showTravelers")}
+                      </Button>
+                    </div>
+                    <Collapse in={openBookingId === booking.bookingId}>
+                      <div className="mt-3">
+                        {travelers[booking.bookingId]?.map((traveler) => (
+                          <Card key={traveler.email} className="traveler-card mb-2">
+                            <Card.Body>
+                              <Card.Title>{traveler.name}</Card.Title>
+                              <Card.Text>{traveler.email}</Card.Text>
+                            </Card.Body>
+                          </Card>
+                        ))}
+                      </div>
+                    </Collapse>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
 
           <Modal
             show={showModal}

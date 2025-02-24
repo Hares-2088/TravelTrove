@@ -75,7 +75,7 @@ const PackageDetails: React.FC = () => {
       if (isAuthenticated && user?.sub && packageId) {
         try {
           const bookings = await getAllBookings();
-          const confirmedBooking = bookings.find(booking => 
+          const confirmedBooking = bookings.find(booking =>
             booking.status === BookingStatus.BOOKING_CONFIRMED &&
             booking.userId === user.sub &&
             booking.packageId === packageId
@@ -131,98 +131,100 @@ const PackageDetails: React.FC = () => {
   console.log(hasConfirmedBooking);
 
   return (
-    <Container className="package-details-container">
-      <div className="d-flex justify-content-center">
-        <Card className="package-card w-75">
-          <Card.Body>
-            <div className="package-header">
-              <Card.Title className="package-title">{pkg.name}</Card.Title>
-              <Card.Text className="package-description">{pkg.description}</Card.Text>
-            </div>
-            <Row className="package-info">
-              <Col md={6}>
-                <p><DollarSign /> <strong>{t('priceSingle')}:&nbsp;</strong> ${pkg.priceSingle}</p>
-                <p><DollarSign /> <strong>{t('priceDouble')}:&nbsp;</strong> ${pkg.priceDouble}</p>
-                <p><DollarSign /> <strong>{t('priceTriple')}:&nbsp;</strong> ${pkg.priceTriple}</p>
-              </Col>
-              <Col md={6}>
-                <p><Users /> <strong>{t('availableSeats')}:&nbsp;</strong> {pkg.availableSeats}</p>
-                <p><Calendar /> <strong>{t('startDate')}:&nbsp;</strong> {pkg.startDate}</p>
-                <p><Calendar /> <strong>{t('endDate')}:&nbsp;</strong> {pkg.endDate}</p>
-              </Col>
-            </Row>
-            <div className="package-actions">
-              {isAuthenticated && pkg.status !== "UPCOMING" && pkg.status !== "SOLD_OUT" && (
-                <Button variant="dark" onClick={handleBook} className="action-button book-button">
-                  {t('bookNow')}
-                </Button>
-              )}
-              {isAuthenticated && (
-                <>
-                  {isSubscribed ? (
-                    <Button variant="danger" onClick={handleUnsubscribe} className="action-button unsubscribe-button">
-                      {t('unsubscribe')}
-                    </Button>
-                  ) : (
-                    <Button variant="success" onClick={handleSubscribe} className="action-button subscribe-button">
-                      {t('subscribe')}
-                    </Button>
-                  )}
-                  {isReviewButtonVisible && (
-                    <Button variant="primary" onClick={() => setShowReviewModal(true)} className="action-button review-button">
-                      {t('addReview')}
-                    </Button>
-                  )}
-                </>
-              )}
-            </div>
-          </Card.Body>
-        </Card>
-      </div>
+    <div className="d-flex justify-content-center align-items-start p-4" style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+      <Container className="package-details-container">
+        <div className="d-flex justify-content-center">
+          <Card className="package-card w-75">
+            <Card.Body>
+              <div className="package-header">
+                <Card.Title className="package-title">{pkg.name}</Card.Title>
+                <Card.Text className="package-description">{pkg.description}</Card.Text>
+              </div>
+              <Row className="package-info">
+                <Col md={6}>
+                  <p><DollarSign /> <strong>{t('priceSingle')}:&nbsp;</strong> ${pkg.priceSingle}</p>
+                  <p><DollarSign /> <strong>{t('priceDouble')}:&nbsp;</strong> ${pkg.priceDouble}</p>
+                  <p><DollarSign /> <strong>{t('priceTriple')}:&nbsp;</strong> ${pkg.priceTriple}</p>
+                </Col>
+                <Col md={6}>
+                  <p><Users /> <strong>{t('availableSeats')}:&nbsp;</strong> {pkg.availableSeats}</p>
+                  <p><Calendar /> <strong>{t('startDate')}:&nbsp;</strong> {pkg.startDate}</p>
+                  <p><Calendar /> <strong>{t('endDate')}:&nbsp;</strong> {pkg.endDate}</p>
+                </Col>
+              </Row>
+              <div className="package-actions">
+                {isAuthenticated && pkg.status === "BOOKING_OPEN" && (
+                  <Button variant="dark" onClick={handleBook} className="action-button book-button">
+                    {t('bookNow')}
+                  </Button>
+                )}
+                {isAuthenticated && (pkg.status === "BOOKING_OPEN" || pkg.status === "UPCOMING") && (
+                  <>
+                    {isSubscribed ? (
+                      <Button variant="danger" onClick={handleUnsubscribe} className="action-button unsubscribe-button">
+                        {t('unsubscribe')}
+                      </Button>
+                    ) : (
+                      <Button variant="success" onClick={handleSubscribe} className="action-button subscribe-button">
+                        {t('subscribe')}
+                      </Button>
+                    )}
+                  </>
+                )}
+                {isAuthenticated && isReviewButtonVisible && (
+                  <Button variant="primary" onClick={() => setShowReviewModal(true)} className="action-button review-button">
+                    {t('addReview')}
+                  </Button>
+                )}
+              </div>
+            </Card.Body>
+          </Card>
+        </div>
 
-      <Modal show={showReviewModal} onHide={() => setShowReviewModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t('addReview')}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {successMessage ? (
-            <Alert variant="success">{successMessage}</Alert>
-          ) : (
-            <Form>
-              <Form.Group controlId="reviewRating">
-                <Form.Label>{t('rating')}</Form.Label>
-                <Form.Control
-                  type="number"
-                  min="1"
-                  max="5"
-                  value={reviewData.rating}
-                  onChange={(e) => setReviewData({ ...reviewData, rating: Number(e.target.value) })}
-                />
-              </Form.Group>
-              <Form.Group controlId="reviewText">
-                <Form.Label>{t('review')}</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={reviewData.review}
-                  onChange={(e) => setReviewData({ ...reviewData, review: e.target.value })}
-                />
-              </Form.Group>
-            </Form>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowReviewModal(false)}>
-            {t('cancel')}
-          </Button>
-          {!successMessage && (
-            <Button variant="primary" onClick={handleAddReview}>
-              {t('submitReview')}
+        <Modal show={showReviewModal} onHide={() => setShowReviewModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>{t('addReview')}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {successMessage ? (
+              <Alert variant="success">{successMessage}</Alert>
+            ) : (
+              <Form>
+                <Form.Group controlId="reviewRating">
+                  <Form.Label>{t('rating')}</Form.Label>
+                  <Form.Control
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={reviewData.rating}
+                    onChange={(e) => setReviewData({ ...reviewData, rating: Number(e.target.value) })}
+                  />
+                </Form.Group>
+                <Form.Group controlId="reviewText">
+                  <Form.Label>{t('review')}</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={reviewData.review}
+                    onChange={(e) => setReviewData({ ...reviewData, review: e.target.value })}
+                  />
+                </Form.Group>
+              </Form>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowReviewModal(false)}>
+              {t('cancel')}
             </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
-    </Container>
+            {!successMessage && (
+              <Button variant="primary" onClick={handleAddReview}>
+                {t('submitReview')}
+              </Button>
+            )}
+          </Modal.Footer>
+        </Modal>
+      </Container>
+    </div>
   );
 };
 
