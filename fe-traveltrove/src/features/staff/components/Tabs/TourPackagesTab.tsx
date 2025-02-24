@@ -653,11 +653,11 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             <td>{pkg.priceSingle}</td>
                             <td>{pkg.availableSeats}</td>
                             <td>{calculateAverageRating(pkg.packageId)}</td>
-                            <td>
+                            {/* <td>
                                 <Button variant="primary" onClick={() => handleAddReview(pkg.packageId)}>
                                     {t("Add Review")}
                                 </Button>
-                            </td>
+                            </td> */}
                             <td>
                                 <Button
                                     variant="outline-primary"
