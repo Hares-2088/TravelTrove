@@ -290,7 +290,9 @@
     "priceTriple": "Prix (Triple)",
     "availableSeats": "Places disponibles",
     "totalSeats": "Places totales",
-    "selectAirport": "Sélectionner un aéroport"
+    "selectAirport": "Sélectionner un aéroport",
+    "cancelled": "Annulé"
+
   },
   "bookings": {
     "bookings": "Réservations",
@@ -333,5 +335,7 @@
     "submit": "Soumettre",
     "success": "Votre message a été envoyé avec succès!",
     "error": "Échec de l'envoi du message. Veuillez réessayer."
-  }
+ },
+  "confirmButton": "Confirmer",
+  "cancelButton": "Annuler"
 }
