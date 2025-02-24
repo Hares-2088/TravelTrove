@@ -1,34 +1,47 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import {
-  AirportRequestModel,
-  AirportResponseModel,
-} from "../../../airports/models/airports.model";
-import { CityResponseModel } from "../../../cities/models/city.model";
-import { useAirportsApi } from "../../../airports/api/airports.api";
 import { useCitiesApi } from "../../../cities/api/cities.api";
+import { useCountriesApi } from "../../../countries/api/countries.api";
 import { useTranslation } from "react-i18next";
+import {
+  CityResponseModel,
+  CityRequestModel,
+} from "../../../cities/models/city.model";
+import { CountryResponseModel } from "../../../countries/models/country.model";
+import "../../../../shared/css/Scrollbar.css";
 
-const AirportsTab: React.FC = () => {
-  const { getAllAirports, getAirportById, addAirport, updateAirport, deleteAirport } = useAirportsApi();
-  const { getAllCities } = useCitiesApi();
+const CitiesTab: React.FC = () => {
+  const { getAllCities, getCityById, addCity, updateCity, deleteCity } = useCitiesApi();
+  const { getAllCountries } = useCountriesApi();
   const { t } = useTranslation();
 
-  const [airports, setAirports] = useState<AirportResponseModel[]>([]);
   const [cities, setCities] = useState<CityResponseModel[]>([]);
+  const [countries, setCountries] = useState<CountryResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
-  const [selectedAirport, setSelectedAirport] = useState<AirportResponseModel | null>(null);
-  const [formData, setFormData] = useState<AirportRequestModel>({ name: "", cityId: "" });
-  const [viewingAirport, setViewingAirport] = useState<AirportResponseModel | null>(null);
+  const [selectedCity, setSelectedCity] = useState<CityResponseModel | null>(null);
+  const [formData, setFormData] = useState<CityRequestModel>({ name: "", countryId: "" });
+  const [viewingCity, setViewingCity] = useState<CityResponseModel | null>(null);
 
   const [nameError, setNameError] = useState(false);
-  const [cityError, setCityError] = useState(false);
+  const [countryError, setCountryError] = useState(false);
+
+  // Uniform button style for consistency
+  const uniformButtonStyle = { minWidth: "120px" };
 
   useEffect(() => {
-    fetchAirports();
     fetchCities();
+    fetchCountries();
   }, []);
+
+  const fetchCountries = async () => {
+    try {
+      const data = await getAllCountries();
+      setCountries(data);
+    } catch (error) {
+      console.error(t("error.fetchingCountries"), error);
+    }
+  };
 
   const fetchCities = async () => {
     try {
@@ -39,75 +52,63 @@ const AirportsTab: React.FC = () => {
     }
   };
 
-  const fetchAirports = async () => {
+  const handleViewCity = async (cityId: string) => {
     try {
-      const data = await getAllAirports();
-      setAirports(data);
+      const city = await getCityById(cityId);
+      setViewingCity(city);
     } catch (error) {
-      console.error(t("error.fetchingAirports"), error);
+      console.error(t("error.fetchingCityDetails"), error);
     }
   };
 
-  const handleViewAirport = async (airportId: string) => {
-    try {
-      const airport = await getAirportById(airportId);
-      setViewingAirport(airport);
-    } catch (error) {
-      console.error(t("error.fetchingAirportDetails"), error);
-    }
-  };
-
-  const getCityName = (cityId: string) => {
-    const city = cities.find((city) => city.cityId === cityId);
-    return city ? city.name : t("unknownCity");
+  const getCountryName = (countryId: string) => {
+    const country = countries.find((country) => country.countryId === countryId);
+    return country ? country.name : t("unknownCountry");
   };
 
   const handleSave = async () => {
     const isNameValid = formData.name.trim() !== "";
-    const isCityValid = !!formData.cityId.trim();
+    const isCountryValid = !!formData.countryId.trim();
 
     setNameError(!isNameValid);
-    setCityError(!isCityValid);
+    setCountryError(!isCountryValid);
 
-    if (!isNameValid || !isCityValid) return;
+    if (!isNameValid || !isCountryValid) return;
 
     try {
       if (modalType === "create") {
-        await addAirport(formData);
-      } else if (modalType === "update" && selectedAirport) {
-        await updateAirport(formData, selectedAirport.airportId);
+        await addCity(formData);
+      } else if (modalType === "update" && selectedCity) {
+        await updateCity(selectedCity.cityId, formData);
       }
       setShowModal(false);
-      await fetchAirports();
+      await fetchCities();
     } catch (error) {
-      console.error(t("error.savingAirport"), error);
+      console.error(t("error.savingCity"), error);
     }
   };
 
   const handleDelete = async () => {
     try {
-      if (selectedAirport) {
-        await deleteAirport(selectedAirport.airportId);
+      if (selectedCity) {
+        await deleteCity(selectedCity.cityId);
         setShowModal(false);
-        await fetchAirports();
+        await fetchCities();
       }
     } catch (error) {
-      console.error(t("error.deletingAirport"), error);
+      console.error(t("error.deletingCity"), error);
     }
   };
 
-  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
-
-
   return (
     <div>
-      {viewingAirport ? (
+      {viewingCity ? (
         <div>
           <Button
             variant="link"
             size="sm"
             className="text-primary mb-3 mx-1"
-            onClick={() => setViewingAirport(null)}
+            onClick={() => setViewingCity(null)}
             style={{
               textDecoration: "none",
               display: "flex",
@@ -117,91 +118,110 @@ const AirportsTab: React.FC = () => {
           >
             <span>&larr;</span> {t("backToList")}
           </Button>
-          <h3>{viewingAirport.name}</h3>
+          <h3>{viewingCity.name}</h3>
           <p>
-            <strong>{t("city")}: </strong>
-            {getCityName(viewingAirport.cityId)}
+            <strong>{t("country")}: </strong>
+            {getCountryName(viewingCity.countryId)}
           </p>
         </div>
       ) : (
         <>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3>{t("airports")}</h3>
+            <h3>{t("cities")}</h3>
             <Button
               variant="primary"
               size="sm"
               style={uniformButtonStyle}
               className="mx-1"
               onClick={() => {
-                fetchCities();
+                fetchCountries();
                 setModalType("create");
-                setFormData({ name: "", cityId: "" });
+                setFormData({ name: "", countryId: "" });
                 setShowModal(true);
               }}
             >
               {t("create")}
             </Button>
           </div>
-          <Table bordered hover responsive className="rounded">
-            <thead className="bg-light">
-              <tr>
-                <th>{t("name")}</th>
-                <th className="text-center">{t("actions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {airports.map((airport) => (
-                <tr key={airport.airportId}>
-                  <td
-                    onClick={() => handleViewAirport(airport.airportId)}
-                    style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
-                  >
-                    {airport.name}
-                  </td>
-                  <td className="text-center">
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      style={uniformButtonStyle}
-                      className="mx-1"
-                      onClick={() => {
-                        fetchCities();
-                        setSelectedAirport(airport);
-                        setModalType("update");
-                        setFormData({ name: airport.name, cityId: airport.cityId });
-                        setShowModal(true);
-                      }}
-                    >
-                      {t("edit")}
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      style={uniformButtonStyle}
-                      className="mx-1"
-                      onClick={() => {
-                        setSelectedAirport(airport);
-                        setModalType("delete");
-                        setShowModal(true);
-                      }}
-                    >
-                      {t("delete")}
-                    </Button>
-                  </td>
+          <div
+            className="dashboard-scrollbar"
+            style={{ maxHeight: "700px", overflowY: "auto" }}
+          >
+            <Table
+              bordered
+              hover
+              responsive
+              className="rounded"
+              style={{ borderRadius: "12px", overflow: "hidden" }}
+            >
+              <thead className="bg-light">
+                <tr>
+                  <th>{t("name")}</th>
+                  <th>{t("actions")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {cities.map((city) => (
+                  <tr key={city.cityId}>
+                    <td
+                      onClick={() => handleViewCity(city.cityId)}
+                      style={{
+                        cursor: "pointer",
+                        color: "#007bff",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      {city.name}
+                    </td>
+                    <td>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        style={uniformButtonStyle}
+                        className="mx-1"
+                        onClick={() => {
+                          fetchCountries();
+                          setSelectedCity(city);
+                          setModalType("update");
+                          setFormData({
+                            name: city.name,
+                            countryId: city.countryId,
+                          });
+                          setShowModal(true);
+                        }}
+                      >
+                        {t("edit")}
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        style={uniformButtonStyle}
+                        className="mx-1"
+                        onClick={() => {
+                          setSelectedCity(city);
+                          setModalType("delete");
+                          setShowModal(true);
+                        }}
+                      >
+                        {t("delete")}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </>
       )}
+
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
             {modalType === "create"
-              ? t("createAirport")
+              ? t("createCity")
               : modalType === "update"
-              ? t("editAirport")
-              : t("deleteAirport")}
+                ? t("editCity")
+                : t("deleteCity")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -210,7 +230,7 @@ const AirportsTab: React.FC = () => {
           ) : (
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>{t("airportName")}</Form.Label>
+                <Form.Label>{t("cityName")}</Form.Label>
                 <Form.Control
                   required
                   type="text"
@@ -221,25 +241,26 @@ const AirportsTab: React.FC = () => {
                   }}
                   isInvalid={nameError}
                 />
-                <div className="invalid-feedback">{t("nameRequired")}</div>
+                <div className="invalid-feedback">{t("cityNameRequired")}</div>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>{t("city")}</Form.Label>
+                <Form.Label>{t("country")}</Form.Label>
                 <Form.Select
-                  value={formData.cityId}
+                  value={formData.countryId}
                   onChange={(e) => {
-                    setFormData({ ...formData, cityId: e.target.value });
-                    setCityError(false);
+                    setFormData({ ...formData, countryId: e.target.value });
+                    setCountryError(false);
                   }}
-                  isInvalid={cityError}
+                  isInvalid={countryError}
                 >
-                  <option value="">{t("selectCity")}</option>
-                  {cities.map((city) => (
-                    <option key={city.cityId} value={city.cityId}>
-                      {city.name}
+                  <option value="">{t("selectCountry")}</option>
+                  {countries.map((country) => (
+                    <option key={country.countryId} value={country.countryId}>
+                      {country.name}
                     </option>
                   ))}
                 </Form.Select>
+                <div className="invalid-feedback">{t("countryRequired")}</div>
               </Form.Group>
             </Form>
           )}
@@ -269,4 +290,4 @@ const AirportsTab: React.FC = () => {
   );
 };
 
-export default AirportsTab;
+export default CitiesTab;

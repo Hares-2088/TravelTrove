@@ -1,109 +1,114 @@
 /* Bookings.css */
 
+/* Global Styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+}
+
 /* Card Styling */
 .card {
     border: none;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #ffffff;
+    margin-bottom: 16px;
+    /* Add spacing between cards */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .card-body {
-    padding: 20px;
+    padding: 16px;
+    /* Reduce padding for smaller screens */
 }
 
-/* Table Styling */
-.custom-table {
-    border-collapse: separate;
-    border-spacing: 0 10px;
-    width: 100%;
+/* Booking Card Styling */
+.booking-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
-.custom-table thead th {
-    background-color: #f8f9fa;
+.booking-card .card-title {
+    font-size: 1.1rem;
+    /* Smaller font size for mobile */
     font-weight: 600;
-    text-align: center;
-    padding: 15px;
-    border-bottom: 2px solid #e9ecef;
+    color: #2d3748;
+    margin-bottom: 8px;
 }
 
-.custom-table tbody tr {
-    background-color: #ffffff;
-    transition: background-color 0.3s ease;
+.booking-card .card-text {
+    font-size: 0.85rem;
+    /* Smaller font size for mobile */
+    color: #4a5568;
+    margin-bottom: 6px;
 }
 
-.custom-table tbody tr:hover {
-    background-color: #f8f9fa;
+.booking-card .card-text strong {
+    color: #2d3748;
 }
 
-.custom-table tbody td {
-    padding: 15px;
-    text-align: center;
-    vertical-align: middle;
-    border-top: 1px solid #e9ecef;
+/* Status Badge Styling */
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    /* Smaller padding for mobile */
+    border-radius: 20px;
+    font-size: 0.75rem;
+    /* Smaller font size for mobile */
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status-badge.pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.confirmed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-badge.refunded {
+    background-color: #f8d7da;
+    color: #721c24;
 }
 
 /* Button Styling */
-.btn-outline-primary {
-    border-color: #007bff;
-    color: #007bff;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-primary:hover {
-    background-color: #007bff;
-    color: #fff;
-}
-
+.btn-outline-primary,
 .btn-outline-secondary {
-    border-color: #6c757d;
-    color: #6c757d;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-secondary:hover {
-    background-color: #6c757d;
-    color: #fff;
-}
-
-/* Modal Styling */
-.modal-content {
-    border-radius: 15px;
-    border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-    border-bottom: 1px solid #e9ecef;
-    padding: 15px 20px;
-}
-
-.modal-title {
-    font-weight: 600;
-    font-size: 1.25rem;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
-.modal-footer {
-    border-top: 1px solid #e9ecef;
-    padding: 15px 20px;
+    font-size: 0.85rem;
+    /* Smaller font size for mobile */
+    padding: 6px 12px;
+    /* Smaller padding for mobile */
+    margin: 4px 0;
+    /* Add spacing between buttons */
 }
 
 /* Travelers List Styling */
 .travelers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    padding: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    /* Adjust for mobile */
+    gap: 10px;
+    /* Reduce gap for smaller screens */
+    padding: 10px;
+    /* Reduce padding for smaller screens */
 }
 
 .traveler-card {
     border: 1px solid #e9ecef;
-    border-radius: 10px;
-    padding: 15px;
+    border-radius: 8px;
+    /* Smaller border radius for mobile */
+    padding: 10px;
+    /* Reduce padding for smaller screens */
     transition: box-shadow 0.3s ease;
 }
 
@@ -112,44 +117,75 @@
 }
 
 .traveler-card .card-title {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    /* Smaller font size for mobile */
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .traveler-card .card-text {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    /* Smaller font size for mobile */
     color: #6c757d;
 }
 
-/* Scrollbar Styling */
-.dashboard-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: #007bff #f8f9fa;
+/* Modal Styling */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.dashboard-scrollbar::-webkit-scrollbar {
-    width: 8px;
+.modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 12px 16px;
+    /* Reduce padding for smaller screens */
 }
 
-.dashboard-scrollbar::-webkit-scrollbar-track {
-    background: #f8f9fa;
+.modal-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    /* Smaller font size for mobile */
 }
 
-.dashboard-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #007bff;
-    border-radius: 10px;
+.modal-body {
+    padding: 16px;
+    /* Reduce padding for smaller screens */
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 12px 16px;
+    /* Reduce padding for smaller screens */
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 576px) {
+    .card-body {
+        padding: 12px;
+        /* Further reduce padding for very small screens */
+    }
 
-    .custom-table thead th,
-    .custom-table tbody td {
-        padding: 10px;
+    .booking-card .card-title {
+        font-size: 1rem;
+        /* Adjust font size for very small screens */
+    }
+
+    .booking-card .card-text {
+        font-size: 0.8rem;
+        /* Adjust font size for very small screens */
+    }
+
+    .btn-outline-primary,
+    .btn-outline-secondary {
+        font-size: 0.8rem;
+        /* Adjust font size for very small screens */
+        padding: 4px 8px;
+        /* Adjust padding for very small screens */
     }
 
     .travelers-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        /* Adjust for very small screens */
     }
 }
