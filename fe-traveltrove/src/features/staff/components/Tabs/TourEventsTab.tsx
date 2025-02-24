@@ -175,9 +175,7 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
         </Button>
       </div>
 
-      <div
-        style={{ maxHeight: "550px", overflowY: "auto" }}
-      >
+      <div style={{ maxHeight: "550px", overflowY: "auto" }}>
         <Table bordered hover responsive>
           <thead className="bg-light">
             <tr>
@@ -198,35 +196,41 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
                   <td>{getEventNameById(event.eventId)}</td>
                   <td>{getHotelNameById(event.hotelId)}</td>
                   <td>
-                    <Button
-                      variant="outline-primary"
-                      onClick={() => {
-                        setSelectedEvent(event);
-                        setModalType("update");
-                        setFormData({
-                          tourId,
-                          seq: event.seq,
-                          seqDesc: event.seqDesc,
-                          eventId: event.eventId,
-                          hotelId: event.hotelId,
-                        });
-                        setShowModal(true);
-                      }}
-                    >
-                      {t("editButton")}
-                    </Button>
+                    <div className="d-flex flex-column flex-md-row gap-2">
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="flex-grow-1 flex-md-grow-0"
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setModalType("update");
+                          setFormData({
+                            tourId,
+                            seq: event.seq,
+                            seqDesc: event.seqDesc,
+                            eventId: event.eventId,
+                            hotelId: event.hotelId,
+                          });
+                          setShowModal(true);
+                        }}
+                      >
+                        {t("editButton")}
+                      </Button>
 
-                    <Button
-                      variant="outline-danger"
-                      className="ms-2"
-                      onClick={() => {
-                        setSelectedEvent(event);
-                        setModalType("delete");
-                        setShowModal(true);
-                      }}
-                    >
-                      {t("deleteButton")}
-                    </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        className="flex-grow-1 flex-md-grow-0"
+                        
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setModalType("delete");
+                          setShowModal(true);
+                        }}
+                      >
+                        {t("deleteButton")}
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -240,8 +244,8 @@ const TourEventsTab: React.FC<TourEventsTabProps> = ({ tourId }) => {
             {modalType === "create"
               ? t("createTitle")
               : modalType === "update"
-                ? t("editTitle")
-                : t("deleteTitle")}
+              ? t("editTitle")
+              : t("deleteTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
