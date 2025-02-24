@@ -63,3 +63,10 @@
 .package-dates {
   margin-top: 10px;
 }
+
+/* Media query for small screens */
+@media (max-width: 576px) {
+  .status-tag {
+    position: static;
+  }
+}
