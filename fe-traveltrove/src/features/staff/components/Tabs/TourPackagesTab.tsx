@@ -210,7 +210,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     //fetch all the packages again
                     await fetchPackages();
 
-                    console.log('updating the status !!!!')
+
                 } catch (error) {
                     console.error(`Error updating status for package ${pkg.packageId}:`, error);
                 }
@@ -447,7 +447,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
 
     const handleViewAllReviews = (pkgId: string) => {
         const selected = packages.find((pkg) => pkg.packageId === pkgId);
-        console.log("Selected package:", selected); // Debugging
+
         setSelectedPackage(selected || null);
         setShowReviewList(true);
     };
@@ -467,12 +467,12 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                 return;
             }
 
-            console.log(`handleUpdate method : Updating packageId=${pkg.packageId} to newStatus=${newStatus} from=${pkg.status}`);
+
 
             await updatePackageStatus(pkg.packageId, newStatus);
             await fetchPackages(); // Refresh the list
 
-            console.log(`Package status updated successfully for ${pkg.packageId}`);
+
         } catch (error) {
             console.error(`Error updating package status for ${pkg.packageId}:`, error);
         }
