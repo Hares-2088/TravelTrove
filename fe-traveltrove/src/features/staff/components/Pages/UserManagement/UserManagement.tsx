@@ -13,7 +13,6 @@ const UserManagement: React.FC = () => {
   const { t } = useTranslation();
   const [selectedRole, setSelectedRole] = useState(t("allRoles"));
 
-  // ROLE_MAPPING is defined here so that translations via t are available.
   const ROLE_MAPPING: Record<string, string> = {
     [t("allRoles")]: "",
     [t("roles.Admin")]: "Admin",
@@ -80,14 +79,14 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="d-flex justify-content-center align-items-start p-4" style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
-      <Card className="rounded shadow border-0" style={{ width: "100%", maxWidth: "1600px" }}>
+      <Card className="rounded shadow border-0 w-100" style={{ maxWidth: "1600px" }}>
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h2 className="mb-0">{t("userManagement")}</h2>
           </div>
 
           <Row className="mb-4 g-3">
-            <Col md={3}>
+            <Col xs={12} md={3}>
               <Form.Select
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
@@ -100,11 +99,15 @@ const UserManagement: React.FC = () => {
             </Col>
           </Row>
 
-          <UsersList
-            users={filteredUsers}
-            onUpdateUser={handleUpdateUser}
-            onUpdateRole={handleRoleUpdate}
-          />
+          <div className="table-responsive"> {/* Add this wrapper */}
+            <div style={{ minWidth: "800px" }}> {/* Add minimum width container */}
+              <UsersList
+                users={filteredUsers}
+                onUpdateUser={handleUpdateUser}
+                onUpdateRole={handleRoleUpdate}
+              />
+            </div>
+          </div>
 
           <div className="d-flex justify-content-between align-items-center mt-4">
             <div>

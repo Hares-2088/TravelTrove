@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
 
   const handleNavClick = (tab: string) => {
     setActiveTab(tab);
-    setShowOffcanvas(false); //  offcanvas on mobile when an item is clicked
+    setShowOffcanvas(false); // Close offcanvas on mobile when an item is clicked
   };
 
   const navItems = (
@@ -186,7 +186,7 @@ const Dashboard: React.FC = () => {
                 md={10}
                 className="bg-white"
                 style={{
-                  height: "90vh",
+                  height: "calc(100% - 56px)", // Adjust height to account for header
                   overflowY: "auto",
                   padding: "1rem",
                 }}
