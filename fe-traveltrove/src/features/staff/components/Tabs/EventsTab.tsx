@@ -34,8 +34,8 @@ const EventsTab: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
 
-  // Uniform button style for consistent sizing
-  const uniformButtonStyle = { minWidth: "120px" };
+  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
+
 
   const fetchEvents = async () => {
     try {

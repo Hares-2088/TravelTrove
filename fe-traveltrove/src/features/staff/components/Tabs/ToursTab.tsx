@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Button, Table, Modal, Form } from "react-bootstrap";
 import { useToursApi } from "../../../tours/api/tours.api";
 import { TourRequestModel, TourResponseModel } from "../../../tours/models/Tour";
-import { Button, Table, Modal, Form, Container, Row, Col } from "react-bootstrap";
-import TourEventsTab from "./TourEventsTab";
-import TourPackagesTab from "./TourPackagesTab";
-import "../../../../shared/css/Scrollbar.css";
 import { useTranslation } from "react-i18next";
 import UploadImage from "../../../../shared/AWS/UploadImage";
 import { useS3Upload } from "../../../../shared/AWS/useS3Upload";
 import { toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
 import { useUserContext } from "../../../../context/UserContext";
+import TourEventsTab from "./TourEventsTab";
+import TourPackagesTab from "./TourPackagesTab";
 
 const ToursTab: React.FC = () => {
   const {
@@ -19,11 +17,11 @@ const ToursTab: React.FC = () => {
     addTour,
     updateTour,
     deleteTour,
-    updateTourImage,
     calculateRevenueByTourId,
   } = useToursApi();
   const { t } = useTranslation();
   const { getPresignedUrl } = useS3Upload();
+  const { roles } = useUserContext();
 
   const [tours, setTours] = useState<TourResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -33,14 +31,14 @@ const ToursTab: React.FC = () => {
   const [viewingTour, setViewingTour] = useState<TourResponseModel | null>(null);
   const [tourNameError, setTourNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
-  const [imageUploadModal, setImageUploadModal] = useState(false);
-  const [imageUploadTourId, setImageUploadTourId] = useState<string | null>(null);
   const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [revenue, setRevenue] = useState<number | null>(null);
-  const { roles } = useUserContext();
+  const [imageUploadTourId, setImageUploadTourId] = useState<string | null>(null);
 
   const isAdmin = roles.includes("Admin");
+
+  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
 
   useEffect(() => {
     fetchTours();
@@ -59,10 +57,10 @@ const ToursTab: React.FC = () => {
     try {
       const tour = await getTourByTourId(tourId);
       setViewingTour(tour);
-      const revenue = await calculateRevenueByTourId(tourId);
-      setRevenue(revenue);
+      const rev = await calculateRevenueByTourId(tourId);
+      setRevenue(rev);
     } catch (error) {
-      console.error("Error fetching Tour details:", error);
+      console.error("Error fetching tour details:", error);
     }
   };
 
@@ -93,7 +91,6 @@ const ToursTab: React.FC = () => {
       if (selectedTour) {
         await deleteTour(selectedTour.tourId);
         setShowModal(false);
-        setImageUploadTourId(null);
         await fetchTours();
       }
     } catch (error) {
@@ -112,7 +109,7 @@ const ToursTab: React.FC = () => {
   };
 
   const extractImportantPart = (url: string) => {
-    const parts = url.split('/');
+    const parts = url.split("/");
     return parts[parts.length - 1];
   };
 
@@ -128,185 +125,145 @@ const ToursTab: React.FC = () => {
     }
   };
 
-  const uniformButtonStyle = { minWidth: "120px" };
-
   return (
-    <Container fluid className="p-3">
+    <div className="p-3">
       {viewingTour ? (
-        <>
-          <Row>
-            <Col xs={12}>
-              <Button
-                variant="link"
-                size="sm"
-                className="text-primary mb-3 mx-1"
-                onClick={() => setViewingTour(null)}
-                style={{
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                }}
-              >
-                <span>&larr;</span> {t('backToListT')}
-              </Button>
-            </Col>
-          </Row>
-          <Row className="mb-3">
-            <Col xs={12}>
-              <h3>{viewingTour.name}</h3>
-              <p>
-                <strong>{t('tourDescription')}:</strong>{" "}
-                {viewingTour.description || t('noDescriptionT')}
-              </p>
-              <p>
-                <strong>{t('revenue')}:</strong>{" "}
-                {revenue !== null ? `$${(revenue / 100).toFixed(2)}` : t('noRevenue')}
-              </p>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12} className="mb-3">
-              <TourEventsTab tourId={viewingTour.tourId} />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              <TourPackagesTab tourId={viewingTour.tourId} />
-            </Col>
-          </Row>
-        </>
+        <div>
+          <Button
+            variant="link"
+            size="sm"
+            className="text-primary mb-3"
+            onClick={() => setViewingTour(null)}
+            style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "5px" }}
+          >
+            <span>&larr;</span> {t("backToListT")}
+          </Button>
+          <h3>{viewingTour.name}</h3>
+          <p>
+            <strong>{t("tourDescription")}:</strong> {viewingTour.description || t("noDescriptionT")}
+          </p>
+          <p>
+            <strong>{t("revenue")}:</strong>{" "}
+            {revenue !== null ? `$${(revenue / 100).toFixed(2)}` : t("noRevenue")}
+          </p>
+          <div className="mb-3">
+            <TourEventsTab tourId={viewingTour.tourId} />
+          </div>
+          <div>
+            <TourPackagesTab tourId={viewingTour.tourId} />
+          </div>
+        </div>
       ) : (
         <>
-          <Row className="mb-3 align-items-center">
-            <Col xs={12} md={6}>
-              <h3>{t('tours')}</h3>
-            </Col>
-            <Col xs={12} md={6} className="text-center text-md-end">
-              <Button
-                variant="primary"
-                size="sm"
-                style={uniformButtonStyle}
-                className="mx-1"
-                onClick={() => {
-                  setModalType("create");
-                  setFormData({ name: "", description: "" });
-                  setShowModal(true);
-                }}
-              >
-                {t('createTour')}
-              </Button>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12} className="dashboard-scrollbar" style={{ maxHeight: "700px", overflowY: "auto" }}>
-              <Table bordered hover responsive className="rounded">
-                <thead className="bg-light">
-                  <tr>
-                    <th>{t('tourName')}</th>
-                    <th>{t('tourImageUrl')}</th>
-                    <th className="text-center">{t('actionsT')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tours.map((tour) => (
-                    <tr key={tour.tourId}>
-                      <td
-                        onClick={() => handleViewTour(tour.tourId)}
-                        style={{
-                          cursor: "pointer",
-                          color: "#007bff",
-                          textDecoration: "underline",
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h3>{t("tours")}</h3>
+            <Button
+              variant="primary"
+              size="sm"
+              style={uniformButtonStyle}
+              onClick={() => {
+                setModalType("create");
+                setFormData({ name: "", description: "" });
+                setShowModal(true);
+              }}
+            >
+              {t("createTour")}
+            </Button>
+          </div>
+          <Table bordered hover responsive className="rounded">
+            <thead className="bg-light">
+              <tr>
+                <th>{t("tourName")}</th>
+                <th>{t("tourImageUrl")}</th>
+                <th className="text-center">{t("actionsT")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tours.map((tour) => (
+                <tr key={tour.tourId}>
+                  <td
+                    onClick={() => handleViewTour(tour.tourId)}
+                    style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+                  >
+                    {tour.name}
+                  </td>
+                  <td>
+                    {tour.tourImageUrl ? (
+                      <img
+                        src={tour.tourImageUrl}
+                        alt="Tour"
+                        width="50"
+                        height="50"
+                        style={{ objectFit: "cover", borderRadius: "5px" }}
+                      />
+                    ) : (
+                      <span>{t("noImage")}</span>
+                    )}
+                  </td>
+                  <td className="text-center">
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      style={uniformButtonStyle}
+                      className="mx-1"
+                      onClick={() => {
+                        setSelectedTour(tour);
+                        setModalType("update");
+                        setFormData({ name: tour.name, description: tour.description });
+                        setShowModal(true);
+                      }}
+                    >
+                      {t("editTour")}
+                    </Button>
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
+                      style={uniformButtonStyle}
+                      className="mx-1"
+                      onClick={() => setImageUploadTourId(tour.tourId)}
+                    >
+                      {t("updateImage")}
+                    </Button>
+                    {isAdmin && (
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        style={uniformButtonStyle}
+                        className="mx-1"
+                        onClick={() => {
+                          setSelectedTour(tour);
+                          setModalType("delete");
+                          setShowModal(true);
                         }}
                       >
-                        {tour.name}
-                      </td>
-                      <td>
-                        {tour.tourImageUrl ? (
-                          <img
-                            src={tour.tourImageUrl}
-                            alt="Tour"
-                            width="50"
-                            height="50"
-                            style={{ objectFit: "cover", borderRadius: "5px" }}
-                          />
-                        ) : (
-                          <span>{t('noImage')}</span>
-                        )}
-                      </td>
-                      <td className="text-center">
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          style={uniformButtonStyle}
-                          className="mx-1"
-                          onClick={() => {
-                            setSelectedTour(tour);
-                            setModalType("update");
-                            setFormData({
-                              name: tour.name,
-                              description: tour.description,
-                            });
-                            setShowModal(true);
-                          }}
-                        >
-                          {t('editTour')}
-                        </Button>
-                        <Button
-                          variant="outline-secondary"
-                          size="sm"
-                          style={uniformButtonStyle}
-                          className="mx-1"
-                          onClick={() => {
-                            setImageUploadTourId(tour.tourId);
-                            setImageUploadModal(true);
-                          }}
-                        >
-                          {t('updateImage')}
-                        </Button>
-                        {isAdmin && (
-                          <Button
-                            variant="outline-danger"
-                            size="sm"
-                            style={uniformButtonStyle}
-                            className="mx-1"
-                            onClick={() => {
-                              setSelectedTour(tour);
-                              setModalType("delete");
-                              setShowModal(true);
-                            }}
-                          >
-                            {t('deleteTour')}
-                          </Button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
+                        {t("deleteTour")}
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </>
       )}
 
-      {/* Modal for Create, Update, and Delete */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
             {modalType === "create"
-              ? t('createTour')
+              ? t("createTour")
               : modalType === "update"
-              ? t('editTour')
-              : t('deleteTour')}
+              ? t("editTour")
+              : t("deleteTour")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {modalType === "delete" ? (
-            <p>{t('areYouSureDelete')}</p>
+            <p>{t("areYouSureDelete")}</p>
           ) : (
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>{t('tourName')}</Form.Label>
+                <Form.Label>{t("tourName")}</Form.Label>
                 <Form.Control
                   required
                   type="text"
@@ -317,10 +274,10 @@ const ToursTab: React.FC = () => {
                   }}
                   isInvalid={tourNameError}
                 />
-                <div className="invalid-feedback">{t('tourNameRequired')}</div>
+                <div className="invalid-feedback">{t("tourNameRequired")}</div>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>{t('tourDescription')}</Form.Label>
+                <Form.Label>{t("tourDescription")}</Form.Label>
                 <Form.Control
                   as="textarea"
                   value={formData.description}
@@ -331,10 +288,10 @@ const ToursTab: React.FC = () => {
                   isInvalid={descriptionError}
                   rows={3}
                 />
-                <div className="invalid-feedback">{t('tourDescriptionRequired')}</div>
+                <div className="invalid-feedback">{t("tourDescriptionRequired")}</div>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>{t('tourImage')}</Form.Label>
+                <Form.Label>{t("tourImage")}</Form.Label>
                 <UploadImage
                   onFileSelect={requestPresignedUrl}
                   presignedUrl={presignedUrl}
@@ -361,7 +318,7 @@ const ToursTab: React.FC = () => {
             className="mx-1"
             onClick={() => setShowModal(false)}
           >
-            {t('cancelT')}
+            {t("cancelT")}
           </Button>
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
@@ -370,15 +327,14 @@ const ToursTab: React.FC = () => {
             className="mx-1"
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
-            {modalType === "delete" ? t('confirmT') : t('saveT')}
+            {modalType === "delete" ? t("confirmT") : t("saveT")}
           </Button>
         </Modal.Footer>
       </Modal>
 
-      {/* Image Upload Modal */}
       <Modal show={!!imageUploadTourId} onHide={() => setImageUploadTourId(null)}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('updateImage')}</Modal.Title>
+          <Modal.Title>{t("updateImage")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <UploadImage
@@ -396,11 +352,11 @@ const ToursTab: React.FC = () => {
             className="mx-1"
             onClick={() => setImageUploadTourId(null)}
           >
-            {t('cancelT')}
+            {t("cancelT")}
           </Button>
         </Modal.Footer>
       </Modal>
-    </Container>
+    </div>
   );
 };
 

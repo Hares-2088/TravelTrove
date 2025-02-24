@@ -96,8 +96,8 @@ const AirportsTab: React.FC = () => {
     }
   };
 
-  // Uniform button style for consistent sizing and margin
-  const uniformButtonStyle = { minWidth: "120px" };
+  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
+
 
   return (
     <div>

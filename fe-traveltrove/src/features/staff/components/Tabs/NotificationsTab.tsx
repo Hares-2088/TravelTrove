@@ -34,8 +34,8 @@ const NotificationsTab: React.FC = () => {
     messageContent: false,
   });
 
-  // Uniform button style for consistent sizing
-  const uniformButtonStyle = { minWidth: "120px" };
+  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
+
 
   useEffect(() => {
     fetchNotifications();

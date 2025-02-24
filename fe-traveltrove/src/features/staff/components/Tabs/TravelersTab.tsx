@@ -35,8 +35,8 @@ const TravelersTab: React.FC = () => {
   });
   const [viewingTraveler, setViewingTraveler] = useState<TravelerResponseModel | null>(null);
 
-  // Uniform button style for consistent sizing and margin
-  const uniformButtonStyle = { minWidth: "120px" };
+  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
+
 
   useEffect(() => {
     fetchTravelers();

@@ -98,9 +98,8 @@ const HotelsTab: React.FC = () => {
       console.error(t("error.deletingHotel"), error);
     }
   };
+  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
 
-  // Uniform button style for consistent sizing
-  const uniformButtonStyle = { minWidth: "120px" };
 
   return (
     <div>
