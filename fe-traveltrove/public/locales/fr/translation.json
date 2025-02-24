@@ -252,5 +252,6 @@
   "showCompleted": "Packages terminés",
   "completed": "Terminé",
 
-  "reviewSubmittedSuccessfully": "Votre avis a été soumis avec succès."
+  "reviewSubmittedSuccessfully": "Votre avis a été soumis avec succès.",
+  "updateImage": "Modifier l'image"
 }

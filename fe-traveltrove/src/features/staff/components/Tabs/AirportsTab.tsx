@@ -96,15 +96,23 @@ const AirportsTab: React.FC = () => {
     }
   };
 
+  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
+
   return (
     <div>
       {viewingAirport ? (
         <div>
           <Button
             variant="link"
-            className="text-primary mb-3"
+            size="sm"
+            className="text-primary mb-3 mx-1"
             onClick={() => setViewingAirport(null)}
-            style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "5px" }}
+            style={{
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+            }}
           >
             <span>&larr;</span> {t("backToList")}
           </Button>
@@ -120,6 +128,9 @@ const AirportsTab: React.FC = () => {
             <h3>{t("airports")}</h3>
             <Button
               variant="primary"
+              size="sm"
+              style={uniformButtonStyle}
+              className="mx-1"
               onClick={() => {
                 fetchCities();
                 setModalType("create");
@@ -134,7 +145,7 @@ const AirportsTab: React.FC = () => {
             <thead className="bg-light">
               <tr>
                 <th>{t("name")}</th>
-                <th>{t("actions")}</th>
+                <th className="text-center">{t("actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -146,9 +157,12 @@ const AirportsTab: React.FC = () => {
                   >
                     {airport.name}
                   </td>
-                  <td>
+                  <td className="text-center">
                     <Button
                       variant="outline-primary"
+                      size="sm"
+                      style={uniformButtonStyle}
+                      className="mx-1"
                       onClick={() => {
                         fetchCities();
                         setSelectedAirport(airport);
@@ -161,7 +175,9 @@ const AirportsTab: React.FC = () => {
                     </Button>
                     <Button
                       variant="outline-danger"
-                      className="ms-2"
+                      size="sm"
+                      style={uniformButtonStyle}
+                      className="mx-1"
                       onClick={() => {
                         setSelectedAirport(airport);
                         setModalType("delete");
@@ -179,7 +195,13 @@ const AirportsTab: React.FC = () => {
       )}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{modalType === "create" ? t("createAirport") : modalType === "update" ? t("editAirport") : t("deleteAirport")}</Modal.Title>
+          <Modal.Title>
+            {modalType === "create"
+              ? t("createAirport")
+              : modalType === "update"
+              ? t("editAirport")
+              : t("deleteAirport")}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {modalType === "delete" ? (
@@ -212,16 +234,32 @@ const AirportsTab: React.FC = () => {
                 >
                   <option value="">{t("selectCity")}</option>
                   {cities.map((city) => (
-                    <option key={city.cityId} value={city.cityId}>{city.name}</option>
+                    <option key={city.cityId} value={city.cityId}>
+                      {city.name}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Form>
           )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>{t("cancel")}</Button>
-          <Button variant={modalType === "delete" ? "danger" : "primary"} onClick={modalType === "delete" ? handleDelete : handleSave}>
+        <Modal.Footer className="d-flex justify-content-center">
+          <Button
+            variant="secondary"
+            size="sm"
+            style={uniformButtonStyle}
+            className="mx-1"
+            onClick={() => setShowModal(false)}
+          >
+            {t("cancel")}
+          </Button>
+          <Button
+            variant={modalType === "delete" ? "danger" : "primary"}
+            size="sm"
+            style={uniformButtonStyle}
+            className="mx-1"
+            onClick={modalType === "delete" ? handleDelete : handleSave}
+          >
             {modalType === "delete" ? t("confirm") : t("save")}
           </Button>
         </Modal.Footer>

@@ -266,5 +266,6 @@
   "showCompleted": "Past Packages",
   "completed": "Completed",
 
-  "reviewSubmittedSuccessfully": "Review submitted successfully."
+  "reviewSubmittedSuccessfully": "Review submitted successfully.",
+  "updateImage": "Update Image"
 }

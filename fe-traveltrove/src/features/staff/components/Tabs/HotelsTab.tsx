@@ -17,20 +17,10 @@ const HotelsTab: React.FC = () => {
   const [hotels, setHotels] = useState<HotelResponseModel[]>([]);
   const [cities, setCities] = useState<CityResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">(
-    "create"
-  );
-  const [selectedHotel, setSelectedHotel] = useState<HotelResponseModel | null>(
-    null
-  );
-  const [formData, setFormData] = useState<HotelRequestModel>({
-    name: "",
-    url: "",
-    cityId: "",
-  });
-  const [viewingHotel, setViewingHotel] = useState<HotelResponseModel | null>(
-    null
-  );
+  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
+  const [selectedHotel, setSelectedHotel] = useState<HotelResponseModel | null>(null);
+  const [formData, setFormData] = useState<HotelRequestModel>({ name: "", url: "", cityId: "" });
+  const [viewingHotel, setViewingHotel] = useState<HotelResponseModel | null>(null);
 
   const [nameError, setNameError] = useState(false);
   const [urlError, setUrlError] = useState(false);
@@ -79,7 +69,7 @@ const HotelsTab: React.FC = () => {
     const isCityValid = !!formData.cityId.trim();
 
     setNameError(!isNameValid);
-    setUrlError(!isUrlValid)
+    setUrlError(!isUrlValid);
     setCityError(!isCityValid);
 
     if (!isNameValid || !isUrlValid || !isCityValid) return;
@@ -108,6 +98,8 @@ const HotelsTab: React.FC = () => {
       console.error(t("error.deletingHotel"), error);
     }
   };
+  const uniformButtonStyle = { minWidth: "120px", margin:"0.2rem" };
+
 
   return (
     <div>
@@ -115,7 +107,8 @@ const HotelsTab: React.FC = () => {
         <div>
           <Button
             variant="link"
-            className="text-primary mb-3"
+            size="sm"
+            className="text-primary mb-3 mx-1"
             onClick={() => setViewingHotel(null)}
             style={{
               textDecoration: "none",
@@ -140,6 +133,9 @@ const HotelsTab: React.FC = () => {
             <h3>{t("hotels")}</h3>
             <Button
               variant="primary"
+              size="sm"
+              style={uniformButtonStyle}
+              className="mx-1"
               onClick={() => {
                 fetchCities();
                 setModalType("create");
@@ -150,10 +146,7 @@ const HotelsTab: React.FC = () => {
               {t("create")}
             </Button>
           </div>
-          <div
-            
-            style={{ maxHeight: "700px", overflowY: "auto" }}
-          >
+          <div className="dashboard-scrollbar" style={{ maxHeight: "700px", overflowY: "auto" }}>
             <Table
               bordered
               hover
@@ -183,6 +176,9 @@ const HotelsTab: React.FC = () => {
                     <td>
                       <Button
                         variant="outline-primary"
+                        size="sm"
+                        style={uniformButtonStyle}
+                        className="mx-1"
                         onClick={() => {
                           fetchCities();
                           setSelectedHotel(hotel);
@@ -199,7 +195,9 @@ const HotelsTab: React.FC = () => {
                       </Button>
                       <Button
                         variant="outline-danger"
-                        className="ms-2"
+                        size="sm"
+                        style={uniformButtonStyle}
+                        className="mx-1"
                         onClick={() => {
                           setSelectedHotel(hotel);
                           setModalType("delete");
@@ -223,8 +221,8 @@ const HotelsTab: React.FC = () => {
             {modalType === "create"
               ? t("createHotel")
               : modalType === "update"
-                ? t("editHotel")
-                : t("deleteHotel")}
+              ? t("editHotel")
+              : t("deleteHotel")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -277,19 +275,26 @@ const HotelsTab: React.FC = () => {
                     </option>
                   ))}
                 </Form.Select>
-                <div className="invalid-feedback">
-                  {t("cityRequired")}
-                </div>
+                <div className="invalid-feedback">{t("cityRequired")}</div>
               </Form.Group>
             </Form>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button
+            variant="secondary"
+            size="sm"
+            style={uniformButtonStyle}
+            className="mx-1"
+            onClick={() => setShowModal(false)}
+          >
             {t("cancel")}
           </Button>
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
+            size="sm"
+            style={uniformButtonStyle}
+            className="mx-1"
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
             {modalType === "delete" ? t("confirm") : t("save")}
