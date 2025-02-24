@@ -17,7 +17,7 @@ import "../../../../shared/css/Scrollbar.css";
 const formatStatus = (status: string) => {
     return status
         .toLowerCase()
-        .split(' ')
+        .split('_')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 };
@@ -60,13 +60,27 @@ const Bookings: React.FC = () => {
     const fetchBookings = async () => {
         try {
             const data = await getAllBookings({ packageId: packageId || undefined });
-            const userIds = data.map((booking) => booking.userId);
-            const userNamesData = await Promise.all(userIds.map((id) => getUserById(id)));
-            const userNamesMap = userNamesData.reduce((acc, user) => {
-                acc[user.userId] = user.firstName + " " + user.lastName; // Assuming firstName and lastName exist
+            const travelerNamesPromises = data.map(async (booking) => {
+                let name = "No Traveler";
+                const user = await getUserById(booking.userId);
+                let primaryTravelerId = user.travelerId;
+                if (!primaryTravelerId && user.travelerIds && user.travelerIds.length > 0) {
+                    primaryTravelerId = user.travelerIds[0];
+                }
+                if (primaryTravelerId) {
+                    const traveler = await getTravelerById(primaryTravelerId);
+                    if (traveler) {
+                        name = `${traveler.firstName} ${traveler.lastName}`;
+                    }
+                }
+                return { bookingId: booking.bookingId, name };
+            });
+            const travelerNamesData = await Promise.all(travelerNamesPromises);
+            const travelerNamesMap = travelerNamesData.reduce((acc, { bookingId, name }) => {
+                acc[bookingId] = name;
                 return acc;
             }, {} as { [key: string]: string });
-            setUserNames(userNamesMap);
+            setUserNames(travelerNamesMap);
             setBookings(data);
             fetchPayments(data);
         } catch (error) {
@@ -165,13 +179,11 @@ const Bookings: React.FC = () => {
                             <Col xs={12} md={6} lg={4} key={booking.bookingId} className="mb-4">
                                 <Card className="h-100 booking-card">
                                     <Card.Body>
-                                        <Card.Title>{userNames[booking.userId]}</Card.Title>
+                                        <Card.Title>{userNames[booking.bookingId]}</Card.Title>
                                         <Card.Text>
                                             <strong>{t("bookings.totalPrice")}:</strong> {booking.totalPrice}<br />
                                             <strong>{t("bookings.status")}:</strong> {formatStatus(booking.status)}<br />
                                             <strong>{t("bookings.bookingDate")}:</strong> {booking.bookingDate}<br />
-                                            <strong>{t("bookings.revenue")}:</strong> {paymentDetails[booking.bookingId]?.amount !== undefined ? `$${((paymentDetails[booking.bookingId].amount) / 100).toFixed(2)}` : t('bookings.noAmount')}
-                                            &nbsp;({paymentDetails[booking.bookingId]?.currency || t('bookings.noCurrency')})
                                         </Card.Text>
                                         <div className="d-flex justify-content-between">
                                             {booking.status !== BookingStatus.REFUNDED && (
