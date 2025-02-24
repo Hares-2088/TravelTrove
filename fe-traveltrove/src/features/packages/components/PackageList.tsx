@@ -31,8 +31,10 @@ const PackageList: React.FC<PackageListProps> = ({ tourId }) => {
 
         if (isMounted) {
           // Filter packages based on status
-          const filteredPackages = data.filter(pkg =>
-            ["UPCOMING", "BOOKING_OPEN", "SOLD_OUT", "COMPLETED"].includes(pkg.status)
+          const filteredPackages = data.filter((pkg) =>
+            ["UPCOMING", "BOOKING_OPEN", "SOLD_OUT", "COMPLETED"].includes(
+              pkg.status
+            )
           );
           setPackages(filteredPackages);
         }
@@ -59,7 +61,7 @@ const PackageList: React.FC<PackageListProps> = ({ tourId }) => {
 
   const filteredPackages = showCompleted
     ? packages
-    : packages.filter(pkg => pkg.status !== "COMPLETED");
+    : packages.filter((pkg) => pkg.status !== "COMPLETED");
 
   return (
     <div>
@@ -76,15 +78,29 @@ const PackageList: React.FC<PackageListProps> = ({ tourId }) => {
         ) : (
           filteredPackages.map((pkg) => (
             <Card key={pkg.packageId} className="package-item">
-              <div className={`status-tag ${pkg.status === "COMPLETED" ? "completed" : "price-tag"}`}>
-                {pkg.status === "COMPLETED" ? t("completed") : `$${pkg.priceSingle}`}
+              <div
+                className={`status-tag ${
+                  pkg.status === "COMPLETED" ? "completed" : "price-tag"
+                }`}
+              >
+                {pkg.status === "COMPLETED"
+                  ? t("completed")
+                  : `$${pkg.priceSingle}`}
               </div>
               <Card.Body>
-                <Card.Title className="package-title">{pkg.name}</Card.Title>
-                <Card.Text className="package-description">{pkg.description}</Card.Text>
+                <Card.Title >{pkg.name}</Card.Title>
+                <Card.Text >
+                  {pkg.description}
+                </Card.Text>
                 <div className="package-dates">
-                  <p><Calendar className="date-icon" /> {t('startDate')}: {new Date(pkg.startDate).toLocaleDateString()}</p>
-                  <p><Calendar className="date-icon" /> {t('endDate')}: {new Date(pkg.endDate).toLocaleDateString()}</p>
+                  <p>
+                    <Calendar className="date-icon" /> {t("startDate")}:{" "}
+                    {new Date(pkg.startDate).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <Calendar className="date-icon" /> {t("endDate")}:{" "}
+                    {new Date(pkg.endDate).toLocaleDateString()}
+                  </p>
                 </div>
                 <Link to={`/packages/${pkg.packageId}`}>
                   <Button variant="dark">{t("viewDetails")}</Button>
