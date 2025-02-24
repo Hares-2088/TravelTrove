@@ -19,9 +19,7 @@ const CountriesTab: React.FC = () => {
   const { t } = useTranslation();
   const [countries, setCountries] = useState<CountryResponseModel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">(
-    "create"
-  );
+  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
   const [selectedCountry, setSelectedCountry] =
     useState<CountryResponseModel | null>(null);
   const [formData, setFormData] = useState<CountryRequestModel>({
@@ -89,13 +87,17 @@ const CountriesTab: React.FC = () => {
     }
   };
 
+  // Uniform button style for consistent sizing
+  const uniformButtonStyle = { minWidth: "120px" };
+
   return (
     <div>
       {viewingCountry ? (
         <div>
           <Button
             variant="link"
-            className="text-primary mb-3"
+            size="sm"
+            className="text-primary mb-3 mx-1"
             onClick={() => setViewingCountry(null)}
             style={{
               textDecoration: "none",
@@ -118,6 +120,9 @@ const CountriesTab: React.FC = () => {
             <h3>{t('title')}</h3>
             <Button
               variant="primary"
+              size="sm"
+              style={uniformButtonStyle}
+              className="mx-1"
               onClick={() => {
                 setModalType("create");
                 setFormData({ name: "", image: "" });
@@ -141,7 +146,7 @@ const CountriesTab: React.FC = () => {
               <thead className="bg-light">
                 <tr>
                   <th>{t('name')}</th>
-                  <th>{t('actions')}</th>
+                  <th className="text-center">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -157,9 +162,12 @@ const CountriesTab: React.FC = () => {
                     >
                       {country.name}
                     </td>
-                    <td>
+                    <td className="text-center">
                       <Button
                         variant="outline-primary"
+                        size="sm"
+                        style={uniformButtonStyle}
+                        className="mx-1"
                         onClick={() => {
                           setSelectedCountry(country);
                           setModalType("update");
@@ -174,7 +182,9 @@ const CountriesTab: React.FC = () => {
                       </Button>
                       <Button
                         variant="outline-danger"
-                        className="ms-2"
+                        size="sm"
+                        style={uniformButtonStyle}
+                        className="mx-1"
                         onClick={() => {
                           setSelectedCountry(country);
                           setModalType("delete");
@@ -198,8 +208,8 @@ const CountriesTab: React.FC = () => {
             {modalType === "create"
               ? t('createCountry')
               : modalType === "update"
-                ? t('editCountry')
-                : t('deleteCountry')}
+              ? t('editCountry')
+              : t('deleteCountry')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -242,12 +252,21 @@ const CountriesTab: React.FC = () => {
             </Form>
           )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+        <Modal.Footer className="d-flex justify-content-center">
+          <Button
+            variant="secondary"
+            size="sm"
+            style={uniformButtonStyle}
+            className="mx-1"
+            onClick={() => setShowModal(false)}
+          >
             {t('cancelC')}
           </Button>
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
+            size="sm"
+            style={uniformButtonStyle}
+            className="mx-1"
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
             {modalType === "delete" ? t('confirmC') : t('saveC')}

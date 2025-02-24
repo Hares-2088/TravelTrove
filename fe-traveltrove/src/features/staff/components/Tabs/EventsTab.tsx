@@ -13,22 +13,15 @@ import FilterBar from "../../../../shared/components/FilterBar";
 
 const EventsTab: React.FC = () => {
   const { t } = useTranslation();
-  const { getAllEvents, getEventById, addEvent, updateEvent, deleteEvent } =
-    useEventsApi();
+  const { getAllEvents, getEventById, addEvent, updateEvent, deleteEvent } = useEventsApi();
   const { getAllCities } = useCitiesApi();
   const { getAllCountries } = useCountriesApi();
   const [events, setEvents] = useState<EventResponseModel[]>([]);
-  const [cities, setCities] = useState<
-    { id: string; name: string; countryId: string }[]
-  >([]);
+  const [cities, setCities] = useState<{ id: string; name: string; countryId: string }[]>([]);
   const [countries, setCountries] = useState<{ id: string; name: string }[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"create" | "update" | "delete">(
-    "create"
-  );
-  const [selectedEvent, setSelectedEvent] = useState<EventResponseModel | null>(
-    null
-  );
+  const [modalType, setModalType] = useState<"create" | "update" | "delete">("create");
+  const [selectedEvent, setSelectedEvent] = useState<EventResponseModel | null>(null);
   const [formData, setFormData] = useState<EventRequestModel>({
     cityId: "",
     countryId: "",
@@ -36,12 +29,13 @@ const EventsTab: React.FC = () => {
     description: "",
     image: "",
   });
-  const [viewingEvent, setViewingEvent] = useState<EventResponseModel | null>(
-    null
-  );
+  const [viewingEvent, setViewingEvent] = useState<EventResponseModel | null>(null);
 
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
+
+  // Uniform button style for consistent sizing
+  const uniformButtonStyle = { minWidth: "120px" };
 
   const fetchEvents = async () => {
     try {
@@ -106,7 +100,6 @@ const EventsTab: React.FC = () => {
         alert(t("descriptionRequired"));
         return;
       }
-
       if (modalType === "create") {
         await addEvent(formData);
       } else if (modalType === "update" && selectedEvent) {
@@ -136,9 +129,7 @@ const EventsTab: React.FC = () => {
   };
 
   const filteredEvents = events.filter((event) => {
-    const matchesCountry = selectedCountry
-      ? event.countryId === selectedCountry
-      : true;
+    const matchesCountry = selectedCountry ? event.countryId === selectedCountry : true;
     const matchesCity = selectedCity ? event.cityId === selectedCity : true;
     return matchesCountry && matchesCity;
   });
@@ -149,7 +140,8 @@ const EventsTab: React.FC = () => {
         <div>
           <Button
             variant="link"
-            className="text-primary mb-3"
+            size="sm"
+            className="text-primary mb-3 mx-1"
             onClick={() => setViewingEvent(null)}
             style={{
               textDecoration: "none",
@@ -174,6 +166,9 @@ const EventsTab: React.FC = () => {
             <h3>{t("eventTitle")}</h3>
             <Button
               variant="primary"
+              size="sm"
+              style={uniformButtonStyle}
+              className="mx-1"
               onClick={() => {
                 fetchCities();
                 fetchCountries();
@@ -207,10 +202,7 @@ const EventsTab: React.FC = () => {
                 label: t("selectCity"),
                 value: selectedCity,
                 options: cities
-                  .filter(
-                    (city) =>
-                      !selectedCountry || city.countryId === selectedCountry
-                  )
+                  .filter((city) => !selectedCountry || city.countryId === selectedCountry)
                   .map((city) => ({
                     value: city.id,
                     label: city.name,
@@ -224,15 +216,12 @@ const EventsTab: React.FC = () => {
               setSelectedCity("");
             }}
           />
-          <div
-            
-            style={{ maxHeight: "700px", overflowY: "auto" }}
-          >
+          <div className="dashboard-scrollbar" style={{ maxHeight: "700px", overflowY: "auto" }}>
             <Table bordered hover responsive className="rounded">
               <thead className="bg-light">
                 <tr>
                   <th>{t("nameE")}</th>
-                  <th>{t("actions")}</th>
+                  <th className="text-center">{t("actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -249,9 +238,12 @@ const EventsTab: React.FC = () => {
                       >
                         {event.name}
                       </td>
-                      <td>
+                      <td className="text-center">
                         <Button
                           variant="outline-primary"
+                          size="sm"
+                          style={uniformButtonStyle}
+                          className="mx-1"
                           onClick={() => {
                             fetchCities();
                             fetchCountries();
@@ -271,7 +263,9 @@ const EventsTab: React.FC = () => {
                         </Button>
                         <Button
                           variant="outline-danger"
-                          className="ms-2"
+                          size="sm"
+                          style={uniformButtonStyle}
+                          className="mx-1"
                           onClick={() => {
                             setSelectedEvent(event);
                             setModalType("delete");
@@ -316,9 +310,7 @@ const EventsTab: React.FC = () => {
                 <Form.Control
                   type="text"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   isInvalid={!formData.name.trim()}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -331,9 +323,7 @@ const EventsTab: React.FC = () => {
                   as="textarea"
                   rows={3}
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   isInvalid={!formData.description.trim()}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -345,9 +335,7 @@ const EventsTab: React.FC = () => {
                 <Form.Control
                   as="select"
                   value={formData.cityId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, cityId: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, cityId: e.target.value })}
                 >
                   <option value="">{t("city")}</option>
                   {cities.map((city) => (
@@ -362,9 +350,7 @@ const EventsTab: React.FC = () => {
                 <Form.Control
                   as="select"
                   value={formData.countryId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, countryId: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, countryId: e.target.value })}
                 >
                   <option value="">{t("selectCountryE")}</option>
                   {countries.map((country) => (
@@ -379,20 +365,27 @@ const EventsTab: React.FC = () => {
                 <Form.Control
                   type="text"
                   value={formData.image}
-                  onChange={(e) =>
-                    setFormData({ ...formData, image: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 />
               </Form.Group>
             </Form>
           )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+        <Modal.Footer className="d-flex justify-content-center">
+          <Button
+            variant="secondary"
+            size="sm"
+            style={uniformButtonStyle}
+            className="mx-1"
+            onClick={() => setShowModal(false)}
+          >
             {t("cancelE")}
           </Button>
           <Button
             variant={modalType === "delete" ? "danger" : "primary"}
+            size="sm"
+            style={uniformButtonStyle}
+            className="mx-1"
             onClick={modalType === "delete" ? handleDelete : handleSave}
           >
             {modalType === "delete" ? t("confirmE") : t("saveE")}

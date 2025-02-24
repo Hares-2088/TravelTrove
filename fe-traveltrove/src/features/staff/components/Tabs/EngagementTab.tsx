@@ -7,6 +7,11 @@ const EngagementTab = () => {
   const { analytics, error } = useEngagementAnalytics();
   const { t } = useTranslation();
 
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+  };
+
   const chartData = {
     labels: analytics.map((pkg) => pkg.packageName),
     datasets: [
@@ -31,9 +36,9 @@ const EngagementTab = () => {
   if (error) return <p>{t("error")}: {error}</p>;
 
   return (
-    <div>
+    <div style={{ width: "100%", height: "400px", padding: "20px" }}>
       <h2>{t("packageEngagementAnalytics")}</h2>
-      <Bar data={chartData} />
+      <Bar data={chartData} options={chartOptions} />
     </div>
   );
 };
