@@ -312,7 +312,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             priceSingle: formData.priceSingle === null,
             airportId: !formData.airportId,
             dateOrder: new Date(formData.startDate) >= new Date(formData.endDate),
-            totalSeats: formData.totalSeats === null,
+            totalSeats: false, // Add totalSeats validation
         };
         setFormErrors(errors);
 
@@ -324,7 +324,8 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
             if (modalType === "create") {
                 await addPackage(formData);
             } else if (modalType === "update" && selectedPackage) {
-                await updatePackage(selectedPackage.packageId, formData, notificationMessage);
+                // Include totalSeats from selectedPackage in the update request
+                await updatePackage(selectedPackage.packageId, { ...formData, totalSeats: selectedPackage.totalSeats }, notificationMessage);
                 toast.success("Package changes recorded successfully!");
             }
             setShowModal(false);
@@ -485,6 +486,21 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
 
     const isStartDateEditable = selectedPackage?.status !== PackageStatus.BOOKING_OPEN;
 
+    const getStatusText = (status: PackageStatus) => {
+        switch (status) {
+            case PackageStatus.BOOKING_OPEN:
+                return t("tourPackagesTab.bookingOpen");
+            case PackageStatus.BOOKING_CLOSED:
+                return t("tourPackagesTab.bookingClosed");
+            case PackageStatus.COMPLETED:
+                return t("tourPackagesTab.completed");
+            case PackageStatus.CANCELLED:
+                return t("tourPackagesTab.cancelled");
+            default:
+                return status;
+        }
+    };
+
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -631,7 +647,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                     {filteredPackages.map((pkg) => (
                         <tr key={pkg.packageId}>
                             <td>{pkg.name}</td>
-                            <td>{pkg.status}</td>
+                            <td>{getStatusText(pkg.status)}</td>
                             <td>{new Date(pkg.startDate).toLocaleDateString()}</td>
                             <td>{new Date(pkg.endDate).toLocaleDateString()}</td>
                             <td>{pkg.priceSingle}</td>
@@ -700,12 +716,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     className="ms-2"
                                     onClick={() => handleViewAllReviews(pkg.packageId)}>
                                     {t("tourPackagesTab.viewAllReviews")}
-                                </Button>
-                                <Button variant="outline-secondary"
-                                    className="ms-2"
-                                    onClick={() => handleUpdateSeats(pkg.packageId, 1)} // Example: Decrease by 1
-                                >
-                                    {loading ? t("tourPackagesTab.decreaseSeats") : t("tourPackagesTab.decreaseSeats")}
                                 </Button>
                                 {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
                                     <Button
@@ -923,20 +933,6 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                 </Form.Control>
                                 <Form.Control.Feedback type="invalid">
                                     {t("tourPackagesTab.airportRequired")}
-                                </Form.Control.Feedback>
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>{t("tourPackagesTab.totalSeats")}</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    value={formData.totalSeats}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, totalSeats: +e.target.value })
-                                    }
-                                    isInvalid={formErrors.totalSeats}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {t("totalSeatsRequired")}
                                 </Form.Control.Feedback>
                             </Form.Group>
                             {modalType === "update" && (
