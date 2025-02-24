@@ -98,7 +98,7 @@ const Dashboard: React.FC = () => {
             borderRadius: "10px",
           }}
         >
-          Airports
+          {t("airports")}
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
             borderRadius: "10px",
           }}
         >
-          Travelers
+          {t("travelers")}
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>

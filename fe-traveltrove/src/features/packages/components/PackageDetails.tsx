@@ -80,7 +80,7 @@ const PackageDetails: React.FC = () => {
             booking.userId === user.sub &&
             booking.packageId === packageId
           );
-          console.log(confirmedBooking)
+
           setHasConfirmedBooking(!!confirmedBooking);
         } catch {
           setHasConfirmedBooking(false);
@@ -128,7 +128,7 @@ const PackageDetails: React.FC = () => {
   if (!pkg) return <Alert variant="info" className="info-alert">{t('noPackageDetails')}</Alert>;
 
   const isReviewButtonVisible = !hasReviewed && hasConfirmedBooking && new Date(pkg.endDate) < new Date();
-  console.log(hasConfirmedBooking);
+
 
   return (
     <div className="d-flex justify-content-center align-items-start p-4" style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>

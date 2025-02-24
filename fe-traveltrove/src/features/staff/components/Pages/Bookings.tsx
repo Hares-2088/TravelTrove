@@ -89,7 +89,7 @@ const Bookings: React.FC = () => {
     const fetchTravelers = async (travelerIds: string[]) => {
         try {
             const travelersData = await Promise.all(travelerIds.map((id) => getTravelerById(id)));
-            console.log("Fetched travelers:", travelersData); // Log fetched travelers
+
             return travelersData.map((traveler) => ({
                 name: `${traveler.firstName} ${traveler.lastName}`,
                 email: traveler.email,
