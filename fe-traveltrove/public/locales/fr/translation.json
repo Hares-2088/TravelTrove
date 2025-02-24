@@ -1,5 +1,13 @@
 {
   "home": "Accueil",
+  "homePage": {
+    "heroTitle": "Explorez le monde avec nous",
+    "heroSubtitle": "Découvrez des destinations incroyables et créez des souvenirs inoubliables.",
+    "popularDestinations": "Destinations populaires",
+    "exploreNow": "Explorer maintenant",
+    "noToursAvailable": "Aucun tour disponible pour le moment.",
+    "customerReviews": "Avis des clients"
+  },
   "trips": "Voyages",
   "dashboard": "Tableau de bord",
   "signIn": "Se connecter",
