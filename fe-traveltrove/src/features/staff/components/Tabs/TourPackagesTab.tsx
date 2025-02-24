@@ -41,6 +41,8 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
     const [modalType, setModalType] = useState<"create" | "update" | "cancel" | "view" | "review" | "viewReviews">(
         "create"
     );
+    const { roles } = useUserContext();
+
     const [showReviewList, setShowReviewList] = useState(false);
 
     const [selectedPackage, setSelectedPackage] =
@@ -692,7 +694,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                     >
                                         {t("tourPackagesTab.editPackage")}
                                     </Button>
-                                    {pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
+                                    {roles.includes("Admin") && pkg.status !== PackageStatus.CANCELLED && pkg.status !== PackageStatus.COMPLETED && (
                                         <Button
                                             variant="outline-danger"
                                             className="btn-modern"
@@ -702,7 +704,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                                                 setShowModal(true);
                                             }}
                                         >
-                                            {t("tourPackagesTab.cancelPackage")}
+                                            {t("tourPackagesTab.cancelPackage")} 
                                         </Button>
                                     )}
                                     <Button
@@ -959,7 +961,7 @@ const TourPackagesTab: React.FC<TourPackagesTabProps> = ({ tourId }) => {
                             </Form.Group>
                             {modalType === "update" && (
                                 <Form.Group className="mb-3">
-                                    <Form.Label>{t("notificationMessage")}</Form.Label>
+                                    <Form.Label>Notification</Form.Label>
                                     <Form.Control
                                         as="textarea"
                                         rows={3}
