@@ -1,0 +1,94 @@
+@startuml
+title Standalone Class Diagram for Users
+
+package "usersubdomain" {
+
+
+    package "businesslayer" {
+        interface UserService {
+            + getAllUsers() : Flux<UserResponseModel>
+            + getUserById(userId: String) : Mono<UserResponseModel>
+            + addUser(user: UserRequestModel) : Mono<UserResponseModel>
+            + updateUser(userId: String, userRequestModel: UserRequestModel) : Mono<UserResponseModel>
+            + deleteUser(userId: String) : Mono<Void>
+        }
+
+        class UserServiceImpl {
+            - userRepository: UserRepository
+            + getAllUsers() : Flux<UserResponseModel>
+            + getUserById(userId: String) : Mono<UserResponseModel>
+            + addUser(user: UserRequestModel) : Mono<UserResponseModel>
+            + updateUser(userId: String, userRequestModel: UserRequestModel) : Mono<UserResponseModel>
+            + deleteUser(userId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class User {
+            + _id: ObjectId
+            + userId: String
+            + firstName: String
+            + lastName: String
+            + email: String
+            + password: String
+            + phoneNumber: String
+            + role: Enum [Admin, Customer, Employee]
+        }
+
+        interface UserRepository extends ReactiveMongoRepository {
+            + findUserByUserId(userId: String) : Mono<User>
+            + findAll() : Flux<User>
+        }
+    }
+
+    package "presentationlayer" {
+        class UserRequestModel {
+            + firstName: String
+            + lastName: String
+            + email: String
+            + password: String
+            + phoneNumber: String
+            + role: Enum [Admin, Customer, Employee]
+        }
+
+        class UserResponseModel {
+            + userId: String
+            + firstName: String
+            + lastName: String
+            + email: String
+            + phoneNumber: String
+            + role: Enum [Admin, Customer, Employee]
+        }
+
+        class UserController {
+            - userService: UserService
+            + getAllUsers() : Flux<UserResponseModel>
+            + getUserById(userId: String) : Mono<ResponseEntity<UserResponseModel>>
+            + addUser(userRequestModel: UserRequestModel) : Mono<UserResponseModel>
+            + updateUser(userId: String, userRequestModel: UserRequestModel) : Mono<ResponseEntity<UserResponseModel>>
+            + deleteUser(userId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toUserResponseModel(user: User) : UserResponseModel
+            + toUserEntity(userRequestModel: UserRequestModel) : User
+            + generateUUIDString() : String
+        }
+    }
+
+    UserServiceImpl -down-|> UserService : implements
+    UserServiceImpl -down-> UserRepository : uses
+    UserController -down-> UserService : uses
+    UserController -down-> UserRequestModel : uses
+    UserController -down-> UserResponseModel : uses
+    UserServiceImpl -down-> User : manipulates
+    UserServiceImpl -down-> UserRequestModel : uses
+    UserServiceImpl -down-> UserResponseModel : returns
+    EntityModelUtil -up-^ User : converts
+    EntityModelUtil -up-^ UserRequestModel : maps
+    EntityModelUtil -up-^ UserResponseModel : maps
+}
+
+@enduml

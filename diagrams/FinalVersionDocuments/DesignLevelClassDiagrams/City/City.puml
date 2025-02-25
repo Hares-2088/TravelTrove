@@ -1,0 +1,83 @@
+@startuml
+title Standalone Class Diagram for Cities
+
+package "citysubdomain" {
+
+
+    package "businesslayer" {
+        interface CityService {
+            + getAllCities() : Flux<CityResponseModel>
+            + getCityById(cityId: String) : Mono<CityResponseModel>
+            + addCity(city: CityRequestModel) : Mono<CityResponseModel>
+            + updateCity(cityId: String, cityRequestModel: CityRequestModel) : Mono<CityResponseModel>
+            + deleteCity(cityId: String) : Mono<Void>
+        }
+
+        class CityServiceImpl {
+            - cityRepository: CityRepository
+            + getAllCities() : Flux<CityResponseModel>
+            + getCityById(cityId: String) : Mono<CityResponseModel>
+            + addCity(city: CityRequestModel) : Mono<CityResponseModel>
+            + updateCity(cityId: String, cityRequestModel: CityRequestModel) : Mono<CityResponseModel>
+            + deleteCity(cityId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class City {
+            + _id: ObjectId
+            + cityId: String
+            + name: String
+            + countryId: String
+        }
+
+        interface CityRepository extends ReactiveMongoRepository {
+            + findCityByCityId(cityId: String) : Mono<City>
+            + findAll() : Flux<City>
+        }
+    }
+
+    package "presentationlayer" {
+        class CityRequestModel {
+            + name: String
+            + countryId: String
+        }
+
+        class CityResponseModel {
+            + cityId: String
+            + name: String
+            + countryId: String
+        }
+
+        class CityController {
+            - cityService: CityService
+            + getAllCities() : Flux<CityResponseModel>
+            + getCityById(cityId: String) : Mono<ResponseEntity<CityResponseModel>>
+            + addCity(cityRequestModel: CityRequestModel) : Mono<CityResponseModel>
+            + updateCity(cityId: String, cityRequestModel: CityRequestModel) : Mono<ResponseEntity<CityResponseModel>>
+            + deleteCity(cityId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toCityResponseModel(city: City) : CityResponseModel
+            + toCityEntity(cityRequestModel: CityRequestModel) : City
+            + generateUUIDString() : String
+        }
+    }
+
+    CityServiceImpl -down-|> CityService : implements
+    CityServiceImpl -down-> CityRepository : uses
+    CityController -down-> CityService : uses
+    CityController -down-> CityRequestModel : uses
+    CityController -down-> CityResponseModel : uses
+    CityServiceImpl -down-> City : manipulates
+    CityServiceImpl -down-> CityRequestModel : uses
+    CityServiceImpl -down-> CityResponseModel : returns
+    EntityModelUtil -up-^ City : converts
+    EntityModelUtil -up-^ CityRequestModel : maps
+    EntityModelUtil -up-^ CityResponseModel : maps
+}
+
+@enduml

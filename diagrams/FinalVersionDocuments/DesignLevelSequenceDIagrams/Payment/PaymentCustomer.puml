@@ -1,0 +1,104 @@
+@startuml
+title Payment Sequence Diagram for "Pay for a Tour"
+
+actor Customer as "<<Actor>>\nCustomer"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant CheckoutPage as "<<View>>\nCheckoutPage"
+participant PaymentController as "<<Controller>>\nPaymentController"
+participant StripeService as "<<Service>>\nStripeService"
+participant PaymentService as "<<Service>>\nPaymentService"
+participant BookingService as "<<Service>>\nBookingService"
+participant PaymentEntity as "<<Entity>>\nPaymentEntity"
+participant PaymentRepository as "<<Repository>>\nPaymentRepository"
+participant StripeAPI as "<<External Service>>\nStripeAPI"
+participant Database as "<<Database>>"
+
+' === Step 1: Customer navigates to the checkout page ===
+Customer -> ReactApplication : Click on "Book and Pay"
+activate ReactApplication
+ReactApplication -> CheckoutPage : render()
+activate CheckoutPage
+deactivate ReactApplication
+
+' === Step 2: Customer submits payment request ===
+CheckoutPage -> PaymentController : POST /api/v1/payments/create-checkout-session\n(paymentRequest)
+activate PaymentController
+
+' === Step 3: Create Stripe checkout session and save payment ===
+PaymentController -> StripeService : createCheckoutSession(paymentRequest)
+activate StripeService
+
+' Create Stripe session via external API
+StripeService -> StripeAPI : Session.create(params)
+activate StripeAPI
+StripeAPI --> StripeService : Return session details\n(sessionId, successUrl, cancelUrl)
+deactivate StripeAPI
+
+' Save payment record in our system
+StripeService -> PaymentService : createPayment(paymentRequest, sessionId)
+activate PaymentService
+PaymentService -> PaymentEntity : Instantiate payment entity
+activate PaymentEntity
+PaymentEntity --> PaymentService : Payment entity created
+deactivate PaymentEntity
+PaymentService -> PaymentRepository : save(paymentEntity)
+activate PaymentRepository
+PaymentRepository -> Database : INSERT payment record
+Database --> PaymentRepository : Success
+deactivate Database
+PaymentRepository --> PaymentService : Payment saved
+deactivate PaymentRepository
+PaymentService --> StripeService : Payment record saved
+deactivate PaymentService
+
+StripeService --> PaymentController : Return checkout session details
+deactivate StripeService
+
+PaymentController --> CheckoutPage : Return session details for redirection
+deactivate PaymentController
+
+' === Step 4: Customer interacts with Stripe for payment ===
+Customer -> StripeAPI : Redirect to Stripe Checkout Page
+activate StripeAPI
+StripeAPI -> Customer : Display payment UI
+Customer -> StripeAPI : Enter payment details
+deactivate StripeAPI
+
+' === Step 5: Payment outcome handling via Webhook ===
+alt Payment Completed
+    StripeAPI -> PaymentController : Webhook: checkout.session.completed
+    activate PaymentController
+    PaymentController -> StripeService : processWebhook(payload, sigHeader)
+    activate StripeService
+    StripeService -> BookingService : confirmBookingPayment(bookingId)
+    activate BookingService
+    BookingService -> "BookingEntity" : Update booking status to PAYMENT_COMPLETED
+    "BookingEntity" --> BookingService : Booking updated
+    deactivate "BookingEntity"
+    BookingService --> StripeService : Booking confirmation result
+    deactivate BookingService
+    StripeService --> PaymentController : Return confirmation response
+    deactivate StripeService
+    PaymentController -> ReactApplication : Redirect to Success Page
+    ReactApplication -> Customer : Display Payment Success Page
+    deactivate PaymentController
+else Payment Failed or Canceled
+    StripeAPI -> PaymentController : Webhook: payment_intent.payment_failed\nOR\ncheckout.session.expired
+    activate PaymentController
+    PaymentController -> StripeService : processWebhook(payload, sigHeader)
+    activate StripeService
+    PaymentService -> PaymentEntity : Update payment status to PAYMENT_FAILED
+    activate PaymentEntity
+    PaymentEntity --> PaymentService : Payment updated
+    deactivate PaymentEntity
+    PaymentService --> StripeService : Payment update result
+    deactivate PaymentService
+    StripeService --> PaymentController : Return failure response
+    deactivate StripeService
+    PaymentController -> ReactApplication : Redirect to Cancelled Page
+    ReactApplication -> Customer : Display Payment Cancelled Page
+    deactivate PaymentController
+end
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+title ADMIN4 - Download Revenue Report (CSV)
+
+skinparam backgroundColor #F5F5DC
+skinparam HyperlinkColor none
+hide footbox
+
+actor Admin #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+
+Admin -> TMS: getReports()
+TMS -> Admin: Report Options
+
+alt [Yearly Report]
+    Admin -> TMS: getYearlyRevenueReportCSV(Year)
+    TMS -> Admin: CSV Data
+else [Monthly Report]
+    Admin -> TMS: getMonthlyRevenueReportCSV(Year, Month)
+    TMS -> Admin: CSV Data
+end
+
+@enduml

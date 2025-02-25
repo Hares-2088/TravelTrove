@@ -1,0 +1,63 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Deployment.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!include DEVICONS/mongodb.puml
+!include DEVICONS/react.puml
+!include DEVICONS/java.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include FONTAWESOME/amazon.puml
+!include FONTAWESOME/stripe.puml
+!include FONTAWESOME/google.puml
+
+skinparam defaultTextAlignment center
+skinparam component {
+    ArrowStyle dashed
+}
+
+title Deployment Diagram for Dar El Salam Travel Agency System
+
+Deployment_Node(CloudProvider, "Cloud Provider", "AWS or similar", $sprite="amazon") {
+
+    Deployment_Node(WebServer, "Web Server", "Netty") {
+        Container(web_app, "Web Application", "TypeScript, React", "Delivers static content and main interface", $sprite="react")
+        Container(api_app, "API Application", "Java, Spring Boot", "Handles business logic and API interactions", $sprite="java")
+    }
+
+    Deployment_Node(DatabaseServer, "Database Server", "MongoDB Atlas") {
+        ContainerDb(database, "MongoDB Database", "MongoDB", "Stores all travel agency data", $sprite="mongodb")
+    }
+
+}
+    Deployment_Node(AuthService, "Auth0 Service", "Auth0 Cloud") {
+        System_Ext(Auth0, "Auth0", "External authentication service", $sprite="google")
+    }
+
+    Deployment_Node(PaymentService, "Payment Processing Service", "Stripe Cloud") {
+        System_Ext(Stripe, "Stripe", "External payment processing service", $sprite="stripe")
+    }
+
+    Deployment_Node(EmailService, "Email Service", "Gmail API") {
+        System_Ext(GmailAPI, "Gmail API", "External service for sending emails", $sprite="google")
+    }
+
+
+Deployment_Node(CustomerDevice, "Customer's Device", "Web Browser / Mobile App") {
+    Container(spa, "Single-Page Application", "JavaScript, React", "Main interface for interacting with the Dar El Salam system", $sprite="react")
+}
+
+Person(customer, "Customer", "Customer of the travel agency")
+Person(employee, "Employee", "Employee of the travel agency")
+Person(admin, "Admin", "Admin of the travel agency")
+
+Rel(customer, spa, "Interacts with", "Web Browser / Mobile App")
+Rel(admin, spa, "Interacts with", "Web Browser")
+Rel(employee, spa, "Interacts with", "API Client")
+
+Rel(spa, api_app, "Interacts with", "HTTPS")
+Rel(web_app, spa, "Routes requests to", "HTTPS")
+Rel(api_app, database, "Reads/Writes data to", "MongoDB Queries")
+Rel(api_app, Auth0, "Authenticates via", "OAuth 2.0/JWT")
+Rel(api_app, Stripe, "Processes payments through", "HTTPS API")
+Rel(api_app, GmailAPI, "Sends emails through", "HTTPS API")
+@enduml

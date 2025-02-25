@@ -1,0 +1,266 @@
+@startuml
+hide circle
+left to right direction
+
+!define ENTITY(entityName) class entityName << Entity >>
+!define AGGREGATE(aggregateName) class aggregateName << Aggregate >>
+!define AGGREGATE_ROOT(name) class name <<Aggregate Root>>
+!define AGGREGATE_ROOT_ENTITY(name) class name <<Aggregate Root>> << Entity >>
+!define VALUE_OBJECT(name) class name <<Value Object>>
+
+skinparam packageStyle rectangle
+skinparam rectangle {
+    BackgroundColor #f7f4eb
+    BorderColor Black
+}
+
+rectangle "TravelTrove" as BoundedContextTravelTrove #line.dashed {
+
+    Package "User Sub-Domain" <<Rectangle>> #FFEE93 {
+        AGGREGATE_ROOT_ENTITY(User) #lightblue {
+            userId: String <<Unique>>
+            email: String <<Unique>>
+            firstName: String
+            lastName: String
+            roles: List<String>
+            permissions: List<String>
+            travelerId: String <<Optional FK>>
+        }
+
+        VALUE_OBJECT(UserId) #Bisque {
+            id: UUID
+        }
+
+        User "1" o-- "1" UserId
+    }
+
+    Package "Traveler Sub-Domain" <<Rectangle>> #E0FFD6 {
+        AGGREGATE_ROOT(Traveler) #lightblue {
+            travelerId: String <<Unique>>
+            seq: Integer
+            firstName: String
+            lastName: String
+            addressLine1: String
+            addressLine2: String
+            city: String
+            state: String
+            email: String
+            countryId: String <<FK>>
+            userId: String <<FK>> <<Optional>>
+            bookingId: String <<FK>>
+        }
+
+        VALUE_OBJECT(TravelerId) #Bisque {
+            id: UUID
+        }
+
+        Traveler "1" o-- "1" TravelerId
+    }
+
+    Package "Tour Sub-Domain" <<Rectangle>> #LightGreen {
+        AGGREGATE_ROOT(Tour) #lightblue {
+            tourId: String <<Unique>>
+            name: String
+            description: String
+        }
+
+        VALUE_OBJECT(TourId) #Bisque {
+            id: UUID
+        }
+
+        Tour "1" o-- "1" TourId
+    }
+
+    Package "Package Sub-Domain" <<Rectangle>> #FFCC99 {
+        AGGREGATE_ROOT(Package) #lightblue {
+            packageId: String <<Unique>>
+            name: String
+            description: String
+            startDate: DateTime
+            endDate: DateTime
+            priceForOne: Decimal
+            priceForTwo: Decimal
+            priceForThree: Decimal
+            totalSeats: Integer
+            availableSeats: Integer
+            airportId: String <<FK>>
+            tourId: String <<FK>>
+        }
+
+        VALUE_OBJECT(PackageId) #Bisque {
+            id: UUID
+        }
+
+        Package "1" o-- "1" PackageId
+    }
+
+    Package "Booking Sub-Domain" <<Rectangle>> #FFCDD2 {
+        AGGREGATE_ROOT(Booking) #lightpink {
+            bookingId: String <<Unique>>
+            userId: String <<FK>> "User who made the booking"
+            packageId: String <<FK>> "Package being booked"
+            bookingDate: DateTime
+            totalPrice: Decimal
+            status: String
+        }
+
+        VALUE_OBJECT(BookingId) #Bisque {
+            id: UUID
+        }
+
+        Booking "1" o-- "1" BookingId
+    }
+
+    Package "Payment Sub-Domain" <<Rectangle>> #LightGray {
+        AGGREGATE_ROOT(Payment) #lightblue {
+            paymentId: String <<Unique>>
+            bookingId: String <<FK>>
+            stripePaymentId: String <<Unique>>
+            paymentDate: DateTime
+            price: Decimal
+            status: String
+        }
+
+        VALUE_OBJECT(PaymentId) #Bisque {
+            id: UUID
+        }
+
+        Payment "1" o-- "1" PaymentId
+    }
+
+    Package "Review Sub-Domain" <<Rectangle>> #FAFAD2 {
+        AGGREGATE_ROOT(Review) #lightblue {
+            reviewId: String <<Unique>>
+            userId: String <<FK>>
+            packageId: String <<FK>>
+            bookingId: String <<FK>>
+            rating: Integer
+            comment: String
+            reviewDate: DateTime
+        }
+
+        VALUE_OBJECT(ReviewId) #Bisque {
+            id: UUID
+        }
+
+        Review "1" o-- "1" ReviewId
+    }
+
+    Package "Hotel Sub-Domain" <<Rectangle>> #LightYellow {
+        AGGREGATE_ROOT(Hotel) #lightblue {
+            hotelId: String <<Unique>>
+            name: String
+            cityId: String <<FK>>
+            countryId: String <<FK>>
+            address: String
+            hotelUrl: String
+        }
+
+        VALUE_OBJECT(HotelId) #Bisque {
+            id: UUID
+        }
+
+        Hotel "1" o-- "1" HotelId
+    }
+
+    Package "Airport Sub-Domain" <<Rectangle>> #LightGray {
+        AGGREGATE_ROOT(Airport) #lightblue {
+            airportId: String <<Unique>>
+            name: String
+            cityId: String <<FK>>
+        }
+
+        VALUE_OBJECT(AirportId) #Bisque {
+            id: UUID
+        }
+
+        Airport "1" o-- "1" AirportId
+    }
+
+    Package "City Sub-Domain" <<Rectangle>> #Lavender {
+        AGGREGATE_ROOT(City) #lightblue {
+            cityId: String <<Unique>>
+            name: String
+            countryId: String <<FK>>
+        }
+
+        VALUE_OBJECT(CityId) #Bisque {
+            id: UUID
+        }
+
+        City "1" o-- "1" CityId
+    }
+
+    Package "Country Sub-Domain" <<Rectangle>> #LightSalmon {
+        AGGREGATE_ROOT(Country) #lightblue {
+            countryId: String
+            name: String
+            imagePath: String
+        }
+
+        VALUE_OBJECT(CountryId) #Bisque {
+            id: UUID
+        }
+
+        Country "1" o-- "1" CountryId
+    }
+
+    Package "Event Sub-Domain" <<Rectangle>> #LightYellow {
+        AGGREGATE_ROOT(Event) #lightblue {
+            eventId: String <<Unique>>
+            title: String
+            description: String
+            cityId: String <<FK>>
+        }
+
+        VALUE_OBJECT(EventId) #Bisque {
+            id: UUID
+        }
+
+        Event "1" o-- "1" EventId
+    }
+
+    Package "TourEvent Sub-Domain" <<Rectangle>> #LightGreen {
+        AGGREGATE_ROOT(TourEvent) #lightblue {
+            tourEventId: String <<Unique>>
+            seq: Integer
+            seqDesc: String
+            tourId: String <<FK>>
+            eventId: String <<FK>>
+            hotelId: String <<FK>>
+        }
+
+        VALUE_OBJECT(TourEventId) #Bisque {
+            id: UUID
+        }
+
+        TourEvent "1" o-- "1" TourEventId
+    }
+
+    ' Relationships
+    User ||--o{ Booking : "1:M"
+    User ||--o{ Review : "1:M"
+
+    Package ||--o{ Booking : "1:M"
+    Package ||--o{ Review : "1:M"
+    Package ||--o{ Tour : "1:1"
+
+    Booking ||--|| Payment : "1:1"
+
+    City ||--o{ Hotel : "1:M"
+    City ||--o{ Airport : "1:M"
+    Country ||--o{ City : "1:M"
+    City ||--o{ Event : "1:M"
+
+    Package ||--o{ Airport : "1:1"
+
+    TourEvent ||--o{ Event : "1:M"
+    TourEvent ||--o{ Hotel : "1:M"
+    Tour ||--o{ TourEvent : "1:M"
+
+    Traveler ||--|| Country : "1:1"
+    Traveler ||--o{ Booking : "1:M"
+    Traveler }o--o| User : "Optional"
+
+}
+@enduml

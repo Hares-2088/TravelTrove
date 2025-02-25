@@ -1,0 +1,47 @@
+@startuml
+title CUST2 - Browse Tour Packages
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor Customer #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+
+Customer -> TMS : Browse Tour Packages
+TMS -> Customer : Tour Packages Data
+
+opt CUST7 - Filter Search Result
+    Customer -> TMS : Apply Search Filters
+    TMS -> Customer : Filtered Tour Packages Data
+end
+
+Customer -> TMS : Choose a Tour Package
+TMS -> Customer : Selected Tour Package Data
+
+opt View Reviews, Airport, and Hotels
+    Customer -> TMS : Request Reviews for the Tour Package
+    TMS -> Customer : Reviews Data
+
+    Customer -> TMS : Request Associated Airport Details
+    TMS -> Customer : Airport Data
+
+    Customer -> TMS : Request Associated Hotel Details
+    TMS -> Customer : Hotels Data
+end
+
+opt CUST3 - Book a Tour Package
+    Customer -> TMS : Proceed to Book the Tour
+    TMS -> Customer : Booking Data
+
+    group include [CUST5 - Pay for a Tour]
+    end
+
+    TMS -> Customer : Decrease Available Seats
+end
+
+opt CUST6 - Subscribe to Notifications
+    Customer -> TMS : Subscribe for Notifications
+    TMS -> Customer : Subscription Data
+end
+
+@enduml

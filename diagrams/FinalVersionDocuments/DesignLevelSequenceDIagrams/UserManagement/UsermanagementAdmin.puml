@@ -1,0 +1,97 @@
+@startuml
+title User Management Sequence Diagram for Admin (Updated for Roles)
+
+actor Admin as "<<Actor>>\nAdmin"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant DashboardPage as "<<View>>\nDashboardPage"
+participant UserController as "<<Controller>>\nUserController"
+participant UserService as "<<Service>>\nUserService"
+participant UserEntity as "<<Entity>>\nUserEntity"
+participant UserRepository as "<<Repository>>\nUserRepository"
+participant Database as "<<Database>>"
+participant UserResponseModel as "<<Model>>\nUserResponseModel"
+
+Admin -> ReactApplication : Access Dashboard Page
+activate ReactApplication
+
+ReactApplication -> DashboardPage : render()
+activate DashboardPage
+deactivate ReactApplication
+
+DashboardPage -> UserController : GET /api/v1/users
+activate UserController
+
+UserController -> UserService : getAllUsers()
+activate UserService
+
+UserService -> UserRepository : findAll()
+activate UserRepository
+
+UserRepository -> Database : SELECT * FROM users
+activate Database
+Database --> UserRepository : List of users
+deactivate Database
+
+UserRepository --> UserService : userEntities
+deactivate UserRepository
+
+UserService -> UserResponseModel : Map entities to response models
+activate UserResponseModel
+UserResponseModel --> UserService : Response models ready
+deactivate UserResponseModel
+
+UserService --> UserController : List of UserResponseModels
+deactivate UserService
+
+UserController --> DashboardPage : Display users list
+deactivate UserController
+
+opt Update User Role
+    Admin -> DashboardPage : Select user to update role
+    DashboardPage -> UserController : POST /api/v1/users/{userId}/roles
+    activate UserController
+
+    UserController -> UserService : updateUserRole(userId, roleIds)
+    activate UserService
+
+    UserService -> UserRepository : findUserById(userId)
+    activate UserRepository
+    UserRepository -> Database : SELECT * FROM users WHERE id = userId
+    activate Database
+    Database --> UserRepository : User found
+    deactivate Database
+    UserRepository --> UserService : userEntity
+    deactivate UserRepository
+
+    UserService -> Auth0 : Get user's existing roles
+    activate Auth0
+    Auth0 --> UserService : Existing roles
+    deactivate Auth0
+
+    UserService -> Auth0 : Remove existing roles, Assign new role
+    activate Auth0
+    Auth0 --> UserService : Role assignment success
+    deactivate Auth0
+
+    UserService -> UserEntity : Update entity with new role
+    activate UserEntity
+    UserEntity --> UserService : Updated entity
+    deactivate UserEntity
+
+    UserService -> UserRepository : save(updatedUserEntity)
+    activate UserRepository
+    UserRepository -> Database : UPDATE users SET roles = ...
+    Database --> UserRepository : Success
+    deactivate Database
+    UserRepository --> UserService : Updated user
+    deactivate UserRepository
+
+    UserService --> UserController : Role update confirmation
+    deactivate UserService
+
+    UserController --> DashboardPage : Role updated successfully
+    deactivate UserController
+end
+
+@enduml
