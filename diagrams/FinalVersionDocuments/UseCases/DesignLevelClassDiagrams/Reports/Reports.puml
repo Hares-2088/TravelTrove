@@ -1,0 +1,57 @@
+@startuml
+
+title Upgraded Report Subdomain Design Class Diagram
+
+package "traveltrove.betraveltrove" {
+    package "business.report" {
+        interface ReportService {
+            + generatePaymentRevenueReport(periodType: String, year: int, month: Integer) : Mono<ByteArrayInputStream>
+            + generateMonthlyBookingReportPDF(year: int, month: int) : Mono<ByteArrayResource>
+            + generateMonthlyBookingReportCSV(year: int, month: int) : Mono<ByteArrayResource>
+        }
+
+        class ReportServiceImpl {
+            + generatePaymentRevenueReport(periodType: String, year: int, month: Integer) : Mono<ByteArrayInputStream>
+            + generateMonthlyBookingReportPDF(year: int, month: int) : Mono<ByteArrayResource>
+            + generateMonthlyBookingReportCSV(year: int, month: int) : Mono<ByteArrayResource>
+            - isBookingInMonth(booking: BookingResponseModel, startDate: LocalDate, endDate: LocalDate) : boolean
+            - generateReportPDF(bookings: List<BookingResponseModel>, year: int, month: int) : Mono<Map<String, Object>>
+            - generateReportCSV(bookings: List<BookingResponseModel>, year: int, month: int) : Mono<Map<String, Object>>
+        }
+    }
+
+    package "presentation.report" {
+        class ReportController {
+            - reportService: ReportService
+            + downloadRevenueReport(periodType: String, year: int, month: Integer) : Mono<ResponseEntity<InputStreamResource>>
+            + getMonthlyBookingReportPDF(year: int, month: int) : Mono<ResponseEntity<ByteArrayResource>>
+            + getMonthlyBookingReportCSV(year: int, month: int) : Mono<ResponseEntity<ByteArrayResource>>
+        }
+    }
+
+    package "utils.reports" {
+        class CSVGenerator {
+            + generateRevenueCSV(paymentList: List<Payment>, periodType: String) : ByteArrayInputStream
+            + generateMonthlyBookingCSV(reportData: Map<String, Object>) : Mono<ByteArrayResource>
+        }
+
+        class PDFGenerator {
+            + generateMonthlyBookingPDF(reportData: Map<String, Object>) : Mono<ByteArrayResource>
+        }
+
+        class ReportFormatter {
+            + formatMonthlyBookingReportPDF(year: int, month: int, bookings: List<BookingResponseModel>, packageBookingCount: Map<String, Long>, packages: List<PackageResponseModel>, reviews: List<ReviewResponseModel>) : Map<String, Object>
+            + formatMonthlyBookingReportCSV(year: int, month: int, bookings: List<BookingResponseModel>, packageBookingCount: Map<String, Long>, packages: List<PackageResponseModel>, reviews: List<ReviewResponseModel>) : Map<String, Object>
+        }
+    }
+}
+
+ReportServiceImpl -down-|> ReportService : implements
+ReportController -down-> ReportService : uses
+ReportServiceImpl -down-> CSVGenerator : generates CSV
+ReportServiceImpl -down-> PDFGenerator : generates PDF
+ReportServiceImpl -down-> ReportFormatter : formats reports
+CSVGenerator -down-> ByteArrayResource : generates
+PDFGenerator -down-> ByteArrayResource : generates
+
+@enduml

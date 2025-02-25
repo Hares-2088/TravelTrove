@@ -59,7 +59,7 @@ const router = createBrowserRouter([
       {
         path: AppRoutes.Bookings,
         element: (
-          <ProtectedRoute requiredRoles={["Customer"]}>
+          <ProtectedRoute>
             <Bookings />
           </ProtectedRoute>
         ),

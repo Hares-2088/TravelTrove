@@ -1,0 +1,177 @@
+@startuml
+skinparam linetype polyline
+skinparam monochrome true
+skinparam entity {
+    BackgroundColor #DDEEFF
+    BorderColor #3366CC
+    FontColor Black
+}
+
+' Entities
+entity "User" as User {
+    + _id: ObjectId
+    --
+      userId: String <<Unique>>
+      travelerId: String <<Optional FK>>
+      email: String <<Unique>>
+      firstName: String
+      lastName: String
+      roles: List<String>
+      permissions: List<String>
+      travelerIds: List<String>
+}
+
+entity "Traveler" as Traveler {
+    + _id: ObjectId
+    --
+    travelerId: String <<Unique>>
+    seq: Integer
+    firstName: String
+    lastName: String
+    addressLine1: String
+    addressLine2: String
+    city: String
+    state: String
+    email: String
+    countryId: String <<FK>>
+    userId: String <<FK>> <<Optional>>
+    bookingId: String <<FK>>
+}
+
+entity "Tour" as Tour {
+    + _id: ObjectId
+    --
+    tourId: String <<Unique>>
+    name: String
+    description: String
+}
+
+entity "Package" as Package {
+    + _id: ObjectId
+    --
+    packageId: String <<Unique>>
+    name: String
+    description: String
+    startDate: DateTime
+    endDate: DateTime
+    priceForOne: Decimal
+    priceForTwo: Decimal
+    priceForThree: Decimal
+    totalSeats: Integer
+    availableSeats: Integer
+    status: PackageStatus
+    airportId: String <<FK>>
+    tourId: String <<FK>>
+}
+
+entity "Booking" as Booking {
+    + _id: ObjectId
+    --
+    bookingId: String <<Unique>>
+    userId: String <<FK>> "User who made the booking"
+    packageId: String <<FK>> "Package being booked"
+    bookingDate: DateTime
+    totalPrice: Decimal
+    status: String
+    travelerIds: String <<FK>>
+}
+
+entity "Payment" as Payment {
+    + _id: ObjectId
+    --
+    paymentId: String <<Unique>>
+    bookingId: String <<FK>>
+    stripePaymentId: String <<Unique>>
+    paymentDate: DateTime
+    amount: Decimal
+    status: String
+    currency: String
+}
+
+entity "Review" as Review {
+    + _id: ObjectId
+    --
+    reviewId: String <<Unique>>
+    userId: String <<FK>>
+    packageId: String <<FK>>
+    bookingId: String <<FK>>
+    rating: Integer
+    comment: String
+    reviewDate: DateTime
+}
+
+entity "Hotel" as Hotel {
+    + _id: ObjectId
+    --
+    hotelId: String <<Unique>>
+    name: String
+    cityId: String <<FK>>
+    countryId: String <<FK>>
+    address: String
+    hotelUrl: String
+}
+
+entity "Airport" as Airport {
+    + _id: ObjectId
+    --
+    airportId: String <<Unique>>
+    name: String
+    cityId: String <<FK>>
+}
+
+entity "City" as City {
+    + _id: ObjectId
+    --
+    cityId: String <<Unique>>
+    name: String
+    countryId: String <<FK>>
+}
+
+entity "Country" as Country {
+    + _id: ObjectId
+    --
+    countryId: String <<Unique>>
+    name: String
+    imagePath: String
+}
+
+entity "Event" as Event {
+    + _id: ObjectId
+    --
+    eventId: String <<Unique>>
+    title: String
+    description: String
+    cityId: String <<FK>>
+}
+
+entity "TourEvent" as TourEvent {
+    + _id: ObjectId
+    --
+    tourEventId: String <<Unique>>
+    seq: Integer
+    seqDesc: String
+    tourId: String <<FK>>
+    eventId: String <<FK>>
+    hotelId: String <<FK>>
+}
+
+' Relationships
+User ||--o{ Booking : "1:M"
+User ||--o{ Review : "1:M"
+Package ||--o{ Booking : "1:M"
+Package ||--o{ Review : "1:M"
+Package ||--o{ Tour : "1:1"
+Booking ||--|| Payment : "1:1"
+City ||--o{ Hotel : "1:M"
+City ||--o{ Airport : "1:M"
+Country ||--o{ City : "1:M"
+City ||--o{ Event : "1:M"
+Package ||--o{ Airport : "1:1"
+Package ||--o{ TourEvent : "1:M"
+TourEvent ||--o{ Event : "1:M"
+TourEvent ||--o{ Hotel : "1:M"
+Traveler ||--|| Country : "1:1"
+Traveler ||--o{ Booking : "1:M"
+Traveler }o--o| User : "Optional"
+"Tour" ||--o{ "TourEvent" : "1:M"
+@enduml
