@@ -1,0 +1,84 @@
+@startuml
+title Standalone Class Diagram for Airports
+
+package "airportsubdomain" {
+
+
+
+    package "businesslayer" {
+        interface AirportService {
+            + getAllAirports() : Flux<AirportResponseModel>
+            + getAirportById(airportId: String) : Mono<AirportResponseModel>
+            + addAirport(airport: AirportRequestModel) : Mono<AirportResponseModel>
+            + updateAirport(airportId: String, airportRequestModel: AirportRequestModel) : Mono<AirportResponseModel>
+            + deleteAirport(airportId: String) : Mono<Void>
+        }
+
+        class AirportServiceImpl {
+            - airportRepository: AirportRepository
+            + getAllAirports() : Flux<AirportResponseModel>
+            + getAirportById(airportId: String) : Mono<AirportResponseModel>
+            + addAirport(airport: AirportRequestModel) : Mono<AirportResponseModel>
+            + updateAirport(airportId: String, airportRequestModel: AirportRequestModel) : Mono<AirportResponseModel>
+            + deleteAirport(airportId: String) : Mono<Void>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Airport {
+            + _id: ObjectId
+            + airportId: String
+            + name: String
+            + cityId: String
+        }
+
+        interface AirportRepository extends ReactiveMongoRepository {
+            + findAirportByAirportId(airportId: String) : Mono<Airport>
+            + findAll() : Flux<Airport>
+        }
+    }
+
+    package "presentationlayer" {
+        class AirportRequestModel {
+            + name: String
+            + cityId: String
+        }
+
+        class AirportResponseModel {
+            + airportId: String
+            + name: String
+            + cityId: String
+        }
+
+        class AirportController {
+            - airportService: AirportService
+            + getAllAirports() : Flux<AirportResponseModel>
+            + getAirportById(airportId: String) : Mono<ResponseEntity<AirportResponseModel>>
+            + addAirport(airportRequestModel: AirportRequestModel) : Mono<AirportResponseModel>
+            + updateAirport(airportId: String, airportRequestModel: AirportRequestModel) : Mono<ResponseEntity<AirportResponseModel>>
+            + deleteAirport(airportId: String) : Mono<Void>
+        }
+    }
+
+    package "utils" {
+        class EntityModelUtil {
+            + toAirportResponseModel(airport: Airport) : AirportResponseModel
+            + toAirportEntity(airportRequestModel: AirportRequestModel) : Airport
+            + generateUUIDString() : String
+        }
+    }
+
+    AirportServiceImpl -down-|> AirportService : implements
+    AirportServiceImpl -down-> AirportRepository : uses
+    AirportController -down-> AirportService : uses
+    AirportController -down-> AirportRequestModel : uses
+    AirportController -down-> AirportResponseModel : uses
+    AirportServiceImpl -down-> Airport : manipulates
+    AirportServiceImpl -down-> AirportRequestModel : uses
+    AirportServiceImpl -down-> AirportResponseModel : returns
+    EntityModelUtil -up-^ Airport : converts
+    EntityModelUtil -up-^ AirportRequestModel : maps
+    EntityModelUtil -up-^ AirportResponseModel : maps
+}
+
+@enduml

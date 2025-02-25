@@ -1,0 +1,90 @@
+@startuml
+title Payment Module - Class Diagram
+
+package "paymentsubdomain" {
+
+    package "businesslayer" {
+        interface PaymentService {
+            + createPayment(paymentRequest: PaymentRequestModel, stripePaymentId: String): Mono<Payment>
+            + getPaymentByPaymentId(paymentId: String): Mono<PaymentResponseModel>
+            + getAllPayments(): Flux<PaymentResponseModel>
+        }
+
+        class PaymentServiceImpl {
+            - paymentRepository: PaymentRepository
+            + createPayment(paymentRequest: PaymentRequestModel, stripePaymentId: String): Mono<Payment>
+            + getPaymentByPaymentId(paymentId: String): Mono<PaymentResponseModel>
+            + getAllPayments(): Flux<PaymentResponseModel>
+        }
+    }
+
+    package "dataaccesslayer" {
+        class Payment {
+            + id: String
+            + paymentId: String
+            + bookingId: String
+            + amount: Long
+            + currency: String
+            + paymentDate: LocalDateTime
+            + status: String
+            + stripePaymentId: String
+        }
+
+        interface PaymentRepository {
+            + findByPaymentId(paymentId: String): Mono<PaymentResponseModel
+        }
+    }
+
+    package "externalservices" {
+        interface StripeService {
+            + createCheckoutSession(paymentRequest: PaymentRequestModel): Mono<PaymentResponseModel>
+            + processWebhook(payload: String, sigHeader: String): Mono<ResponseEntity<String>>
+        }
+    }
+
+    package "utils" {
+        class PaymentModelUtil {
+            + toPaymentResponseModel(payment: Payment, stripeSessionId: String): PaymentResponseModel
+            + toPaymentEntity(stripePaymentId: String, paymentRequest: PaymentRequestModel): Payment
+        }
+    }
+
+    package "presentationlayer" {
+        class PaymentRequestModel {
+            + amount: Long
+            + currency: String
+            + packageId: String
+            + successUrl: String
+            + cancelUrl: String
+            + bookingId: String
+            + travelers: List<TravelerRequestModel>
+        }
+
+        class PaymentResponseModel {
+            + paymentId: String
+            + sessionId: String
+            + amount: Long
+            + currency: String
+            + status: String
+        }
+
+        class PaymentController {
+            - paymentService: PaymentService
+            - stripeService: StripeService
+            + createCheckoutSession(paymentRequest: PaymentRequestModel): Mono<PaymentResponseModel>
+            + handleWebhook(payload: String, sigHeader: String): Mono<ResponseEntity<String>>
+            + getAllPayments(): Flux<PaymentResponseModel>
+            + getPaymentByPaymentId(paymentId: String): Mono<ResponseEntity<PaymentResponseModel>>
+        }
+    }
+}
+
+PaymentServiceImpl -down-|> PaymentService : implements
+PaymentServiceImpl -down-> PaymentRepository : uses
+PaymentController -down-> PaymentService : uses
+PaymentController -down-> StripeService : uses
+PaymentModelUtil -up-^ Payment : converts
+PaymentModelUtil -up-^ PaymentRequestModel : maps
+PaymentModelUtil -up-^ PaymentResponseModel : maps
+
+@enduml
