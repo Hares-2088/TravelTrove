@@ -1,0 +1,169 @@
+@startuml
+title Admin Report Generation & Download Sequence Diagram for Admin
+
+actor Admin as "<<Actor>>\nAdmin"
+
+participant ReactApplication as "<<View>>\nReactApplication"
+participant ReportsPage as "<<View>>\nReportsPage"
+participant ReportController as "<<Controller>>\nReportController"
+participant ReportService as "<<Service>>\nReportServiceImpl"
+participant ReportFormatter as "<<Utility>>\nReportFormatter"
+participant CSVGenerator as "<<Utility>>\nCSVGenerator"
+participant PDFGenerator as "<<Utility>>\nPDFGenerator"
+participant PaymentService as "<<Service>>\nPaymentService"
+participant BookingService as "<<Service>>\nBookingService"
+participant ReviewService as "<<Service>>\nReviewService"
+participant PackageService as "<<Service>>\nPackageService"
+
+Admin -> ReactApplication : Access Reports Page
+activate ReactApplication
+
+ReactApplication -> ReportsPage : render()
+activate ReportsPage
+deactivate ReactApplication
+
+ReportsPage --> Admin : Show filters (year, month, type, etc.)
+
+opt Admin selects Revenue Report
+    Admin -> ReportsPage : Select "Revenue Report" and filters (Choose Monthly or Yearly)
+
+    opt Admin chooses Yearly Report
+        Admin -> ReportsPage : Click "Download Yearly Revenue Report"
+        ReportsPage -> ReportController : GET /api/v1/reports/revenue?periodType=yearly&year={year}
+        activate ReportController
+
+        ReportController -> ReportService : generatePaymentRevenueReport("yearly", year, null)
+        activate ReportService
+
+        ReportService -> PaymentService : getPaymentsByPeriod(year, null)
+        activate PaymentService
+        PaymentService --> ReportService : List of yearly payments
+        deactivate PaymentService
+
+        ReportService -> CSVGenerator : generateRevenueCSV(payments, "yearly")
+        activate CSVGenerator
+        CSVGenerator --> ReportService : CSV binary data
+        deactivate CSVGenerator
+
+        ReportService --> ReportController : CSV binary data
+        deactivate ReportService
+
+        ReportController --> ReportsPage : Send CSV file to FE
+        deactivate ReportController
+
+        ReportsPage --> ReactApplication : Trigger browser file download (Yearly CSV)
+    end
+
+    opt Admin chooses Monthly Report
+        Admin -> ReportsPage : Click "Download Monthly Revenue Report"
+        ReportsPage -> ReportController : GET /api/v1/reports/revenue?periodType=monthly&year={year}&month={month}
+        activate ReportController
+
+        ReportController -> ReportService : generatePaymentRevenueReport("monthly", year, month)
+        activate ReportService
+
+        ReportService -> PaymentService : getPaymentsByPeriod(year, month)
+        activate PaymentService
+        PaymentService --> ReportService : List of monthly payments
+        deactivate PaymentService
+
+        ReportService -> CSVGenerator : generateRevenueCSV(payments, "monthly")
+        activate CSVGenerator
+        CSVGenerator --> ReportService : CSV binary data
+        deactivate CSVGenerator
+
+        ReportService --> ReportController : CSV binary data
+        deactivate ReportService
+
+        ReportController --> ReportsPage : Send CSV file to FE
+        deactivate ReportController
+
+        ReportsPage --> ReactApplication : Trigger browser file download (Monthly CSV)
+    end
+end
+
+opt Admin selects Monthly Booking Report (PDF)
+    Admin -> ReportsPage : Click "Download Monthly Booking Report (PDF)"
+    ReportsPage -> ReportController : GET /api/v1/reports/bookings/monthly/pdf?year={year}&month={month}
+    activate ReportController
+
+    ReportController -> ReportService : generateMonthlyBookingReportPDF(year, month)
+    activate ReportService
+
+    ReportService -> BookingService : getBookingsByStatus(BOOKING_CONFIRMED)
+    activate BookingService
+    BookingService --> ReportService : List of confirmed bookings
+    deactivate BookingService
+
+    ReportService -> PackageService : getAllPackages()
+    activate PackageService
+    PackageService --> ReportService : List of tour packages
+    deactivate PackageService
+
+    ReportService -> ReviewService : getReviewsByPackage()
+    activate ReviewService
+    ReviewService --> ReportService : List of reviews per package
+    deactivate ReviewService
+
+    ReportService -> ReportFormatter : formatMonthlyBookingReportPDF(year, month, bookings, packageStats, reviews)
+    activate ReportFormatter
+    ReportFormatter --> ReportService : Formatted report data
+    deactivate ReportFormatter
+
+    ReportService -> PDFGenerator : generateMonthlyBookingPDF(formatted report data)
+    activate PDFGenerator
+    PDFGenerator --> ReportService : PDF binary data
+    deactivate PDFGenerator
+
+    ReportService --> ReportController : PDF binary data
+    deactivate ReportService
+
+    ReportController --> ReportsPage : Send PDF file to FE
+    deactivate ReportController
+
+    ReportsPage --> ReactApplication : Trigger browser file download (PDF)
+end
+
+opt Admin selects Monthly Booking Report (CSV)
+    Admin -> ReportsPage : Click "Download Monthly Booking Report (CSV)"
+    ReportsPage -> ReportController : GET /api/v1/reports/bookings/monthly/csv?year={year}&month={month}
+    activate ReportController
+
+    ReportController -> ReportService : generateMonthlyBookingReportCSV(year, month)
+    activate ReportService
+
+    ReportService -> BookingService : getBookingsByStatus(BOOKING_CONFIRMED)
+    activate BookingService
+    BookingService --> ReportService : List of confirmed bookings
+    deactivate BookingService
+
+    ReportService -> PackageService : getAllPackages()
+    activate PackageService
+    PackageService --> ReportService : List of tour packages
+    deactivate PackageService
+
+    ReportService -> ReviewService : getReviewsByPackage()
+    activate ReviewService
+    ReviewService --> ReportService : List of reviews per package
+    deactivate ReviewService
+
+    ReportService -> ReportFormatter : formatMonthlyBookingReportCSV(year, month, bookings, packageStats, reviews)
+    activate ReportFormatter
+    ReportFormatter --> ReportService : Formatted CSV report data
+    deactivate ReportFormatter
+
+    ReportService -> CSVGenerator : generateMonthlyBookingCSV(formatted report data)
+    activate CSVGenerator
+    CSVGenerator --> ReportService : CSV binary data
+    deactivate CSVGenerator
+
+    ReportService --> ReportController : CSV binary data
+    deactivate ReportService
+
+    ReportController --> ReportsPage : Send CSV file to FE
+    deactivate ReportController
+
+    ReportsPage --> ReactApplication : Trigger browser file download (CSV)
+end
+
+@enduml
