@@ -1,0 +1,33 @@
+@startuml
+title ADMIN1 - Manage User Accounts
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Admin" as Admin #F5F5DC
+participant "Travel Trove System" as TMS #FFFFFF
+participant "Auth0 API" as Auth0 #DDDDFF
+
+Admin -> TMS : getUsers()
+TMS -> Admin : users data
+
+opt 2. Manage Roles
+    Admin -> TMS : selectUserAccount(userId)
+    TMS -> Auth0 : getCurrentRoles(userId)
+    Auth0 -> TMS : current roles data (e.g., Admin, Customer)
+    TMS -> Admin : current roles data
+
+    Admin -> TMS : updateRole(userId, newRole)
+
+    TMS -> Auth0 : assignRemoveRoles(userId, newRole)
+    Auth0 -> TMS : update success response
+    TMS -> Admin : updated roles data (e.g., new roles)
+
+end
+
+opt 3. Filter by Roles
+    Admin -> TMS : getUsers(roles)
+    TMS -> Admin : users data
+end
+
+@enduml

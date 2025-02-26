@@ -1,0 +1,13 @@
+@startuml
+title ADMIN5 - Remove a Tour
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Admin" as Admin #F5F5DC
+participant "Travel Trove System" as TMS #FFFFFF
+
+Admin -> TMS : removeTour(tourId)
+TMS -> Admin : tour removed confirmation
+
+@enduml

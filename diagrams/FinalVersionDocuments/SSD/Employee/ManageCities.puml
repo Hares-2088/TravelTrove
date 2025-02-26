@@ -1,5 +1,5 @@
 @startuml
-title Manage Cities (CRUD)
+title EMPL11 - Manage Cities
 
 skinparam backgroundColor #F5F5DC
 hide footbox

@@ -1,0 +1,13 @@
+@startuml
+title ADMIN4 - Cancel a Package
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Admin" as Admin #F5F5DC
+participant "Travel Trove System" as TMS #FFFFFF
+
+Admin -> TMS : cancelPackage(packageId)
+TMS -> Admin : package canceled confirmation
+
+@enduml

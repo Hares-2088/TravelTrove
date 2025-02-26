@@ -1,0 +1,68 @@
+@startuml
+title EMPL1 - Manage Tours
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Employee" as Employee #F5F5DC
+participant "Travel Trove System" as TMS #FFFFFF
+
+Employee -> TMS : getTours()
+TMS -> Employee : tours data
+
+opt Get Tour
+    Employee -> TMS : getTour(tourId)
+    TMS -> Employee : tour data
+
+    opt 2. Browse Packages
+        Employee -> TMS : getTourPackages()
+        TMS -> Employee : tour packages data
+
+        opt 4. Modify Package
+            Employee -> TMS : updatePackage(packageId, updatedDetails)
+            TMS -> Employee : updated package data
+
+            opt 5. Custom Notification
+                Employee -> TMS : sendCustomNotification(notificationDetails)
+                TMS -> Employee : notification sent
+            end
+        end
+
+        opt 6. View Package Bookings
+            Employee -> TMS : getPackageBookings(packageId)
+            TMS -> Employee : package bookings data
+
+            opt 7. View Travelers
+                Employee -> TMS : getTravelers(bookingId)
+                TMS -> Employee : traveler details
+            end
+        end
+
+        opt 8. Filter Search Result
+            Employee -> TMS : filterPackages(filterCriteria)
+            TMS -> Employee : filtered packages data
+        end
+
+        opt 15. View Package Reviews
+            Employee -> TMS : getPackageReviews(packageId)
+            TMS -> Employee : reviews data
+        end
+    end
+
+    opt 12. Manage Tour Events
+        Employee -> TMS : updateTourEvents(tourId, eventDetails)
+        TMS -> Employee : tour events updated
+    end
+end
+
+opt Create Tour
+    Employee -> TMS : createTour(tourDetails)
+    TMS -> Employee : tour created
+end
+
+opt Modify Tour
+    Employee -> TMS : updateTour(tourId, updatedDetails)
+    TMS -> Employee : updated tour data
+end
+
+@enduml

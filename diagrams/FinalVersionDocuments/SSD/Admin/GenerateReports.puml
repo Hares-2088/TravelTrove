@@ -1,0 +1,33 @@
+@startuml
+title ADMIN3 - Generate Reports
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Admin" as Admin #F5F5DC
+participant "Travel Trove System" as TMS #FFFFFF
+
+alt Admin chooses "Revenue Report"
+    Admin -> TMS : generateRevenueReport()
+    alt Admin selects "Yearly Report"
+        Admin -> TMS : generateYearlyRevenueReport(year)
+        TMS -> Admin : yearly revenue report data
+    else Admin selects "Monthly Report"
+        Admin -> TMS : generateMonthlyRevenueReport(month, year)
+        TMS -> Admin : monthly revenue report data
+    end
+    Admin -> TMS : downloadReport("CSV")
+    TMS -> Admin : revenue report file (CSV)
+else Admin chooses "Monthly Booking Report"
+    Admin -> TMS : generateMonthlyBookingReport(month, year)
+    TMS -> Admin : monthly booking report data
+    alt Admin selects "CSV"
+        Admin -> TMS : downloadReport("CSV")
+        TMS -> Admin : booking report file (CSV)
+    else Admin selects "PDF"
+        Admin -> TMS : downloadReport("PDF")
+        TMS -> Admin : booking report file (PDF)
+    end
+end
+
+@enduml

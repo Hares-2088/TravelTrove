@@ -30,7 +30,7 @@ rectangle "Travel Trove System" {
 "3. Browse packages" <.. "4. Book a package" : <<extend>>
 "3. Browse packages" <.. "8. Subscribe to notifications" : <<extend>>
 
-"4. Book a package" <.. "5. Pay for a tour package" : <<include>>
+"4. Book a package" ..> "5. Pay for a tour package" : <<include>>
 "4. Book a package" <.. "6. Manage travelers for booking" : <<extend>>
 "4. Book a package" <.. "7. Add a Review to a Package" : <<extend>>
 
