@@ -2,15 +2,8 @@
 
 left to right direction
 
-' Add a header with left alignment
-header
-Dar El Salam
-endheader
-
-' Align the header text to the left
 skinparam headerAlignment left
 
-' Custom skin parameters for use cases
 skinparam usecase {
     BackgroundColor lightblue
     BorderColor DarkSlateGray
@@ -21,68 +14,27 @@ actor "Customer" as Customer
 
 rectangle "Travel Trove System" {
 
-    usecase "Sign up for an Account"
-    usecase "Set up Profile"
-'    usecase "View Account"
-'    usecase "Edit Account"
-'    usecase "View Profile"
-'    usecase "Modify Profile Information"
+    usecase "1. Sign up for an Account"
+    usecase "2. Set up Profile"
 
-    usecase "Browse packages"
-'    usecase "Filter search result"
-    usecase "Subscribe to notifications"
-
-    usecase "Book a package"
-    usecase "Pay for a tour"
-
-'    usecase "Cancel a tour"
-'    usecase "Request a refund"
-
-    usecase "View Travelers"
-    usecase "View Traveler Details"
-'    usecase "Add a Traveler"
-'    usecase "Edit a Traveler"
-    usecase "Assign a Traveler to booking"
-    usecase "Remove a Traveler from booking"
-
-'    usecase "Access their package bookings"
-
-    usecase "View Package Reviews"
-    usecase "Add a Review to a Package"
-    usecase "Edit their Review"
-    usecase "Remove their Review"
+    usecase "3. Browse packages"
+    usecase "4. Book a package"
+    usecase "5. Pay for a tour package"
+    usecase "6. Manage travelers for booking"
+    usecase "7. Add a Review to a Package"
+    usecase "8. Subscribe to notifications"
 }
 
-"Sign up for an Account" <.. "Set up Profile" : <<extend>>
-'"Sign up for an Account" <.. "View Account" : <<extend>>
-'"View Account" <.. "Edit Account" : <<extend>>
-"Browse packages" <.. "Book a package" : <<extend>>
-"Browse packages" <.. "Subscribe to notifications" : <<extend>>
-"Browse packages" <.. "View Package Reviews" : <<extend>>
-"Browse packages" <.. "Remove their Review" : <<extend>>
-'"Book a package" <.. "Filter search result" : <<extend>>
-"Book a package" <.. "Pay for a tour" : <<include>>
-'"Cancel a tour" <.. "Request a refund" : <<extend>>
-'"Sign up for an Account" <.. "View Profile" : <<extend>>
-'"View Profile" <.. "Modify Profile Information" : <<extend>>
-'"View Profile" <.. "Set up Profile" : <<extend>>
-'"Access their package bookings" <.. "View Travelers" : <<extend>>
-'"Access their package bookings" <.. "View Traveler Details" : <<extend>>
-'"Access their package bookings" <.. "Add a Traveler" : <<extend>>
-'"Access their package bookings" <.. "Edit a Traveler" : <<extend>>
-'"Access their package bookings" <.. "Remove a Traveler from booking" : <<extend>>
-"Book a package" <.. "View Travelers" : <<extend>>"
-"Book a package" <.. "View Traveler Details" : <<extend>>"
-"Book a package" <.. "Remove a Traveler from booking" : <<extend>>"
-"Book a package" <.. "Assign a Traveler to booking" : <<extend>>"
-"Book a package" <.. "View Package Reviews" : <<extend>>"
-"Book a package" <.. "Add a Review to a Package" : <<extend>>"
-"Book a package" <.. "Edit their Review" : <<extend>>"
-"Book a package" <.. "Remove their Review" : <<extend>>"
+"1. Sign up for an Account" <.. "2. Set up Profile" : <<extend>>
 
-Customer -- "Sign up for an Account"
-Customer -- "Browse packages"
-'Customer -- "Access their package bookings"
-'Customer -- "Cancel a tour"
+"3. Browse packages" <.. "4. Book a package" : <<extend>>
+"3. Browse packages" <.. "8. Subscribe to notifications" : <<extend>>
+
+"4. Book a package" <.. "5. Pay for a tour package" : <<include>>
+"4. Book a package" <.. "6. Manage travelers for booking" : <<extend>>
+"4. Book a package" <.. "7. Add a Review to a Package" : <<extend>>
+
+Customer -- "1. Sign up for an Account"
+Customer -- "3. Browse packages"
 
 @enduml

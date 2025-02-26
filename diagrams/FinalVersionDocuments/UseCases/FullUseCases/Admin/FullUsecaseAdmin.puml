@@ -1,10 +1,6 @@
 @startuml
-scale 1
-left to right direction
 
-header
-Dar El Salam
-endheader
+left to right direction
 
 skinparam usecase {
     BackgroundColor lightblue
@@ -16,18 +12,20 @@ actor "Dar El Salam's Admin" as Admin
 
 rectangle "Travel Trove System" {
 
-    usecase "Manage user accounts"
-    usecase "Control Roles"
-    usecase "Generate report"
-    usecase "Remove a tour package"
+    usecase "1. Manage user accounts"
+    usecase "2. Manage Roles"
+    usecase "3. Generate reports"
+    usecase "4. Cancel a package"
+    usecase "5. Remove a tour"
 
 }
 
-"Manage user accounts" ..> "Control Roles" : <<include>>
+"1. Manage user accounts" ..> "2. Manage Roles" : <<include>>
 Admin <|-- Employee
-Admin -- "Manage user accounts"
-Admin -- "Generate report"
-Admin -- "Remove a tour package"
+Admin -- "1. Manage user accounts"
+Admin -- "3. Generate reports"
+Admin -- "4. Cancel a package"
+Admin -- "5. Remove a tour"
 
 
 @enduml
