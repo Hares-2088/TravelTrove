@@ -1,0 +1,38 @@
+@startuml
+title Manage Hotels (CRUD)
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Employee" as Employee #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+
+'--- Primary Flow: GET (Retrieve all hotels) ---
+Employee -> TMS : GET /hotels
+TMS -> Employee : List of hotels
+
+'--- Extension: GET hotel by ID ---
+opt GET hotel by ID
+    Employee -> TMS : GET /hotels/{hotelId}
+    TMS -> Employee : Hotel details
+end
+
+'--- Extension: POST (Create new hotel) ---
+opt POST (Create new hotel)
+    Employee -> TMS : POST /hotels (hotel data)
+    TMS -> Employee : New hotel info
+end
+
+'--- Extension: PUT (Update existing hotel) ---
+opt PUT (Update existing hotel)
+    Employee -> TMS : PUT /hotels/{hotelId} (updated data)
+    TMS -> Employee : Updated hotel info
+end
+
+'--- Extension: DELETE (Remove hotel) ---
+opt DELETE (Remove hotel)
+    Employee -> TMS : DELETE /hotels/{hotelId}
+    TMS -> Employee : Hotel has been deleted
+end
+
+@enduml

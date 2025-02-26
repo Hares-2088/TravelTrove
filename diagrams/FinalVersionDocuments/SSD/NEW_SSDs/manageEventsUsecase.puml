@@ -1,0 +1,38 @@
+@startuml
+title Manage Events (CRUD)
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Employee" as Employee #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+
+'--- Primary Flow: GET (Retrieve all events) ---
+Employee -> TMS : GET /events
+TMS -> Employee : List of events
+
+'--- Extension: GET event by ID ---
+opt GET event by ID
+    Employee -> TMS : GET /events/{eventId}
+    TMS -> Employee : Event details
+end
+
+'--- Extension: POST (Create new event) ---
+opt POST (Create new event)
+    Employee -> TMS : POST /events (event data)
+    TMS -> Employee :New event info
+end
+
+'--- Extension: PUT (Update existing event) ---
+opt PUT (Update existing event)
+    Employee -> TMS : PUT /events/{eventId} (updated data)
+    TMS -> Employee : Updated event info
+end
+
+'--- Extension: DELETE (Remove event) ---
+opt DELETE (Remove event)
+    Employee -> TMS : DELETE /events/{eventId}
+    TMS -> Employee : Event has been deleted
+end
+
+@enduml
