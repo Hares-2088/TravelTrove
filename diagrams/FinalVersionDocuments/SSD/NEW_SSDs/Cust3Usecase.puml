@@ -1,0 +1,53 @@
+@startuml
+title CUST3 - Browse Packages (with Extensions)
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor Customer #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+
+'--- Primary Flow: Browse Packages ---
+Customer -> TMS : 1. BrowsePackages()
+TMS -> Customer : 2. Display package listings
+
+'--- Extension: 8. Subscribe to Notifications (extends Browse Packages) ---
+opt 8. Subscribe to Notifications
+    Customer -> TMS : SubscribeToNotifications()
+end
+
+'--- Extension: 4. Book a Package (extends Browse Packages) ---
+opt 4. Book a Package
+    Customer -> TMS : 5. BookPackage(packageId)
+
+    '--- New Subscription Check on Booking ---
+    opt Check Subscription Status
+        alt Already Subscribed
+            TMS -> Customer : "You are already subscribed."
+        else Not Subscribed
+            TMS -> Customer : "You have been subscribed."
+        end
+    end
+
+    '--- Extension: 6. Manage travelers for booking ---
+    opt 6. Manage travelers for booking
+        Customer -> TMS : AddTravelerDetails(name, address, email, city, country)
+    end
+
+    '--- Included Use Case: 5. Pay for a Tour Package ---
+    group Include [5. Pay for a Tour Package]
+        alt Payment Successful
+            TMS -> Customer : Booking confirmed
+
+            '--- Extension: 7. Add a Review (extends Book a Package) ---
+            opt 7. Add a Review (after trip completion)
+                Customer -> TMS : AddReview(packageId, rating, comments)
+                TMS -> Customer : Review posted successfully
+            end
+        else Payment Failed
+            TMS -> Customer : Payment cancellation
+        end
+    end
+end
+
+@enduml
