@@ -1,5 +1,5 @@
 @startuml
-title Payment Sequence Diagram for "Pay for a Tour"
+title Payment Sequence Diagram for "Pay for a Package"
 
 actor Customer as "<<Actor>>\nCustomer"
 

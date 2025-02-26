@@ -1,0 +1,38 @@
+@startuml
+title Manage Countries (CRUD)
+
+skinparam backgroundColor #F5F5DC
+hide footbox
+
+actor "Employee" as Employee #F5F5DC
+participant "Travel Management System" as TMS #FFFFFF
+
+'--- Primary Flow: GET (Retrieve all countries) ---
+Employee -> TMS : GET /countries
+TMS -> Employee : List of countries
+
+'--- Extension: GET country by ID ---
+opt GET country by ID
+    Employee -> TMS : GET /countries/{countryId}
+    TMS -> Employee : Country details
+end
+
+'--- Extension: POST (Create new country) ---
+opt POST (Create new country)
+    Employee -> TMS : POST /countries (country data)
+    TMS -> Employee : New country info
+end
+
+'--- Extension: PUT (Update existing country) ---
+opt PUT (Update existing country)
+    Employee -> TMS : PUT /countries/{countryId} (updated data)
+    TMS -> Employee : Updated country info
+end
+
+'--- Extension: DELETE (Remove country) ---
+opt DELETE (Remove country)
+    Employee -> TMS : DELETE /countries/{countryId}
+    TMS -> Employee : Country has been deleted
+end
+
+@enduml
