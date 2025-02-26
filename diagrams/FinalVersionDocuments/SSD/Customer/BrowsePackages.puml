@@ -1,5 +1,5 @@
 @startuml
-title CUST3 - Browse Packages (with Extensions)
+title CUST3 - Browse Packages
 
 skinparam backgroundColor #F5F5DC
 hide footbox

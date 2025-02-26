@@ -1,5 +1,5 @@
 @startuml
-title Manage Airports (CRUD)
+title EMPL14 - Manage Airports
 
 skinparam backgroundColor #F5F5DC
 hide footbox

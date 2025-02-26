@@ -1,5 +1,5 @@
 @startuml
-title Manage Countries (CRUD)
+title EMPL10 - Manage Countries
 
 skinparam backgroundColor #F5F5DC
 hide footbox

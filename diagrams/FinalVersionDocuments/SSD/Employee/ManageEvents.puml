@@ -1,5 +1,5 @@
 @startuml
-title Manage Events (CRUD)
+title EMPL9 - Manage Events
 
 skinparam backgroundColor #F5F5DC
 hide footbox

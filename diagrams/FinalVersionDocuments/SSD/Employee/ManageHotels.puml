@@ -1,5 +1,5 @@
 @startuml
-title Manage Hotels (CRUD)
+title EMPL13 - Manage Hotels
 
 skinparam backgroundColor #F5F5DC
 hide footbox
